@@ -34,10 +34,31 @@ end8 <-   as.POSIXct("2021-01-01")
 
 dat.raw.no.dup <- 
   dat.raw.no.dup %>%
-  mutate(wave =  case_when(startDate >= start2 & startDate < end2 ~ "June 2020",
-                           startDate >= start3 & startDate < end3 ~ "July 2020",
-                           startDate >= start4 & startDate < end4 ~ "August 2020",
-                           startDate >= start5 & startDate < end5 ~ "September 2020",
-                           startDate >= start6 & startDate < end6 ~ "October 2020",
-                           startDate >= start7 & startDate < end7 ~ "November 2020",
-                           startDate >= start8 & startDate < end8 ~ "December 2020")
+  mutate(wave_A_taf =  case_when(startDate_wavesA_taf >= start2 & startDate_wavesA_taf < end2 ~ "June 2020",
+                           startDate_wavesA_taf >= start3 & startDate_wavesA_taf < end3 ~ "July 2020",
+                           startDate_wavesA_taf >= start4 & startDate_wavesA_taf < end4 ~ "August 2020",
+                           startDate_wavesA_taf >= start5 & startDate_wavesA_taf < end5 ~ "September 2020",
+                           startDate_wavesA_taf >= start6 & startDate_wavesA_taf < end6 ~ "October 2020",
+                           startDate_wavesA_taf >= start7 & startDate_wavesA_taf < end7 ~ "November 2020",
+                           startDate_wavesA_taf >= start8 & startDate_wavesA_taf < end8 ~ "December 2020"))
+         
+dat.raw.no.dup <- 
+  dat.raw.no.dup %>%
+  mutate(wave_B_taf =  case_when(startDate_wavesB_taf >= start2 & startDate_wavesB_taf < end2 ~ "June 2020",
+                                 startDate_wavesB_taf >= start3 & startDate_wavesB_taf < end3 ~ "July 2020",
+                                 startDate_wavesB_taf >= start4 & startDate_wavesB_taf < end4 ~ "August 2020",
+                                 startDate_wavesB_taf >= start5 & startDate_wavesB_taf < end5 ~ "September 2020",
+                                 startDate_wavesB_taf >= start6 & startDate_wavesB_taf < end6 ~ "October 2020",
+                                 startDate_wavesB_taf >= start7 & startDate_wavesB_taf < end7 ~ "November 2020",
+                                 startDate_wavesB_taf >= start8 & startDate_wavesB_taf < end8 ~ "December 2020"))
+
+
+dat.raw.no.dup <- 
+  dat.raw.no.dup %>%
+  mutate(wave_B_edeq =  case_when(startDate_wavesB_edeq >= start2 & startDate_wavesB_edeq < end2 ~ "June 2020",
+                                 startDate_wavesB_edeq >= start3 & startDate_wavesB_edeq < end3 ~ "July 2020",
+                                 startDate_wavesB_edeq >= start4 & startDate_wavesB_edeq < end4 ~ "August 2020",
+                                 startDate_wavesB_edeq >= start5 & startDate_wavesB_edeq < end5 ~ "September 2020",
+                                 startDate_wavesB_edeq >= start6 & startDate_wavesB_edeq < end6 ~ "October 2020",
+                                 startDate_wavesB_edeq >= start7 & startDate_wavesB_edeq < end7 ~ "November 2020",
+                                 startDate_wavesB_edeq >= start8 & startDate_wavesB_edeq < end8 ~ "December 2020"))

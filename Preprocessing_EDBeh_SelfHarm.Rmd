@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -1654,7 +1654,7 @@ scores are reported as means and standard deviations.
 3 Food avoidance
 4 Dietary Rules
 5 Empty stomach
-```{r edeq ramp restraint subscale baseline scoring}
+```{r edeq ramp restraint subscale baseline scoring, eval=FALSE, include=FALSE}
 if(RAMP == TRUE){
   #Check that scores for all items are between 0 - 6
 freq(edeq.ramp.baseline.raw.id$edeq.deliberately_limit_amount_influence_baseline_numeric)
@@ -2255,7 +2255,7 @@ source("./employment_ALLdatasets.R")
 ##MENTAL HEALTH DIAGNOSIS
 ###Call script for recoding employment and key worker status
 ```{r nbr dem calculating age from birthday}
-if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
+if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./mental_health_diagnosis_ALLdatasets.R")
 }
 ```
@@ -2574,6 +2574,12 @@ dat.raw.no.dup <- dat.raw %>%
   filter(ID.dup == FALSE)
 
 colnames(dat.raw.no.dup)
+
+dat.raw.no.dup$startDate_wavesA_taf
+dat.raw.no.dup$startDate_wavesB_edeq
+
+dat.raw.no.dup$startDate_wavesB_taf
+
 
 ```
 
