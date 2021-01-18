@@ -1162,14 +1162,14 @@ if(RAMP == TRUE) {
 
 
 ## Grouping mental health disorders
-1. Depressive disorder group: major depression, antenatal/postnatal depression, premenstrual depression. The logic for this has been double checked for males - KT/MD.
-2. Anxiety group: generalised anxiety, social anxiety, specific phobia, agoraphobia, panic_disorder, panic_attacks.
-3. Agoraphobia and panic_disorder group: panic_disorder, agoraphobia, panic_attacks.
-4. Eating disorders group: anorexianervosa, atypical anorexia nervosa, bulimia nervosa, overeating or bingeeating.
-5. Obsessive complusive disorders: obsessive compulaive disorder, obsessive compulsive related disorders.
-6. Psychotic disorders: schizophrenia, schizoaffective disorder, general psychosis or psychotic illness.
-7. Personality disorders: cluster A, cluster B, cluster C
-8. Control group: no diagnosed disorders.
+#1. Depressive disorder group: major depression, antenatal/postnatal depression, premenstrual depression. The logic for this has been double checked for males - KT/MD.
+#2. Anxiety group: generalised anxiety, social anxiety, specific phobia, agoraphobia, panic_disorder, panic_attacks.
+#3. Agoraphobia and panic_disorder group: panic_disorder, agoraphobia, panic_attacks.
+#4. Eating disorders group: anorexianervosa, atypical anorexia nervosa, bulimia nervosa, overeating or bingeeating.
+#5. Obsessive complusive disorders: obsessive compulaive disorder, obsessive compulsive related disorders.
+#6. Psychotic disorders: schizophrenia, schizoaffective disorder, general psychosis or psychotic illness.
+#7. Personality disorders: cluster A, cluster B, cluster C
+#8. Control group: no diagnosed disorders.
 
 ### Depressive disorders
 if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE | RAMP == TRUE) {
