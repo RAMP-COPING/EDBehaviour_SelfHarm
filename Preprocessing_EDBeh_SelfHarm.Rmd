@@ -2036,8 +2036,6 @@ if(COPING == TRUE){
 }
 ```
 
-
-
 # TAF - follow up b
 ## COPING
 ### Read in data
@@ -2578,6 +2576,26 @@ dat.raw.no.dup <- dat.raw %>%
 colnames(dat.raw.no.dup)
 
 ```
+
+
+#### Create a wave columns 
+Base this on dates of the follow ups drawn from qualtrics.
+
+RAMP
+5 waves
+
+1 - May 2020
+2 - June 2020
+3 - July 2020 (start date actually the last day of June)
+4 - September 2020
+5 - November 2020
+
+```{r identify wave dates ramp}
+if (RAMP ==TRUE) {
+source("./wavesRAMP.R")
+}
+```
+
 
 
 
