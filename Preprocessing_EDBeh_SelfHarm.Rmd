@@ -1,6 +1,6 @@
 ---
 title: "COPING_cleaning_dem"
-author: "Helena Davies"
+author: "Helena Davies (based on PANCHANGE script by KP, KT, KY, TH)"
 date: "15/12/2020"
 output: html_document
 ---
@@ -17,29 +17,14 @@ Delete everything in your global environment
 remove(list = ls())
 ```
 
-Install packages
-```{r Install packages}
-# Remember to hash the installing out
-#install.packages(c("knitr","tidyverse","car","psych","lubridate","broom","ggfortify","summarytools","ggformula","data.table","ggpubr","ggrepel", "eeptools", "skimr"))
+#### Call in library script
+
+```{r source files}
+#source data directory: data_path
+
+source("./libraries.R")
 ```
 
-Load packages
-```{r Load packages}
-library(knitr)
-library(car)
-library(psych)
-library(lubridate)
-library(broom)
-library(ggfortify)
-library(summarytools)
-library(ggformula)
-library(data.table)
-library(ggrepel)
-library(ggpubr)
-library(UpSetR)
-library(skimr)
-library(tidyverse)
-```
 
 #Retrieve the recent date
 ```{r Recent date}
@@ -51,8 +36,8 @@ date
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
-NBR = TRUE
+RAMP = TRUE
+NBR = FALSE
 COPING = FALSE
 ```
 
@@ -1652,6 +1637,9 @@ colnames(edeq.ramp.followupb.raw.id)
 dim(edeq.ramp.followupb.raw)[1]-dim(edeq.ramp.followupb.raw.id)[1]
 }
 ```
+
+###EDEQ scoring
+
 The EDE, and its self-report version, the EDE-Q, generate two types of data. First, they provide
 frequency data on key behavioural features of eating disorders in terms of number of episodes of the
 behaviour and in some instances number of days on which the behaviour has occurred. Second, they
@@ -1663,6 +1651,24 @@ score may nevertheless be obtained by dividing the resulting total by the number
 as more than half the items have been rated. To obtain an overall or ‘global’ score, the four subscales
 scores are summed and the resulting total divided by the number of subscales (i.e. four). Subscale
 scores are reported as means and standard deviations.
+
+##Restraint subscale - BASELINE
+1 Restraint over eating
+2 Avoidance of eating
+3 Food avoidance
+4 Dietary Rules
+5 Empty stomach
+```{r edeq ramp restraint subscale baseline scoring}
+if(RAMP == TRUE){
+  #Check that scores for all items are between 0 - 6
+freq(edeq.ramp.baseline.raw.id$edeq.deliberately_limit_amount_influence_baseline_numeric)
+
+  freq(edeq.ramp.baseline.raw.id$edeq.av)
+
+  
+
+}
+```
 
 
 
