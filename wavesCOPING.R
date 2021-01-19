@@ -38,10 +38,10 @@ end6 <-  as.POSIXct("2020-07-14")
 
 # JULY 2 (wave 4a) - FOLLOW UP A
 start7 <- as.POSIXct("2020-07-14")
-end7 <-  as.POSIXct("2020-07-28") 
+end7 <-  as.POSIXct("2020-07-28") #**I think startDate_wavesA_taf_ongoing starts from here?
 
 # JULY - AUG (wave 4b) - FOLLOW UP B
-start8 <- as.POSIXct("2020-07-28")
+start8 <- as.POSIXct("2020-07-28") #**Some people in 'startDate_wavesA_taf' filled out follow up A TAF on 29th July, but this date falls within follow up B? What should we do with people who filled them in really late?
 end8 <-  as.POSIXct("2020-08-25") 
 
 # AUG - SEPT (wave 5) - FOLLOW UP A
@@ -65,20 +65,23 @@ start13 <- as.POSIXct("2020-12-15")
 end13 <-  as.POSIXct("2020-01-11") 
 
 
-#startDate_wavesA_taf - earlier waves (until 29th July)
+#startDate_wavesA_taf - earlier waves (until 29th July?)
 #startDate_wavesA_taf_ongoing - later waves ()
 
 #startDate_wavesB_taf
 #startDate_wavesB_edeq
 
+##**How much does it matter if someone is in 'A' or 'B' - is the date more important? e.g. can someone who was considered follow up A but completed q during timepoints considered as within 'follow up B', be recoded as follow up B?
+#**Need to check wave_A_taf code - numbers don't look right..Looking at those who are NA for wave_A_taf, their 'startDate_wavesA_taf_ongoing' include these dates: 29th July, 18th December, 20th December. And their 'startDate_wavesA_taf' includes 30th June and 29th July...these all fall in follow up B?
+
 dat.raw <- 
   dat.raw %>%
   mutate(wave_A_taf =  case_when(startDate_wavesA_taf >= start3 & startDate_wavesA_taf < end3 ~ "Wave 2a",
                                  startDate_wavesA_taf >= start5 & startDate_wavesA_taf < end5 ~ "Wave 3a",
-                                 startDate_wavesA_taf >= start7 & startDate_wavesA_taf < end7 ~ "Wave 4a",
-                                 startDate_wavesA_taf >= start9 & startDate_wavesA_taf < end9 ~ "Wave 5",
-                                 startDate_wavesA_taf >= start11 & startDate_wavesA_taf < end11 ~ "Wave 7",
-                                 startDate_wavesA_taf >= start13 & startDate_wavesA_taf < end13 ~ "Wave 9"))
+                                 startDate_wavesA_taf_ongoing >= start7 & startDate_wavesA_taf_ongoing < end7 ~ "Wave 4a",
+                                 startDate_wavesA_taf_ongoing >= start9 & startDate_wavesA_taf_ongoing< end9 ~ "Wave 5",
+                                 startDate_wavesA_taf_ongoing >= start11 & startDate_wavesA_taf_ongoing < end11 ~ "Wave 7",
+                                 startDate_wavesA_taf_ongoing >= start13 & startDate_wavesA_taf_ongoing < end13 ~ "Wave 9"))
 
 dat.raw <- 
   dat.raw %>%
