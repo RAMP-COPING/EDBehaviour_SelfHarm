@@ -2599,6 +2599,10 @@ RAMP
 ```{r identify wave dates ramp}
 if (RAMP ==TRUE) {
 source("./wavesRAMP.R")
+  
+freq(dat.raw.no.dup$wave_A_taf)
+
+  freq(dat.raw.no.dup$wave_B_taf)
 }
 ```
 
