@@ -2537,9 +2537,32 @@ dat.raw <- plyr::join_all(
 
 #look at the data
 colnames(dat.raw)
+
+```
+#### Create a wave columns 
+Base this on dates of the follow ups drawn from qualtrics.
+
+RAMP
+6 waves
+
+MONTHLY
+2 - June 2020
+3 - July 2020 (start date actually the last day of June)
+4 - September 2020
+5 - November 2020
+6 - December 2020
+
+```{r identify wave dates ramp}
+if (RAMP ==TRUE) {
+source("./wavesRAMP.R")
+
+}
 ```
 
-```{r Check duplicates}
+
+
+
+```{r Check duplicates, eval=FALSE, include=FALSE}
 dat.raw$ID.dup <- duplicated(dat.raw$ID)
 
 summary(as.factor(dat.raw$ID.dup))
@@ -2562,26 +2585,7 @@ colnames(dat.raw.no.dup)
 ```
 
 
-#### Create a wave columns 
-Base this on dates of the follow ups drawn from qualtrics.
 
-RAMP
-6 waves
-
-1 - May 2020
-2 - June 2020
-3 - July 2020 (start date actually the last day of June)
-4 - September 2020
-5 - November 2020
-6 - December 2020
-
-```{r identify wave dates ramp}
-if (RAMP ==TRUE) {
-source("./wavesRAMP.R")
-
-  freq(dat.raw.no.dup$wave_A_taf)
-}
-```
 
 
 ```{r identify wave dates ramp}
