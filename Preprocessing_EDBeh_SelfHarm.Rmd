@@ -2569,11 +2569,12 @@ if (COPING ==TRUE) {
 source("./wavesCOPING.R")
 
 }
+
 ```
 
 
 
-
+##Should do this AFTER split by waves (i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
 ```{r Check duplicates, eval=FALSE, include=FALSE}
 dat.raw$ID.dup <- duplicated(dat.raw$ID)
 
