@@ -1,7 +1,7 @@
 ## Create wave column in COPING
 
 ##FORTNIGHTLY:
-#Wave 1, follow up A = 19th May - 26th May ##May1
+#Wave 1, follow up A = 19th May - 26th May ##May1 
 #Wave 2, follow up B = 2nd June - 9th June (?) ##June1
 #Wave 3, follow up A = 16th June - 23 June at 5PM (Set A_ongoing) or Friday, 26 June (setA_1) ##June2
 #Wave 4, follow up B = 30th June - 7th July ##July1
@@ -18,47 +18,47 @@
 
 #**EDEQ only in follow up B, TAF in both A and B
 
-# May1
+# May1 (wave 1a)
 start1 <- as.POSIXct("2020-05-19")
 end1 <- as.POSIXct("2020-05-26")
 
-#June1
+#June1 (wave 1b)
 start2 <- as.POSIXct("2020-06-02")
 end2 <-  as.POSIXct("2020-06-09")  
 
-#June2
+#June2 (wave 2a)
 start3 <- as.POSIXct("2020-06-16")
 end3 <-  as.POSIXct("2020-06-23")
 
-#July1
+#July1 (wave 2b)
 start4 <- as.POSIXct("2020-06-30")
 end4 <-  as.POSIXct("2020-07-07")
 
-#July2
+#July2 (wave 3a)
 start5 <- as.POSIXct("2020-07-14")
 end5 <-  as.POSIXct("2020-07-21")
 
-#July_Aug
+#July_Aug (wave 3b)
 start6 <- as.POSIXct("2020-07-28")
 end6 <-   as.POSIXct("2020-08-04") 
 
-#Aug_Sept
+#Aug_Sept (wave 4)
 start7 <- as.POSIXct("2020-08-25")
 end7 <-   as.POSIXct("2020-09-15") 
 
-#Sept_Oct
+#Sept_Oct (wave 5)
 start8 <- as.POSIXct("2020-09-22")
 end8 <-   as.POSIXct("2021-10-13") 
 
-#Oct_Nov
+#Oct_Nov (wave 6)
 start9 <- as.POSIXct("2020-10-20")
 end9 <-   as.POSIXct("2021-11-10") 
 
-#Nov_Dec
+#Nov_Dec (wave 7)
 start10 <- as.POSIXct("2020-11-17")
 end10 <-   as.POSIXct("2021-12-08") 
 
-#Dec_Jan
+#Dec_Jan (wave 8)
 start11 <- as.POSIXct("2020-12-15")
 end11 <-   as.POSIXct("2021-01-05") 
 
