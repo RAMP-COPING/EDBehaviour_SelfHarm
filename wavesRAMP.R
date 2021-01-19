@@ -1,8 +1,27 @@
 ## Create wave column in RAMP
 
+##First 2 waves are not in COPING
+#Wave 1, follow up A = 21st april 
+#Wave 2, follow up B = 5th May
 
-## Roughly by month.Some day discerpancies from pure calendar month to make sure there is no confusion with 
-### survey send out dates
+
+##End dates here are 'expiry' dates, however some participants requested extra time and for those who were sent questionnaires by text message, no expiration date could be set. For the purposes of waves,I will effectively ignore expiration dates to capture these people.
+
+
+#Wave 3, follow up A = 19th May - 26th May ##May1 
+#Wave 4, follow up B = 2nd June - 9th June (?) ##June1
+#Wave 5, follow up A = 16th June - 23 June at 5PM (Set A_ongoing) or Friday, 26 June (setA_1) ##June2
+#Wave 6, follow up B = 30th June - 7th July ##July1
+#Wave 7, follow up A = 14th July - 21st July ##July2
+#Wave 8, follow up B = 28th July - 4th August ##July_Aug
+
+##MONTHLY
+#Wave 9, follow up A = 25th August- 15th Sept ##August-September
+#Wave 10, follow up B = 22nd Sept - 13th Oct ##September-October
+#Wave 11, follow up A = 20th Oct - 10th Nov ##October-November
+#Wave 12, follow up B, = 17th Nov - 8th Dec ##November - December
+#WAVE 13, follow up A = 15th Dec - 5th Jan ##December - Jan
+#(Note that waves continue but data extracted in Dec)
 
 # June
 start2 <- as.POSIXct("2020-06-01")
