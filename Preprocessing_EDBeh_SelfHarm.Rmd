@@ -1450,7 +1450,7 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw %>% #new dataset with 
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         startDate_wavesB = startDate,
+         startDate_wavesB_edeq = startDate,
          #endDate,
          edeq.deliberately_limit_amount_influence_followupB = edeq.deliberately_limit_amount_influence,
          edeq.calories_made_body_shape_followupB = edeq.calories_made_body_shape,
@@ -1921,7 +1921,7 @@ taf.coping.followupa.raw.id.1 <- taf.coping.followupa.raw.1 %>% #new dataset wit
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         startDate_wavesA = startDate,
+         startDate_wavesA_taf = startDate,
          #endDate,
          taf.worth_living_life_people_followupA = taf.worth_living_life_people,
          taf.felt_weeks_past_followupA = taf.felt_weeks_past,
@@ -1979,7 +1979,7 @@ taf.coping.followupa.raw.id.2 <- taf.coping.followupa.raw.2 %>% #new dataset wit
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         startDate_wavesA_ongoing = startDate,
+         startDate_wavesA_taf_ongoing = startDate,
          #endDate,
          taf.worth_living_life_people_followupA_ongoing = taf.worth_living_life_people,
          taf.felt_weeks_past_followupA_ongoing = taf.felt_weeks_past,
@@ -2049,7 +2049,7 @@ taf.coping.followupb.raw.id <- taf.coping.followupb.raw %>% #new dataset with ID
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         startDate_wavesB = startDate,
+         startDate_wavesB_taf = startDate,
          #endDate,
          taf.worth_living_life_people_followupB = taf.worth_living_life_people,
          taf.felt_weeks_past_followupB = taf.weeks_past_felt, #renamed to same follow up a
@@ -2530,18 +2530,19 @@ dfs.list <- list(
 }
 ```
 
-#List of follow up cohorts (coping and ramp)
-
-edeq.coping.followupb.raw.id
-edeq.ramp.followupb.raw.id
-taf.coping.followupa.raw.id 
-taf.coping.followupb.raw.id
-taf.ramp.followupa.raw.id
-taf.ramp.followupb.raw.id 
-
+#List of follow up cohorts (COPING)
+```{r COPING data frame list}
+if(COPING == TRUE) {
+dfs.list <- list(
+    edeq.coping.followupb.raw.id,
+    taf.coping.followupa.raw.id,
+    taf.coping.followupb.raw.id
+)
+}
+```
 
 ```{r Join all questionnaires}
-if(RAMP == TRUE | NBR ==TRUE | EDGI == TRUE| GLAD == TRUE) {
+if(RAMP == TRUE | NBR ==TRUE | EDGI == TRUE| GLAD == TRUE |COPING == TRUE) {
 dat.raw <- plyr::join_all(
   dfs.list,
   by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
@@ -2550,20 +2551,11 @@ dat.raw <- plyr::join_all(
 #look at the data
 colnames(dat.raw)
 }
+
 ```
+
+
 #### Create a wave columns - RAMP
-Base this on dates of the follow ups drawn from qualtrics.
-
-RAMP
-6 waves
-
-MONTHLY
-2 - June 2020
-3 - July 2020 (start date actually the last day of June)
-4 - September 2020
-5 - November 2020
-6 - December 2020
-
 ```{r identify wave dates ramp}
 if (RAMP ==TRUE) {
 source("./wavesRAMP.R")
@@ -2572,8 +2564,6 @@ source("./wavesRAMP.R")
 ```
 
 #### Create a wave columns - COPING
-Base this on dates of the follow ups drawn from qualtrics.
-
 ```{r identify wave dates ramp}
 if (COPING ==TRUE) {
 source("./wavesCOPING.R")
