@@ -1443,7 +1443,7 @@ exclude_cols_dem <- c("ID",
 
 edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
@@ -1588,7 +1588,7 @@ exclude_cols_dem <- c("ID",
 
 edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
@@ -1648,23 +1648,7 @@ as more than half the items have been rated. To obtain an overall or â€˜globalâ€
 scores are summed and the resulting total divided by the number of subscales (i.e. four). Subscale
 scores are reported as means and standard deviations.
 
-##Restraint subscale - BASELINE
-1 Restraint over eating
-2 Avoidance of eating
-3 Food avoidance
-4 Dietary Rules
-5 Empty stomach
-```{r edeq ramp restraint subscale baseline scoring, eval=FALSE, include=FALSE}
-if(RAMP == TRUE){
-  #Check that scores for all items are between 0 - 6
-freq(edeq.ramp.baseline.raw.id$edeq.deliberately_limit_amount_influence_baseline_numeric)
 
-  freq(edeq.ramp.baseline.raw.id$edeq.av)
-
-  
-
-}
-```
 
 
 
@@ -1929,7 +1913,7 @@ exclude_cols_dem <- c("ID",
 
 taf.coping.followupa.raw.id.1 <- taf.coping.followupa.raw.1 %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
@@ -1987,7 +1971,7 @@ exclude_cols_dem <- c("ID",
 
 taf.coping.followupa.raw.id.2 <- taf.coping.followupa.raw.2 %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
@@ -2057,7 +2041,7 @@ exclude_cols_dem <- c("ID",
 
 taf.coping.followupb.raw.id <- taf.coping.followupb.raw %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+ # distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
@@ -2114,7 +2098,7 @@ exclude_cols_dem <- c("ID",
 
 taf.ramp.followupa.raw.id <- taf.ramp.followupa.raw %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
@@ -2170,7 +2154,7 @@ exclude_cols_dem <- c("ID",
 
 taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
@@ -2575,12 +2559,6 @@ dat.raw.no.dup <- dat.raw %>%
 
 colnames(dat.raw.no.dup)
 
-dat.raw.no.dup$startDate_wavesA_taf
-dat.raw.no.dup$startDate_wavesB_edeq
-
-dat.raw.no.dup$startDate_wavesB_taf
-
-
 ```
 
 
@@ -2588,22 +2566,39 @@ dat.raw.no.dup$startDate_wavesB_taf
 Base this on dates of the follow ups drawn from qualtrics.
 
 RAMP
-5 waves
+6 waves
 
 1 - May 2020
 2 - June 2020
 3 - July 2020 (start date actually the last day of June)
 4 - September 2020
 5 - November 2020
+6 - December 2020
 
 ```{r identify wave dates ramp}
 if (RAMP ==TRUE) {
 source("./wavesRAMP.R")
-  
-freq(dat.raw.no.dup$wave_A_taf)
 
-  freq(dat.raw.no.dup$wave_B_taf)
+  freq(dat.raw.no.dup$wave_A_taf)
 }
+```
+
+
+```{r identify wave dates ramp}
+freq(dat.raw.no.dup$startDate_wavesA_taf)
+dat.raw.no.dup$startDate_wavesA_taf
+dat.raw.no.dup$startDate_wavesB_edeq
+
+dat.raw.no.dup$startDate_wavesB_taf
+
+
+x <- dat.raw.no.dup %>%
+  filter(is.na(wave_A_taf))
+
+freq(x$startDate_wavesA_taf)
+
+
+
 ```
 
 
