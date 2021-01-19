@@ -4,9 +4,8 @@
 ## Roughly by month.Some day discerpancies from pure calendar month to make sure there is no confusion with 
 ### survey send out dates
 
-# May
-start1 <- as.POSIXct("2020-05-01")
-end1 <- as.POSIXct("2020-05-31")
+#Questionnaires are sent every 2 weeks on a Tuesday
+#After 28 July, questionnaires are sent every 4 weeks.
 
 # June
 start2 <- as.POSIXct("2020-06-01")
@@ -38,8 +37,7 @@ end8 <-   as.POSIXct("2021-01-01")
 
 dat.raw.no.dup <- 
   dat.raw.no.dup %>%
-  mutate(wave_A_taf =  case_when(startDate_wavesA_taf >= start1 & startDate_wavesA_taf < end1 ~ "May 2020",
-                                 startDate_wavesA_taf >= start2 & startDate_wavesA_taf < end2 ~ "June 2020",
+  mutate(wave_A_taf =  case_when(startDate_wavesA_taf >= start2 & startDate_wavesA_taf < end2 ~ "June 2020",
                            startDate_wavesA_taf >= start3 & startDate_wavesA_taf < end3 ~ "July 2020",
                            startDate_wavesA_taf >= start4 & startDate_wavesA_taf < end4 ~ "August 2020",
                            startDate_wavesA_taf >= start5 & startDate_wavesA_taf < end5 ~ "September 2020",
