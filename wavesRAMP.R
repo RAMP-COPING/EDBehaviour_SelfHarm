@@ -4,9 +4,6 @@
 ## Roughly by month.Some day discerpancies from pure calendar month to make sure there is no confusion with 
 ### survey send out dates
 
-#Questionnaires are sent every 2 weeks on a Tuesday
-#After 28 July, questionnaires are sent every 4 weeks.
-
 # June
 start2 <- as.POSIXct("2020-06-01")
 end2 <-  as.POSIXct("2020-06-29")  ## both RAMP and COPING ended by now, new RAMP started at 30 June

@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE 
 ```
 
 
@@ -2530,6 +2530,7 @@ dfs.list <- list(
 ```
 
 ```{r Join all questionnaires}
+if(RAMP == TRUE | NBR ==TRUE | EDGI == TRUE| GLAD == TRUE) {
 dat.raw <- plyr::join_all(
   dfs.list,
   by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
@@ -2537,9 +2538,9 @@ dat.raw <- plyr::join_all(
 
 #look at the data
 colnames(dat.raw)
-
+}
 ```
-#### Create a wave columns 
+#### Create a wave columns - RAMP
 Base this on dates of the follow ups drawn from qualtrics.
 
 RAMP
@@ -2555,6 +2556,16 @@ MONTHLY
 ```{r identify wave dates ramp}
 if (RAMP ==TRUE) {
 source("./wavesRAMP.R")
+
+}
+```
+
+#### Create a wave columns - COPING
+Base this on dates of the follow ups drawn from qualtrics.
+
+```{r identify wave dates ramp}
+if (COPING ==TRUE) {
+source("./wavesCOPING.R")
 
 }
 ```
@@ -2587,7 +2598,7 @@ colnames(dat.raw.no.dup)
 
 
 
-
+##Checking waves 
 ```{r identify wave dates ramp}
 freq(dat.raw.no.dup$startDate_wavesA_taf)
 dat.raw.no.dup$startDate_wavesA_taf
@@ -2598,6 +2609,7 @@ dat.raw.no.dup$startDate_wavesB_taf
 
 x <- dat.raw.no.dup %>%
   filter(is.na(wave_A_taf))
+
 
 freq(x$startDate_wavesA_taf)
 
