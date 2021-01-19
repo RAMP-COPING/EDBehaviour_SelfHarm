@@ -1730,6 +1730,7 @@ exclude_cols_dem <- c("ID",
                   "startDate",
                   "endDate")
 
+
 taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
@@ -2012,7 +2013,7 @@ dim(taf.coping.followupa.raw.2)[1]-dim(taf.coping.followupa.raw.id.2)[1]
 ```{r}
 if(COPING == TRUE){
     taf.coping.followupa.raw.id <- merge(taf.coping.followupa.raw.id.2, taf.coping.followupa.raw.id.1, by = c("ID", "cohort_name"))
-  
+
 # Inspect dimensions
   dim(taf.coping.followupa.raw.id)
 # Inspect colnames
@@ -2528,6 +2529,16 @@ dfs.list <- list(
 
 }
 ```
+
+#List of follow up cohorts (coping and ramp)
+
+edeq.coping.followupb.raw.id
+edeq.ramp.followupb.raw.id
+taf.coping.followupa.raw.id 
+taf.coping.followupb.raw.id
+taf.ramp.followupa.raw.id
+taf.ramp.followupb.raw.id 
+
 
 ```{r Join all questionnaires}
 if(RAMP == TRUE | NBR ==TRUE | EDGI == TRUE| GLAD == TRUE) {
