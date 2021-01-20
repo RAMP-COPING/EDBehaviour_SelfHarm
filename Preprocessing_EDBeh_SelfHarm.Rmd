@@ -2730,16 +2730,30 @@ taf.ramp.followupa.raw.id.deliberate_harm_2_weeks <- taf.ramp.followupa.raw.id.d
 ```
 
 
-##4. combine (rbind) - RAMP
-
-```{r}
+##4. Combine RAMP follow up cohorts, TAF
+```{r RAMP data frame list}
+if(RAMP == TRUE) {
+dfs.list <- list(
+    taf.ramp.followupa.raw.id.deliberate_harm_2_weeks,
+    taf.ramp.followupa.raw.id.harming_self_2_weeks,
+    taf.ramp.followupa.raw.id.harming_self,
+    taf.ramp.followupa.raw.id.worth_living_2_weeks,
+    taf.ramp.followupa.raw.id.worth_living 
+)
+}
 ```
 
+```{r Join all questionnaires}
+if(RAMP == TRUE) {
+dat.raw <- plyr::join_all(
+  dfs.list,
+  by = c("ID") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
+  )
 
+#look at the data
+colnames(dat.raw)
+}
 
-##Do second variable etc
-
-##rbind by ID
 ```
 
 
@@ -2755,7 +2769,6 @@ dfs.list <- list(
 }
 ```
 
-##4. JOIN
 
 ####1. Create a wave columns in follow up data - COPING
 ```{r identify wave dates ramp}
