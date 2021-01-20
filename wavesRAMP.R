@@ -26,7 +26,7 @@
 
 # APRIL (wave 1a) - FOLLOW UP A
 start1 <- as.POSIXct("2020-04-21")
-end1 <-  as.POSIXct("2020-05-05")  ## both RAMP and COPING ended by now, new RAMP started at 30 June
+end1 <-  as.POSIXct("2020-05-05")  
 
 # MAY 1 (wave 1b) - FOLLOW UP B
 start2 <- as.POSIXct("2020-05-05")
