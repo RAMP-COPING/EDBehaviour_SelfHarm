@@ -2581,33 +2581,76 @@ source("./wavesRAMP.R")
 ```
 
 
-## 2. Change follow up to long format, remove duplicates, rename columns to indicate wave AND variable (e.g. wave1a_worth_living), then combine (rbind) - RAMP
+## 2. Change follow up to long format & remove duplicate IDs
 ```{r change to long format}
 
-##Do each variable - worth living
+##Many people have thoughts that life is not worth living. Have you felt that way?	
 taf.ramp.followupa.raw.id.worth_living <- taf.ramp.followupa.raw.id %>%
   pivot_wider(id_cols = ID,
               names_from = wave_A_taf,
               values_from = taf.worth_living_life_people_followupA,
               values_fn = length)
 
-##Identify duplicates from that variable dataset
-taf.ramp.followupa.raw.id.worth_living.dupids <- taf.ramp.followupa.raw.id.worth_living$ID[(taf.ramp.followupa.raw.id.worth_living$`Wave 1a` > 1 | taf.ramp.followupa.raw.id.worth_living$`Wave 2a` > 1 |
-                         taf.ramp.followupa.raw.id.worth_living$`Wave 3a` > 1 | taf.ramp.followupa.raw.id.worth_living$`Wave 4a` > 1 |
-                         taf.ramp.followupa.raw.id.worth_living$`Wave 5` > 1 |taf.ramp.followupa.raw.id.worth_living$`Wave 7` > 1)]
+##Remove duplicate IDs
+taf.ramp.followupa.raw.id.worth_living  <- taf.ramp.followupa.raw.id.worth_living  %>%
+  filter(., !duplicated(ID)) 
+
+##Life worth living, past 2 weeks
+taf.ramp.followupa.raw.id.worth_living_2_weeks <- taf.ramp.followupa.raw.id %>%
+  pivot_wider(id_cols = ID,
+              names_from = wave_A_taf,
+              values_from = taf.meant_life_end_weeks_followupA,
+              values_fn = length)
+
+##Remove duplicate IDs
+taf.ramp.followupa.raw.id.worth_living_2_weeks  <- taf.ramp.followupa.raw.id.worth_living_2_weeks  %>%
+  filter(., !duplicated(ID)) 
 
 
-taf.ramp.followupa.raw.id.worth_living.dupids <- unique(taf.ramp.followupa.raw.id.worth_living.dupids)
+##Have you contemplated harming yourself ?
+taf.ramp.followupa.raw.id.harming_self <- taf.ramp.followupa.raw.id %>%
+  pivot_wider(id_cols = ID,
+              names_from = wave_A_taf,
+              values_from = taf.have_you_contemplated_harming_yourself_followupA,
+              values_fn = length)
 
-##Remove from data
-taf.ramp.followupa.raw.id.worth_living.NO_dupids <- taf.ramp.followupa.raw.id.worth_living.dupids[(taf.ramp.followupa.raw.id.worth_living.dupids$ID %!in% taf.ramp.followupa.raw.id.worth_living.dupids),]
+##Remove duplicate IDs
+taf.ramp.followupa.raw.id.harming_self  <- taf.ramp.followupa.raw.id.harming_self  %>%
+  filter(., !duplicated(ID)) 
+
+##Harming self - past 2 weeks?
+taf.ramp.followupa.raw.id.harming_self_2_weeks <- taf.ramp.followupa.raw.id %>%
+  pivot_wider(id_cols = ID,
+              names_from = wave_A_taf,
+              values_from = taf.felt_weeks_past.1_followupA,
+              values_fn = length)
+
+##Remove duplicate IDs
+taf.ramp.followupa.raw.id.harming_self_2_weeks  <- taf.ramp.followupa.raw.id.harming_self_2_weeks  %>%
+  filter(., !duplicated(ID)) 
+
+
+##In the last two weeks, have you deliberately harmed yourself, whether or not you meant to end your life?	
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks <- taf.ramp.followupa.raw.id %>%
+  pivot_wider(id_cols = ID,
+              names_from = wave_A_taf,
+              values_from = taf.meant_life_end_weeks_followupA,
+              values_fn = length)
+
+##Remove duplicate IDs
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks  <- taf.ramp.followupa.raw.id.deliberate_harm_2_weeks  %>%
+  filter(., !duplicated(ID)) 
+
 ```
-##Rename columns to capture wave AND variable name
 
 
+##3. Rename columns to capture wave AND variable name
+```{r}
+taf.ramp.followupa.raw.id$taf.felt_weeks_past.1_followupA
+```
 
 
-
+##4. combine (rbind) - RAMP
 
 ##Do second variable etc
 
