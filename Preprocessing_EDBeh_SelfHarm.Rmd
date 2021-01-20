@@ -2646,11 +2646,96 @@ taf.ramp.followupa.raw.id.deliberate_harm_2_weeks  <- taf.ramp.followupa.raw.id.
 
 ##3. Rename columns to capture wave AND variable name
 ```{r}
-taf.ramp.followupa.raw.id$taf.felt_weeks_past.1_followupA
+
+##Worth living
+##Many people have thoughts that life is not worth living. Have you felt that way?	
+taf.ramp.followupa.raw.id.worth_living <- taf.ramp.followupa.raw.id.worth_living %>%
+  setnames(., old = c('Wave 1a',
+                    'Wave 2a',
+                    'Wave 3a',
+                    'Wave 4a',
+                    'Wave 5',
+                    'Wave 7'), 
+         new = c('Wave1a_worth_living',
+                 'Wave2a_worth_living',
+                 'Wave3a_worth_living',
+                 'Wave4a_worth_living',
+                 'Wave5_worth_living',
+                 'Wave7_worth_living'))
+
+##Worth living - past 2 weeks
+##Many people have thoughts that life is not worth living. Have you felt that way in the past 2 weeks?                
+taf.ramp.followupa.raw.id.worth_living_2_weeks <- taf.ramp.followupa.raw.id.worth_living_2_weeks %>%
+  setnames(., old = c('Wave 1a',
+                    'Wave 2a',
+                    'Wave 3a',
+                    'Wave 4a',
+                    'Wave 5',
+                    'Wave 7'), 
+         new = c('Wave1a_worth_living_2_weeks',
+                 'Wave2a_worth_living_2_weeks',
+                 'Wave3a_worth_living_2_weeks',
+                 'Wave4a_worth_living_2_weeks',
+                 'Wave5_worth_living_2_weeks',
+                 'Wave7_worth_living_2_weeks'))
+
+##Contemplated_harming
+##Have you contemplated harming yourself ?
+taf.ramp.followupa.raw.id.harming_self <- taf.ramp.followupa.raw.id.harming_self %>%
+  setnames(., old = c('Wave 1a',
+                    'Wave 2a',
+                    'Wave 3a',
+                    'Wave 4a',
+                    'Wave 5',
+                    'Wave 7'), 
+         new = c('Wave1a_contemplated_harm',
+                 'Wave2a_contemplated_harm',
+                 'Wave3a_contemplated_harm',
+                 'Wave4a_contemplated_harm',
+                 'Wave5_contemplated_harm',
+                 'Wave7_contemplated_harm'))
+
+##Contemplated_harming - past 2 weeks
+##Have you contemplated harming yourself in the past 2 weeks?
+taf.ramp.followupa.raw.id.harming_self_2_weeks <- taf.ramp.followupa.raw.id.harming_self_2_weeks %>%
+  setnames(., old = c('Wave 1a',
+                    'Wave 2a',
+                    'Wave 3a',
+                    'Wave 4a',
+                    'Wave 5',
+                    'Wave 7'), 
+         new = c('Wave1a_contemplated_harm_2_weeks',
+                 'Wave2a_contemplated_harm_2_weeks',
+                 'Wave3a_contemplated_harm_2_weeks',
+                 'Wave4a_contemplated_harm_2_weeks',
+                 'Wave5_contemplated_harm_2_weeks',
+                 'Wave7_contemplated_harm_2_weeks'))
+
+##Deliberate_harm
+##In the last two weeks, have you deliberately harmed yourself, whether or not you meant to end your life?	
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks <- taf.ramp.followupa.raw.id.deliberate_harm_2_weeks %>%
+  setnames(., old = c('Wave 1a',
+                    'Wave 2a',
+                    'Wave 3a',
+                    'Wave 4a',
+                    'Wave 5',
+                    'Wave 7'), 
+         new = c('Wave1a_deliberate_harm_2_weeks',
+                 'Wave2a_deliberate_harm_2_weeks',
+                 'Wave3a_deliberate_harm_2_weeks',
+                 'Wave4a_deliberate_harm_2_weeks',
+                 'Wave5_deliberate_harm_2_weeks',
+                 'Wave7_deliberate_harm_2_weeks'))
+
 ```
 
 
 ##4. combine (rbind) - RAMP
+
+```{r}
+```
+
+
 
 ##Do second variable etc
 
