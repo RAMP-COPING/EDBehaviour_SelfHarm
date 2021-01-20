@@ -2445,7 +2445,6 @@ mhd.raw.id %>%
 }
 ```
 
-
 **Check - does this work with EDGI?
 ```{r Check control columns}
 if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
@@ -2531,19 +2530,10 @@ dfs.list <- list(
 }
 ```
 
-#List of follow up cohorts (COPING)
-```{r COPING data frame list}
-if(COPING == TRUE) {
-dfs.list <- list(
-    edeq.coping.followupb.raw.id,
-    taf.coping.followupa.raw.id,
-    taf.coping.followupb.raw.id
-)
-}
-```
+
 
 ```{r Join all questionnaires}
-if(RAMP == TRUE | NBR ==TRUE | EDGI == TRUE| GLAD == TRUE |COPING == TRUE) {
+if(RAMP == TRUE | NBR ==TRUE | EDGI == TRUE| GLAD == TRUE) {
 dat.raw <- plyr::join_all(
   dfs.list,
   by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
@@ -2554,7 +2544,6 @@ colnames(dat.raw)
 }
 
 ```
-
 
 #### Create a wave columns - RAMP
 ```{r identify wave dates ramp}
@@ -2573,6 +2562,17 @@ source("./wavesCOPING.R")
 
 ```
 
+
+#List of follow up cohorts (COPING)
+```{r COPING data frame list}
+if(COPING == TRUE) {
+dfs.list <- list(
+    edeq.coping.followupb.raw.id,
+    taf.coping.followupa.raw.id,
+    taf.coping.followupb.raw.id
+)
+}
+```
 
 
 ##Should do this AFTER split by waves (i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
