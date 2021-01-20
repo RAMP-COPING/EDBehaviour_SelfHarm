@@ -2520,10 +2520,10 @@ dfs.list <- list(
     ramp.dem.raw.id,
     mhd.raw.id,
     edeq.ramp.baseline.raw.id,
-    edeq.ramp.followupb.raw.id,
+    #edeq.ramp.followupb.raw.id,
     taf.ramp.baseline.raw.id,
-    taf.ramp.followupa.raw.id,
-    taf.ramp.followupb.raw.id
+    #taf.ramp.followupa.raw.id,
+    #taf.ramp.followupb.raw.id
   
 )
 
@@ -2560,6 +2560,17 @@ source("./wavesCOPING.R")
 
 }
 
+```
+
+#List of follow up cohorts (RAMP)
+```{r RANP data frame list}
+if(RAMP == TRUE) {
+dfs.list <- list(
+    edeq.ramp.followupb.raw.id,
+    taf.ramp.followupa.raw.id,
+    taf.ramp.followupb.raw.id
+)
+}
 ```
 
 
