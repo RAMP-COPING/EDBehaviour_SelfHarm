@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE 
+COPING = FALSE
 ```
 
 
@@ -2512,6 +2512,7 @@ taf.nbr.baseline.raw.id
 
 ```
 
+
 ##RAMP data frame list
 ```{r RAMP data frame list}
 if(RAMP == TRUE) {
@@ -2546,52 +2547,8 @@ colnames(dat.raw)
 ```
 
 
-
-#### Create a wave columns - RAMP
-```{r identify wave dates ramp}
-if (RAMP ==TRUE) {
-source("./wavesRAMP.R")
-
-}
-```
-
-#### Create a wave columns - COPING
-```{r identify wave dates ramp}
-if (COPING ==TRUE) {
-source("./wavesCOPING.R")
-
-}
-
-```
-
-
-
-
-#List of follow up cohorts (RAMP)
-```{r RANP data frame list}
-if(RAMP == TRUE) {
-dfs.list <- list(
-    edeq.ramp.followupb.raw.id,
-    taf.ramp.followupa.raw.id,
-    taf.ramp.followupb.raw.id
-)
-}
-```
-
-
-#List of follow up cohorts (COPING)
-```{r COPING data frame list}
-if(COPING == TRUE) {
-dfs.list <- list(
-    edeq.coping.followupb.raw.id,
-    taf.coping.followupa.raw.id,
-    taf.coping.followupb.raw.id
-)
-}
-```
-
-
-##Should do this AFTER split by waves (i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
+#Get rid of duplicates in all baseline data
+##Should do this AFTER split by waves in follow up data(i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
 ```{r Check duplicates, eval=FALSE, include=FALSE}
 dat.raw$ID.dup <- duplicated(dat.raw$ID)
 
@@ -2614,6 +2571,67 @@ colnames(dat.raw.no.dup)
 
 ```
 
+#WAVES - FOLLOW UP RAMP DATA
+## 1. Create a wave columns in follow up data - RAMP
+```{r identify wave dates ramp}
+if (RAMP ==TRUE) {
+source("./wavesRAMP.R")
+
+}
+```
+
+
+## 2. Change follow up to long format - RAMP
+```{r change to long format}
+
+edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>% 
+  pivot_wider(name_from = startDate_wavesB_edeq, values_from = startDate_wavesB_edeq)
+
+
+?spread
+edeq.ramp.followupb.raw.id$
+
+```
+
+##3. List of follow up cohorts (RAMP)
+```{r RANP data frame list}
+if(RAMP == TRUE) {
+dfs.list <- list(
+    edeq.ramp.followupb.raw.id,
+    taf.ramp.followupa.raw.id,
+    taf.ramp.followupb.raw.id
+)
+}
+```
+
+##4. JOIN
+
+####1. Create a wave columns in follow up data - COPING
+```{r identify wave dates ramp}
+if (COPING ==TRUE) {
+source("./wavesCOPING.R")
+
+}
+
+```
+
+2. Change to long format
+
+#3. List of follow up cohorts (COPING)
+```{r COPING data frame list}
+if(COPING == TRUE) {
+dfs.list <- list(
+    edeq.coping.followupb.raw.id,
+    taf.coping.followupa.raw.id,
+    taf.coping.followupb.raw.id
+)
+}
+```
+
+4. JOIN
+
+
+
 
 
 
@@ -2626,7 +2644,7 @@ dat.raw.no.dup$startDate_wavesB_edeq
 dat.raw.no.dup$startDate_wavesB_taf
 
 
-x <- dat.raw.no.dup %>%
+x <- dat.raw%>%
   filter(is.na(wave_A_taf))
 
 
