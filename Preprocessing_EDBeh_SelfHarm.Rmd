@@ -2581,17 +2581,40 @@ source("./wavesRAMP.R")
 ```
 
 
-## 2. Change follow up to long format - RAMP
+## 2. Change follow up to long format, remove duplicates, rename columns to indicate wave AND variable (e.g. wave1a_worth_living), then combine (rbind) - RAMP
 ```{r change to long format}
 
-edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>% 
-  pivot_wider(name_from = startDate_wavesB_edeq, values_from = startDate_wavesB_edeq)
+##Do each variable - worth living
+taf.ramp.followupa.raw.id.worth_living <- taf.ramp.followupa.raw.id %>%
+  pivot_wider(id_cols = ID,
+              names_from = wave_A_taf,
+              values_from = taf.worth_living_life_people_followupA,
+              values_fn = length)
+
+##Identify duplicates from that variable dataset
+taf.ramp.followupa.raw.id.worth_living.dupids <- taf.ramp.followupa.raw.id.worth_living$ID[(taf.ramp.followupa.raw.id.worth_living$`Wave 1a` > 1 | taf.ramp.followupa.raw.id.worth_living$`Wave 2a` > 1 |
+                         taf.ramp.followupa.raw.id.worth_living$`Wave 3a` > 1 | taf.ramp.followupa.raw.id.worth_living$`Wave 4a` > 1 |
+                         taf.ramp.followupa.raw.id.worth_living$`Wave 5` > 1 |taf.ramp.followupa.raw.id.worth_living$`Wave 7` > 1)]
 
 
-?spread
-edeq.ramp.followupb.raw.id$
+taf.ramp.followupa.raw.id.worth_living.dupids <- unique(taf.ramp.followupa.raw.id.worth_living.dupids)
 
+##Remove from data
+taf.ramp.followupa.raw.id.worth_living.NO_dupids <- taf.ramp.followupa.raw.id.worth_living.dupids[(taf.ramp.followupa.raw.id.worth_living.dupids$ID %!in% taf.ramp.followupa.raw.id.worth_living.dupids),]
 ```
+##Rename columns to capture wave AND variable name
+
+
+
+
+
+
+##Do second variable etc
+
+##rbind by ID
+```
+
+
 
 ##3. List of follow up cohorts (RAMP)
 ```{r RANP data frame list}
