@@ -76,6 +76,13 @@ end12 <-  as.POSIXct("2020-12-15")
 start13 <- as.POSIXct("2020-12-15")
 end13 <-  as.POSIXct("2020-01-11") 
 
+##Follow up A and B can overlap in time, but follow up A can not overlap with the timing of another follow up A
+
+
+#Should create wave variable within each dataset first
+#Then merge by ID and waves (each participant should have ONE data entry for each wave, but multiple wave data entries)
+#Consider then splitting by wave (i.e. so have 'TAF_WAVE1A', 'TAF_WAVE1B' etc etc)
+  
 
 
 dat.raw <- 

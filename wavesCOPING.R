@@ -74,6 +74,15 @@ end13 <-  as.POSIXct("2020-01-11")
 ##**How much does it matter if someone is in 'A' or 'B' - is the date more important? e.g. can someone who was considered follow up A but completed q during timepoints considered as within 'follow up B', be recoded as follow up B?
 #**Need to check wave_A_taf code - numbers don't look right..Looking at those who are NA for wave_A_taf, their 'startDate_wavesA_taf_ongoing' include these dates: 29th July, 18th December, 20th December. And their 'startDate_wavesA_taf' includes 30th June and 29th July...these all fall in follow up B?
 
+##Follow up A and B can overlap in time, but follow up A can not overlap with the timing of another follow up A
+
+
+#Should create wave variable within each dataset first
+#Then merge by ID and waves (each participant should have ONE data entry for each wave, but multiple wave data entries)
+#Consider then splitting by wave (i.e. so have 'TAF_WAVE1A', 'TAF_WAVE1B' etc etc)
+
+
+
 dat.raw <- 
   dat.raw %>%
   mutate(wave_A_taf =  case_when(startDate_wavesA_taf >= start3 & startDate_wavesA_taf < end3 ~ "Wave 2a",
