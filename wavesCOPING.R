@@ -85,7 +85,7 @@ end13 <-  as.POSIXct("2020-01-11")
 
 dat.raw <- 
   dat.raw %>%
-  mutate(wave_A_taf =  case_when(startDate_wavesA_taf >= start3 & startDate_wavesA_taf < end3 ~ "Wave 2a",
+  mutate(wave_taf =  case_when(startDate_wavesA_taf >= start3 & startDate_wavesA_taf < end3 ~ "Wave 2a",
                                  startDate_wavesA_taf >= start5 & startDate_wavesA_taf < end5 ~ "Wave 3a",
                                  startDate_wavesA_taf_ongoing >= start7 & startDate_wavesA_taf_ongoing < end7 ~ "Wave 4a",
                                  startDate_wavesA_taf_ongoing >= start9 & startDate_wavesA_taf_ongoing< end9 ~ "Wave 5",
@@ -94,7 +94,7 @@ dat.raw <-
 
 dat.raw <- 
   dat.raw %>%
-  mutate(wave_B_taf =  case_when(startDate_wavesB_taf >= start4 & startDate_wavesB_taf < end4 ~ "Wave 2b",
+  mutate(wave_taf =  case_when(startDate_wavesB_taf >= start4 & startDate_wavesB_taf < end4 ~ "Wave 2b",
                                  startDate_wavesB_taf >= start6 & startDate_wavesB_taf < end6 ~ "Wave 3b",
                                  startDate_wavesB_taf >= start8 & startDate_wavesB_taf < end8 ~ "Wave 4b",
                                  startDate_wavesB_taf >= start10 & startDate_wavesB_taf < end10 ~ "Wave 6",
