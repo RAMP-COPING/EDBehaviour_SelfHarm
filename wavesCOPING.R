@@ -99,10 +99,10 @@ taf.coping.followupb.raw.id <-
                                  startDate_waves >= start12 & startDate_waves < end12 ~ "Wave 8"))
 
 
-dat.raw<- 
-  dat.raw %>%
-  mutate(wave_B_edeq =  case_when(startDate_wavesB_taf >= start4 & startDate_wavesB_taf < end4 ~ "Wave 2b",
-                                  startDate_wavesB_taf >= start6 & startDate_wavesB_taf < end6 ~ "Wave 3b",
-                                  startDate_wavesB_taf >= start8 & startDate_wavesB_taf < end8 ~ "Wave 4b",
-                                  startDate_wavesB_taf >= start10 & startDate_wavesB_taf < end10 ~ "Wave 6",
-                                  startDate_wavesB_taf >= start12 & startDate_wavesB_taf < end12 ~ "Wave 8"))
+edeq.coping.followupb.raw <- 
+  edeq.coping.followupb.raw %>%
+  mutate(wave_edeq =  case_when(startDate_waves >= start4 & startDate_waves < end4 ~ "Wave 2b",
+                                  startDate_waves >= start6 & startDate_waves < end6 ~ "Wave 3b",
+                                  startDate_waves >= start8 & startDate_waves < end8 ~ "Wave 4b",
+                                  startDate_waves >= start10 & startDate_wave < end10 ~ "Wave 6",
+                                  startDate_waves >= start12 & startDate_waves < end12 ~ "Wave 8"))
