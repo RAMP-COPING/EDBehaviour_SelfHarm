@@ -2522,7 +2522,7 @@ dfs.list <- list(
     mhd.raw.id,
     edeq.ramp.baseline.raw.id,
     #edeq.ramp.followupb.raw.id,
-    taf.ramp.baseline.raw.id,
+    taf.ramp.baseline.raw.id
     #taf.ramp.followupa.raw.id,
     #taf.ramp.followupb.raw.id
   
@@ -2571,6 +2571,11 @@ colnames(dat.raw.no.dup)
 
 ```
 
+
+
+
+
+
 #WAVES - FOLLOW UP RAMP DATA
 ## 1. Create a wave columns in follow up data - RAMP
 ```{r identify wave dates ramp}
@@ -2579,6 +2584,25 @@ source("./wavesRAMP.R")
 
 }
 ```
+
+```{r}
+
+ggplot(taf.ramp.followupa.raw.id,
+       aes(taf.worth_living_life_people_followupA, 
+           fill = wave_A_taf)) +
+        geom_bar(size = 1,
+                 shape = 23,
+                 colour = "blue",
+                 position = position_dodge()) +
+  labs(y = "Number of participants",
+     x = "Many people have thoughts that life is not worth living. Have you felt that way?",
+       title = "RAMP: Life not worth living (lifetime)")
+
+
+```
+
+
+
 ##**NEED TO THINK ABUOT HOW DATA SHOULD BE IN ORDER TO PLOT IT, NEED TO BE ABLE TO GROUP BY WAVE (SO WAVE SHOULD BE A SINGEL COLUMN). WILL END WITH MULTIPLE IDS.
 
 ## 2. Change follow up to long format & remove duplicate IDs
