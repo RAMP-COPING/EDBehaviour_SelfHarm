@@ -2572,6 +2572,7 @@ colnames(dat.raw.no.dup)
 
 
 #WAVES - FOLLOW UP RAMP DATA
+
 ## 1. Create a wave columns in follow up data - RAMP
 ```{r identify wave dates ramp}
 if (RAMP ==TRUE) {
@@ -2581,19 +2582,41 @@ source("./wavesRAMP.R")
 ```
 
 ##2. Join TAF (+ RAMP + COPING)
-```{r RANP data frame list}
+```{r RANP join taf data}
 if(RAMP == TRUE) {
-dat.raw <- rbind(taf.ramp.followupa.raw.id,
+dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
     taf.ramp.followupb.raw.id)
 
 #check column names
-colnames(dat.raw)
+colnames(dat.raw.taf.ramp)
 }
 ```
-#3. Remove IDs that multiple wave data for one wave
+#3. Remove IDs that multiple wave data for one wave: Life worth living (lifetime)
 ##i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
-```{r}
+```{r remove dup IDs with dup waves ramp taf}
 
+DupIDdat <- dat.raw.taf.ramp %>%
+  pivot_wider(id_cols = ID,
+              names_from = wave_taf,
+              values_from = taf.worth_living_life_people,
+              values_fn = length)
+
+dupids <- DupIDdat$ID[(DupIDdat$`Wave 1a` > 1 | DupIDdat$`Wave 1b` > 1 |
+                         DupIDdat$`Wave 2a` > 1 | DupIDdat$`Wave 2b` > 1 |
+                         DupIDdat$`Wave 3a` > 1 | DupIDdat$`Wave 3b` > 1 |
+                         DupIDdat$`Wave 4a` > 1 | DupIDdat$`Wave 4b` > 1 |
+                         DupIDdat$`Wave 5` > 1 | DupIDdat$`Wave 6` > 1 |
+                         DupIDdat$`Wave 7` > 1 | DupIDdat$`Wave 8` > 1 |
+                         DupIDdat$`Wave 9` > 1)]
+
+dupids <- unique(dupids)
+
+##Now drop from  data
+
+dat.raw.taf.ramp <- dat.raw.taf.ramp[(dat.raw.taf.ramp$ID %!in% dupids),]
+
+##Check number of rows
+nrow(dat.raw.taf.ramp)
 ```
 
 
