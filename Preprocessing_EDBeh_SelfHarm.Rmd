@@ -2570,7 +2570,7 @@ colnames(dat.raw.no.dup)
 ```
 
 
-#WAVES - FOLLOW UP RAMP DATA
+#WAVES - TAF
 
 ## 1. Create a wave columns in follow up data - RAMP
 ```{r identify wave dates ramp}
@@ -2590,9 +2590,37 @@ dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
 colnames(dat.raw.taf.ramp)
 }
 ```
-#3. Remove IDs that multiple wave data for one wave: Life worth living (lifetime)
-##i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
-```{r remove dup IDs with dup waves ramp taf}
+
+##1.Create a wave columns in follow up data - COPING
+```{r identify wave dates ramp}
+if (COPING ==TRUE) {
+source("./wavesCOPING.R")
+
+}
+
+```
+
+##2. Join TAF follow ups (COPING)
+```{r COPING join taf}
+if(COPING == TRUE) {
+dat.raw.taf.coping <- rbind(taf.coping.followupa.raw.id,
+    taf.coping.followupb.raw.id)
+
+
+##Check col names
+colnames(dat.raw.taf.coping)
+
+##Check number of rows
+nrow(dat.raw.taf.coping)
+}
+```
+
+
+PLOTTING
+#Remove IDs that multiple data for one wave RAMP
+
+##Life worth living (lifetime) i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
+```{r remove dup IDs with dup waves ramp taf, life worth living}
 if(RAMP == TRUE) {
 DupIDdat <- dat.raw.taf.ramp %>%
   pivot_wider(id_cols = ID,
@@ -2619,40 +2647,38 @@ nrow(dat.raw.taf.ramp)
 }
 ```
 
-###1.Create a wave columns in follow up data - COPING
-```{r identify wave dates ramp}
-if (COPING ==TRUE) {
-source("./wavesCOPING.R")
 
-}
 
-```
+#Remove IDs that have multiple data for one wave COPING
 
-#2. Join TAF follow ups (COPING)
-```{r COPING join taf}
+##Life worth living (lifetime) i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
+
+```{r remove dup IDs with dup waves COPING taf, life worth living}
 if(COPING == TRUE) {
-dat.raw.taf.coping <- rbind(taf.ramp.followupa.raw.id,
-    taf.ramp.followupb.raw.id)
+DupIDdat <- dat.raw.taf.coping %>%
+  pivot_wider(id_cols = ID,
+              names_from = wave_taf,
+              values_from = taf.worth_living_life_people,
+              values_fn = length)
 
-#check column names
-colnames(dat.raw.taf.ramp)
+dupids <- DupIDdat$ID[(DupIDdat$`Wave 1a` > 1 | DupIDdat$`Wave 1b` > 1 |
+                         DupIDdat$`Wave 2a` > 1 | DupIDdat$`Wave 2b` > 1 |
+                         DupIDdat$`Wave 3a` > 1 | DupIDdat$`Wave 3b` > 1 |
+                         DupIDdat$`Wave 4a` > 1 | DupIDdat$`Wave 4b` > 1 |
+                         DupIDdat$`Wave 5` > 1 | DupIDdat$`Wave 6` > 1 |
+                         DupIDdat$`Wave 7` > 1 | DupIDdat$`Wave 8` > 1 |
+                         DupIDdat$`Wave 9` > 1)]
+
+dupids <- unique(dupids)
+
+##Now drop from  data
+
+dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
+
+##Check number of rows
+nrow(dat.raw.taf.coping)
 }
 ```
-
-3. JOIN
-4. PLOT
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ##Plot by wave and question:  RAMP - Life worth living (lifetime)
