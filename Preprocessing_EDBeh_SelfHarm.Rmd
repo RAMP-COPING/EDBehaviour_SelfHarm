@@ -2667,27 +2667,6 @@ dfs.list <- list(
 
 
 
-##Checking waves 
-```{r identify wave dates ramp}
-freq(dat.raw.no.dup$startDate_wavesA_taf)
-dat.raw.no.dup$startDate_wavesA_taf
-dat.raw.no.dup$startDate_wavesB_edeq
-
-dat.raw.no.dup$startDate_wavesB_taf
-
-
-x <- dat.raw%>%
-  filter(is.na(wave_A_taf))
-
-
-freq(x$startDate_wavesA_taf)
-
-
-
-```
-
-
-
 
 
 
