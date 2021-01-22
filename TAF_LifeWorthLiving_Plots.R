@@ -38,8 +38,7 @@ if(COPING == TRUE) {
                 values_from = taf.worth_living_life_people,
                 values_fn = length)
   
-  dupids <- DupIDdat$ID[(DupIDdat$`Wave 1a` > 1 | DupIDdat$`Wave 1b` > 1 |
-                           DupIDdat$`Wave 2a` > 1 | DupIDdat$`Wave 2b` > 1 |
+  dupids <- DupIDdat$ID[(DupIDdat$`Wave 2a` > 1 | DupIDdat$`Wave 2b` > 1 |
                            DupIDdat$`Wave 3a` > 1 | DupIDdat$`Wave 3b` > 1 |
                            DupIDdat$`Wave 4a` > 1 | DupIDdat$`Wave 4b` > 1 |
                            DupIDdat$`Wave 5` > 1 | DupIDdat$`Wave 6` > 1 |
