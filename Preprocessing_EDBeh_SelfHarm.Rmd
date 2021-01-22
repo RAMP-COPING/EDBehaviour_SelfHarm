@@ -2107,7 +2107,7 @@ taf.ramp.followupa.raw.id <- taf.ramp.followupa.raw %>% #new dataset with ID
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         startDate_wavesA_taf = startDate,
+         startDate_waves = startDate,
          #endDate,
          taf.worth_living_life_people = taf.worth_living_life_people,
          taf.felt_weeks_past = taf.felt_weeks_past,
@@ -2163,7 +2163,7 @@ taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw %>% #new dataset with ID
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         startDate_wavesB_taf = startDate,
+         startDate_waves = startDate,
          #endDate,
          taf.worth_living_life_people = taf.worth_living_life_people,
          taf.felt_weeks_past = taf.weeks_past_felt, #renamed to match follow up a
@@ -2587,12 +2587,15 @@ dat.raw <- rbind(taf.ramp.followupa.raw.id,
     taf.ramp.followupb.raw.id)
 }
 
-RENAME COLUMNS TO MATHC
-remove matching IDs using Kirstin code
+
+colnames(taf.ramp.followupa.raw.id)
 ```
 
 #3. Remove IDs that multiple wave data for one wave
 ##i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
+```{r}
+
+```
 
 
 ##3. Plot by wave and question
