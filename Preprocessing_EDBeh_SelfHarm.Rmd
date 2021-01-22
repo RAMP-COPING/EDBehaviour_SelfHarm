@@ -2095,7 +2095,7 @@ colnames(taf.ramp.followupa.raw)
 if(RAMP == TRUE){
 exclude_cols_dem <- c("ID",
                   "cohort_name",
-                  "startDate",
+                  "startDate_waves",
                   "endDate")
 
 taf.ramp.followupa.raw.id <- taf.ramp.followupa.raw %>% #new dataset with ID
@@ -2585,12 +2585,11 @@ source("./wavesRAMP.R")
 if(RAMP == TRUE) {
 dat.raw <- rbind(taf.ramp.followupa.raw.id,
     taf.ramp.followupb.raw.id)
+
+#check column names
+colnames(dat.raw)
 }
-
-
-colnames(taf.ramp.followupa.raw.id)
 ```
-
 #3. Remove IDs that multiple wave data for one wave
 ##i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
 ```{r}
