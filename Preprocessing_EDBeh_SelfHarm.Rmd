@@ -1438,7 +1438,7 @@ colnames(edeq.coping.followupb.raw)
 if(COPING == TRUE){
 exclude_cols_dem <- c("ID",
                   "cohort_name",
-                  "startDate",
+                  "startDate_waves",
                   "endDate")
 
 edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw %>% #new dataset with ID
@@ -1450,22 +1450,22 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw %>% #new dataset with 
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         startDate_wavesB_edeq = startDate,
+         startDate_waves = startDate,
          #endDate,
-         edeq.deliberately_limit_amount_influence_followupB = edeq.deliberately_limit_amount_influence,
-         edeq.calories_made_body_shape_followupB = edeq.calories_made_body_shape,
-         edeq.weight_influenced_person_followupB = edeq.weight_influenced_person,
-         edeq.dissatisfied_shape_weight_followupB = edeq.dissatisfied_shape_weight,
-         edeq.actively_been_monitoring_your_shape_or_weight_followupB = edeq.actively_been_monitoring_your_shape_or_weight_,
-         edeq.regard_lost_control_eaten_followupB = edeq.regard_lost_control_eaten,
-         edeq.sick_means_made_shape_followupB = edeq.sick_means_made_shape,
-         edeq.diuretics_laxatives_means_shape_followupB = edeq.diuretics_laxatives_means_shape,
-         edeq.compulsive_driven_burn_calories_followupB = edeq.compulsive_driven_burn_calories,
-         edeq.eating_behaviours_distressed_concerns_followupB = edeq.eating_behaviours_distressed_concerns,
-         edeq.nibbled_picked_snacks_grazed_followupB = edeq.nibbled_picked_snacks_grazed,
-         edeq.felt_anxious_blue_bored_followupB = edeq.felt_anxious_blue_bored,
-         edeq.felt_anxious_blue_bored.1_followupB = edeq.felt_anxious_blue_bored.1,
-         edeq.experiences_pandemic_followupB = edeq.experiences_pandemic
+         edeq.deliberately_limit_amount_influence = edeq.deliberately_limit_amount_influence,
+         edeq.calories_made_body_shape = edeq.calories_made_body_shape,
+         edeq.weight_influenced_person = edeq.weight_influenced_person,
+         edeq.dissatisfied_shape_weight = edeq.dissatisfied_shape_weight,
+         edeq.actively_been_monitoring_your_shape_or_weight = edeq.actively_been_monitoring_your_shape_or_weight_,
+         edeq.regard_lost_control_eaten = edeq.regard_lost_control_eaten,
+         edeq.sick_means_made_shape = edeq.sick_means_made_shape,
+         edeq.diuretics_laxatives_means_shape = edeq.diuretics_laxatives_means_shape,
+         edeq.compulsive_driven_burn_calories = edeq.compulsive_driven_burn_calories,
+         edeq.eating_behaviours_distressed_concerns = edeq.eating_behaviours_distressed_concerns,
+         edeq.nibbled_picked_snacks_grazed  = edeq.nibbled_picked_snacks_grazed,
+         edeq.felt_anxious_blue_bored = edeq.felt_anxious_blue_bored,
+         edeq.felt_anxious_blue_bored.1 = edeq.felt_anxious_blue_bored.1,
+         edeq.experiences_pandemic = edeq.experiences_pandemic
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1583,7 +1583,7 @@ colnames(edeq.ramp.followupb.raw)
 if(RAMP == TRUE){
 exclude_cols_dem <- c("ID",
                   "cohort_name",
-                  "startDate",
+                  "startDate_waves",
                   "endDate")
 
 edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw %>% #new dataset with ID
@@ -1595,21 +1595,21 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw %>% #new dataset with ID
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         startDate_wavesB_edeq = startDate,
+         startDate_waves = startDate,
          #endDate,
-         edeq.deliberately_limit_amount_influence_followupB = edeq.deliberately_limit_amount_influence,
-         edeq.calories_made_body_shape_followupB = edeq.calories_made_body_shape,
-         edeq.weight_influenced_person_followupB = edeq.weight_influenced_person,
-         edeq.dissatisfied_shape_weight_followupB = edeq.dissatisfied_shape_weight,
-         edeq.actively_been_monitoring_your_shape_or_weight_followupB = edeq.actively_been_monitoring_your_shape_or_weight_,
-         edeq.regard_lost_control_eaten_followupB = edeq.regard_lost_control_eaten,
-         edeq.sick_means_made_shape_followupB = edeq.sick_means_made_shape,
-         edeq.diuretics_laxatives_means_shape_followupB = edeq.diuretics_laxatives_means_shape,
-         edeq.compulsive_driven_burn_calories_followupB = edeq.compulsive_driven_burn_calories,
-         edeq.eating_behaviours_distressed_concerns_followupB = edeq.eating_behaviours_distressed_concerns,
-         edeq.nibbled_picked_snacks_grazed_followupB = edeq.nibbled_picked_snacks_grazed,
-         edeq.felt_anxious_blue_bored_followupB = edeq.felt_anxious_blue_bored,
-         edeq.felt_anxious_blue_bored.1_followupB = edeq.felt_anxious_blue_bored.1,
+         edeq.deliberately_limit_amount_influence = edeq.deliberately_limit_amount_influence,
+         edeq.calories_made_body_shape = edeq.calories_made_body_shape,
+         edeq.weight_influenced_person = edeq.weight_influenced_person,
+         edeq.dissatisfied_shape_weight = edeq.dissatisfied_shape_weight,
+         edeq.actively_been_monitoring_your_shape_or_weight = edeq.actively_been_monitoring_your_shape_or_weight_,
+         edeq.regard_lost_control_eaten = edeq.regard_lost_control_eaten,
+         edeq.sick_means_made_shape = edeq.sick_means_made_shape,
+         edeq.diuretics_laxatives_means_shape = edeq.diuretics_laxatives_means_shape,
+         edeq.compulsive_driven_burn_calories = edeq.compulsive_driven_burn_calories,
+         edeq.eating_behaviours_distressed_concerns = edeq.eating_behaviours_distressed_concerns,
+         edeq.nibbled_picked_snacks_grazed = edeq.nibbled_picked_snacks_grazed,
+         edeq.felt_anxious_blue_bored = edeq.felt_anxious_blue_bored,
+         edeq.felt_anxious_blue_bored.1 = edeq.felt_anxious_blue_bored.1,
          #edeq.experiences_pandemic #not in ramp but in coping
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
