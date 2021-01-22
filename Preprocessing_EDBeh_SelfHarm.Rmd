@@ -2620,11 +2620,9 @@ nrow(dat.raw.taf.coping)
 ```{r nbr dem calculating age from birthday}
 if(RAMP == TRUE | COPING == TRUE) {
 source("./TAF_LifeWorthLiving_Plots.R")
-  
-  dat.raw.taf.coping$wave_taf
+
 }
 ```
-
 
 
 
