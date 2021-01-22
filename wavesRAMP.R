@@ -26,7 +26,7 @@
 
 # APRIL (wave 1a) - FOLLOW UP A
 start1 <- as.POSIXct("2020-04-21")
-end1 <-  as.POSIXct("2020-05-05")  ## both RAMP and COPING ended by now, new RAMP started at 30 June
+end1 <-  as.POSIXct("2020-05-05")  
 
 # MAY 1 (wave 1b) - FOLLOW UP B
 start2 <- as.POSIXct("2020-05-05")
@@ -76,33 +76,35 @@ end12 <-  as.POSIXct("2020-12-15")
 start13 <- as.POSIXct("2020-12-15")
 end13 <-  as.POSIXct("2020-01-11") 
 
+##Follow up A and B can overlap in time, but follow up A can not overlap with the timing of another follow up A
 
 
-dat.raw <- 
-  dat.raw %>%
-  mutate(wave_A_taf =  case_when(startDate_wavesA_taf >= start1 & startDate_wavesA_taf < end1 ~ "Wave 1a",
-                                 startDate_wavesA_taf >= start3 & startDate_wavesA_taf < end3 ~ "Wave 2a",
-                           startDate_wavesA_taf >= start5 & startDate_wavesA_taf < end5 ~ "Wave 3a",
-                           startDate_wavesA_taf >= start7 & startDate_wavesA_taf < end7 ~ "Wave 4a",
-                           startDate_wavesA_taf >= start9 & startDate_wavesA_taf < end9 ~ "Wave 5",
-                           startDate_wavesA_taf >= start11 & startDate_wavesA_taf < end11 ~ "Wave 7",
-                           startDate_wavesA_taf >= start13 & startDate_wavesA_taf < end13 ~ "Wave 9"))
+#Should create wave variable within each dataset first
+#Then merge by ID and waves (each participant should have ONE data entry for each wave, but multiple wave data entries)
+
+
+taf.ramp.followupa.raw.id <-  taf.ramp.followupa.raw.id %>%
+  mutate(wave_taf =  case_when(startDate_waves >= start1 & startDate_waves < end1 ~ "Wave 1a",
+                                 startDate_waves >= start3 & startDate_waves < end3 ~ "Wave 2a",
+                           startDate_waves >= start5 & startDate_waves < end5 ~ "Wave 3a",
+                           startDate_waves >= start7 & startDate_waves < end7 ~ "Wave 4a",
+                           startDate_waves >= start9 & startDate_waves < end9 ~ "Wave 5",
+                           startDate_waves >= start11 & startDate_waves < end11 ~ "Wave 7",
+                           startDate_waves >= start13 & startDate_waves < end13 ~ "Wave 9"))
          
-dat.raw <- 
-  dat.raw %>%
-  mutate(wave_B_taf =  case_when(startDate_wavesB_taf >= start2 & startDate_wavesB_taf < end2 ~ "Wave 1b",
-                                 startDate_wavesB_taf >= start4 & startDate_wavesB_taf < end4 ~ "Wave 2b",
-                                 startDate_wavesB_taf >= start6 & startDate_wavesB_taf < end6 ~ "Wave 3b",
-                                 startDate_wavesB_taf >= start8 & startDate_wavesB_taf < end8 ~ "Wave 4b",
-                                 startDate_wavesB_taf >= start10 & startDate_wavesB_taf < end10 ~ "Wave 6",
-                                 startDate_wavesB_taf >= start12 & startDate_wavesB_taf < end12 ~ "Wave 8"))
+taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw.id %>%
+  mutate(wave_taf =  case_when(startDate_waves >= start2 & startDate_waves < end2 ~ "Wave 1b",
+                                 startDate_waves >= start4 & startDate_waves < end4 ~ "Wave 2b",
+                                 startDate_waves >= start6 & startDate_waves < end6 ~ "Wave 3b",
+                                 startDate_waves >= start8 & startDate_waves < end8 ~ "Wave 4b",
+                                 startDate_waves >= start10 & startDate_waves < end10 ~ "Wave 6",
+                                 startDate_waves >= start12 & startDate_waves < end12 ~ "Wave 8"))
 
 
-dat.raw<- 
-  dat.raw %>%
-  mutate(wave_B_edeq =  case_when(startDate_wavesB_taf >= start2 & startDate_wavesB_taf < end2 ~ "Wave 1b",
-                                  startDate_wavesB_taf >= start4 & startDate_wavesB_taf < end4 ~ "Wave 2b",
-                                  startDate_wavesB_taf >= start6 & startDate_wavesB_taf < end6 ~ "Wave 3b",
-                                  startDate_wavesB_taf >= start8 & startDate_wavesB_taf < end8 ~ "Wave 4b",
-                                  startDate_wavesB_taf >= start10 & startDate_wavesB_taf < end10 ~ "Wave 6",
-                                  startDate_wavesB_taf >= start12 & startDate_wavesB_taf < end12 ~ "Wave 8"))
+edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
+  mutate(wave_B_edeq =  case_when(startDate_wavesB_edeq >= start2 & startDate_wavesB_edeq < end2 ~ "Wave 1b",
+                                  startDate_wavesB_edeq >= start4 & startDate_wavesB_edeq < end4 ~ "Wave 2b",
+                                  startDate_wavesB_edeq >= start6 & startDate_wavesB_edeq < end6 ~ "Wave 3b",
+                                  startDate_wavesB_edeq >= start8 & startDate_wavesB_edeq < end8 ~ "Wave 4b",
+                                  startDate_wavesB_edeq >= start10 & startDate_wavesB_edeq < end10 ~ "Wave 6",
+                                  startDate_wavesB_edeq >= start12 & startDate_wavesB_edeq < end12 ~ "Wave 8"))
