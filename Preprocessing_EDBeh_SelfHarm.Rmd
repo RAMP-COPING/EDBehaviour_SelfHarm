@@ -2109,11 +2109,11 @@ taf.ramp.followupa.raw.id <- taf.ramp.followupa.raw %>% #new dataset with ID
          cohort_name, # Sample
          startDate_wavesA_taf = startDate,
          #endDate,
-         taf.worth_living_life_people_followupA = taf.worth_living_life_people,
-         taf.felt_weeks_past_followupA = taf.felt_weeks_past,
-         taf.have_you_contemplated_harming_yourself_followupA = taf.have_you_contemplated_harming_yourself_,
-         taf.felt_weeks_past.1_followupA = taf.felt_weeks_past.1,
-         taf.meant_life_end_weeks_followupA = taf.meant_life_end_weeks
+         taf.worth_living_life_people = taf.worth_living_life_people,
+         taf.felt_weeks_past = taf.felt_weeks_past,
+         taf.have_you_contemplated_harming_yourself = taf.have_you_contemplated_harming_yourself_,
+         taf.felt_weeks_past.1 = taf.felt_weeks_past.1,
+         taf.meant_life_end_weeks = taf.meant_life_end_weeks
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -2165,11 +2165,11 @@ taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw %>% #new dataset with ID
          cohort_name, # Sample
          startDate_wavesB_taf = startDate,
          #endDate,
-         taf.worth_living_life_people_followupB = taf.worth_living_life_people,
-         taf.felt_weeks_past_followupB = taf.weeks_past_felt, #renamed to match follow up a
-         taf.have_you_contemplated_harming_yourself_followupB = taf.have_you_contemplated_harming_yourself_,
-         taf.felt_weeks_past.1_followupB = taf.weeks_past_felt.1, #renamed to match follow up a
-         taf.meant_life_end_weeks_followupB = taf.deliberately_harmed_meant_end #renamed to match follow up a
+         taf.worth_living_life_people = taf.worth_living_life_people,
+         taf.felt_weeks_past = taf.weeks_past_felt, #renamed to match follow up a
+         taf.have_you_contemplated_harming_yourself = taf.have_you_contemplated_harming_yourself_,
+         taf.felt_weeks_past.1 = taf.weeks_past_felt.1, #renamed to match follow up a
+         taf.meant_life_end_weeks = taf.deliberately_harmed_meant_end #renamed to match follow up a
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -2548,7 +2548,6 @@ colnames(dat.raw)
 
 
 #Get rid of duplicates in all baseline data
-##Should do this AFTER split by waves in follow up data(i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
 ```{r Check duplicates, eval=FALSE, include=FALSE}
 dat.raw$ID.dup <- duplicated(dat.raw$ID)
 
@@ -2572,10 +2571,6 @@ colnames(dat.raw.no.dup)
 ```
 
 
-
-
-
-
 #WAVES - FOLLOW UP RAMP DATA
 ## 1. Create a wave columns in follow up data - RAMP
 ```{r identify wave dates ramp}
@@ -2585,32 +2580,22 @@ source("./wavesRAMP.R")
 }
 ```
 
-##2. List RAMP follow up cohorts of same questionnaire (e.g. follow up A and B of TAF)
+##2. Join TAF (+ RAMP + COPING)
 ```{r RANP data frame list}
 if(RAMP == TRUE) {
-dfs.list <- list(
-    edeq.ramp.followupb.raw.id,
-    taf.ramp.followupa.raw.id,
-    taf.ramp.followupb.raw.id
-)
+dat.raw <- rbind(taf.ramp.followupa.raw.id,
+    taf.ramp.followupb.raw.id)
 }
+
+RENAME COLUMNS TO MATHC
+remove matching IDs using Kirstin code
 ```
 
-##3. Join
-```{r Join all questionnaires}
-if(RAMP == TRUE) {
-dat.raw <- plyr::join_all(
-  dfs.list,
-  by = c("ID") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
-  )
-
-#look at the data
-colnames(dat.raw)
-}
-```
+#3. Remove IDs that multiple wave data for one wave
+##i.e. one person should not have multiple data for one wave [e.g. duplicated ID in wave 1a dataset], but one person will have multiple wave data [e.g. wave 1a, wave 1b, etc])
 
 
-##4. Plot by wave and question
+##3. Plot by wave and question
 ```{r}
 
 ggplot(taf.ramp.followupa.raw.id,
@@ -2618,7 +2603,7 @@ ggplot(taf.ramp.followupa.raw.id,
            fill = wave_A_taf)) +
         geom_bar(size = 1,
                  shape = 23,
-                 colour = "blue",
+                 colour = "black",
                  position = position_dodge()) +
   labs(y = "Number of participants",
      x = "Many people have thoughts that life is not worth living. Have you felt that way?",
