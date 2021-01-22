@@ -75,7 +75,7 @@ ggplot(dat.raw.taf.ramp,
 
 ##Plot by wave and question:  RAMP - Life worth living (lifetime)
 if(COPING == TRUE) {
-ggplot(dat.coping.taf.ramp,
+ggplot(dat.raw.taf.coping,
        aes(taf.worth_living_life_people, 
            fill = wave_taf)) +
   geom_bar(size = 1,
