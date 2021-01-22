@@ -81,8 +81,7 @@ end13 <-  as.POSIXct("2020-01-11")
 
 #Should create wave variable within each dataset first
 #Then merge by ID and waves (each participant should have ONE data entry for each wave, but multiple wave data entries)
-#Consider then splitting by wave (i.e. so have 'TAF_WAVE1A', 'TAF_WAVE1B' etc etc)
-  
+
 
 taf.ramp.followupa.raw.id <-  taf.ramp.followupa.raw.id %>%
   mutate(wave_A_taf =  case_when(startDate_wavesA_taf >= start1 & startDate_wavesA_taf < end1 ~ "Wave 1a",

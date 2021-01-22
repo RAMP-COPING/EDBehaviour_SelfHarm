@@ -2579,7 +2579,7 @@ source("./wavesRAMP.R")
 
 }
 ```
-
+##**NEED TO THINK ABUOT HOW DATA SHOULD BE IN ORDER TO PLOT IT, NEED TO BE ABLE TO GROUP BY WAVE (SO WAVE SHOULD BE A SINGEL COLUMN). WILL END WITH MULTIPLE IDS.
 
 ## 2. Change follow up to long format & remove duplicate IDs
 ```{r change to long format}
@@ -2727,10 +2727,106 @@ taf.ramp.followupa.raw.id.deliberate_harm_2_weeks <- taf.ramp.followupa.raw.id.d
                  'Wave5_deliberate_harm_2_weeks',
                  'Wave7_deliberate_harm_2_weeks'))
 
+
+
+
+
+
+```
+
+```{r}
+taf.ramp.followupa.raw.id.worth_living
+
+###**NEED TO SORT THE RENAMING
+
+Seen but not answered  Prefer not to answer                    No             Yes, once   Yes, more than once 
+                  -77                   -99                     0                     1                     2 
+
+##Recoding wwave 1a life worth living
+taf.ramp.followupa.raw.id.worth_living$Wave1a_deliberate_harm_2_weeks <- 
+  with(taf.ramp.followupa.raw.id.worth_living,
+  case_when(Wave1a_worth_living == 0 ~ "No",
+            Wave1a_worth_living == 1 ~ "Yes, once",
+            Wave1a_worth_living == 2 ~ "Yes, more than once",
+            Wave1a_worth_living == -99 ~ "Prefer not to answer",
+            Wave1a_worth_living == -77 ~ "Seen but not answered"))
+
+freq(taf.ramp.followupa.raw.id.worth_living$Wave1a_worth_living)
+
+
+
+freq(taf.ramp.followupa.raw.id.worth_living$Wave1a_worth_living)
 ```
 
 
-##4. Combine RAMP follow up cohorts, TAF
+
+
+##PRACTICING PLOTTING
+```{r}
+
+##Recoding wwave 1a deliberate harm 2 weeks
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks$Wave1a_deliberate_harm_2_weeks <- 
+  with(taf.ramp.followupa.raw.id.deliberate_harm_2_weeks,
+  case_when(Wave1a_deliberate_harm_2_weeks == "0" ~ "No",
+            Wave1a_deliberate_harm_2_weeks == "1" ~ "Yes"))
+
+##Recoding wwave 2a deliberate harm 2 weeks
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks$Wave2a_deliberate_harm_2_weeks <- 
+  with(taf.ramp.followupa.raw.id.deliberate_harm_2_weeks,
+  case_when(Wave2a_deliberate_harm_2_weeks == "0" ~ "No",
+            Wave2a_deliberate_harm_2_weeks == "1" ~ "Yes"))
+
+
+
+##Recoding wwave 3a deliberate harm 2 weeks
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks$Wave3a_deliberate_harm_2_weeks <- 
+  with(taf.ramp.followupa.raw.id.deliberate_harm_2_weeks,
+  case_when(Wave3a_deliberate_harm_2_weeks == "0" ~ "No",
+            Wave3a_deliberate_harm_2_weeks == "1" ~ "Yes"))
+
+##Recoding wwave 4a deliberate harm 2 weeks
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks$Wave4a_deliberate_harm_2_weeks <- 
+  with(taf.ramp.followupa.raw.id.deliberate_harm_2_weeks,
+  case_when(Wave4a_deliberate_harm_2_weeks == "0" ~ "No",
+            Wave4a_deliberate_harm_2_weeks == "1" ~ "Yes"))
+
+
+##Recoding wwave 5 deliberate harm 2 weeks
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks$Wave5_deliberate_harm_2_weeks <- 
+  with(taf.ramp.followupa.raw.id.deliberate_harm_2_weeks,
+  case_when(Wave5_deliberate_harm_2_weeks == "0" ~ "No",
+            Wave5_deliberate_harm_2_weeks == "1" ~ "Yes"))
+
+##Recoding wwave 7 deliberate harm 2 weeks
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks$Wave7_deliberate_harm_2_weeks <- 
+  with(taf.ramp.followupa.raw.id.deliberate_harm_2_weeks,
+  case_when(Wave7_deliberate_harm_2_weeks == "0" ~ "No",
+            Wave7_deliberate_harm_2_weeks == "1" ~ "Yes"))
+
+
+
+
+
+##PRACTICE PLOTTING
+
+summary(taf.ramp.followupa.raw.id.deliberate_harm_2_weeks$Wave7_deliberate_harm_2_weeks)
+
+
+taf.ramp.followupa.raw.id.deliberate_harm_2_weeks %>%
+  pivot_longer(Wave1a_deliberate_harm_2_weeks:Wave7_deliberate_harm_2_weeks, 
+               names_to = "wave_and_question", values_to = "response") %>%
+  ggplot(aes(x = response)) +
+  geom_bar() +
+  facet_wrap(vars(wave_and_question), ncol = 3) +
+  labs(x = "Response", y = "Number of respondents")
+
+```
+
+
+
+
+
+##4. Combine RAMP follow up cohorts, TAF (**should add follow up B, then try and plot)
 ```{r RAMP data frame list}
 if(RAMP == TRUE) {
 dfs.list <- list(
@@ -2753,7 +2849,6 @@ dat.raw <- plyr::join_all(
 #look at the data
 colnames(dat.raw)
 }
-
 ```
 
 
