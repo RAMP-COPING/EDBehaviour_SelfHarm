@@ -2618,14 +2618,12 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp[(dat.raw.taf.ramp$ID %!in% dupids),]
 ##Check number of rows
 nrow(dat.raw.taf.ramp)
 ```
-
-
-##3. Plot by wave and question
+##3. Plot by wave and question:  Life worth living (lifetime)
 ```{r}
 
-ggplot(taf.ramp.followupa.raw.id,
-       aes(taf.worth_living_life_people_followupA, 
-           fill = wave_A_taf)) +
+ggplot(dat.raw.taf.ramp,
+       aes(taf.worth_living_life_people, 
+           fill = wave_taf)) +
         geom_bar(size = 1,
                  shape = 23,
                  colour = "black",
