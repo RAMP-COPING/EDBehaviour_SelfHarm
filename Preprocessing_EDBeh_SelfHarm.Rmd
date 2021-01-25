@@ -1469,16 +1469,16 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw %>% #new dataset with 
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(edeq.coping.followupb.raw.id)
@@ -1548,16 +1548,16 @@ edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(edeq.ramp.baseline.raw.id)
@@ -1614,16 +1614,16 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(edeq.ramp.followupb.raw.id)
@@ -1690,16 +1690,16 @@ taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw %>% #new dataset
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.glad.coping.baseline.raw.id)
@@ -1752,16 +1752,16 @@ taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw %>% #new dataset
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.edgi.coping.baseline.raw.id)
@@ -1812,16 +1812,16 @@ taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.nbr.baseline.raw.id)
@@ -1872,16 +1872,16 @@ taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.ramp.baseline.raw.id)
@@ -1930,16 +1930,16 @@ taf.coping.followupa.raw.id.1 <- taf.coping.followupa.raw.1 %>% #new dataset wit
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.coping.followupa.raw.id.1)
@@ -1988,16 +1988,16 @@ taf.coping.followupa.raw.id.2 <- taf.coping.followupa.raw.2 %>% #new dataset wit
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+# mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered"))  # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.coping.followupa.raw.id.2)
@@ -2059,16 +2059,16 @@ taf.coping.followupb.raw.id <- taf.coping.followupb.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered"))  # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.coping.followupb.raw.id)
@@ -2116,16 +2116,16 @@ taf.ramp.followupa.raw.id <- taf.ramp.followupa.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.ramp.followupa.raw.id)
@@ -2172,16 +2172,16 @@ taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.ramp.followupb.raw.id)
@@ -2475,7 +2475,7 @@ source("./wavesRAMP.R")
 ```
 
 ##2. Join TAF follow ups (RAMP)
-```{r RANP join taf data, eval=FALSE, include=FALSE}
+```{r RANP join taf data}
 if(RAMP == TRUE) {
 dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
     taf.ramp.followupb.raw.id)
@@ -2495,7 +2495,7 @@ source("./wavesCOPING.R")
 ```
 
 ##2. Join TAF follow ups (COPING)
-```{r COPING join taf, eval=FALSE, include=FALSE}
+```{r COPING join taf}
 if(COPING == TRUE) {
 dat.raw.taf.coping <- rbind(taf.coping.followupa.raw.id,
     taf.coping.followupb.raw.id)
@@ -2507,7 +2507,7 @@ colnames(dat.raw.taf.coping)
 ##Check number of rows
 nrow(dat.raw.taf.coping)
 
-dat.raw.taf.coping$taf.meant_life_end_weeks
+}
 ```
 
 ##3.Remove dup IDs (TAF COPING)
@@ -2529,7 +2529,6 @@ source("./DupIDs_EDEQ_COPING.R")
 ```
 
 
-edeq.coping.followupb.raw.id
 edeq.ramp.followupb.raw.id 
 
 dat.raw.taf.ramp
@@ -2539,21 +2538,17 @@ dat.raw.taf.ramp
 
 
 
-#### order wave variable
+## 2. Change follow up TAF COPING to long format
 
 ```{r reorder wave factor}
-taf.coping.followupa.raw.id$wave_taf <- factor(taf.coping.followupa.raw.id$wave_taf,
-                         levels = c("Wave 2a",
-                                    "Wave 2b",
-                                    "Wave 3a",
-                                    "Wave 3b",
-                                    "Wave 4a",
-                                    "Wave 4b",
-                                    "Wave 5",
-                                    "Wave 7",
-                                    "Wave 9"))
 
-nrow(taf.coping.followupa.raw.id)
+##Many people have thoughts that life is not worth living. Have you felt that way?	
+dat.raw.taf.coping <- dat.raw.taf.coping %>%
+  pivot_wider(id_cols = ID,
+              names_from = wave_taf,
+              values_from = taf.worth_living_life_people,
+              values_fn = length)
+
 ```
 
 
