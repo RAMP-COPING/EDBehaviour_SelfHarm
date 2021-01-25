@@ -1,0 +1,38 @@
+---
+title: "Merging_EDBeh_SelfHarm"
+author: "Helena Davies"
+date: "25/01/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+#Set up
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+options(bitmapType = 'quartz') # to render fonts better
+```
+
+Clear global environment
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Retrieve the current date to use it for file endings to not overwrite files when one exports files
+```{r Recent date}
+date = Sys.Date()
+```
+
+
+Load packages
+```{r}
+library(tidyverse)
+library(skimr)
+```

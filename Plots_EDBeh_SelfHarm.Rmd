@@ -1,0 +1,21 @@
+---
+title: "Plots_EDBeh_SelfHarm"
+author: "Helena Davies"
+date: "25/01/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+##PLOTTING - Life worth living (lifetime)
+###Call script for recoding employment and key worker status
+```{r nbr dem calculating age from birthday}
+if(RAMP == TRUE | COPING == TRUE) {
+source("./TAF_LifeWorthLiving_Plots.R")
+
+}
+```

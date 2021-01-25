@@ -2464,6 +2464,103 @@ mhd.raw.id %>%
 }
 ```
 
+#WAVES - TAF
+
+## 1. Create a wave columns in follow up data - RAMP
+```{r identify wave dates ramp}
+if (RAMP ==TRUE) {
+source("./wavesRAMP.R")
+
+}
+```
+
+##2. Join TAF follow ups (RAMP)
+```{r RANP join taf data, eval=FALSE, include=FALSE}
+if(RAMP == TRUE) {
+dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
+    taf.ramp.followupb.raw.id)
+
+#check column names
+colnames(dat.raw.taf.ramp)
+}
+```
+
+##1.Create a wave columns in follow up data - COPING
+```{r identify wave dates ramp}
+if (COPING ==TRUE) {
+source("./wavesCOPING.R")
+
+}
+
+```
+
+##2. Join TAF follow ups (COPING)
+```{r COPING join taf, eval=FALSE, include=FALSE}
+if(COPING == TRUE) {
+dat.raw.taf.coping <- rbind(taf.coping.followupa.raw.id,
+    taf.coping.followupb.raw.id)
+
+
+##Check col names
+colnames(dat.raw.taf.coping)
+
+##Check number of rows
+nrow(dat.raw.taf.coping)
+
+dat.raw.taf.coping$taf.meant_life_end_weeks
+```
+
+##3.Remove dup IDs (TAF COPING)
+```{r identify wave dates ramp}
+if (COPING ==TRUE) {
+source("./DupIDs_TAF_COPING.R")
+
+}
+
+```
+
+
+
+edeq.coping.followupb.raw.id
+edeq.ramp.followupb.raw.id 
+
+dat.raw.taf.ramp
+
+
+
+
+
+
+#### order wave variable
+
+```{r reorder wave factor}
+taf.coping.followupa.raw.id$wave_taf <- factor(taf.coping.followupa.raw.id$wave_taf,
+                         levels = c("Wave 2a",
+                                    "Wave 2b",
+                                    "Wave 3a",
+                                    "Wave 3b",
+                                    "Wave 4a",
+                                    "Wave 4b",
+                                    "Wave 5",
+                                    "Wave 7",
+                                    "Wave 9"))
+
+nrow(taf.coping.followupa.raw.id)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ###JOINING DATASETS
 ##EDGI data frame list
@@ -2570,68 +2667,30 @@ colnames(dat.raw.no.dup)
 ```
 
 
-#WAVES - TAF
 
-## 1. Create a wave columns in follow up data - RAMP
-```{r identify wave dates ramp}
-if (RAMP ==TRUE) {
-source("./wavesRAMP.R")
 
+
+
+
+
+
+
+
+# Export data
+```{r export data, eval=FALSE, include=FALSE}
+if(GLAD == TRUE){
+saveRDS(object = dat.coping, file = paste0(data_path, "/glad.rds"))
+}
+if(EDGI == TRUE){
+saveRDS(object = dat.coping, file = paste0(data_path, "/edgi.rds"))
+}
+if(NBR == TRUE){
+saveRDS(object = dat.coping, file = paste0(data_path, "/nbr.rds"))
+}
+if(RAMP == TRUE){
+saveRDS(object = dat.coping, file = paste0(data_path, "/ramp.rds"))
 }
 ```
-
-##2. Join TAF follow ups (RAMP)
-```{r RANP join taf data}
-if(RAMP == TRUE) {
-dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
-    taf.ramp.followupb.raw.id)
-
-#check column names
-colnames(dat.raw.taf.ramp)
-}
-```
-
-##1.Create a wave columns in follow up data - COPING
-```{r identify wave dates ramp}
-if (COPING ==TRUE) {
-source("./wavesCOPING.R")
-
-}
-
-```
-
-##2. Join TAF follow ups (COPING)
-```{r COPING join taf}
-if(COPING == TRUE) {
-dat.raw.taf.coping <- rbind(taf.coping.followupa.raw.id,
-    taf.coping.followupb.raw.id)
-
-
-##Check col names
-colnames(dat.raw.taf.coping)
-
-##Check number of rows
-nrow(dat.raw.taf.coping)
-}
-```
-
-##PLOTTING - Life worth living (lifetime)
-###Call script for recoding employment and key worker status
-```{r nbr dem calculating age from birthday}
-if(RAMP == TRUE | COPING == TRUE) {
-source("./TAF_LifeWorthLiving_Plots.R")
-
-}
-```
-
-
-
-
-
-
-
-
-
 
 
 
