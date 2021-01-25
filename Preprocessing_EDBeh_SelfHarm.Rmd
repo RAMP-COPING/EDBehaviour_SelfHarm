@@ -2519,6 +2519,14 @@ source("./DupIDs_TAF_COPING.R")
 
 ```
 
+##3.Remove dup IDs (EDEQ COPING)
+```{r identify wave dates ramp}
+if (COPING ==TRUE) {
+source("./DupIDs_EDEQ_COPING.R")
+
+}
+
+```
 
 
 edeq.coping.followupb.raw.id
