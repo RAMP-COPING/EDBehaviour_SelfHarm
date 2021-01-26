@@ -3027,6 +3027,34 @@ edgi.5 <- mhd.raw.id %>%
 }
 ```
 
+##EDGI data frame list
+```{r EDGI data frame list}
+if(EDGI == TRUE) {
+dfs.list <- list(
+  edgi.1,
+  edgi.2,
+  edgi.3,
+  edgi.4,
+  edgi.5
+)
+}
+```
+
+##Join all EDGI
+```{r Join all EDGI questionnaires}
+if(EDGI == TRUE) {
+dat.raw.edgi <- plyr::join_all(
+  dfs.list,
+  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
+  )
+
+#look at the data
+colnames(dat.raw.edgi)
+}
+
+```
+
+
 ##GLAD data frame list
 ```{r GLAD data frame list}
 if(GLAD == TRUE) {
