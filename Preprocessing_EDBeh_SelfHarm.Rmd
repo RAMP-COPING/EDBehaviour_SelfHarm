@@ -2490,7 +2490,7 @@ colnames(dat.raw.taf.ramp)
 
 ## 3. Change follow up TAF RAMP to long format
 ```{r TAF COPING long format}
-
+if(RAMP == TRUE) {
 dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
   group_by(wave_taf) %>%
   mutate(row = row_number()) %>%
@@ -2502,9 +2502,66 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
                               taf.meant_life_end_weeks_numeric)) %>%
   select(-row)
   
-
+}
 ```
 
+##4. Select variables for dataset TAF RAMP
+```{r}
+if(RAMP == TRUE) {
+dat.raw.taf.coping <- dat.raw.taf.coping %>%
+  select(ID,
+         `taf.worth_living_life_people_numeric_Wave 2a`,
+         `taf.worth_living_life_people_numeric_Wave 2b`,
+         `taf.worth_living_life_people_numeric_Wave 3a`,
+         `taf.worth_living_life_people_numeric_Wave 3b`,
+         `taf.worth_living_life_people_numeric_Wave 4a`,
+         `taf.worth_living_life_people_numeric_Wave 4b`,
+         `taf.worth_living_life_people_numeric_Wave 5`,
+         `taf.worth_living_life_people_numeric_Wave 6`,
+         `taf.worth_living_life_people_numeric_Wave 7`,
+         `taf.worth_living_life_people_numeric_Wave 8`,
+         `taf.felt_weeks_past_numeric_Wave 2a`,
+         `taf.felt_weeks_past_numeric_Wave 2b`,
+         `taf.felt_weeks_past_numeric_Wave 3a`,
+         `taf.felt_weeks_past_numeric_Wave 3b`,
+         `taf.felt_weeks_past_numeric_Wave 4a`,
+         `taf.felt_weeks_past_numeric_Wave 4b`,
+         `taf.felt_weeks_past_numeric_Wave 5`,
+         `taf.felt_weeks_past_numeric_Wave 6`,
+         `taf.felt_weeks_past_numeric_Wave 7`,
+         `taf.felt_weeks_past_numeric_Wave 8`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 2a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 2b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 3a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 3b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 4a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 4b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 5`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 6`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 7`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 8`,
+         `taf.felt_weeks_past.1_numeric_Wave 2a`,
+         `taf.felt_weeks_past.1_numeric_Wave 2b`,
+         `taf.felt_weeks_past.1_numeric_Wave 3a`,
+         `taf.felt_weeks_past.1_numeric_Wave 3b`,
+         `taf.felt_weeks_past.1_numeric_Wave 4a`,
+         `taf.felt_weeks_past.1_numeric_Wave 4b`,
+         `taf.felt_weeks_past.1_numeric_Wave 5`,
+         `taf.felt_weeks_past.1_numeric_Wave 6`,
+         `taf.felt_weeks_past.1_numeric_Wave 7`,
+         `taf.felt_weeks_past.1_numeric_Wave 8`,
+         `taf.meant_life_end_weeks_numeric_Wave 2a`,
+         `taf.meant_life_end_weeks_numeric_Wave 2b`,
+         `taf.meant_life_end_weeks_numeric_Wave 3a`,
+         `taf.meant_life_end_weeks_numeric_Wave 3b`,
+         `taf.meant_life_end_weeks_numeric_Wave 4a`,
+         `taf.meant_life_end_weeks_numeric_Wave 4b`,
+         `taf.meant_life_end_weeks_numeric_Wave 5`,
+         `taf.meant_life_end_weeks_numeric_Wave 6`,
+         `taf.meant_life_end_weeks_numeric_Wave 7`,
+         `taf.meant_life_end_weeks_numeric_Wave 8`)
+}
+```
 
 
 
@@ -2560,7 +2617,7 @@ source("./DupIDs_TAF_COPING.R")
 ```
 ## 3. Change follow up TAF COPING to long format
 ```{r TAF COPING long format}
-
+if(COPING == TRUE) {
 dat.raw.taf.coping <- dat.raw.taf.coping %>%
   group_by(wave_taf) %>%
   mutate(row = row_number()) %>%
@@ -2572,12 +2629,13 @@ dat.raw.taf.coping <- dat.raw.taf.coping %>%
                               taf.meant_life_end_weeks_numeric)) %>%
   select(-row)
   
-
+}
 ```
 
 
 ##4. Select variables for dataset TAF COPING
 ```{r}
+if(COPING == TRUE) {
 dat.raw.taf.coping <- dat.raw.taf.coping %>%
   select(ID,
          `taf.worth_living_life_people_numeric_Wave 2a`,
@@ -2630,10 +2688,12 @@ dat.raw.taf.coping <- dat.raw.taf.coping %>%
          `taf.meant_life_end_weeks_numeric_Wave 6`,
          `taf.meant_life_end_weeks_numeric_Wave 7`,
          `taf.meant_life_end_weeks_numeric_Wave 8`)
+}
 ```
 
 ##5. Remove duplicate IDs TAF COPING
 ```{r}
+if(COPING == TRUE) {
 ##Check col names
 colnames(dat.raw.taf.coping)
 
@@ -2643,6 +2703,7 @@ dat.raw.taf.coping  <- dat.raw.taf.coping  %>%
 
 ##Check number of rows
 nrow(dat.raw.taf.coping)
+}
 
 ```
 
@@ -2656,7 +2717,7 @@ source("./DupIDs_EDEQ_COPING.R")
 ```
 ## 6. Change follow up EDE COPING to long format
 ```{r TAF COPING long format}
-
+if(COPING == TRUE) {
 edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
   group_by(wave_edeq) %>%
   mutate(row = row_number()) %>%
@@ -2676,11 +2737,13 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
                               edeq.felt_anxious_blue_bored.1_numeric)) %>%
   select(-row)
   
+}
 
 ```
 
 ##7. Select variables for dataset EDEQ COPING
 ```{r}
+if(COPING == TRUE) {
 edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
   select(ID,
          `edeq.deliberately_limit_amount_influence_numeric_Wave 2b`,
@@ -2748,12 +2811,13 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
          `edeq.felt_anxious_blue_bored.1_numeric_Wave 4b`,
          `edeq.felt_anxious_blue_bored.1_numeric_Wave 6`,
          `edeq.felt_anxious_blue_bored.1_numeric_Wave 8`)
-
+}
 ```
 
 
 ##8. Remove duplicate IDs EDEQ COPING
 ```{r}
+if(COPING == TRUE) {
 ##Check col names
 colnames(edeq.coping.followupb.raw.id)
 
@@ -2763,6 +2827,7 @@ edeq.coping.followupb.raw.id  <- edeq.coping.followupb.raw.id  %>%
 
 ##Check number of rows
 nrow(edeq.coping.followupb.raw.id)
+}
 
 ```
 
