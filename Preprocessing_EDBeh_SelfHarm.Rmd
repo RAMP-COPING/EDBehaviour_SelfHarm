@@ -2508,7 +2508,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
 ##4. Select variables for dataset TAF RAMP
 ```{r}
 if(RAMP == TRUE) {
-dat.raw.taf.coping <- dat.raw.taf.coping %>%
+dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
   select(ID,
          `taf.worth_living_life_people_numeric_Wave 2a`,
          `taf.worth_living_life_people_numeric_Wave 2b`,
@@ -2563,7 +2563,21 @@ dat.raw.taf.coping <- dat.raw.taf.coping %>%
 }
 ```
 
+##5. Remove duplicate IDs TAF RAMP
+```{r}
+if(RAMP == TRUE) {
+##Check col names
+colnames(dat.raw.taf.ramp)
 
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+dat.raw.taf.ramp  <- dat.raw.taf.ramp %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(dat.raw.taf.ramp)
+}
+
+```
 
 
 
@@ -2715,6 +2729,8 @@ source("./DupIDs_EDEQ_COPING.R")
 }
 
 ```
+
+
 ## 6. Change follow up EDE COPING to long format
 ```{r TAF COPING long format}
 if(COPING == TRUE) {
