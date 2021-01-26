@@ -2946,42 +2946,84 @@ nrow(edeq.coping.followupb.raw.id)
 
 
 ###JOINING DATASETS - baseline 
-Age
+Age (age_category, age_category_numeric) x
 Sex x
 Gender x
-Education 
-Employment 
-Employment change (EDGI & GLAD only) - *check follow up RAMP and NBR
+Education  (highest education_prepan, and highest_education_prepan_numeric, highest_education, highest_education) x
+Employment x
+Employment change (EDGI & GLAD only) - *check follow up RAMP and NBR x
 Ethnicity x
+key worker x
 Mental health diagnoses
 Controls (?)
 UK location x
 current country? x
+TAF baseline x
+EDEQ baseline (RAMP)
 
 ##Select same variables from each dataset
 
-##EDGI data frame list
-```{r EDGI data frame list}
+##EDGI select variables from each dataset
+```{r EDGI select variables}
 if(EDGI == TRUE) {
-dfs.list <- list(
-  ID
-  cohort_name
-  edgi.coping.dem.raw.id$gender_unc
-  edgi.coping.dem.raw.id$sex
-  edgi.coping.dem.raw.id$uk_location
-  edgi.coping.dem.raw.id$current_country
+edgi.1 <- edgi.coping.dem.raw.id %>%
+  select(ID,
+  cohort_name,
+  gender_unc,
+  sex,
+  uk_location,
+  current_country)
   
-  ID
-  cohort_name
-  edgi.dem3.raw.id$
-  edgi.dem3.raw.id$
-#edgi.coping.dem2.raw.id
-,
-edgi.coping.dem4.employ.raw.id,
-taf.edgi.coping.baseline.raw.id,
-mhd.raw.id
-#ADD EDEQ/TAF COPING
-)
+edgi.2 <- edgi.dem3.raw.id %>%
+  select(ID,
+  cohort_name,
+  age_category_numeric,
+  age_category,
+  highest_education_prepan_numeric,
+  highest_education_prepan,
+  ethnicity)
+  
+edgi.3 <- edgi.coping.dem4.employ.raw.id %>%
+  select(ID,
+  cohort_name,
+  highest_education_numeric,
+  highest_education,
+  employment_prior_covid_numeric,
+  employment_prior_covid,
+  employment_change_numeric,
+  employment_change,
+  key_worker,
+  key_worker_numeric)
+  
+edgi.4 <- taf.edgi.coping.baseline.raw.id %>%
+  select(ID,
+  cohort_name,
+  taf.worth_living_life_people_baseline,
+  taf.felt_weeks_past_baseline,
+  taf.pandemic_felt_baseline,
+  taf.have_you_contemplated_harming_yourself_baseline,
+  taf.felt_weeks_past.1_baseline,
+  taf.pandemic_felt.1_baseline,
+  taf.meant_life_end_weeks_baseline,
+  taf.meant_end_life_pandemic_baseline)
+
+
+edgi.5 <- mhd.raw.id %>%
+  select(ID,
+         cohort_name,
+         control,
+         control_numeric,
+         depressive_disorders_numeric,
+         anxiety_disorders_numeric,
+         eating_disorders_numeric,
+         obsessive_compulsive_disorders_numeric,
+         psychotic_disorders_numeric,
+         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
+        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+        autism_spectrum_disorder_numeric,
+        mhd.attention_deficit_hyperactivity_disorder_numeric,
+        mhd.personality_disorder_numeric)
+
 }
 ```
 
