@@ -2211,16 +2211,15 @@ source("./ethnicity_ALLdatasets.R")
 ```
 
 
-
 #CLEANING DEMOGRAPHICS 
 ##AGE
-###Source script for CREATING AGE variable in nbr (age_unc), cleaning it (in all datasets), and categorising it (nbr, edgi, glad - to match ramp)
-
+###Source script for CREATING AGE variable in nbr (age_unc),cleaning it (in all datasets), and categorising it (nbr, edgi, glad - to match ramp)
 ```{r source script age}
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
 source("./age_ALLdatasets.R")
 }
 ```
+
 
 ##EDUCATION
 ###Call script for recoding highest education received, prepandemic (EDGI, GLAD) and baseline (EDGI, GLAD, NBR, RAMP)

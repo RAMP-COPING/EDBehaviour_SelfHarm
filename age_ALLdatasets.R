@@ -121,13 +121,13 @@ if(NBR == TRUE) {
   #Identify number of outliers
   length(
     which(
-      nbr.dem.raw.id.complete$age_unc > age_upper_limit |
-        nbr.dem.raw.id.complete$age_unc < age_lower_limit
+      nbr.dem.raw.id$age_unc > age_upper_limit |
+        nbr.dem.raw.id$age_unc < age_lower_limit
     )
   )
   
   #Remove age outliers
-  nbr.dem.raw.id.complete <- nbr.dem.raw.id.complete %>%
+  nbr.dem.raw.id <- nbr.dem.raw.id %>%
     mutate(
       age =
         if_else(
@@ -140,7 +140,7 @@ if(NBR == TRUE) {
     )
   
   # Inspect variable
-  nbr.dem.raw.id.complete %>%
+  nbr.dem.raw.id %>%
     descr(
       age,
       #stats = "common"
@@ -252,7 +252,7 @@ if(EDGI == TRUE) {
   #Age categories in GLAD, EDGI and NBR have been created to reflect this
 if(NBR == TRUE) {
   # Create categorical age groups per 10 years
-  nbr.dem.raw.id.complete <- nbr.dem.raw.id.complete %>%
+  nbr.dem.raw.id <- nbr.dem.raw.id %>%
     mutate(
       age_category_numeric =
         case_when(
@@ -272,7 +272,7 @@ if(NBR == TRUE) {
         )
     )
   
-  nbr.dem.raw.id.complete <- nbr.dem.raw.id.complete %>%
+  nbr.dem.raw.id  <- nbr.dem.raw.id  %>%
     mutate(
       age_category =
         recode_factor(
@@ -292,6 +292,6 @@ if(NBR == TRUE) {
           "13" = "100+"
         )
     )
-  nbr.dem.raw.id.complete %>%
+  nbr.dem.raw.id  %>%
     freq(age_category)
 }
