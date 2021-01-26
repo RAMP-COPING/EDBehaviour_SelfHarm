@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -2485,6 +2485,43 @@ colnames(dat.raw.taf.ramp)
 }
 ```
 
+## 3. Change follow up TAF RAMP to long format
+```{r TAF COPING long format}
+
+dat.raw.taf.coping <- dat.raw.taf.coping %>%
+  group_by(wave_taf) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(names_from = wave_taf, 
+                     values_from = c(taf.worth_living_life_people_numeric,
+                              taf.felt_weeks_past_numeric,
+                              taf.have_you_contemplated_harming_yourself_numeric,
+                              taf.felt_weeks_past.1_numeric,
+                              taf.meant_life_end_weeks_numeric)) %>%
+  select(-row)
+  
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ##1.Create a wave columns in follow up data - COPING
 ```{r identify wave dates ramp}
 if (COPING ==TRUE) {
@@ -2598,11 +2635,11 @@ dat.raw.taf.coping <- dat.raw.taf.coping %>%
 colnames(dat.raw.taf.coping)
 
 ##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
-dat.raw.taf.coping2  <- dat.raw.taf.coping  %>%
+dat.raw.taf.coping  <- dat.raw.taf.coping  %>%
   filter(., !duplicated(ID)) 
 
 ##Check number of rows
-nrow(dat.raw.taf.coping2)
+nrow(dat.raw.taf.coping)
 
 ```
 
@@ -2614,7 +2651,7 @@ source("./DupIDs_EDEQ_COPING.R")
 }
 
 ```
-## 6. Change follow up TAF COPING to long format
+## 6. Change follow up EDE COPING to long format
 ```{r TAF COPING long format}
 
 edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
@@ -2641,16 +2678,90 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
 
 ##7. Select variables for dataset EDEQ COPING
 ```{r}
-edeq.coping.followupb.raw.id$ <- edeq.coping.followupb.raw.id  %>%
+edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
   select(ID,
-         `taf.worth_living_life_people_numeric_Wave 2a`
-         
-         
-         
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 2b`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 3b`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 4b`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 6`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 8`,
+         `edeq.calories_made_body_shape_numeric_Wave 2b`,
+         `edeq.calories_made_body_shape_numeric_Wave 3b`,
+         `edeq.calories_made_body_shape_numeric_Wave 4b`,
+         `edeq.calories_made_body_shape_numeric_Wave 6`,
+         `edeq.calories_made_body_shape_numeric_Wave 8`,
+         `edeq.weight_influenced_person_numeric_Wave 2b`,
+         `edeq.weight_influenced_person_numeric_Wave 3b`,
+         `edeq.weight_influenced_person_numeric_Wave 4b`,
+         `edeq.weight_influenced_person_numeric_Wave 6`,
+         `edeq.weight_influenced_person_numeric_Wave 8`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 2b`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 3b`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 4b`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 6`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 8`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 2b`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 3b`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 4b`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 6`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 8`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 2b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 3b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 4b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 6`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 8`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 2b`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 3b`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 4b`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 6`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 8`,
+         `edeq.sick_means_made_shape_numeric_Wave 2b`,
+         `edeq.sick_means_made_shape_numeric_Wave 3b`,
+         `edeq.sick_means_made_shape_numeric_Wave 4b`,
+         `edeq.sick_means_made_shape_numeric_Wave 6`,
+         `edeq.sick_means_made_shape_numeric_Wave 8`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 2b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 3b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 4b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 6`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 8`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 2b`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 3b`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 4b`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 6`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 8`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 2b`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 3b`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 4b`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 6`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 8`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 2b`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 3b`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 4b`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 6`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 8`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 2b`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 3b`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 4b`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 6`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 8`)
+
 ```
 
 
+##8. Remove duplicate IDs EDEQ COPING
+```{r}
+##Check col names
+colnames(edeq.coping.followupb.raw.id)
 
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+edeq.coping.followupb.raw.id  <- edeq.coping.followupb.raw.id  %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(edeq.coping.followupb.raw.id)
+
+```
 
 
 
