@@ -40,10 +40,10 @@ source("./functions.R")
 
 # Specify cohort
 ```{r Specify cohort}
-GLAD = TRUE
+GLAD = FALSE
 EDGI = FALSE
 RAMP = FALSE
-NBR = FALSE
+NBR = TRUE
 COPING = FALSE
 ```
 
@@ -2211,6 +2211,7 @@ source("./ethnicity_ALLdatasets.R")
 ```
 
 
+
 #CLEANING DEMOGRAPHICS 
 ##AGE
 ###Source script for CREATING AGE variable in nbr (age_unc), cleaning it (in all datasets), and categorising it (nbr, edgi, glad - to match ramp)
@@ -3133,16 +3134,6 @@ colnames(dat.raw.glad)
 ```
 
 
-
-
-
-
-
-
-
-
-
-
 Age (age_category, age_category_numeric) xx
 Sex xx
 Gender xx
@@ -3163,7 +3154,7 @@ EDEQ baseline (RAMP)
 if(NBR == TRUE) {
 dfs.list <- list(
     nbr.dem.employ.raw.id,
-nbr.dem.raw.id.complete,
+nbr.dem.raw.id.complete$,
 nbr.dem2.raw.id,
 mhd.raw.id,
 taf.nbr.baseline.raw.id
