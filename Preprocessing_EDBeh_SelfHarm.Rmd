@@ -2578,8 +2578,8 @@ nrow(dat.raw.taf.ramp)
 }
 
 ```
-## 6. Change follow up EDE RAMP to long format
-```{r TAF RAMP long format}
+## 6. Change follow up EDEQ RAMP to long format
+```{r EDEQ RAMP long format}
 if(RAMP == TRUE) {
 edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
   group_by(wave_edeq) %>%
@@ -2606,8 +2606,8 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
 
 ##7. Select variables for dataset EDEQ COPING
 ```{r}
-if(COPING == TRUE) {
-edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
+if(RAMP == TRUE) {
+edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id  %>%
   select(ID,
          `edeq.deliberately_limit_amount_influence_numeric_Wave 2b`,
          `edeq.deliberately_limit_amount_influence_numeric_Wave 3b`,
