@@ -2528,28 +2528,94 @@ source("./DupIDs_EDEQ_COPING.R")
 
 ```
 
-
-edeq.ramp.followupb.raw.id 
-
-dat.raw.taf.ramp
-
-
-
-
-
-
 ## 2. Change follow up TAF COPING to long format
+```{r TAF COPING long format}
 
-```{r reorder wave factor}
-
-##Many people have thoughts that life is not worth living. Have you felt that way?	
 dat.raw.taf.coping <- dat.raw.taf.coping %>%
-  pivot_wider(id_cols = ID,
-              names_from = wave_taf,
-              values_from = taf.worth_living_life_people,
-              values_fn = length)
+  group_by(wave_taf) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(names_from = wave_taf, 
+                     values_from = c(taf.worth_living_life_people_numeric,
+                              taf.felt_weeks_past_numeric,
+                              taf.have_you_contemplated_harming_yourself_numeric,
+                              taf.felt_weeks_past.1_numeric,
+                              taf.meant_life_end_weeks_numeric)) %>%
+  select(-row)
+  
 
 ```
+
+##3. Remove dup IDs
+```{r}
+dat.raw.taf.coping <- dat.raw.taf.coping %>%
+  select(ID,
+         `taf.worth_living_life_people_numeric_Wave 2a`,
+         `taf.worth_living_life_people_numeric_Wave 2b`,
+         `taf.worth_living_life_people_numeric_Wave 3a`,
+         `taf.worth_living_life_people_numeric_Wave 3b`,
+         `taf.worth_living_life_people_numeric_Wave 4a`,
+         `taf.worth_living_life_people_numeric_Wave 4b`,
+         `taf.worth_living_life_people_numeric_Wave 5`,
+         `taf.worth_living_life_people_numeric_Wave 6`,
+         `taf.worth_living_life_people_numeric_Wave 7`,
+         `taf.worth_living_life_people_numeric_Wave 8`,
+         `taf.felt_weeks_past_numeric_Wave 2a`,
+         `taf.felt_weeks_past_numeric_Wave 2b`,
+         `taf.felt_weeks_past_numeric_Wave 3a`,
+         `taf.felt_weeks_past_numeric_Wave 3b`,
+         `taf.felt_weeks_past_numeric_Wave 4a`,
+         `taf.felt_weeks_past_numeric_Wave 4b`,
+         `taf.felt_weeks_past_numeric_Wave 5`,
+         `taf.felt_weeks_past_numeric_Wave 6`,
+         `taf.felt_weeks_past_numeric_Wave 7`,
+         `taf.felt_weeks_past_numeric_Wave 8`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 2a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 2b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 3a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 3b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 4a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 4b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 5`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 6`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 7`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 8`,
+         `taf.felt_weeks_past.1_numeric_Wave 2a`,
+         `taf.felt_weeks_past.1_numeric_Wave 2b`,
+         `taf.felt_weeks_past.1_numeric_Wave 3a`,
+         `taf.felt_weeks_past.1_numeric_Wave 3b`,
+         `taf.felt_weeks_past.1_numeric_Wave 4a`,
+         `taf.felt_weeks_past.1_numeric_Wave 4b`,
+         `taf.felt_weeks_past.1_numeric_Wave 5`,
+         `taf.felt_weeks_past.1_numeric_Wave 6`,
+         `taf.felt_weeks_past.1_numeric_Wave 7`,
+         `taf.felt_weeks_past.1_numeric_Wave 8`,
+         `taf.meant_life_end_weeks_numeric_Wave 2a`,
+         `taf.meant_life_end_weeks_numeric_Wave 2b`,
+         `taf.meant_life_end_weeks_numeric_Wave 3a`,
+         `taf.meant_life_end_weeks_numeric_Wave 3b`,
+         `taf.meant_life_end_weeks_numeric_Wave 4a`,
+         `taf.meant_life_end_weeks_numeric_Wave 4b`,
+         `taf.meant_life_end_weeks_numeric_Wave 5`,
+         `taf.meant_life_end_weeks_numeric_Wave 6`,
+         `taf.meant_life_end_weeks_numeric_Wave 7`,
+         `taf.meant_life_end_weeks_numeric_Wave 8`)
+
+##Check col names
+colnames(dat.raw.taf.coping)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+dat.raw.taf.coping2  <- dat.raw.taf.coping  %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(dat.raw.taf.coping2)
+
+```
+
+
+  
+
+
 
 
 

@@ -16,11 +16,11 @@ if(COPING == TRUE) {
                            DupIDdat$`Wave 5` > 1 | DupIDdat$`Wave 6` > 1 |
                            DupIDdat$`Wave 7` > 1 | DupIDdat$`Wave 8` > 1 )]
 
-  dupids <- unique(dupids)
+  dupids1 <- unique(dupids)
   
   ##Now drop from  data
   
-  dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
+ # dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
   
   ##Check number of rows
   nrow(dat.raw.taf.coping)
@@ -42,11 +42,11 @@ if(COPING == TRUE) {
                            DupIDdat$`Wave 7` > 1 | DupIDdat$`Wave 8` > 1 )]
                       
   
-  dupids <- unique(dupids)
+  dupids2 <- unique(dupids)
   
   ##Now drop from  data
   
-  dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
+ # dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
   
   ##Check number of rows
   nrow(dat.raw.taf.coping)
@@ -69,11 +69,11 @@ if(COPING == TRUE) {
                            DupIDdat$`Wave 7` > 1 | DupIDdat$`Wave 8` > 1 )]
                          
   
-  dupids <- unique(dupids)
+  dupids3 <- unique(dupids)
   
   ##Now drop from  data
   
-  dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
+ # dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
   
   ##Check number of rows
   nrow(dat.raw.taf.coping)
@@ -94,11 +94,11 @@ if(COPING == TRUE) {
                            DupIDdat$`Wave 5` > 1 | DupIDdat$`Wave 6` > 1 |
                            DupIDdat$`Wave 7` > 1 | DupIDdat$`Wave 8` > 1 )]
   
-  dupids <- unique(dupids)
+  dupids4 <- unique(dupids)
   
   ##Now drop from  data
   
-  dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
+ # dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
   
   ##Check number of rows
   nrow(dat.raw.taf.coping)
@@ -119,11 +119,11 @@ if(COPING == TRUE) {
                            DupIDdat$`Wave 5` > 1 | DupIDdat$`Wave 6` > 1 |
                            DupIDdat$`Wave 7` > 1 | DupIDdat$`Wave 8` > 1 )]
   
-  dupids <- unique(dupids)
+  dupids5 <- unique(dupids)
   
   ##Now drop from  data
   
-  dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
+  #dat.raw.taf.coping <- dat.raw.taf.coping[(dat.raw.taf.coping$ID %!in% dupids),]
   
   ##Check number of rows
   nrow(dat.raw.taf.coping)
