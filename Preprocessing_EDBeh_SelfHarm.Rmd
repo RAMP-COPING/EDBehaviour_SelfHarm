@@ -2604,7 +2604,7 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
 
 ```
 
-##7. Select variables for dataset EDEQ COPING
+##7. Select variables for dataset EDEQ RAMP
 ```{r}
 if(RAMP == TRUE) {
 edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id  %>%
@@ -2677,24 +2677,24 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id  %>%
 }
 ```
 
+##8. Remove duplicate IDs EDEQ RAMP
+```{r}
+if(RAMP == TRUE) {
+##Check col names
+colnames(edeq.ramp.followupb.raw.id)
 
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+edeq.ramp.followupb.raw.id  <- edeq.ramp.followupb.raw.id  %>%
+  filter(., !duplicated(ID)) 
 
+##Check number of rows
+nrow(edeq.ramp.followupb.raw.id)
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
+```
 
 ##1.Create a wave columns in follow up data - COPING
-```{r identify wave dates ramp}
+```{r identify wave dates coping}
 if (COPING ==TRUE) {
 source("./wavesCOPING.R")
 
@@ -2719,7 +2719,7 @@ nrow(dat.raw.taf.coping)
 ```
 
 ##Remove dup IDs (TAF COPING) [not in use]
-```{r identify wave dates ramp, eval=FALSE, include=FALSE}
+```{r identify wave dates coping, eval=FALSE, include=FALSE}
 if (COPING ==TRUE) {
 source("./DupIDs_TAF_COPING.R")
 
@@ -2819,7 +2819,7 @@ nrow(dat.raw.taf.coping)
 ```
 
 ##Remove dup IDs (EDEQ COPING) [not in use]
-```{r identify wave dates ramp}
+```{r identify wave dates edeq coping}
 if (COPING ==TRUE) {
 source("./DupIDs_EDEQ_COPING.R")
 
@@ -2945,26 +2945,19 @@ nrow(edeq.coping.followupb.raw.id)
 ```
 
 
-
-  
-
-
-
-
-
-
-
-
-
-
+###JOINING DATASETS - baseline 
+Age
+Sex 
+Gender
+Education 
+Employment 
+Employment change (EDGI & GLAD only) - *check follow up RAMP and NBR
+Ethnicity
+Mental health diagnoses
+Controls (?)
 
 
-
-
-
-
-
-###JOINING DATASETS
+##Select same variables from each dataset
 
 ##EDGI data frame list
 ```{r EDGI data frame list}
