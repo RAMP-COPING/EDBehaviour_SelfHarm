@@ -2510,25 +2510,15 @@ nrow(dat.raw.taf.coping)
 }
 ```
 
-##3.Remove dup IDs (TAF COPING)
-```{r identify wave dates ramp}
+##Remove dup IDs (TAF COPING) [not in use]
+```{r identify wave dates ramp, eval=FALSE, include=FALSE}
 if (COPING ==TRUE) {
 source("./DupIDs_TAF_COPING.R")
 
 }
 
 ```
-
-##3.Remove dup IDs (EDEQ COPING)
-```{r identify wave dates ramp}
-if (COPING ==TRUE) {
-source("./DupIDs_EDEQ_COPING.R")
-
-}
-
-```
-
-## 2. Change follow up TAF COPING to long format
+## 3. Change follow up TAF COPING to long format
 ```{r TAF COPING long format}
 
 dat.raw.taf.coping <- dat.raw.taf.coping %>%
@@ -2545,7 +2535,8 @@ dat.raw.taf.coping <- dat.raw.taf.coping %>%
 
 ```
 
-##3. Remove dup IDs
+
+##4. Select variables for dataset TAF COPING
 ```{r}
 dat.raw.taf.coping <- dat.raw.taf.coping %>%
   select(ID,
@@ -2599,7 +2590,10 @@ dat.raw.taf.coping <- dat.raw.taf.coping %>%
          `taf.meant_life_end_weeks_numeric_Wave 6`,
          `taf.meant_life_end_weeks_numeric_Wave 7`,
          `taf.meant_life_end_weeks_numeric_Wave 8`)
+```
 
+##5. Remove duplicate IDs TAF COPING
+```{r}
 ##Check col names
 colnames(dat.raw.taf.coping)
 
@@ -2611,6 +2605,53 @@ dat.raw.taf.coping2  <- dat.raw.taf.coping  %>%
 nrow(dat.raw.taf.coping2)
 
 ```
+
+##Remove dup IDs (EDEQ COPING) [not in use]
+```{r identify wave dates ramp}
+if (COPING ==TRUE) {
+source("./DupIDs_EDEQ_COPING.R")
+
+}
+
+```
+## 6. Change follow up TAF COPING to long format
+```{r TAF COPING long format}
+
+edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
+  group_by(wave_edeq) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(names_from = wave_edeq, 
+                     values_from = c(edeq.deliberately_limit_amount_influence_numeric,
+                              edeq.calories_made_body_shape_numeric,
+                              edeq.weight_influenced_person_numeric,
+                              edeq.dissatisfied_shape_weight_numeric,
+                              edeq.eating_behaviours_distressed_concerns_numeric,
+                              edeq.actively_been_monitoring_your_shape_or_weight_numeric,
+                              edeq.regard_lost_control_eaten_numeric,
+                              edeq.sick_means_made_shape_numeric,
+                              edeq.diuretics_laxatives_means_shape_numeric,
+                              edeq.compulsive_driven_burn_calories_numeric,
+                              edeq.nibbled_picked_snacks_grazed_numeric,
+                              edeq.felt_anxious_blue_bored_numeric,
+                              edeq.felt_anxious_blue_bored.1_numeric)) %>%
+  select(-row)
+  
+
+```
+
+##7. Select variables for dataset EDEQ COPING
+```{r}
+edeq.coping.followupb.raw.id$ <- edeq.coping.followupb.raw.id  %>%
+  select(ID,
+         `taf.worth_living_life_people_numeric_Wave 2a`
+         
+         
+         
+```
+
+
+
+
 
 
   
