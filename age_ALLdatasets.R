@@ -33,8 +33,6 @@ if(NBR == TRUE) {
 }
 
 
-
-
 # Clean Age variable
 #Age outlier
 if(GLAD == TRUE) {
@@ -106,7 +104,7 @@ if(EDGI == TRUE) {
   # Inspect variable
   edgi.dem3.raw.id %>%
     descr(
-      age,
+      age
       #stats = "common"
     )
 }
@@ -297,4 +295,3 @@ if(NBR == TRUE) {
   nbr.dem.raw.id.complete %>%
     freq(age_category)
 }
-```
