@@ -3145,8 +3145,8 @@ colnames(dat.raw.glad)
 
 
 
-##NBR data frame list
-```{r NBR data frame list}
+##NBR selected variables
+```{r NBR selected variables}
 if(NBR == TRUE) {
 
   nbr.1 <- nbr.dem.employ.raw.id %>%
@@ -3171,7 +3171,9 @@ nbr.2 <- nbr.dem.raw.id.complete %>%
          uk_location)
     
   nbr.3 <- nbr.dem.raw.id %>%
-    select(age_category,
+    select(ID,
+           cohort_name,
+           age_category,
            age_category_numeric)
 
 nbr.4 <- taf.nbr.baseline.raw.id %>%
@@ -3208,6 +3210,40 @@ nbr.5 <- mhd.raw.id %>%
 #NO HIGHEST EDUCATION PREPAN
 
 ```
+
+##NBR  data frame list
+```{r NBR data frame list}
+if(NBR == TRUE) {
+dfs.list <- list(
+  nbr.1,
+  nbr.2,
+  nbr.3,
+  nbr.4,
+  nbr.5
+)
+}
+```
+
+##Join all NBR 
+```{r Join all NBR questionnaires}
+if(NBR == TRUE) {
+dat.raw.nbr <- plyr::join_all(
+  dfs.list,
+  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
+  )
+
+#look at the data
+colnames(dat.raw.nbr)
+}
+
+```
+
+
+
+
+
+
+
 
 
 Age
