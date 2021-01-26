@@ -41,8 +41,8 @@ source("./functions.R")
 # Specify cohort
 ```{r Specify cohort}
 GLAD = FALSE
-EDGI = FALSE
-RAMP = TRUE
+EDGI = TRUE
+RAMP = FALSE
 NBR = FALSE
 COPING = FALSE
 ```
@@ -1759,7 +1759,7 @@ taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw %>% #new dataset
  # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
  # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
  # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered"))  # Drop empty factor levels
 #  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
 #  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
 #  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
@@ -2947,15 +2947,16 @@ nrow(edeq.coping.followupb.raw.id)
 
 ###JOINING DATASETS - baseline 
 Age
-Sex 
-Gender
+Sex x
+Gender x
 Education 
 Employment 
 Employment change (EDGI & GLAD only) - *check follow up RAMP and NBR
-Ethnicity
+Ethnicity x
 Mental health diagnoses
 Controls (?)
-
+UK location x
+current country? x
 
 ##Select same variables from each dataset
 
@@ -2963,9 +2964,19 @@ Controls (?)
 ```{r EDGI data frame list}
 if(EDGI == TRUE) {
 dfs.list <- list(
-  edgi.coping.dem.raw.id,
-edgi.coping.dem2.raw.id,
-edgi.dem3.raw.id,
+  ID
+  cohort_name
+  edgi.coping.dem.raw.id$gender_unc
+  edgi.coping.dem.raw.id$sex
+  edgi.coping.dem.raw.id$uk_location
+  edgi.coping.dem.raw.id$current_country
+  
+  ID
+  cohort_name
+  edgi.dem3.raw.id$
+  edgi.dem3.raw.id$
+#edgi.coping.dem2.raw.id
+,
 edgi.coping.dem4.employ.raw.id,
 taf.edgi.coping.baseline.raw.id,
 mhd.raw.id
