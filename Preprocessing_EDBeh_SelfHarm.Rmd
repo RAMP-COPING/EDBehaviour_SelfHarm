@@ -1576,6 +1576,7 @@ if(RAMP == TRUE){
 edeq.ramp.followupb.raw <- readRDS(file = "../data_raw/ramp/edeq_ramp_followupb.rds")
 dim(edeq.ramp.followupb.raw)
 colnames(edeq.ramp.followupb.raw)
+
 }
 ```
 ### Select variables
@@ -1620,7 +1621,7 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw %>% #new dataset with ID
  # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
   #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
   #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
  # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
  # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
  # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
@@ -2464,6 +2465,8 @@ mhd.raw.id %>%
 }
 ```
 
+
+
 #WAVES - TAF
 
 ## 1. Create a wave columns in follow up data - RAMP
@@ -2488,7 +2491,7 @@ colnames(dat.raw.taf.ramp)
 ## 3. Change follow up TAF RAMP to long format
 ```{r TAF COPING long format}
 
-dat.raw.taf.coping <- dat.raw.taf.coping %>%
+dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
   group_by(wave_taf) %>%
   mutate(row = row_number()) %>%
   tidyr::pivot_wider(names_from = wave_taf, 
@@ -2784,6 +2787,7 @@ nrow(edeq.coping.followupb.raw.id)
 
 
 ###JOINING DATASETS
+
 ##EDGI data frame list
 ```{r EDGI data frame list}
 if(EDGI == TRUE) {
