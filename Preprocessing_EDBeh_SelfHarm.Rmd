@@ -2223,7 +2223,7 @@ source("./age_ALLdatasets.R")
 
 ##EDUCATION
 ###Call script for recoding highest education received, prepandemic (EDGI, GLAD) and baseline (EDGI, GLAD, NBR, RAMP)
-```{r nbr dem calculating age from birthday}
+```{r education all cohorts}
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
 source("./education_ALLdatasets.R")
 }
@@ -2231,7 +2231,7 @@ source("./education_ALLdatasets.R")
 
 ##EMPLOYMENT
 ###Call script for recoding employment and key worker status
-```{r nbr dem calculating age from birthday}
+```{r employment all cohorts}
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
 source("./employment_ALLdatasets.R")
 }
@@ -2239,8 +2239,8 @@ source("./employment_ALLdatasets.R")
 
 
 ##MENTAL HEALTH DIAGNOSIS
-###Call script for recoding employment and key worker status
-```{r nbr dem calculating age from birthday}
+###Call script for recoding/grouping mental health diagnoses
+```{r mental health diagnoses all cohorts}
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./mental_health_diagnosis_ALLdatasets.R")
 }
@@ -2445,7 +2445,7 @@ mhd.raw.id %>%
 }
 ```
 
-**Check - does this work with EDGI?
+**Check - does this work with EDGI? NBR?
 ```{r Check control columns}
 if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
 mhd.raw.id %>%
@@ -2945,6 +2945,17 @@ nrow(edeq.coping.followupb.raw.id)
 ```
 
 
+
+
+
+
+
+
+
+
+
+
+
 ###JOINING DATASETS - baseline 
 
 ##Select same variables from each dataset
@@ -3133,35 +3144,86 @@ colnames(dat.raw.glad)
 ```
 
 
-Age (age_category, age_category_numeric) xx
-Sex xx
-Gender xx
-Education  (highest education_prepan x, and highest_education_prepan_numeric x, highest_education, highest_education) x
-Employment x
-Employment change (EDGI & GLAD only) - *check follow up RAMP and NBR x
-Ethnicity xx
-key worker x
-Mental health diagnoses
-Controls (?)
-UK location xx
-current country? xx
-TAF baseline x
-EDEQ baseline (RAMP)
 
 ##NBR data frame list
 ```{r NBR data frame list}
 if(NBR == TRUE) {
-dfs.list <- list(
-    nbr.dem.employ.raw.id,
-nbr.dem.raw.id.complete$,
-nbr.dem2.raw.id,
-mhd.raw.id,
-taf.nbr.baseline.raw.id
-#ADD EDEQ/TAF COPING
-)
+
+  nbr.1 <- nbr.dem.employ.raw.id %>%
+    select(ID,
+           cohort_name,
+           highest_education_numeric,
+           highest_education,
+           employment_change_numeric,
+           employment_change,
+           employment_prior_covid,
+           employment_prior_covid_numeric,
+           key_worker,
+           key_worker_numeric)
+  
+nbr.2 <- nbr.dem.raw.id.complete %>%
+  select(ID,
+         cohort_name,
+         sex,
+         gender_unc,
+         ethnicity,
+         current_country,
+         uk_location)
+    
+  nbr.3 <- nbr.dem.raw.id %>%
+    select(age_category,
+           age_category_numeric)
+
+nbr.4 <- taf.nbr.baseline.raw.id %>%
+  select(ID,
+  cohort_name,
+  taf.worth_living_life_people_baseline,
+  taf.felt_weeks_past_baseline,
+  taf.pandemic_felt_baseline,
+  taf.have_you_contemplated_harming_yourself_baseline,
+  taf.felt_weeks_past.1_baseline,
+  taf.pandemic_felt.1_baseline,
+  taf.meant_life_end_weeks_baseline,
+  taf.meant_end_life_pandemic_baseline)
+
+
+nbr.5 <- mhd.raw.id %>%
+  select(ID,
+         cohort_name,
+         control,
+         control_numeric,
+         depressive_disorders_numeric,
+         anxiety_disorders_numeric,
+         eating_disorders_numeric,
+         obsessive_compulsive_disorders_numeric,
+         psychotic_disorders_numeric,
+         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
+        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+        autism_spectrum_disorder_numeric,
+        mhd.attention_deficit_hyperactivity_disorder_numeric,
+        mhd.personality_disorder_numeric)
+
 }
 
+#NO HIGHEST EDUCATION PREPAN
+
 ```
+
+
+Age
+Sex & gender
+Education 
+Employment 
+Employment change (EDGI & GLAD only) - check follow up RAMP and NBR
+Ethnicity
+Mental health diagnoses
+Controls (?)
+
+Mental health diagnoses
+Controls (?)
+
+TAF baseline x
+EDEQ baseline (RAMP)
 
 
 ##RAMP data frame list
