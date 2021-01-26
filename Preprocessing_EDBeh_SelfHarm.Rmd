@@ -40,8 +40,8 @@ source("./functions.R")
 
 # Specify cohort
 ```{r Specify cohort}
-GLAD = FALSE
-EDGI = TRUE
+GLAD = TRUE
+EDGI = FALSE
 RAMP = FALSE
 NBR = FALSE
 COPING = FALSE
@@ -2946,20 +2946,6 @@ nrow(edeq.coping.followupb.raw.id)
 
 
 ###JOINING DATASETS - baseline 
-Age (age_category, age_category_numeric) x
-Sex x
-Gender x
-Education  (highest education_prepan, and highest_education_prepan_numeric, highest_education, highest_education) x
-Employment x
-Employment change (EDGI & GLAD only) - *check follow up RAMP and NBR x
-Ethnicity x
-key worker x
-Mental health diagnoses
-Controls (?)
-UK location x
-current country? x
-TAF baseline x
-EDEQ baseline (RAMP)
 
 ##Select same variables from each dataset
 
@@ -3058,17 +3044,119 @@ colnames(dat.raw.edgi)
 ##GLAD data frame list
 ```{r GLAD data frame list}
 if(GLAD == TRUE) {
+ 
+   glad.1 <-  glad.coping.dem.raw.id %>%
+     select(ID,
+            cohort_name,
+            sex,
+            gender_unc,
+            uk_location,
+            current_country)
+
+glad.2 <- glad.dem3.raw.id %>%
+  select(ID,
+         cohort_name,
+         age_category_numeric,
+         age_category,
+         ethnicity,
+         highest_education_prepan_numeric,
+         highest_education_prepan)
+
+glad.3 <- glad.coping.dem4.employ.raw.id %>%
+  select(ID,
+         cohort_name,
+         highest_education_numeric,
+         highest_education,
+         employment_prior_covid,
+         employment_prior_covid_numeric,
+         employment_change,
+         employment_change_numeric,
+         key_worker,
+         key_worker_numeric)
+
+glad.4 <- taf.glad.coping.baseline.raw.id %>%
+  select(ID,
+  cohort_name,
+  taf.worth_living_life_people_baseline,
+  taf.felt_weeks_past_baseline,
+  taf.pandemic_felt_baseline,
+  taf.have_you_contemplated_harming_yourself_baseline,
+  taf.felt_weeks_past.1_baseline,
+  taf.pandemic_felt.1_baseline,
+  taf.meant_life_end_weeks_baseline,
+  taf.meant_end_life_pandemic_baseline)
+
+
+glad.5 <- mhd.raw.id %>%
+  select(ID,
+         cohort_name,
+         control,
+         control_numeric,
+         depressive_disorders_numeric,
+         anxiety_disorders_numeric,
+         eating_disorders_numeric,
+         obsessive_compulsive_disorders_numeric,
+         psychotic_disorders_numeric,
+         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
+        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+        autism_spectrum_disorder_numeric,
+        mhd.attention_deficit_hyperactivity_disorder_numeric,
+        mhd.personality_disorder_numeric)
+}
+```
+
+##GLAD data frame list
+```{r GLAD data frame list}
+if(GLAD == TRUE) {
 dfs.list <- list(
-    glad.coping.dem.raw.id,
-glad.coping.dem2.raw.id,
-glad.dem3.raw.id,
-glad.coping.dem4.employ.raw.id,
-taf.glad.coping.baseline.raw.id,
-mhd.raw.id
-#ADD EDEQ/TAF COPING
+  glad.1,
+  glad.2,
+  glad.3,
+  glad.4,
+  glad.5
 )
 }
 ```
+
+##Join all GLAD
+```{r Join all GLAD questionnaires}
+if(GLAD == TRUE) {
+dat.raw.glad <- plyr::join_all(
+  dfs.list,
+  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
+  )
+
+#look at the data
+colnames(dat.raw.glad)
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+Age (age_category, age_category_numeric) xx
+Sex xx
+Gender xx
+Education  (highest education_prepan x, and highest_education_prepan_numeric x, highest_education, highest_education) x
+Employment x
+Employment change (EDGI & GLAD only) - *check follow up RAMP and NBR x
+Ethnicity xx
+key worker x
+Mental health diagnoses
+Controls (?)
+UK location xx
+current country? xx
+TAF baseline x
+EDEQ baseline (RAMP)
 
 ##NBR data frame list
 ```{r NBR data frame list}
