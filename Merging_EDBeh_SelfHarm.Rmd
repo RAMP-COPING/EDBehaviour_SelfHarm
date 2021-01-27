@@ -1,15 +1,9 @@
 ---
 title: "Merging_EDBeh_SelfHarm"
 author: "Helena Davies"
-date: "25/01/2021"
+date: "27/01/2021"
 output: html_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
 
 #Set up
 ```{r Setup, include=FALSE}
@@ -30,9 +24,61 @@ Retrieve the current date to use it for file endings to not overwrite files when
 date = Sys.Date()
 ```
 
-
 Load packages
 ```{r}
 library(tidyverse)
 library(skimr)
+```
+
+# Import baseline data
+```{r export data}
+glad_baseline <- readRDS(file = "./data_cleaned/baseline_glad.rds")
+dim(glad_baseline)
+
+edgi_baseline <- readRDS(file = "./data_cleaned/baseline_edgi.rds")
+dim(edgi_baseline)
+
+nbr_baseline <- readRDS(file = "./data_cleaned/baseline_nbr.rds")
+dim(nbr_baseline)
+
+ramp_baseline <- readRDS(file = "./data_cleaned/baseline_ramp.rds")
+dim(ramp_baseline)
+```
+
+
+
+
+
+
+
+
+
+glad/edgi data frame list
+```{r glad/edgi data frame list}
+dat <- bind_rows(
+  glad,
+  edgi,
+  nbr,
+  ramp
+)
+```
+
+
+
+#Import follow up data
+```{r}
+edeq_coping <- readRDS(file = "./data_cleaned/baseline_glad.rds")
+dim(glad_baseline)
+```
+
+
+
+
+```{r Skim data}
+#look at the data
+skimr::skim(dat)
+```
+
+```{r Save four cohorts as rds file}
+saveRDS(object = dat, file = paste0(data_path, "/four_cohorts.rds"))
 ```
