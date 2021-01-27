@@ -32,16 +32,16 @@ library(skimr)
 
 # Import baseline data
 ```{r export data}
-glad_baseline <- readRDS(file = "./data_cleaned/baseline_glad.rds")
+glad_baseline <- readRDS(file = "../data_cleaned/baseline_glad.rds")
 dim(glad_baseline)
 
-edgi_baseline <- readRDS(file = "./data_cleaned/baseline_edgi.rds")
+edgi_baseline <- readRDS(file = "../data_cleaned/baseline_edgi.rds")
 dim(edgi_baseline)
 
-nbr_baseline <- readRDS(file = "./data_cleaned/baseline_nbr.rds")
+nbr_baseline <- readRDS(file = "../data_cleaned/baseline_nbr.rds")
 dim(nbr_baseline)
 
-ramp_baseline <- readRDS(file = "./data_cleaned/baseline_ramp.rds")
+ramp_baseline <- readRDS(file = "../data_cleaned/baseline_ramp.rds")
 dim(ramp_baseline)
 ```
 ##Make list of edeq baseline columns only in RAMP
@@ -91,11 +91,7 @@ edeq_baseline_columnNames <- c("edeq.deliberately_limit_amount_influence_baselin
                                "edeq.regard_lost_control_eaten_baseline_numeric",                       
                                "edeq.sick_means_made_shape_baseline_numeric",                           
                                "edeq.diuretics_laxatives_means_shape_baseline_numeric",
-```
-
-
-```{r}
-"edeq.compulsive_driven_burn_calories_baseline_numeric",                 
+                               "edeq.compulsive_driven_burn_calories_baseline_numeric",                 
                                "edeq.nibbled_picked_snacks_grazed.1_baseline_numeric",                  
                                "edeq.felt_anxious_blue_bored.2_baseline_numeric",                       
                                "edeq.felt_anxious_blue_bored.3_baseline_numeric",                       
@@ -175,13 +171,46 @@ colnames(dat)
 ```
 
 
-
 #Import follow up data
 ```{r}
-edeq_coping <- readRDS(file = "./data_cleaned/baseline_glad.rds")
-dim(glad_baseline)
-```
+edeq_coping <- readRDS(file = "../data_cleaned/edeq_coping.rds")
+dim(edeq_coping)
 
+edeq_ramp <- readRDS(file = "../data_cleaned/edeq_ramp.rds")
+dim(edeq_ramp)
+
+taf_ramp <- readRDS(file = "../data_cleaned/taf_ramp.rds")
+dim(taf_ramp)
+
+taf_coping <- readRDS(file = "../data_cleaned/taf_coping.rds")
+dim(taf_coping)
+```
+#Bind coping and ramp's edeq and taf (separately)
+```{r}
+
+#bind all edeq data
+edeq <- bind_rows(
+  edeq_ramp,
+  edeq_coping
+  
+)
+
+#check col names edeq
+colnames(edeq)
+
+#check no of participants edeq
+nrow(edeq)
+
+#bind all taf data
+taf <- bind_rows(taf_ramp,
+                 taf_coping)
+
+#check col names taf
+colnames(taf)
+
+#check no of participants
+nrow(taf)
+```
 
 
 
