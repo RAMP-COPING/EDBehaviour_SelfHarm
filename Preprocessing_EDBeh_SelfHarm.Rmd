@@ -2944,17 +2944,22 @@ nrow(edeq.coping.followupb.raw.id)
 
 ```
 
+# Export data
+```{r export data}
+if(COPING == TRUE) {
+saveRDS(object = edeq.coping.followupb.raw.id, file = "../data_cleaned/edeq_coping.rds")
+  
+saveRDS(object = dat.raw.taf.coping, file = "../data_cleaned/taf_coping.rds")
 
+}
 
+if(RAMP == TRUE) {
+  saveRDS(object = dat.raw.taf.ramp, file = "../data_cleaned/taf_ramp.rds")
 
-
-
-
-
-
-
-
-
+  saveRDS(object = edeq.ramp.followupb.raw.id, file = "../data_cleaned/edeq_ramp.rds")
+  
+}
+```
 
 ###JOINING DATASETS - baseline 
 
@@ -3425,32 +3430,27 @@ colnames(dat.raw.ramp)
 }
 ```
 
-
-
-
-
-
-
-
-
-
-
-# Export data
-```{r export data, eval=FALSE, include=FALSE}
-if(GLAD == TRUE){
-saveRDS(object = dat.coping, file = paste0(data_path, "/glad.rds"))
+# Export baseline data
+```{r export data}
+if(GLAD == TRUE) {
+saveRDS(object = dat.raw.glad, file = "../data_cleaned/baseline_glad.rds")
+  
 }
-if(EDGI == TRUE){
-saveRDS(object = dat.coping, file = paste0(data_path, "/edgi.rds"))
+
+if(EDGI == TRUE) {
+saveRDS(object = dat.raw.edgi, file = "../data_cleaned/baseline_edgi.rds")
+  
 }
-if(NBR == TRUE){
-saveRDS(object = dat.coping, file = paste0(data_path, "/nbr.rds"))
+if(RAMP == TRUE) {
+  saveRDS(object = dat.raw.ramp, file = "../data_cleaned/baseline_ramp.rds")
+
 }
-if(RAMP == TRUE){
-saveRDS(object = dat.coping, file = paste0(data_path, "/ramp.rds"))
+
+if(NBR == TRUE) {
+  saveRDS(object = dat.raw.nbr, file = "../data_cleaned/baseline_nbr.rds")
+
 }
 ```
-
 
 
 
