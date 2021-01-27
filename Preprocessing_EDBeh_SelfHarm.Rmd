@@ -42,8 +42,8 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
-NBR = TRUE
+RAMP = TRUE
+NBR = FALSE
 COPING = FALSE
 ```
 
@@ -2215,7 +2215,7 @@ source("./ethnicity_ALLdatasets.R")
 ##AGE
 ###Source script for CREATING AGE variable in nbr (age_unc),cleaning it (in all datasets), and categorising it (nbr, edgi, glad - to match ramp)
 ```{r source script age}
-if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
+if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./age_ALLdatasets.R")
 }
 ```
@@ -2224,7 +2224,7 @@ source("./age_ALLdatasets.R")
 ##EDUCATION
 ###Call script for recoding highest education received, prepandemic (EDGI, GLAD) and baseline (EDGI, GLAD, NBR, RAMP)
 ```{r education all cohorts}
-if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
+if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./education_ALLdatasets.R")
 }
 ```
@@ -2232,7 +2232,7 @@ source("./education_ALLdatasets.R")
 ##EMPLOYMENT
 ###Call script for recoding employment and key worker status
 ```{r employment all cohorts}
-if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
+if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./employment_ALLdatasets.R")
 }
 ```
@@ -3022,6 +3022,8 @@ edgi.5 <- mhd.raw.id %>%
         mhd.personality_disorder_numeric)
 
 }
+
+#no edeq baseline (only in ramp)
 ```
 
 ##EDGI data frame list
@@ -3051,6 +3053,29 @@ colnames(dat.raw.edgi)
 
 ```
 
+#Get rid of duplicates in EDGI
+```{r Check duplicates}
+if(EDGI == TRUE) {
+dat.raw.edgi$ID.dup <- duplicated(dat.raw.edgi$ID)
+
+summary(as.factor(dat.raw.edgi$ID.dup))
+
+select(dat.raw.edgi)
+
+ #Check for duplicate names of columns
+names_freq <- as.data.frame(table(names(dat.raw.edgi)))
+names_freq[names_freq$Freq > 1, ]
+
+##Filter out duplicate column names
+ dat.dup <- dat.raw.edgi %>%
+  filter(ID.dup == TRUE)
+
+dat.raw.edgi <- dat.raw.edgi %>%
+  filter(ID.dup == FALSE)
+
+colnames(dat.raw.edgi)
+}
+```
 
 ##GLAD data frame list
 ```{r GLAD data frame list}
@@ -3113,7 +3138,10 @@ glad.5 <- mhd.raw.id %>%
         autism_spectrum_disorder_numeric,
         mhd.attention_deficit_hyperactivity_disorder_numeric,
         mhd.personality_disorder_numeric)
+
 }
+
+#no edeq baseline (only in ramp)
 ```
 
 ##GLAD data frame list
@@ -3143,7 +3171,29 @@ colnames(dat.raw.glad)
 
 ```
 
+#Get rid of duplicates in GLAD
+```{r Check duplicates}
+if(GLAD == TRUE) {
+dat.raw.glad$ID.dup <- duplicated(dat.raw.glad$ID)
 
+summary(as.factor(dat.raw.glad$ID.dup))
+
+select(dat.raw.glad)
+
+ #Check for duplicate names of columns
+names_freq <- as.data.frame(table(names(dat.raw.glad)))
+names_freq[names_freq$Freq > 1, ]
+
+##Filter out duplicate column names
+ dat.dup <- dat.raw.glad %>%
+  filter(ID.dup == TRUE)
+
+dat.raw.glad <- dat.raw.glad %>%
+  filter(ID.dup == FALSE)
+
+colnames(dat.raw.glad)
+}
+```
 
 ##NBR selected variables
 ```{r NBR selected variables}
@@ -3208,6 +3258,7 @@ nbr.5 <- mhd.raw.id %>%
 }
 
 #NO HIGHEST EDUCATION PREPAN
+#no edeq baseline (only in ramp)
 
 ```
 
@@ -3238,85 +3289,140 @@ colnames(dat.raw.nbr)
 
 ```
 
+#Get rid of duplicates in NBR
+```{r Check duplicates}
+if(NBR == TRUE) {
+dat.raw.nbr$ID.dup <- duplicated(dat.raw.nbr$ID)
 
+summary(as.factor(dat.raw.nbr$ID.dup))
 
+select(dat.raw.nbr)
 
+ #Check for duplicate names of columns
+names_freq <- as.data.frame(table(names(dat.raw.nbr)))
+names_freq[names_freq$Freq > 1, ]
 
+##Filter out duplicate column names
+ dat.dup <- dat.raw.nbr %>%
+  filter(ID.dup == TRUE)
 
+dat.raw.nbr <- dat.raw.nbr %>%
+  filter(ID.dup == FALSE)
 
-
-
-Age
-Sex & gender
-Education 
-Employment 
-Employment change (EDGI & GLAD only) - check follow up RAMP and NBR
-Ethnicity
-Mental health diagnoses
-Controls (?)
-
-Mental health diagnoses
-Controls (?)
-
-TAF baseline x
-EDEQ baseline (RAMP)
-
-
-##RAMP data frame list
-```{r RAMP data frame list}
-if(RAMP == TRUE) {
-dfs.list <- list(
-    ramp.dem.employ.raw.id,
-    ramp.dem.raw.id,
-    mhd.raw.id,
-    edeq.ramp.baseline.raw.id,
-    #edeq.ramp.followupb.raw.id,
-    taf.ramp.baseline.raw.id
-    #taf.ramp.followupa.raw.id,
-    #taf.ramp.followupb.raw.id
-  
-)
-
+colnames(dat.raw.nbr)
 }
 ```
 
+##RAMP variable list
+```{r RAMP variable list}
+if(RAMP == TRUE) {
+
+  ramp.1 <- ramp.dem.raw.id %>%
+    select(ID,
+           cohort_name,
+           gender_unc,
+           ethnicity,
+           age_unc)
+
+  ramp.2 <- ramp.dem.employ.raw.id %>%
+    select(ID,
+           cohort_name,
+           highest_education,
+           highest_education_numeric,
+           employment_prior_covid,
+           employment_prior_covid_numeric,
+           employment_change,
+           employment_change_numeric,
+           key_worker,
+           key_worker_numeric)
+   
+  ramp.3 <- taf.ramp.baseline.raw.id %>%
+  select(ID,
+  cohort_name,
+  taf.worth_living_life_people_baseline,
+  taf.felt_weeks_past_baseline,
+  taf.pandemic_felt_baseline,
+  taf.have_you_contemplated_harming_yourself_baseline,
+  taf.felt_weeks_past.1_baseline,
+  taf.pandemic_felt.1_baseline,
+  taf.meant_life_end_weeks_baseline,
+  taf.meant_end_life_pandemic_baseline)
 
 
-```{r Join all questionnaires}
-if(RAMP == TRUE | NBR ==TRUE | EDGI == TRUE| GLAD == TRUE) {
-dat.raw <- plyr::join_all(
+  ramp.4 <- mhd.raw.id %>%
+  select(ID,
+         cohort_name,
+         control,
+         control_numeric,
+         depressive_disorders_numeric,
+         anxiety_disorders_numeric,
+         eating_disorders_numeric,
+         obsessive_compulsive_disorders_numeric,
+         psychotic_disorders_numeric,
+         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
+        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+        autism_spectrum_disorder_numeric,
+        mhd.attention_deficit_hyperactivity_disorder_numeric,
+        mhd.personality_disorder_numeric)
+
+  ramp.5 <- edeq.ramp.baseline.raw.id 
+           
+}
+
+#NO SEX
+#no highest education pre-pandemic
+```
+
+##RAMP  data frame list
+```{r RAMP data frame list}
+if(RAMP == TRUE) {
+dfs.list <- list(
+  ramp.1,
+  ramp.2,
+  ramp.3,
+  ramp.4,
+  ramp.5
+  
+)
+}
+```
+
+##Join all RAMP
+```{r Join all RAMP questionnaires}
+if(RAMP == TRUE) {
+dat.raw.ramp <- plyr::join_all(
   dfs.list,
   by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
   )
 
 #look at the data
-colnames(dat.raw)
+colnames(dat.raw.ramp)
 }
 
 ```
 
+#Get rid of duplicates in RAMP
+```{r Check duplicates}
+if(RAMP == TRUE) {
+dat.raw.ramp$ID.dup <- duplicated(dat.raw.ramp$ID)
 
-#Get rid of duplicates in all baseline data
-```{r Check duplicates, eval=FALSE, include=FALSE}
-dat.raw$ID.dup <- duplicated(dat.raw$ID)
+summary(as.factor(dat.raw.ramp$ID.dup))
 
-summary(as.factor(dat.raw$ID.dup))
-
-select(dat.raw)
+select(dat.raw.ramp)
 
  #Check for duplicate names of columns
-names_freq <- as.data.frame(table(names(dat.raw)))
+names_freq <- as.data.frame(table(names(dat.raw.ramp)))
 names_freq[names_freq$Freq > 1, ]
 
 ##Filter out duplicate column names
- dat.dup <- dat.raw %>%
+ dat.dup <- dat.raw.ramp %>%
   filter(ID.dup == TRUE)
 
-dat.raw.no.dup <- dat.raw %>%
+dat.raw.ramp <- dat.raw.ramp %>%
   filter(ID.dup == FALSE)
 
-colnames(dat.raw.no.dup)
-
+colnames(dat.raw.ramp)
+}
 ```
 
 
