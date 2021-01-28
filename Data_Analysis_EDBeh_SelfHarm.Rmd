@@ -31,6 +31,13 @@ colnames(dat.taf)
 
 ```
 
+### Read in EDEQ data
+```{r}
+dat.edeq <- readRDS(file = "../data_cleaned/dat.edeq.rds")
+dim(dat.edeq)
+colnames(dat.edeq)
+
+```
 # Colour palettes
 Define colours for plotting this are the standard coping colours
 ```{r Colour palettes: COPING}
@@ -106,10 +113,27 @@ theme_personal <-  theme(
     )
 ```
 
+##Demographics - TAF
+#cohort
+```{r}
+freq(dat.taf$cohort_name)
+```
 
+#age
+```{r}
+freq(dat.taf$age_category)
+```
 
+#gender
+```{r}
+freq(dat.taf$gender)
+```
 
+#ethnicity
+```{r}
+freq(dat.taf$ethnicity)
 
+```
 
 
 
