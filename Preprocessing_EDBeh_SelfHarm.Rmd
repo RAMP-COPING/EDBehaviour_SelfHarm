@@ -2203,11 +2203,13 @@ source("./gender_glad_edgi_nbr.R")
 ```
 
 # Source script for synchronising gender categories - GLAD, EDGI, NBR
-RAMP has the correct Gender categories so does not need editing.
 ```{r nbr dem calculating age from birthday}
 if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE | RAMP == TRUE) {
 source("./ethnicity_ALLdatasets.R")
 }
+
+
+freq(ramp.dem.raw.id$ethnicity)
 ```
 
 
@@ -3442,6 +3444,7 @@ saveRDS(object = dat.raw.edgi, file = "../data_cleaned/baseline_edgi.rds")
 if(RAMP == TRUE) {
   saveRDS(object = dat.raw.ramp, file = "../data_cleaned/baseline_ramp.rds")
 }
+
 
 if(NBR == TRUE) {
   saveRDS(object = dat.raw.nbr, file = "../data_cleaned/baseline_nbr.rds")
