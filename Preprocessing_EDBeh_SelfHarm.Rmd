@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -293,7 +293,7 @@ glad.dem3.raw.id <- glad.dem3.raw %>% #new dataset with ID
   distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
-  add_column(cohort_name = "glad", .before = "startDate") %>% #create new column 
+  add_column(cohort_name = "coping_glad", .before = "startDate") %>% #create new column 
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
@@ -579,7 +579,7 @@ edgi.dem3.raw.id <- edgi.dem3.raw %>% #new dataset with ID
   distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
-  add_column(cohort_name = "edgi", .before = "startDate") %>% #create new column 
+  add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
@@ -2218,6 +2218,7 @@ source("./ethnicity_ALLdatasets.R")
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./age_ALLdatasets.R")
 }
+
 ```
 
 
@@ -3169,7 +3170,6 @@ dat.raw.glad <- plyr::join_all(
   dfs.list,
   by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
   )
-
 #look at the data
 colnames(dat.raw.glad)
 }
@@ -3190,11 +3190,11 @@ names_freq <- as.data.frame(table(names(dat.raw.glad)))
 names_freq[names_freq$Freq > 1, ]
 
 ##Filter out duplicate column names
- dat.dup <- dat.raw.glad %>%
-  filter(ID.dup == TRUE)
+ #dat.dup <- dat.raw.glad %>%
+ # filter(ID.dup == TRUE)
 
-dat.raw.glad <- dat.raw.glad %>%
-  filter(ID.dup == FALSE)
+#dat.raw.glad <- dat.raw.glad %>%
+#  filter(ID.dup == FALSE)
 
 colnames(dat.raw.glad)
 }
@@ -3426,7 +3426,6 @@ names_freq[names_freq$Freq > 1, ]
 dat.raw.ramp <- dat.raw.ramp %>%
   filter(ID.dup == FALSE)
 
-colnames(dat.raw.ramp)
 }
 ```
 
@@ -3434,7 +3433,6 @@ colnames(dat.raw.ramp)
 ```{r export data}
 if(GLAD == TRUE) {
 saveRDS(object = dat.raw.glad, file = "../data_cleaned/baseline_glad.rds")
-  
 }
 
 if(EDGI == TRUE) {
@@ -3443,12 +3441,10 @@ saveRDS(object = dat.raw.edgi, file = "../data_cleaned/baseline_edgi.rds")
 }
 if(RAMP == TRUE) {
   saveRDS(object = dat.raw.ramp, file = "../data_cleaned/baseline_ramp.rds")
-
 }
 
 if(NBR == TRUE) {
   saveRDS(object = dat.raw.nbr, file = "../data_cleaned/baseline_nbr.rds")
-
 }
 ```
 
