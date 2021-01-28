@@ -138,10 +138,11 @@ ramp_baseline$sex <- NA
 ramp_baseline$age_category_numeric <- NA
 
 #age called "age_unc" in RAMP
-  ramp_baseline %>% 
+  ramp_baseline <- ramp_baseline %>% 
   rename(
     age_category = age_unc,
     )
+  
   
 #highest_education_prepan/numeric not in ramp or nbr
 ramp_baseline$highest_education_prepan <- NA
