@@ -1469,16 +1469,16 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw %>% #new dataset with 
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(edeq.coping.followupb.raw.id)
@@ -1548,16 +1548,16 @@ edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(edeq.ramp.baseline.raw.id)
@@ -1576,6 +1576,7 @@ if(RAMP == TRUE){
 edeq.ramp.followupb.raw <- readRDS(file = "../data_raw/ramp/edeq_ramp_followupb.rds")
 dim(edeq.ramp.followupb.raw)
 colnames(edeq.ramp.followupb.raw)
+
 }
 ```
 ### Select variables
@@ -1614,16 +1615,16 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(edeq.ramp.followupb.raw.id)
@@ -1690,16 +1691,16 @@ taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw %>% #new dataset
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.glad.coping.baseline.raw.id)
@@ -1752,16 +1753,16 @@ taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw %>% #new dataset
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered"))  # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.edgi.coping.baseline.raw.id)
@@ -1812,16 +1813,16 @@ taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.nbr.baseline.raw.id)
@@ -1872,16 +1873,16 @@ taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.ramp.baseline.raw.id)
@@ -1930,16 +1931,16 @@ taf.coping.followupa.raw.id.1 <- taf.coping.followupa.raw.1 %>% #new dataset wit
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.coping.followupa.raw.id.1)
@@ -1988,16 +1989,16 @@ taf.coping.followupa.raw.id.2 <- taf.coping.followupa.raw.2 %>% #new dataset wit
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+# mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered"))  # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.coping.followupa.raw.id.2)
@@ -2059,16 +2060,16 @@ taf.coping.followupb.raw.id <- taf.coping.followupb.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered"))  # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.coping.followupb.raw.id)
@@ -2116,16 +2117,16 @@ taf.ramp.followupa.raw.id <- taf.ramp.followupa.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.ramp.followupa.raw.id)
@@ -2172,16 +2173,16 @@ taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw %>% #new dataset with ID
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
   mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
 dim(taf.ramp.followupb.raw.id)
@@ -2212,34 +2213,34 @@ source("./ethnicity_ALLdatasets.R")
 
 #CLEANING DEMOGRAPHICS 
 ##AGE
-###Source script for CREATING AGE variable in nbr (age_unc), cleaning it (in all datasets), and categorising it (nbr, edgi, glad - to match ramp)
-
+###Source script for CREATING AGE variable in nbr (age_unc),cleaning it (in all datasets), and categorising it (nbr, edgi, glad - to match ramp)
 ```{r source script age}
-if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
+if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./age_ALLdatasets.R")
 }
 ```
 
+
 ##EDUCATION
 ###Call script for recoding highest education received, prepandemic (EDGI, GLAD) and baseline (EDGI, GLAD, NBR, RAMP)
-```{r nbr dem calculating age from birthday}
-if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
+```{r education all cohorts}
+if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./education_ALLdatasets.R")
 }
 ```
 
 ##EMPLOYMENT
 ###Call script for recoding employment and key worker status
-```{r nbr dem calculating age from birthday}
-if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | NBR == TRUE) {
+```{r employment all cohorts}
+if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./employment_ALLdatasets.R")
 }
 ```
 
 
 ##MENTAL HEALTH DIAGNOSIS
-###Call script for recoding employment and key worker status
-```{r nbr dem calculating age from birthday}
+###Call script for recoding/grouping mental health diagnoses
+```{r mental health diagnoses all cohorts}
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./mental_health_diagnosis_ALLdatasets.R")
 }
@@ -2444,7 +2445,7 @@ mhd.raw.id %>%
 }
 ```
 
-**Check - does this work with EDGI?
+**Check - does this work with EDGI? NBR?
 ```{r Check control columns}
 if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
 mhd.raw.id %>%
@@ -2464,110 +2465,6 @@ mhd.raw.id %>%
 }
 ```
 
-
-###JOINING DATASETS
-##EDGI data frame list
-```{r EDGI data frame list}
-if(EDGI == TRUE) {
-dfs.list <- list(
-  edgi.coping.dem.raw.id,
-edgi.coping.dem2.raw.id,
-edgi.dem3.raw.id,
-edgi.coping.dem4.employ.raw.id,
-taf.edgi.coping.baseline.raw.id,
-mhd.raw.id
-#ADD EDEQ/TAF COPING
-)
-}
-```
-
-##GLAD data frame list
-```{r GLAD data frame list}
-if(GLAD == TRUE) {
-dfs.list <- list(
-    glad.coping.dem.raw.id,
-glad.coping.dem2.raw.id,
-glad.dem3.raw.id,
-glad.coping.dem4.employ.raw.id,
-taf.glad.coping.baseline.raw.id,
-mhd.raw.id
-#ADD EDEQ/TAF COPING
-)
-}
-```
-
-##NBR data frame list
-```{r NBR data frame list}
-if(NBR == TRUE) {
-dfs.list <- list(
-    nbr.dem.employ.raw.id,
-nbr.dem.raw.id.complete,
-nbr.dem2.raw.id,
-mhd.raw.id,
-taf.nbr.baseline.raw.id
-#ADD EDEQ/TAF COPING
-)
-}
-
-```
-
-
-##RAMP data frame list
-```{r RAMP data frame list}
-if(RAMP == TRUE) {
-dfs.list <- list(
-    ramp.dem.employ.raw.id,
-    ramp.dem.raw.id,
-    mhd.raw.id,
-    edeq.ramp.baseline.raw.id,
-    #edeq.ramp.followupb.raw.id,
-    taf.ramp.baseline.raw.id
-    #taf.ramp.followupa.raw.id,
-    #taf.ramp.followupb.raw.id
-  
-)
-
-}
-```
-
-
-
-```{r Join all questionnaires}
-if(RAMP == TRUE | NBR ==TRUE | EDGI == TRUE| GLAD == TRUE) {
-dat.raw <- plyr::join_all(
-  dfs.list,
-  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
-  )
-
-#look at the data
-colnames(dat.raw)
-}
-
-```
-
-
-#Get rid of duplicates in all baseline data
-```{r Check duplicates, eval=FALSE, include=FALSE}
-dat.raw$ID.dup <- duplicated(dat.raw$ID)
-
-summary(as.factor(dat.raw$ID.dup))
-
-select(dat.raw)
-
- #Check for duplicate names of columns
-names_freq <- as.data.frame(table(names(dat.raw)))
-names_freq[names_freq$Freq > 1, ]
-
-##Filter out duplicate column names
- dat.dup <- dat.raw %>%
-  filter(ID.dup == TRUE)
-
-dat.raw.no.dup <- dat.raw %>%
-  filter(ID.dup == FALSE)
-
-colnames(dat.raw.no.dup)
-
-```
 
 
 #WAVES - TAF
@@ -2591,8 +2488,213 @@ colnames(dat.raw.taf.ramp)
 }
 ```
 
+## 3. Change follow up TAF RAMP to long format
+```{r TAF COPING long format}
+if(RAMP == TRUE) {
+dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
+  group_by(wave_taf) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(names_from = wave_taf, 
+                     values_from = c(taf.worth_living_life_people_numeric,
+                              taf.felt_weeks_past_numeric,
+                              taf.have_you_contemplated_harming_yourself_numeric,
+                              taf.felt_weeks_past.1_numeric,
+                              taf.meant_life_end_weeks_numeric)) %>%
+  select(-row)
+  
+}
+```
+
+##4. Select variables for dataset TAF RAMP
+```{r}
+if(RAMP == TRUE) {
+dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
+  select(ID,
+         `taf.worth_living_life_people_numeric_Wave 2a`,
+         `taf.worth_living_life_people_numeric_Wave 2b`,
+         `taf.worth_living_life_people_numeric_Wave 3a`,
+         `taf.worth_living_life_people_numeric_Wave 3b`,
+         `taf.worth_living_life_people_numeric_Wave 4a`,
+         `taf.worth_living_life_people_numeric_Wave 4b`,
+         `taf.worth_living_life_people_numeric_Wave 5`,
+         `taf.worth_living_life_people_numeric_Wave 6`,
+         `taf.worth_living_life_people_numeric_Wave 7`,
+         `taf.worth_living_life_people_numeric_Wave 8`,
+         `taf.felt_weeks_past_numeric_Wave 2a`,
+         `taf.felt_weeks_past_numeric_Wave 2b`,
+         `taf.felt_weeks_past_numeric_Wave 3a`,
+         `taf.felt_weeks_past_numeric_Wave 3b`,
+         `taf.felt_weeks_past_numeric_Wave 4a`,
+         `taf.felt_weeks_past_numeric_Wave 4b`,
+         `taf.felt_weeks_past_numeric_Wave 5`,
+         `taf.felt_weeks_past_numeric_Wave 6`,
+         `taf.felt_weeks_past_numeric_Wave 7`,
+         `taf.felt_weeks_past_numeric_Wave 8`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 2a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 2b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 3a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 3b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 4a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 4b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 5`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 6`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 7`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 8`,
+         `taf.felt_weeks_past.1_numeric_Wave 2a`,
+         `taf.felt_weeks_past.1_numeric_Wave 2b`,
+         `taf.felt_weeks_past.1_numeric_Wave 3a`,
+         `taf.felt_weeks_past.1_numeric_Wave 3b`,
+         `taf.felt_weeks_past.1_numeric_Wave 4a`,
+         `taf.felt_weeks_past.1_numeric_Wave 4b`,
+         `taf.felt_weeks_past.1_numeric_Wave 5`,
+         `taf.felt_weeks_past.1_numeric_Wave 6`,
+         `taf.felt_weeks_past.1_numeric_Wave 7`,
+         `taf.felt_weeks_past.1_numeric_Wave 8`,
+         `taf.meant_life_end_weeks_numeric_Wave 2a`,
+         `taf.meant_life_end_weeks_numeric_Wave 2b`,
+         `taf.meant_life_end_weeks_numeric_Wave 3a`,
+         `taf.meant_life_end_weeks_numeric_Wave 3b`,
+         `taf.meant_life_end_weeks_numeric_Wave 4a`,
+         `taf.meant_life_end_weeks_numeric_Wave 4b`,
+         `taf.meant_life_end_weeks_numeric_Wave 5`,
+         `taf.meant_life_end_weeks_numeric_Wave 6`,
+         `taf.meant_life_end_weeks_numeric_Wave 7`,
+         `taf.meant_life_end_weeks_numeric_Wave 8`)
+}
+```
+
+##5. Remove duplicate IDs TAF RAMP
+```{r}
+if(RAMP == TRUE) {
+##Check col names
+colnames(dat.raw.taf.ramp)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+dat.raw.taf.ramp  <- dat.raw.taf.ramp %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(dat.raw.taf.ramp)
+}
+
+```
+## 6. Change follow up EDEQ RAMP to long format
+```{r EDEQ RAMP long format}
+if(RAMP == TRUE) {
+edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
+  group_by(wave_edeq) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(names_from = wave_edeq, 
+                     values_from = c(edeq.deliberately_limit_amount_influence_numeric,
+                              edeq.calories_made_body_shape_numeric,
+                              edeq.weight_influenced_person_numeric,
+                              edeq.dissatisfied_shape_weight_numeric,
+                              edeq.eating_behaviours_distressed_concerns_numeric,
+                              edeq.actively_been_monitoring_your_shape_or_weight_numeric,
+                              edeq.regard_lost_control_eaten_numeric,
+                              edeq.sick_means_made_shape_numeric,
+                              edeq.diuretics_laxatives_means_shape_numeric,
+                              edeq.compulsive_driven_burn_calories_numeric,
+                              edeq.nibbled_picked_snacks_grazed_numeric,
+                              edeq.felt_anxious_blue_bored_numeric,
+                              edeq.felt_anxious_blue_bored.1_numeric)) %>%
+  select(-row)
+  
+}
+
+```
+
+##7. Select variables for dataset EDEQ RAMP
+```{r}
+if(RAMP == TRUE) {
+edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id  %>%
+  select(ID,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 2b`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 3b`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 4b`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 6`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 8`,
+         `edeq.calories_made_body_shape_numeric_Wave 2b`,
+         `edeq.calories_made_body_shape_numeric_Wave 3b`,
+         `edeq.calories_made_body_shape_numeric_Wave 4b`,
+         `edeq.calories_made_body_shape_numeric_Wave 6`,
+         `edeq.calories_made_body_shape_numeric_Wave 8`,
+         `edeq.weight_influenced_person_numeric_Wave 2b`,
+         `edeq.weight_influenced_person_numeric_Wave 3b`,
+         `edeq.weight_influenced_person_numeric_Wave 4b`,
+         `edeq.weight_influenced_person_numeric_Wave 6`,
+         `edeq.weight_influenced_person_numeric_Wave 8`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 2b`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 3b`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 4b`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 6`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 8`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 2b`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 3b`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 4b`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 6`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 8`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 2b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 3b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 4b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 6`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 8`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 2b`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 3b`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 4b`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 6`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 8`,
+         `edeq.sick_means_made_shape_numeric_Wave 2b`,
+         `edeq.sick_means_made_shape_numeric_Wave 3b`,
+         `edeq.sick_means_made_shape_numeric_Wave 4b`,
+         `edeq.sick_means_made_shape_numeric_Wave 6`,
+         `edeq.sick_means_made_shape_numeric_Wave 8`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 2b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 3b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 4b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 6`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 8`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 2b`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 3b`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 4b`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 6`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 8`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 2b`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 3b`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 4b`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 6`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 8`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 2b`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 3b`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 4b`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 6`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 8`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 2b`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 3b`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 4b`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 6`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 8`)
+}
+```
+
+##8. Remove duplicate IDs EDEQ RAMP
+```{r}
+if(RAMP == TRUE) {
+##Check col names
+colnames(edeq.ramp.followupb.raw.id)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+edeq.ramp.followupb.raw.id  <- edeq.ramp.followupb.raw.id  %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(edeq.ramp.followupb.raw.id)
+}
+
+```
+
 ##1.Create a wave columns in follow up data - COPING
-```{r identify wave dates ramp}
+```{r identify wave dates coping}
 if (COPING ==TRUE) {
 source("./wavesCOPING.R")
 
@@ -2612,26 +2714,743 @@ colnames(dat.raw.taf.coping)
 
 ##Check number of rows
 nrow(dat.raw.taf.coping)
-}
-```
-
-##PLOTTING - Life worth living (lifetime)
-###Call script for recoding employment and key worker status
-```{r nbr dem calculating age from birthday}
-if(RAMP == TRUE | COPING == TRUE) {
-source("./TAF_LifeWorthLiving_Plots.R")
 
 }
 ```
 
+##Remove dup IDs (TAF COPING) [not in use]
+```{r identify wave dates coping, eval=FALSE, include=FALSE}
+if (COPING ==TRUE) {
+source("./DupIDs_TAF_COPING.R")
+
+}
+
+```
+## 3. Change follow up TAF COPING to long format
+```{r TAF COPING long format}
+if(COPING == TRUE) {
+dat.raw.taf.coping <- dat.raw.taf.coping %>%
+  group_by(wave_taf) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(names_from = wave_taf, 
+                     values_from = c(taf.worth_living_life_people_numeric,
+                              taf.felt_weeks_past_numeric,
+                              taf.have_you_contemplated_harming_yourself_numeric,
+                              taf.felt_weeks_past.1_numeric,
+                              taf.meant_life_end_weeks_numeric)) %>%
+  select(-row)
+  
+}
+```
 
 
+##4. Select variables for dataset TAF COPING
+```{r}
+if(COPING == TRUE) {
+dat.raw.taf.coping <- dat.raw.taf.coping %>%
+  select(ID,
+         `taf.worth_living_life_people_numeric_Wave 2a`,
+         `taf.worth_living_life_people_numeric_Wave 2b`,
+         `taf.worth_living_life_people_numeric_Wave 3a`,
+         `taf.worth_living_life_people_numeric_Wave 3b`,
+         `taf.worth_living_life_people_numeric_Wave 4a`,
+         `taf.worth_living_life_people_numeric_Wave 4b`,
+         `taf.worth_living_life_people_numeric_Wave 5`,
+         `taf.worth_living_life_people_numeric_Wave 6`,
+         `taf.worth_living_life_people_numeric_Wave 7`,
+         `taf.worth_living_life_people_numeric_Wave 8`,
+         `taf.felt_weeks_past_numeric_Wave 2a`,
+         `taf.felt_weeks_past_numeric_Wave 2b`,
+         `taf.felt_weeks_past_numeric_Wave 3a`,
+         `taf.felt_weeks_past_numeric_Wave 3b`,
+         `taf.felt_weeks_past_numeric_Wave 4a`,
+         `taf.felt_weeks_past_numeric_Wave 4b`,
+         `taf.felt_weeks_past_numeric_Wave 5`,
+         `taf.felt_weeks_past_numeric_Wave 6`,
+         `taf.felt_weeks_past_numeric_Wave 7`,
+         `taf.felt_weeks_past_numeric_Wave 8`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 2a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 2b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 3a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 3b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 4a`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 4b`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 5`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 6`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 7`,
+         `taf.have_you_contemplated_harming_yourself_numeric_Wave 8`,
+         `taf.felt_weeks_past.1_numeric_Wave 2a`,
+         `taf.felt_weeks_past.1_numeric_Wave 2b`,
+         `taf.felt_weeks_past.1_numeric_Wave 3a`,
+         `taf.felt_weeks_past.1_numeric_Wave 3b`,
+         `taf.felt_weeks_past.1_numeric_Wave 4a`,
+         `taf.felt_weeks_past.1_numeric_Wave 4b`,
+         `taf.felt_weeks_past.1_numeric_Wave 5`,
+         `taf.felt_weeks_past.1_numeric_Wave 6`,
+         `taf.felt_weeks_past.1_numeric_Wave 7`,
+         `taf.felt_weeks_past.1_numeric_Wave 8`,
+         `taf.meant_life_end_weeks_numeric_Wave 2a`,
+         `taf.meant_life_end_weeks_numeric_Wave 2b`,
+         `taf.meant_life_end_weeks_numeric_Wave 3a`,
+         `taf.meant_life_end_weeks_numeric_Wave 3b`,
+         `taf.meant_life_end_weeks_numeric_Wave 4a`,
+         `taf.meant_life_end_weeks_numeric_Wave 4b`,
+         `taf.meant_life_end_weeks_numeric_Wave 5`,
+         `taf.meant_life_end_weeks_numeric_Wave 6`,
+         `taf.meant_life_end_weeks_numeric_Wave 7`,
+         `taf.meant_life_end_weeks_numeric_Wave 8`)
+}
+```
+
+##5. Remove duplicate IDs TAF COPING
+```{r}
+if(COPING == TRUE) {
+##Check col names
+colnames(dat.raw.taf.coping)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+dat.raw.taf.coping  <- dat.raw.taf.coping  %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(dat.raw.taf.coping)
+}
+
+```
+
+##Remove dup IDs (EDEQ COPING) [not in use]
+```{r identify wave dates edeq coping}
+if (COPING ==TRUE) {
+source("./DupIDs_EDEQ_COPING.R")
+
+}
+
+```
 
 
+## 6. Change follow up EDE COPING to long format
+```{r TAF COPING long format}
+if(COPING == TRUE) {
+edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
+  group_by(wave_edeq) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(names_from = wave_edeq, 
+                     values_from = c(edeq.deliberately_limit_amount_influence_numeric,
+                              edeq.calories_made_body_shape_numeric,
+                              edeq.weight_influenced_person_numeric,
+                              edeq.dissatisfied_shape_weight_numeric,
+                              edeq.eating_behaviours_distressed_concerns_numeric,
+                              edeq.actively_been_monitoring_your_shape_or_weight_numeric,
+                              edeq.regard_lost_control_eaten_numeric,
+                              edeq.sick_means_made_shape_numeric,
+                              edeq.diuretics_laxatives_means_shape_numeric,
+                              edeq.compulsive_driven_burn_calories_numeric,
+                              edeq.nibbled_picked_snacks_grazed_numeric,
+                              edeq.felt_anxious_blue_bored_numeric,
+                              edeq.felt_anxious_blue_bored.1_numeric)) %>%
+  select(-row)
+  
+}
+
+```
+
+##7. Select variables for dataset EDEQ COPING
+```{r}
+if(COPING == TRUE) {
+edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
+  select(ID,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 2b`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 3b`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 4b`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 6`,
+         `edeq.deliberately_limit_amount_influence_numeric_Wave 8`,
+         `edeq.calories_made_body_shape_numeric_Wave 2b`,
+         `edeq.calories_made_body_shape_numeric_Wave 3b`,
+         `edeq.calories_made_body_shape_numeric_Wave 4b`,
+         `edeq.calories_made_body_shape_numeric_Wave 6`,
+         `edeq.calories_made_body_shape_numeric_Wave 8`,
+         `edeq.weight_influenced_person_numeric_Wave 2b`,
+         `edeq.weight_influenced_person_numeric_Wave 3b`,
+         `edeq.weight_influenced_person_numeric_Wave 4b`,
+         `edeq.weight_influenced_person_numeric_Wave 6`,
+         `edeq.weight_influenced_person_numeric_Wave 8`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 2b`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 3b`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 4b`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 6`,
+         `edeq.dissatisfied_shape_weight_numeric_Wave 8`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 2b`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 3b`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 4b`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 6`,
+         `edeq.eating_behaviours_distressed_concerns_numeric_Wave 8`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 2b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 3b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 4b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 6`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_Wave 8`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 2b`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 3b`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 4b`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 6`,
+         `edeq.regard_lost_control_eaten_numeric_Wave 8`,
+         `edeq.sick_means_made_shape_numeric_Wave 2b`,
+         `edeq.sick_means_made_shape_numeric_Wave 3b`,
+         `edeq.sick_means_made_shape_numeric_Wave 4b`,
+         `edeq.sick_means_made_shape_numeric_Wave 6`,
+         `edeq.sick_means_made_shape_numeric_Wave 8`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 2b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 3b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 4b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 6`,
+         `edeq.diuretics_laxatives_means_shape_numeric_Wave 8`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 2b`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 3b`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 4b`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 6`,
+         `edeq.compulsive_driven_burn_calories_numeric_Wave 8`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 2b`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 3b`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 4b`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 6`,
+         `edeq.nibbled_picked_snacks_grazed_numeric_Wave 8`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 2b`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 3b`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 4b`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 6`,
+         `edeq.felt_anxious_blue_bored_numeric_Wave 8`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 2b`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 3b`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 4b`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 6`,
+         `edeq.felt_anxious_blue_bored.1_numeric_Wave 8`)
+}
+```
 
 
+##8. Remove duplicate IDs EDEQ COPING
+```{r}
+if(COPING == TRUE) {
+##Check col names
+colnames(edeq.coping.followupb.raw.id)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+edeq.coping.followupb.raw.id  <- edeq.coping.followupb.raw.id  %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(edeq.coping.followupb.raw.id)
+}
+
+```
+
+# Export data
+```{r export data}
+if(COPING == TRUE) {
+saveRDS(object = edeq.coping.followupb.raw.id, file = "../data_cleaned/edeq_coping.rds")
+  
+saveRDS(object = dat.raw.taf.coping, file = "../data_cleaned/taf_coping.rds")
+
+}
+
+if(RAMP == TRUE) {
+  saveRDS(object = dat.raw.taf.ramp, file = "../data_cleaned/taf_ramp.rds")
+
+  saveRDS(object = edeq.ramp.followupb.raw.id, file = "../data_cleaned/edeq_ramp.rds")
+  
+}
+```
+
+###JOINING DATASETS - baseline 
+
+##Select same variables from each dataset
+
+##EDGI select variables from each dataset
+```{r EDGI select variables}
+if(EDGI == TRUE) {
+edgi.1 <- edgi.coping.dem.raw.id %>%
+  select(ID,
+  cohort_name,
+  gender_unc,
+  sex,
+  uk_location,
+  current_country)
+  
+edgi.2 <- edgi.dem3.raw.id %>%
+  select(ID,
+  cohort_name,
+  age_category_numeric,
+  age_category,
+  highest_education_prepan_numeric,
+  highest_education_prepan,
+  ethnicity)
+  
+edgi.3 <- edgi.coping.dem4.employ.raw.id %>%
+  select(ID,
+  cohort_name,
+  highest_education_numeric,
+  highest_education,
+  employment_prior_covid_numeric,
+  employment_prior_covid,
+  employment_change_numeric,
+  employment_change,
+  key_worker,
+  key_worker_numeric)
+  
+edgi.4 <- taf.edgi.coping.baseline.raw.id %>%
+  select(ID,
+  cohort_name,
+  taf.worth_living_life_people_baseline,
+  taf.felt_weeks_past_baseline,
+  taf.pandemic_felt_baseline,
+  taf.have_you_contemplated_harming_yourself_baseline,
+  taf.felt_weeks_past.1_baseline,
+  taf.pandemic_felt.1_baseline,
+  taf.meant_life_end_weeks_baseline,
+  taf.meant_end_life_pandemic_baseline)
 
 
+edgi.5 <- mhd.raw.id %>%
+  select(ID,
+         cohort_name,
+         control,
+         control_numeric,
+         depressive_disorders_numeric,
+         anxiety_disorders_numeric,
+         eating_disorders_numeric,
+         obsessive_compulsive_disorders_numeric,
+         psychotic_disorders_numeric,
+         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
+        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+        autism_spectrum_disorder_numeric,
+        mhd.attention_deficit_hyperactivity_disorder_numeric,
+        mhd.personality_disorder_numeric)
+
+}
+
+#no edeq baseline (only in ramp)
+```
+
+##EDGI data frame list
+```{r EDGI data frame list}
+if(EDGI == TRUE) {
+dfs.list <- list(
+  edgi.1,
+  edgi.2,
+  edgi.3,
+  edgi.4,
+  edgi.5
+)
+}
+```
+
+##Join all EDGI
+```{r Join all EDGI questionnaires}
+if(EDGI == TRUE) {
+dat.raw.edgi <- plyr::join_all(
+  dfs.list,
+  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
+  )
+
+#look at the data
+colnames(dat.raw.edgi)
+}
+
+```
+
+#Get rid of duplicates in EDGI
+```{r Check duplicates}
+if(EDGI == TRUE) {
+dat.raw.edgi$ID.dup <- duplicated(dat.raw.edgi$ID)
+
+summary(as.factor(dat.raw.edgi$ID.dup))
+
+select(dat.raw.edgi)
+
+ #Check for duplicate names of columns
+names_freq <- as.data.frame(table(names(dat.raw.edgi)))
+names_freq[names_freq$Freq > 1, ]
+
+##Filter out duplicate column names
+ dat.dup <- dat.raw.edgi %>%
+  filter(ID.dup == TRUE)
+
+dat.raw.edgi <- dat.raw.edgi %>%
+  filter(ID.dup == FALSE)
+
+colnames(dat.raw.edgi)
+}
+```
+
+##GLAD data frame list
+```{r GLAD data frame list}
+if(GLAD == TRUE) {
+ 
+   glad.1 <-  glad.coping.dem.raw.id %>%
+     select(ID,
+            cohort_name,
+            sex,
+            gender_unc,
+            uk_location,
+            current_country)
+
+glad.2 <- glad.dem3.raw.id %>%
+  select(ID,
+         cohort_name,
+         age_category_numeric,
+         age_category,
+         ethnicity,
+         highest_education_prepan_numeric,
+         highest_education_prepan)
+
+glad.3 <- glad.coping.dem4.employ.raw.id %>%
+  select(ID,
+         cohort_name,
+         highest_education_numeric,
+         highest_education,
+         employment_prior_covid,
+         employment_prior_covid_numeric,
+         employment_change,
+         employment_change_numeric,
+         key_worker,
+         key_worker_numeric)
+
+glad.4 <- taf.glad.coping.baseline.raw.id %>%
+  select(ID,
+  cohort_name,
+  taf.worth_living_life_people_baseline,
+  taf.felt_weeks_past_baseline,
+  taf.pandemic_felt_baseline,
+  taf.have_you_contemplated_harming_yourself_baseline,
+  taf.felt_weeks_past.1_baseline,
+  taf.pandemic_felt.1_baseline,
+  taf.meant_life_end_weeks_baseline,
+  taf.meant_end_life_pandemic_baseline)
+
+
+glad.5 <- mhd.raw.id %>%
+  select(ID,
+         cohort_name,
+         control,
+         control_numeric,
+         depressive_disorders_numeric,
+         anxiety_disorders_numeric,
+         eating_disorders_numeric,
+         obsessive_compulsive_disorders_numeric,
+         psychotic_disorders_numeric,
+         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
+        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+        autism_spectrum_disorder_numeric,
+        mhd.attention_deficit_hyperactivity_disorder_numeric,
+        mhd.personality_disorder_numeric)
+
+}
+
+#no edeq baseline (only in ramp)
+```
+
+##GLAD data frame list
+```{r GLAD data frame list}
+if(GLAD == TRUE) {
+dfs.list <- list(
+  glad.1,
+  glad.2,
+  glad.3,
+  glad.4,
+  glad.5
+)
+}
+```
+
+##Join all GLAD
+```{r Join all GLAD questionnaires}
+if(GLAD == TRUE) {
+dat.raw.glad <- plyr::join_all(
+  dfs.list,
+  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
+  )
+
+#look at the data
+colnames(dat.raw.glad)
+}
+
+```
+
+#Get rid of duplicates in GLAD
+```{r Check duplicates}
+if(GLAD == TRUE) {
+dat.raw.glad$ID.dup <- duplicated(dat.raw.glad$ID)
+
+summary(as.factor(dat.raw.glad$ID.dup))
+
+select(dat.raw.glad)
+
+ #Check for duplicate names of columns
+names_freq <- as.data.frame(table(names(dat.raw.glad)))
+names_freq[names_freq$Freq > 1, ]
+
+##Filter out duplicate column names
+ dat.dup <- dat.raw.glad %>%
+  filter(ID.dup == TRUE)
+
+dat.raw.glad <- dat.raw.glad %>%
+  filter(ID.dup == FALSE)
+
+colnames(dat.raw.glad)
+}
+```
+
+##NBR selected variables
+```{r NBR selected variables}
+if(NBR == TRUE) {
+
+  nbr.1 <- nbr.dem.employ.raw.id %>%
+    select(ID,
+           cohort_name,
+           highest_education_numeric,
+           highest_education,
+           employment_change_numeric,
+           employment_change,
+           employment_prior_covid,
+           employment_prior_covid_numeric,
+           key_worker,
+           key_worker_numeric)
+  
+nbr.2 <- nbr.dem.raw.id.complete %>%
+  select(ID,
+         cohort_name,
+         sex,
+         gender_unc,
+         ethnicity,
+         current_country,
+         uk_location)
+    
+  nbr.3 <- nbr.dem.raw.id %>%
+    select(ID,
+           cohort_name,
+           age_category,
+           age_category_numeric)
+
+nbr.4 <- taf.nbr.baseline.raw.id %>%
+  select(ID,
+  cohort_name,
+  taf.worth_living_life_people_baseline,
+  taf.felt_weeks_past_baseline,
+  taf.pandemic_felt_baseline,
+  taf.have_you_contemplated_harming_yourself_baseline,
+  taf.felt_weeks_past.1_baseline,
+  taf.pandemic_felt.1_baseline,
+  taf.meant_life_end_weeks_baseline,
+  taf.meant_end_life_pandemic_baseline)
+
+
+nbr.5 <- mhd.raw.id %>%
+  select(ID,
+         cohort_name,
+         control,
+         control_numeric,
+         depressive_disorders_numeric,
+         anxiety_disorders_numeric,
+         eating_disorders_numeric,
+         obsessive_compulsive_disorders_numeric,
+         psychotic_disorders_numeric,
+         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
+        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+        autism_spectrum_disorder_numeric,
+        mhd.attention_deficit_hyperactivity_disorder_numeric,
+        mhd.personality_disorder_numeric)
+
+}
+
+#NO HIGHEST EDUCATION PREPAN
+#no edeq baseline (only in ramp)
+
+```
+
+##NBR  data frame list
+```{r NBR data frame list}
+if(NBR == TRUE) {
+dfs.list <- list(
+  nbr.1,
+  nbr.2,
+  nbr.3,
+  nbr.4,
+  nbr.5
+)
+}
+```
+
+##Join all NBR 
+```{r Join all NBR questionnaires}
+if(NBR == TRUE) {
+dat.raw.nbr <- plyr::join_all(
+  dfs.list,
+  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
+  )
+
+#look at the data
+colnames(dat.raw.nbr)
+}
+
+```
+
+#Get rid of duplicates in NBR
+```{r Check duplicates}
+if(NBR == TRUE) {
+dat.raw.nbr$ID.dup <- duplicated(dat.raw.nbr$ID)
+
+summary(as.factor(dat.raw.nbr$ID.dup))
+
+select(dat.raw.nbr)
+
+ #Check for duplicate names of columns
+names_freq <- as.data.frame(table(names(dat.raw.nbr)))
+names_freq[names_freq$Freq > 1, ]
+
+##Filter out duplicate column names
+ dat.dup <- dat.raw.nbr %>%
+  filter(ID.dup == TRUE)
+
+dat.raw.nbr <- dat.raw.nbr %>%
+  filter(ID.dup == FALSE)
+
+colnames(dat.raw.nbr)
+}
+```
+
+##RAMP variable list
+```{r RAMP variable list}
+if(RAMP == TRUE) {
+
+  ramp.1 <- ramp.dem.raw.id %>%
+    select(ID,
+           cohort_name,
+           gender_unc,
+           ethnicity,
+           age_unc)
+
+  ramp.2 <- ramp.dem.employ.raw.id %>%
+    select(ID,
+           cohort_name,
+           highest_education,
+           highest_education_numeric,
+           employment_prior_covid,
+           employment_prior_covid_numeric,
+           employment_change,
+           employment_change_numeric,
+           key_worker,
+           key_worker_numeric)
+   
+  ramp.3 <- taf.ramp.baseline.raw.id %>%
+  select(ID,
+  cohort_name,
+  taf.worth_living_life_people_baseline,
+  taf.felt_weeks_past_baseline,
+  taf.pandemic_felt_baseline,
+  taf.have_you_contemplated_harming_yourself_baseline,
+  taf.felt_weeks_past.1_baseline,
+  taf.pandemic_felt.1_baseline,
+  taf.meant_life_end_weeks_baseline,
+  taf.meant_end_life_pandemic_baseline)
+
+
+  ramp.4 <- mhd.raw.id %>%
+  select(ID,
+         cohort_name,
+         control,
+         control_numeric,
+         depressive_disorders_numeric,
+         anxiety_disorders_numeric,
+         eating_disorders_numeric,
+         obsessive_compulsive_disorders_numeric,
+         psychotic_disorders_numeric,
+         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
+        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+        autism_spectrum_disorder_numeric,
+        mhd.attention_deficit_hyperactivity_disorder_numeric,
+        mhd.personality_disorder_numeric)
+
+  ramp.5 <- edeq.ramp.baseline.raw.id 
+           
+}
+
+#NO SEX
+#no highest education pre-pandemic
+```
+
+##RAMP  data frame list
+```{r RAMP data frame list}
+if(RAMP == TRUE) {
+dfs.list <- list(
+  ramp.1,
+  ramp.2,
+  ramp.3,
+  ramp.4,
+  ramp.5
+  
+)
+}
+```
+
+##Join all RAMP
+```{r Join all RAMP questionnaires}
+if(RAMP == TRUE) {
+dat.raw.ramp <- plyr::join_all(
+  dfs.list,
+  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
+  )
+
+#look at the data
+colnames(dat.raw.ramp)
+}
+
+```
+
+#Get rid of duplicates in RAMP
+```{r Check duplicates}
+if(RAMP == TRUE) {
+dat.raw.ramp$ID.dup <- duplicated(dat.raw.ramp$ID)
+
+summary(as.factor(dat.raw.ramp$ID.dup))
+
+select(dat.raw.ramp)
+
+ #Check for duplicate names of columns
+names_freq <- as.data.frame(table(names(dat.raw.ramp)))
+names_freq[names_freq$Freq > 1, ]
+
+##Filter out duplicate column names
+ dat.dup <- dat.raw.ramp %>%
+  filter(ID.dup == TRUE)
+
+dat.raw.ramp <- dat.raw.ramp %>%
+  filter(ID.dup == FALSE)
+
+colnames(dat.raw.ramp)
+}
+```
+
+# Export baseline data
+```{r export data}
+if(GLAD == TRUE) {
+saveRDS(object = dat.raw.glad, file = "../data_cleaned/baseline_glad.rds")
+  
+}
+
+if(EDGI == TRUE) {
+saveRDS(object = dat.raw.edgi, file = "../data_cleaned/baseline_edgi.rds")
+  
+}
+if(RAMP == TRUE) {
+  saveRDS(object = dat.raw.ramp, file = "../data_cleaned/baseline_ramp.rds")
+
+}
+
+if(NBR == TRUE) {
+  saveRDS(object = dat.raw.nbr, file = "../data_cleaned/baseline_nbr.rds")
+
+}
+```
 
 
 

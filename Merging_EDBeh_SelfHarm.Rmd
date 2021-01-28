@@ -1,0 +1,252 @@
+---
+title: "Merging_EDBeh_SelfHarm"
+author: "Helena Davies"
+date: "27/01/2021"
+output: html_document
+---
+
+#Set up
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+options(bitmapType = 'quartz') # to render fonts better
+```
+
+Clear global environment
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Retrieve the current date to use it for file endings to not overwrite files when one exports files
+```{r Recent date}
+date = Sys.Date()
+```
+
+Load packages
+```{r}
+library(tidyverse)
+library(skimr)
+```
+
+# Import baseline data
+```{r export data}
+glad_baseline <- readRDS(file = "../data_cleaned/baseline_glad.rds")
+dim(glad_baseline)
+
+edgi_baseline <- readRDS(file = "../data_cleaned/baseline_edgi.rds")
+dim(edgi_baseline)
+
+nbr_baseline <- readRDS(file = "../data_cleaned/baseline_nbr.rds")
+dim(nbr_baseline)
+
+ramp_baseline <- readRDS(file = "../data_cleaned/baseline_ramp.rds")
+dim(ramp_baseline)
+```
+##Make list of edeq baseline columns only in RAMP
+```{r}
+edeq_baseline_columnNames <- c("edeq.deliberately_limit_amount_influence_baseline",                     
+                               "edeq.calories_made_body_shape_baseline",                               
+                               "edeq.weight_influenced_person_baseline",                                
+                               "edeq.dissatisfied_shape_weight_baseline",                              
+                               "edeq.nibbled_picked_snacks_grazed_baseline",                            
+                               "edeq.felt_anxious_blue_bored_baseline",                                
+                               "edeq.felt_anxious_blue_bored.1_baseline",                              
+                               "edeq.eating_behaviours_concerns_distressed_baseline",                  
+                               "edeq.deliberately_limit_amount_influence.1_baseline",                   
+                               "edeq.calories_made_body_shape.1_baseline",                              
+                               "edeq.weight_influenced_person.1_baseline",                              
+                               "edeq.dissatisfied_shape_weight.1_baseline",                            
+                               "edeq.eating_behaviours_concerns_distressed.1_baseline",                 
+                               "edeq.feelings_pandemic_felt_baseline",                                  
+                               "edeq.actively_been_monitoring_your_shape_or_weight_baseline",           
+                               "edeq.regard_lost_control_eaten_baseline",                               
+                               "edeq.sick_means_made_shape_baseline",                                   
+                               "edeq.diuretics_laxatives_means_shape_baseline",                         
+                               "edeq.compulsive_driven_burn_calories_baseline",                         
+                               "edeq.nibbled_picked_snacks_grazed.1_baseline",                         
+                               "edeq.felt_anxious_blue_bored.2_baseline",                               
+                               "edeq.felt_anxious_blue_bored.3_baseline",                               
+                               "edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline",        
+                               "edeq.regard_lost_control_eaten.1_baseline",                             
+                               "edeq.sick_means_made_shape.1_baseline",                                 
+                               "edeq.diuretics_laxatives_means_shape.1_baseline",                       
+                               "edeq.compulsive_driven_burn_calories.1_baseline",                       
+                               "edeq.deliberately_limit_amount_influence_baseline_numeric",             
+                               "edeq.calories_made_body_shape_baseline_numeric",                        
+                               "edeq.weight_influenced_person_baseline_numeric",                        
+                               "edeq.dissatisfied_shape_weight_baseline_numeric",                       
+                               "edeq.nibbled_picked_snacks_grazed_baseline_numeric",                    
+                               "edeq.felt_anxious_blue_bored_baseline_numeric",                         
+                               "edeq.felt_anxious_blue_bored.1_baseline_numeric",                       
+                               "edeq.eating_behaviours_concerns_distressed_baseline_numeric",           
+                               "edeq.deliberately_limit_amount_influence.1_baseline_numeric",           
+                               "edeq.calories_made_body_shape.1_baseline_numeric",                      
+                               "edeq.weight_influenced_person.1_baseline_numeric",                      
+                               "edeq.dissatisfied_shape_weight.1_baseline_numeric",                     
+                               "edeq.eating_behaviours_concerns_distressed.1_baseline_numeric",         
+                               "edeq.feelings_pandemic_felt_baseline_numeric",                          
+                               "edeq.actively_been_monitoring_your_shape_or_weight_baseline_numeric",   
+                               "edeq.regard_lost_control_eaten_baseline_numeric",                       
+                               "edeq.sick_means_made_shape_baseline_numeric",                           
+                               "edeq.diuretics_laxatives_means_shape_baseline_numeric",
+                               "edeq.compulsive_driven_burn_calories_baseline_numeric",                 
+                               "edeq.nibbled_picked_snacks_grazed.1_baseline_numeric",                  
+                               "edeq.felt_anxious_blue_bored.2_baseline_numeric",                       
+                               "edeq.felt_anxious_blue_bored.3_baseline_numeric",                       
+                               "edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline_numeric",
+                               "edeq.regard_lost_control_eaten.1_baseline_numeric",                     
+                               "edeq.sick_means_made_shape.1_baseline_numeric",                         
+                               "edeq.diuretics_laxatives_means_shape.1_baseline_numeric",               
+                               "edeq.compulsive_driven_burn_calories.1_baseline_numeric") 
+                               
+```
+
+##EDEQ baseline only in RAMP, so add all above columns as NA in nbr, edgi + glad
+```{r}
+nbr_baseline[edeq_baseline_columnNames] <- NA
+
+glad_baseline[edeq_baseline_columnNames] <- NA
+
+edgi_baseline[edeq_baseline_columnNames] <- NA
+```
+                                                          
+ [3] "sex"       - not in ramp                                                            
+ [4] "gender_unc"                                                            
+ [5] "uk_location"                                                           
+ [6] "current_country"                                                       
+ [7] "age_category_numeric"    - called "age_unc" in ramp                                              
+ [8] "age_category"                                                          
+ [9] "ethnicity"                                                             
+[10] "highest_education_prepan_numeric"    - not in ramp, nbr                                   
+[11] "highest_education_prepan"           - not in ramp, nbr                                     
+[12] "highest_education_numeric"                                             
+[13] "highest_education"                                                     
+[14] "employment_prior_covid"                                                
+[15] "employment_prior_covid_numeric"                                        
+[16] "employment_change"                                                     
+[17] "employment_change_numeric" 
+
+##Need same columns across all datasets in order to merge
+
+
+
+```{r}
+#sex & age_category_numeric not in RAMP
+ramp_baseline$sex <- NA
+ramp_baseline$age_category_numeric <- NA
+
+#age called "age_unc" in RAMP
+  ramp_baseline %>% 
+  rename(
+    age_category = age_unc,
+    )
+  
+#highest_education_prepan/numeric not in ramp or nbr
+ramp_baseline$highest_education_prepan <- NA
+ramp_baseline$highest_education_prepan_numeric <- NA
+nbr_baseline$highest_education_prepan <- NA
+nbr_baseline$highest_education_prepan_numeric <- NA
+
+
+```
+
+##Merge all baseline data
+```{r glad/edgi/nbr/ramp data frame list}
+
+#change ptsd variable to numeric [wrongly coded]
+nbr_baseline$mhd.posttraumatic_stress_disorder_ptsd_numeric <- as.numeric(nbr_baseline$mhd.posttraumatic_stress_disorder_ptsd_numeric)
+
+#bind all baseline data
+dat <- bind_rows(
+  glad_baseline,
+  edgi_baseline,
+  nbr_baseline,
+  ramp_baseline
+)
+
+##check col names
+colnames(dat)
+```
+
+
+#Import follow up data
+```{r}
+edeq_coping <- readRDS(file = "../data_cleaned/edeq_coping.rds")
+dim(edeq_coping)
+
+edeq_ramp <- readRDS(file = "../data_cleaned/edeq_ramp.rds")
+dim(edeq_ramp)
+
+taf_ramp <- readRDS(file = "../data_cleaned/taf_ramp.rds")
+dim(taf_ramp)
+
+taf_coping <- readRDS(file = "../data_cleaned/taf_coping.rds")
+dim(taf_coping)
+```
+#Bind coping and ramp's edeq and taf (separately)
+```{r}
+
+#bind all edeq data
+edeq <- bind_rows(
+  edeq_ramp,
+  edeq_coping
+  
+)
+
+#check col names edeq
+colnames(edeq)
+
+#check no of participants edeq
+nrow(edeq)
+
+#bind all taf data
+taf <- bind_rows(taf_ramp,
+                 taf_coping)
+
+#check col names taf
+colnames(taf)
+
+#check no of participants
+nrow(taf)
+```
+
+#Bind edeq with baseline
+```{r}
+dat.edeq <- merge(dat,
+                  edeq,
+                  by = "ID")
+
+```
+
+#Skim edeq + baseline data
+```{r Skim edeq + baseline data}
+#look at the data
+skimr::skim(dat.edeq)
+```
+
+#Save taf+baseline
+```{r Save edeq + baseline rds file}
+saveRDS(object = dat.edeq, file = "../data_cleaned/dat.edeq.rds")
+```
+
+#Bind taf with baseline
+```{r}
+dat.taf <- merge(dat,
+                  taf,
+                  by = "ID")
+
+```
+
+#Skim taf + baseline data
+```{r Skim taf + baseline data}
+#look at the data
+skimr::skim(dat.taf)
+
+```
+
+#Save edeq+baseline
+```{r Save taf + baseline rds file}
+saveRDS(object = dat.taf, file = "../data_cleaned/dat.taf.rds")
+```

@@ -168,19 +168,21 @@ if(NBR == TRUE) {
                       "Arab" = "Arab",
                       "Other ethnic group (please specify)" = "Other ethnic group"
         )
-    ) %>%
+    )
+  
+  nbr.dem.raw.id.complete <- nbr.dem.raw.id.complete %>%
     mutate(
       ethnicity_numeric =
-        recode(ethnicity.unc_numeric,
-               "White" = 1,
-               "Mixed or multiple ethnic origins" = 2,
-               "Asian or Asian British" = 3,
-               "Black or Black British" = 4,
-               "Arab" = 5,
-               "Other ethnic group" = 6
+        dplyr::recode(ethnicity_unc,
+                      "White" = 1,
+                      "Mixed or multiple ethnic origins" = 2,
+                      "Asian or Asian British" = 3,
+                      "Black or Black British" = 4,
+                      "Arab" = 5, #None in NBR cohort?
+                      "Other ethnic group" = 6 #None in NBR cohort?
         )
     )
+  
 }
-
 
 
