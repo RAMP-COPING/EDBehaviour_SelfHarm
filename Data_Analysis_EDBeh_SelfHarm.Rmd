@@ -132,10 +132,27 @@ freq(dat.taf$gender)
 #ethnicity
 ```{r}
 freq(dat.taf$ethnicity)
+##Lots of missing data from NBR - have checked ethnicity source script and seems that the original dataset contains a lot of NAs...
+
+##Check which cohort missing data is from
+x <- dat.taf %>%
+  filter(is.na(ethnicity))
+
+freq(x$cohort_name)
 
 ```
 
+#highest level of education
+```{r}
+freq(dat.taf$highest_education)
 
+##Check which cohort missing data is from
+x <- dat.taf %>%
+  filter(is.na(highest_education))
+
+freq(x$cohort_name)
+
+```
 
 
 

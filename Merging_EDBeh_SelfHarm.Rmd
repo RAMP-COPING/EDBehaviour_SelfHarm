@@ -129,9 +129,6 @@ edgi_baseline[edeq_baseline_columnNames] <- NA
 [17] "employment_change_numeric" 
 
 ##Need same columns across all datasets in order to merge
-
-
-
 ```{r}
 #sex & age_category_numeric not in RAMP
 ramp_baseline$sex <- NA
@@ -149,8 +146,6 @@ ramp_baseline$highest_education_prepan <- NA
 ramp_baseline$highest_education_prepan_numeric <- NA
 nbr_baseline$highest_education_prepan <- NA
 nbr_baseline$highest_education_prepan_numeric <- NA
-
-
 ```
 
 ##Merge all baseline data

@@ -40,9 +40,9 @@ source("./functions.R")
 
 # Specify cohort
 ```{r Specify cohort}
-GLAD = FALSE
+GLAD = TRUE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
 COPING = FALSE
 ```
@@ -2193,8 +2193,9 @@ dim(taf.ramp.followupb.raw)[1]-dim(taf.ramp.followupb.raw.id)[1]
 }
 ```
 
+#CLEANING DEMOGRAPHICS 
 
-# Source script for synchronising gender categories - GLAD, EDGI, NBR
+# GENDER - Source script for synchronising gender categories - GLAD, EDGI, NBR
 RAMP has the correct Gender categories so does not need editing.
 ```{r nbr dem calculating age from birthday}
 if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE) {
@@ -2202,18 +2203,13 @@ source("./gender_glad_edgi_nbr.R")
 }
 ```
 
-# Source script for synchronising gender categories - GLAD, EDGI, NBR
+# ETHNICITY
 ```{r nbr dem calculating age from birthday}
 if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE | RAMP == TRUE) {
 source("./ethnicity_ALLdatasets.R")
 }
-
-
-freq(ramp.dem.raw.id$ethnicity)
 ```
 
-
-#CLEANING DEMOGRAPHICS 
 ##AGE
 ###Source script for CREATING AGE variable in nbr (age_unc),cleaning it (in all datasets), and categorising it (nbr, edgi, glad - to match ramp)
 ```{r source script age}
@@ -2230,6 +2226,8 @@ source("./age_ALLdatasets.R")
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./education_ALLdatasets.R")
 }
+
+
 ```
 
 ##EMPLOYMENT
@@ -3106,7 +3104,7 @@ glad.2 <- glad.dem3.raw.id %>%
          highest_education_prepan_numeric,
          highest_education_prepan)
 
-glad.3 <- glad.coping.dem4.employ.raw.id %>%
+glad.3 <- glad.coping.dem4.employ.raw.id %>% 
   select(ID,
          cohort_name,
          highest_education_numeric,
@@ -3163,14 +3161,16 @@ dfs.list <- list(
   glad.5
 )
 }
+
 ```
+
 
 ##Join all GLAD
 ```{r Join all GLAD questionnaires}
 if(GLAD == TRUE) {
 dat.raw.glad <- plyr::join_all(
   dfs.list,
-  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
+  by = c("ID", "cohort_name")
   )
 #look at the data
 colnames(dat.raw.glad)
@@ -3187,7 +3187,7 @@ summary(as.factor(dat.raw.glad$ID.dup))
 
 select(dat.raw.glad)
 
- #Check for duplicate names of columns
+#Check for duplicate names of columns
 names_freq <- as.data.frame(table(names(dat.raw.glad)))
 names_freq[names_freq$Freq > 1, ]
 
@@ -3200,6 +3200,7 @@ names_freq[names_freq$Freq > 1, ]
 
 colnames(dat.raw.glad)
 }
+
 ```
 
 ##NBR selected variables

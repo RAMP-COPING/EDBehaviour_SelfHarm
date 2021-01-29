@@ -9,7 +9,7 @@ if(GLAD == TRUE) {
       highest_education_prepan_numeric =
         case_when(
           dem.college_or_university_degree_numeric == "1" ~ 5,
-          #dem.other_professional_qualifications_numeric == "1" ~ 5, #Not in EDGI
+          dem.other_professional_qualifications_numeric == "1" ~ 5, #Not in EDGI
           dem.a_levelsas_levels_or_equivalent_numeric == "1" ~ 4,
           dem.nvq_or_hnd_or_hnc_or_equivalent_numeric == "1" ~ 3,
           dem.o_levelsgcses_or_equivalent_numeric == "1" ~ 2,
@@ -27,7 +27,7 @@ if(GLAD == TRUE) {
           `2` = "GCSE/CSE",
           `3` = "NVQ",
           `4` = "A-levels",
-          `5` = "University")
+          `5` = "University/Other professional qualifications")
     )
   glad.dem3.raw.id %>%
     freq(highest_education_prepan)
@@ -42,7 +42,7 @@ if(GLAD == TRUE) {
            dem.a_levelsas_levels_or_equivalent,
            dem.nvq_or_hnd_or_hnc_or_equivalent,
            dem.o_levelsgcses_or_equivalent,
-           # dem.other_professional_qualifications_numeric,
+           dem.other_professional_qualifications_numeric,
            dem.cses_or_equivalent,
            dem.none_of_the_above_education
     )
@@ -77,7 +77,7 @@ if(EDGI == TRUE) {
           `2` = "GCSE/CSE",
           `3` = "NVQ",
           `4` = "A-levels",
-          `5` = "University")
+          `5` = "University/Other professional qualifications")
     )
   edgi.dem3.raw.id %>%
     freq(highest_education_prepan)
@@ -140,7 +140,7 @@ if(GLAD == TRUE) {
           `2` = "GCSE/CSE",
           `3` = "NVQ",
           `4` = "A-levels",
-          `5` = "University")
+          `5` = "University/Other professional qualifications")
     )
   glad.coping.dem4.employ.raw.id  %>%
     freq(highest_education)
@@ -196,7 +196,7 @@ if(EDGI == TRUE) {
           `2` = "GCSE/CSE",
           `3` = "NVQ",
           `4` = "A-levels",
-          `5` = "University")
+          `5` = "University/Other professional qualifications")
     )
   edgi.coping.dem4.employ.raw.id %>%
     freq(highest_education)
@@ -250,7 +250,7 @@ if(NBR == TRUE) {
           `2` = "GCSE/CSE",
           `3` = "NVQ",
           `4` = "A-levels",
-          `5` = "University")
+          `5` = "University/Other professional qualifications")
     )
   nbr.dem.employ.raw.id %>%
     freq(highest_education)
@@ -299,7 +299,7 @@ if(RAMP == TRUE){
           `1` = "GCSE/CSE",
           `2` = NA_character_,
           `3` = "A-levels",
-          `4` = "University",
+          `4` = "University/Other professional qualifications",
           `5` = "No formal qualifications")
     )
   ramp.dem.employ.raw.id %>%
