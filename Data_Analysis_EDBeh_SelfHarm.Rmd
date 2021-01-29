@@ -154,6 +154,48 @@ freq(x$cohort_name)
 
 ```
 
+#self-reported diagnoses
+```{r}
+freq(dat.taf$depressive_disorders_numeric) ##ALL GLAD
+
+z <- dat.taf %>% 
+  filter(depressive_disorders_numeric ==1)
+
+freq(z$anxiety_disorders_numeric) #
+
+z <- dat.taf %>% 
+  filter(anxiety_disorders_numeric ==1)
+
+freq(z$cohort_name)
+
+
+freq(dat.taf$eating_disorders_numeric)
+
+freq(dat.taf$obsessive_compulsive_disorders_numeric) ##all glad
+
+z <- dat.taf %>% 
+  filter(obsessive_compulsive_disorders_numeric == 1)
+
+freq(z$cohort_name)
+
+freq(dat.taf$psychotic_disorders_numeric) 
+
+freq(dat.taf$autism_spectrum_disorder_numeric) 
+
+freq(dat.taf$mhd.mania_hypomania_bipolar_or_manicdepression_numeric) 
+
+freq(dat.taf$mhd.posttraumatic_stress_disorder_ptsd_numeric)
+
+freq(dat.taf$mhd.attention_deficit_hyperactivity_disorder_numeric) 
+
+freq(dat.taf$mhd.personality_disorder_numeric)
+
+z <- dat.taf %>%
+  filter(mhd.personality_disorder_numeric == 1)
+
+freq(z$cohort_name)
+
+```
 
 
 

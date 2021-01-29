@@ -43,6 +43,8 @@ dim(nbr_baseline)
 
 ramp_baseline <- readRDS(file = "../data_cleaned/baseline_ramp.rds")
 dim(ramp_baseline)
+
+
 ```
 ##Make list of edeq baseline columns only in RAMP
 ```{r}

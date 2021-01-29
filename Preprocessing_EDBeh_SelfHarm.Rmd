@@ -40,8 +40,8 @@ source("./functions.R")
 
 # Specify cohort
 ```{r Specify cohort}
-GLAD = TRUE
-EDGI = FALSE
+GLAD = FALSE
+EDGI = TRUE
 RAMP = FALSE
 NBR = FALSE
 COPING = FALSE
@@ -2245,6 +2245,7 @@ source("./employment_ALLdatasets.R")
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./mental_health_diagnosis_ALLdatasets.R")
 }
+
 ```
 
 ### Controls
@@ -3022,10 +3023,27 @@ edgi.5 <- mhd.raw.id %>%
          obsessive_compulsive_disorders_numeric,
          psychotic_disorders_numeric,
          mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
-        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
-        autism_spectrum_disorder_numeric,
-        mhd.attention_deficit_hyperactivity_disorder_numeric,
-        mhd.personality_disorder_numeric)
+         mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+         autism_spectrum_disorder_numeric,
+         mhd.attention_deficit_hyperactivity_disorder_numeric,
+         mhd.personality_disorder_numeric)
+
+##See if IDs match with edgi.5
+x <- edgi.5[edgi.5$ID %in% edgi.4$ID,]
+
+length(unique(x$ID))
+
+x <- edgi.5[edgi.5$ID %in% edgi.3$ID,]
+
+length(unique(x$ID))
+
+x <- edgi.5[edgi.5$ID %in% edgi.2$ID,]
+
+length(unique(x$ID))
+
+x <- edgi.5[edgi.5$ID %in% edgi.1$ID,]
+
+length(unique(x$ID))
 
 }
 
@@ -3094,7 +3112,7 @@ if(GLAD == TRUE) {
             gender_unc,
             uk_location,
             current_country)
-
+   
 glad.2 <- glad.dem3.raw.id %>%
   select(ID,
          cohort_name,
@@ -3145,9 +3163,23 @@ glad.5 <- mhd.raw.id %>%
         mhd.attention_deficit_hyperactivity_disorder_numeric,
         mhd.personality_disorder_numeric)
 
-}
+##See if IDs match with glad.3
+x <- glad.3[glad.3$ID %in% glad.1$ID,]
 
-#no edeq baseline (only in ramp)
+length(unique(x$ID))
+
+x <- glad.3[glad.3$ID %in% glad.2$ID,]
+
+length(unique(x$ID))
+
+x <- glad.3[glad.3$ID %in% glad.4$ID,]
+
+length(unique(x$ID))
+
+x <- glad.3[glad.3$ID %in% glad.5$ID,]
+
+length(unique(x$ID))
+}
 ```
 
 ##GLAD data frame list
@@ -3263,10 +3295,28 @@ nbr.5 <- mhd.raw.id %>%
         mhd.attention_deficit_hyperactivity_disorder_numeric,
         mhd.personality_disorder_numeric)
 
+#Check nbr mhd data IDs
+x <- nbr.5[nbr.5$ID %in% nbr.1$ID,]
+
+length(unique(x$ID))
+
+x <- nbr.5[nbr.5$ID %in% nbr.2$ID,]
+
+length(unique(x$ID))
+
+x <- nbr.5[nbr.5$ID %in% nbr.3$ID,]
+
+length(unique(x$ID))
+
+x <- nbr.5[nbr.5$ID %in% nbr.4$ID,]
+
+length(unique(x$ID))
+
 }
 
 #NO HIGHEST EDUCATION PREPAN
 #no edeq baseline (only in ramp)
+
 
 ```
 
@@ -3294,6 +3344,7 @@ dat.raw.nbr <- plyr::join_all(
 #look at the data
 colnames(dat.raw.nbr)
 }
+
 
 ```
 
@@ -3357,7 +3408,7 @@ if(RAMP == TRUE) {
   taf.meant_end_life_pandemic_baseline)
 
 
-  ramp.4 <- mhd.raw.id %>%
+  ramp.4 <- mhd.raw.id %>% ##IDs do not match with others??
   select(ID,
          cohort_name,
          control,
@@ -3374,7 +3425,23 @@ if(RAMP == TRUE) {
         mhd.personality_disorder_numeric)
 
   ramp.5 <- edeq.ramp.baseline.raw.id 
-           
+   
+#Check ramp.4 has same IDs as other datasets
+x <- ramp.4[ramp.4$ID %in% ramp.1$ID,]
+
+length(unique(x$ID))
+
+x <- ramp.4[ramp.4$ID %in% ramp.2$ID,]
+
+length(unique(x$ID))
+
+x <- ramp.4[ramp.4$ID %in% ramp.3$ID,]
+
+length(unique(x$ID))
+
+x <- ramp.3[ramp.3$ID %in% ramp.5$ID,]
+
+length(unique(x$ID))        
 }
 
 #NO SEX
