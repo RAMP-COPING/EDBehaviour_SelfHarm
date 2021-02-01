@@ -17,7 +17,7 @@ if(GLAD == TRUE) {
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
     # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "glad", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "coping_glad", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
       cohort_name, # Sample
@@ -861,7 +861,7 @@ if(EDGI == TRUE) {
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
     # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "edgi", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
       cohort_name, # Sample
@@ -928,7 +928,7 @@ if(EDGI == TRUE){
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
     #mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "edgi", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
       cohort_name, # Sample

@@ -41,9 +41,9 @@ source("./functions.R")
 # Specify cohort
 ```{r Specify cohort}
 GLAD = FALSE
-EDGI = TRUE
+EDGI = FALSE
 RAMP = FALSE
-NBR = FALSE
+NBR = TRUE
 COPING = FALSE
 ```
 
@@ -2970,7 +2970,7 @@ if(RAMP == TRUE) {
 ##EDGI select variables from each dataset
 ```{r EDGI select variables}
 if(EDGI == TRUE) {
-edgi.1 <- edgi.coping.dem.raw.id %>%
+edgi.1 <- edgi.coping.dem.raw.id %>% #590
   select(ID,
   cohort_name,
   gender_unc,
@@ -2978,7 +2978,7 @@ edgi.1 <- edgi.coping.dem.raw.id %>%
   uk_location,
   current_country)
   
-edgi.2 <- edgi.dem3.raw.id %>%
+edgi.2 <- edgi.dem3.raw.id %>% #3251
   select(ID,
   cohort_name,
   age_category_numeric,
@@ -2987,7 +2987,7 @@ edgi.2 <- edgi.dem3.raw.id %>%
   highest_education_prepan,
   ethnicity)
   
-edgi.3 <- edgi.coping.dem4.employ.raw.id %>%
+edgi.3 <- edgi.coping.dem4.employ.raw.id %>% #590
   select(ID,
   cohort_name,
   highest_education_numeric,
@@ -2999,7 +2999,7 @@ edgi.3 <- edgi.coping.dem4.employ.raw.id %>%
   key_worker,
   key_worker_numeric)
   
-edgi.4 <- taf.edgi.coping.baseline.raw.id %>%
+edgi.4 <- taf.edgi.coping.baseline.raw.id %>% #590
   select(ID,
   cohort_name,
   taf.worth_living_life_people_baseline,
@@ -3012,7 +3012,7 @@ edgi.4 <- taf.edgi.coping.baseline.raw.id %>%
   taf.meant_end_life_pandemic_baseline)
 
 
-edgi.5 <- mhd.raw.id %>%
+edgi.5 <- mhd.raw.id %>% #3251
   select(ID,
          cohort_name,
          control,
@@ -3061,6 +3061,7 @@ dfs.list <- list(
   edgi.5
 )
 }
+
 ```
 
 ##Join all EDGI
@@ -3099,6 +3100,7 @@ dat.raw.edgi <- dat.raw.edgi %>%
 
 colnames(dat.raw.edgi)
 }
+
 ```
 
 ##GLAD data frame list
@@ -3279,7 +3281,7 @@ nbr.4 <- taf.nbr.baseline.raw.id %>%
   taf.meant_end_life_pandemic_baseline)
 
 
-nbr.5 <- mhd.raw.id %>%
+nbr.5 <- mhd.raw.id %>% 
   select(ID,
          cohort_name,
          control,
@@ -3312,6 +3314,11 @@ x <- nbr.5[nbr.5$ID %in% nbr.4$ID,]
 
 length(unique(x$ID))
 
+nrow(nbr.5)
+nrow(nbr.4)
+nrow(nbr.3)
+nrow(nbr.2)
+nrow(nbr.1)
 }
 
 #NO HIGHEST EDUCATION PREPAN
@@ -3344,7 +3351,6 @@ dat.raw.nbr <- plyr::join_all(
 #look at the data
 colnames(dat.raw.nbr)
 }
-
 
 ```
 
@@ -3419,10 +3425,10 @@ if(RAMP == TRUE) {
          obsessive_compulsive_disorders_numeric,
          psychotic_disorders_numeric,
          mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
-        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
-        autism_spectrum_disorder_numeric,
-        mhd.attention_deficit_hyperactivity_disorder_numeric,
-        mhd.personality_disorder_numeric)
+         mhd.posttraumatic_stress_disorder_ptsd_numeric, 
+         autism_spectrum_disorder_numeric,
+         mhd.attention_deficit_hyperactivity_disorder_numeric,
+         mhd.personality_disorder_numeric)
 
   ramp.5 <- edeq.ramp.baseline.raw.id 
    
