@@ -41,9 +41,9 @@ source("./functions.R")
 # Specify cohort
 ```{r Specify cohort}
 GLAD = FALSE
-EDGI = FALSE
+EDGI = TRUE 
 RAMP = FALSE
-NBR = TRUE
+NBR = FALSE
 COPING = FALSE
 ```
 
