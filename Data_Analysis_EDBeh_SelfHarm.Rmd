@@ -161,6 +161,29 @@ freq(dat.taf$depressive_disorders_numeric) ##ALL GLAD + EDGI
 ```
 
 
+##PLOTS
+```{r}
+##Create new wave colummn OR make wide data long
+
+
+
+
+
+ggplot(dat.taf,
+       aes(taf.worth_living_life_people, 
+           fill = wave_taf)) +
+  geom_bar(size = 1,
+           shape = 23,
+           colour = "black",
+           position = position_dodge()) +
+  labs(y = "Number of participants",
+       x = "Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?",
+       title = "Life not worth living (past 2 weeks)")
+
+
+```
+
+
 
 
 

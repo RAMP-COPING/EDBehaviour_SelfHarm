@@ -1014,7 +1014,7 @@ if(NBR == TRUE) {
     distinct(subjectid, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(subjectid, into = c("Sample", "ID.intm"), sep = 6) %>% # Split ID in Sample and Number
     #separate(ID.intm, into = "ID", sep = 7) %>%
-    add_column(cohort_name = "coping_nbr", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "nbr", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
       cohort_name, # Sample

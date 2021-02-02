@@ -41,9 +41,9 @@ source("./functions.R")
 # Specify cohort
 ```{r Specify cohort}
 GLAD = FALSE
-EDGI = TRUE 
+EDGI = FALSE
 RAMP = FALSE
-NBR = FALSE
+NBR = TRUE
 COPING = FALSE
 ```
 
@@ -3323,8 +3323,6 @@ nrow(nbr.1)
 
 #NO HIGHEST EDUCATION PREPAN
 #no edeq baseline (only in ramp)
-
-
 ```
 
 ##NBR  data frame list
@@ -3523,6 +3521,7 @@ if(RAMP == TRUE) {
 if(NBR == TRUE) {
   saveRDS(object = dat.raw.nbr, file = "../data_cleaned/baseline_nbr.rds")
 }
+
 ```
 
 
