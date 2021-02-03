@@ -163,15 +163,125 @@ freq(dat.taf$depressive_disorders_numeric) ##ALL GLAD + EDGI
 
 ##PLOTS
 ```{r}
-##Create new wave colummn OR make wide data long
+##Make wide data long
+dat.taf_practice <- dat.taf %>%
+  select("ID",
+                                "cohort_name",
+                                "sex",
+                                "gender_unc",
+                                "uk_location",
+                                "current_country",
+                                "age_category_numeric",
+                                "age_category",
+                                "ethnicity",
+                                "highest_education_prepan_numeric",
+                                "highest_education",
+                                "highest_education_prepan",
+                                "highest_education_numeric",
+                                "employment_prior_covid",
+                                "employment_prior_covid_numeric",
+                                "employment_change",
+                                "employment_change_numeric",
+                                "key_worker",
+                                "key_worker_numeric",
+                                "taf.felt_weeks_past_baseline",
+         "taf.pandemic_felt_baseline")
+
+         
+x <- reshape2::melt(dat.taf_practice, id.vars = c("ID",
+                                "cohort_name",
+                                "sex",
+                                "gender_unc",
+                                "uk_location",
+                                "current_country",
+                                "age_category_numeric",
+                                "age_category",
+                                "ethnicity",
+                                "highest_education_prepan_numeric",
+                                "highest_education",
+                                "highest_education_prepan",
+                                "highest_education_numeric",
+                                "employment_prior_covid",
+                                "employment_prior_covid_numeric",
+                                "employment_change",
+                                "employment_change_numeric",
+                                "key_worker",
+                                "key_worker_numeric",
+                                "taf.pandemic_felt_baseline"),
+          measure.vars = c("taf.felt_weeks_past_baseline"),
+          value.name = c("felt.weeks.baseline"))
+   colnames(x)    
+   
+   ##rename 'variable' column name  to 'wave', and variables within it to "baseline"
+   
+x$felt.weeks.baseline <- paste(y$variable,y$variable)
+
+x$wave <- paste0("baseline",22:nrow(x))
+          
+y <- reshape2::melt(x, id.vars = c("ID",
+                                "cohort_name",
+                                "sex",
+                                "gender_unc",
+                                "uk_location",
+                                "current_country",
+                                "age_category_numeric",
+                                "age_category",
+                                "ethnicity",
+                                "highest_education_prepan_numeric",
+                                "highest_education",
+                                "highest_education_prepan",
+                                "highest_education_numeric",
+                                "employment_prior_covid",
+                                "employment_prior_covid_numeric",
+                                "employment_change",
+                                "employment_change_numeric",
+                                "key_worker",
+                                "key_worker_numeric",
+                                "felt.weeks.baseline",
+                                "variable"),
+          measure.vars = c("taf.pandemic_felt_baseline"),
+          value.name = c("pandemic_felt_baseline"))
+                         
+
+y
+
+   
+    
+
+    
+
+
+colnames(dat.taf)
+
+```
+
+
+```{r}
+
+
+dat.taf <- dat.taf %>%
+  pivot_longer(
+    cols = (starts_with("taf") &
+              contains("wave")),
+    names_to = "wave_taf",
+    values_to = "value") %>%
+  separate(wave_taf, into = c("taf", "wave"), sep = "_W", remove = TRUE) %>%
+  pivot_wider(
+     names_from = "taf",
+     values_from = "value")
+   
+
+
+```
 
 
 
 
+```{r}
 
 ggplot(dat.taf,
-       aes(taf.worth_living_life_people, 
-           fill = wave_taf)) +
+       aes(taf.worth_living_life_people_numeri, 
+           fill = wave)) +
   geom_bar(size = 1,
            shape = 23,
            colour = "black",
@@ -180,8 +290,14 @@ ggplot(dat.taf,
        x = "Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?",
        title = "Life not worth living (past 2 weeks)")
 
-
 ```
+
+
+
+
+
+
+
 
 
 
