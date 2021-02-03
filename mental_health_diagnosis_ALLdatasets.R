@@ -1005,7 +1005,6 @@ if(NBR == TRUE) {
   colnames(nbr.mhd.raw)
 }
 
-
 if(NBR == TRUE) {
   exclude_cols <- c("cohort_name",
                     "ID")
@@ -1014,9 +1013,9 @@ if(NBR == TRUE) {
     distinct(subjectid, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(subjectid, into = c("Sample", "ID.intm"), sep = 6) %>% # Split ID in Sample and Number
     #separate(ID.intm, into = "ID", sep = 7) %>%
-    add_column(cohort_name = "nbr", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "nbr", .after = "subjectid") %>% #create new column 
     select(
-      ID = externalDataReference, # ID
+      ID = subjectid, # ID
       cohort_name, # Sample
       #startDate_baseline = startDate,
       starts_with("mhd."),
@@ -1086,7 +1085,6 @@ if(RAMP == TRUE) {
   colnames(ramp.mhd.raw)
 }
 
-
 if(RAMP == TRUE) {
   
   exclude_cols <- c("cohort_name",
@@ -1095,11 +1093,11 @@ if(RAMP == TRUE) {
   ramp.mhd.raw.id <- ramp.mhd.raw %>%
     drop_na(`Login ID`) %>% # Drop NAs
     distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    separate(`Login ID`, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    separate(ID, into = "ID", sep = 7) %>%
+    #separate(`Login ID`, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+    #separate(ID, into = "ID", sep = 7) %>%
     add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
     select(
-      ID = externalDataReference, # ID
+      ID = `Login ID`, # ID
       cohort_name, # Sample
       #startDate_baseline = startDate,
       mhd.depression = mhq.depression,

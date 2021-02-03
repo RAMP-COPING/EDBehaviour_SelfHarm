@@ -161,29 +161,27 @@ freq(dat.taf$depressive_disorders_numeric) ##ALL GLAD + EDGI
 ```
 
 ##PLOTS - TAF 
-#First, need to re-structure data 
+#First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
 ```{r}
-
 dat.taf <- dat.taf %>%
   pivot_longer(
     cols = (starts_with("taf") &
-              contains("wave")),
+              contains(".Wave")),
     names_to = "wave_taf",
     values_to = "value") %>%
-  separate(wave_taf, into = c("taf", "wave"), sep = "_W", remove = TRUE) %>%
+  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
   pivot_wider(
      names_from = "taf",
      values_from = "value")
-   
-```
 
-#Add baseline wave
+```
 
 
 
 #Plot 1. Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?
 ```{r}
 
+##NEEDS TO BE PERCENTAGES!!!!!!!!!
 ggplot(subset(dat.taf, !is.na(taf.worth_living_life_people)),
        aes(taf.worth_living_life_people, 
            fill = wave)) +
