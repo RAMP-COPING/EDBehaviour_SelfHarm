@@ -40,11 +40,11 @@ source("./functions.R")
 
 # Specify cohort
 ```{r Specify cohort}
-GLAD = FALSE
+GLAD = TRUE
 EDGI = FALSE
 RAMP = FALSE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -3205,6 +3205,7 @@ length(unique(x$ID))
 x <- glad.3[glad.3$ID %in% glad.5$ID,]
 
 length(unique(x$ID))
+
 }
 ```
 

@@ -176,22 +176,23 @@ dat.taf <- dat.taf %>%
 
 ```
 
-
+For percentage, perhaps try scales::percent instead of percent_format. For ordering, try fill = reorder(wave, taf.worth_living_life_people). Let me know if you prefer a call!
 
 #Plot 1. Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?
 ```{r}
-
-##NEEDS TO BE PERCENTAGES!!!!!!!!!
+##NEEDS TO BE PERCENTAGES!!!!!!!!! change order
 ggplot(subset(dat.taf, !is.na(taf.worth_living_life_people)),
        aes(taf.worth_living_life_people, 
-           fill = wave)) +
+           fill = reorder(wave, taf.worth_living_life_people))) +
   geom_bar(size = 1,
            shape = 23,
            colour = "black",
            position = position_dodge()) +
-  labs(y = "Number of participants",
+  scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
+  labs(y = "Percentage of participants",
        x = "Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?",
        title = "Life not worth living (past 2 weeks)")
+
 
 ```
 
