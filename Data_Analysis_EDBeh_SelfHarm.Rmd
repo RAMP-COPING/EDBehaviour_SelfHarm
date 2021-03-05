@@ -154,11 +154,56 @@ freq(x$cohort_name)
 
 ```
 
-#self-reported diagnoses
+#Self-reported diagnoses
+##Depression
 ```{r}
-freq(dat.taf$depressive_disorders_numeric) ##ALL GLAD + EDGI 
+freq(dat.taf$depressive_disorders_numeric) 
 
 ```
+
+##Mania
+```{r}
+freq(dat.taf$mhd.mania_hypomania_bipolar_or_manicdepression_numeric) 
+
+```
+
+##anxiety
+```{r}
+  freq(dat.taf$anxiety_disorders_numeric)
+
+```
+
+##eating disorders
+```{r}
+freq(dat.taf$eating_disorders_numeric)
+
+```
+
+##OCD
+```{r}
+  freq(dat.taf$obsessive_compulsive_disorders_numeric)
+
+```
+
+##Psychotic disorder
+```{r}
+  freq(dat.taf$psychotic_disorders_numeric)
+```
+
+##PTSD
+```{r eval=FALSE, include=FALSE}
+  freq(dat.taf$mhd.posttraumatic_stress_disorder_ptsd_numeric
+```
+##Autism
+```{r}
+freq(dat.taf$autism_spectrum_disorder_numeric)
+```
+
+##ADHD
+```{r}
+  freq(dat.taf$mhd.attention_deficit_hyperactivity_disorder_numeric)
+```
+
 
 ##PLOTS - TAF 
 #First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
@@ -176,24 +221,352 @@ dat.taf <- dat.taf %>%
 
 ```
 
-For percentage, perhaps try scales::percent instead of percent_format. For ordering, try fill = reorder(wave, taf.worth_living_life_people). Let me know if you prefer a call!
 
 #Plot 1. Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?
-```{r}
+```{r eval=FALSE, include=FALSE}
 ##NEEDS TO BE PERCENTAGES!!!!!!!!! change order
 ggplot(subset(dat.taf, !is.na(taf.worth_living_life_people)),
-       aes(taf.worth_living_life_people, 
-           fill = reorder(wave, taf.worth_living_life_people))) +
-  geom_bar(size = 1,
+       aes(taf.worth_living_life_people,
+           group = 1)) +
+  geom_bar(aes(y = ..prop..,
+               fill = wave),
+           stat = "count",
+                 size = 1,
            shape = 23,
            colour = "black",
            position = position_dodge()) +
-  scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
+  scale_y_continuous(labels = scales::percent) +
   labs(y = "Percentage of participants",
        x = "Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?",
        title = "Life not worth living (past 2 weeks)")
+```
+
+##EDEQ
+
+*****
+"PRE-PANDEMIC" [retrospective] EDEQ BASELINE-SPECIFIC QUESTIONS (*NB: Baseline questions also asks about "Over the past 28 days...")
+
+1. edeq.deliberately_limit_amount_influence.1_baseline
+= On how many of the 28 days BEFORE THE PANDEMIC: Have you been deliberately trying to limit the amount of food you eat to influence your shape or weight ?
+
+2. edeq.calories_made_body_shape.1_baseline
+= On how many of the 28 days BEFORE THE PANDEMIC: Has thinking about body shape, weight, food, eating, or calories made it very difficult to concentrate on things you are interested in ?
+
+3. edeq.weight_influenced_person.1_baseline
+= Over the 28 days BEFORE THE PANDEMIC: Has your weight influenced how you think about yourself as a person?
+
+4. edeq.dissatisfied_shape_weight.1_baseline
+= Over the 28 days BEFORE THE PANDEMIC: How dissatisfied have you been with your weight or shape?
+
+5. edeq.eating_behaviours_concerns_distressed.1_baseline
+= Over the 28 days BEFORE THE PANDEMIC: How distressed have you been by your eating behaviours, the measures you've taken to control your weight, or concerns about your weight and shape?
+
+6. edeq.feelings_pandemic_felt_baseline [ONLY ONE NOT ASKED IN FOLLOW UP]
+= How different are these feelings to how you felt before the pandemic?
+
+7. edeq.nibbled_picked_snacks_grazed.1_baseline
+= On how many of the past 28 days BEFORE THE PANDEMIC: Picked at, nibbled, or grazed food repeatedly outside of planned meals and snacks?
+
+8. edeq.felt_anxious_blue_bored.2_baseline
+= On how many of the past 28 days BEFORE THE PANDEMIC: Eaten more than usual because you felt anxious, blue, bored, frustrated or lonely?
+ 
+9.  edeq.felt_anxious_blue_bored.3_baseline
+= On how many of the past 28 days BEFORE THE PANDEMIC: Eaten less than usual because you felt anxious, blue, bored, frustrated or lonely?
+
+10.  edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline
+= Over the past 28 days BEFORE PANDEMIC, how many times have you: Actively been monitoring your shape or weight ?
+
+11.  edeq.regard_lost_control_eaten.1_baseline
+= Over the past 28 days BEFORE PANDEMIC, how many times have you:Eaten what other people would regard as an unusually large amount of food with a sense of having lost control over your eating?
+
+12.  edeq.sick_means_made_shape.1_baseline =
+Over the past 28 days BEFORE PANDEMIC, how many times have you:Made yourself sick as a means of controlling your shape or weight?
+ 
+13. edeq.diuretics_laxatives_means_shape.1_baseline
+= Over the past 28 days BEFORE PANDEMIC, how many times have you: Taken laxatives, diuretics, or diet pills as a means of controlling your shape or weight?
+ 
+ 14. edeq.compulsive_driven_burn_calories.1_baseline
+= Over the past 28 days BEFORE PANDEMIC, how many times have you: Exercised in a “driven” or “compulsive” way as a means of controlling your weight, shape, or amount of fat, or to burn off calories?
 
 
+*****
+BASELINE + WAVES EDEQ QUESTIONS
+
+1. edeq.deliberately_limit_amount_influence_X 
+= On how many of the past 28 days: Have you been deliberately trying to limit the amount of food you eat to influence your shape or weight ?
+
+2. edeq.calories_made_body_shape_X 
+= On how many of the past 28 days: Has thinking about body shape, weight, food, eating, or calories made it very difficult to concentrate on things you are interested in ?
+
+3. edeq.weight_influenced_person_baseline
+= Over the past 28 days: Has your weight influenced how you think about yourself as a person?
+
+4. edeq.dissatisfied_shape_weight_baseline
+= Over the past 28 days: How dissatisfied have you been with your weight or shape?
+
+5. edeq.nibbled_picked_snacks_grazed_baseline
+= Over the past 28 days, on how many days have you: Picked at, nibbled, or grazed food repeatedly outside of planned meals and snacks?
+
+6. edeq.felt_anxious_blue_bored_baseline
+= Over the past 28 days, on how many days have you: Eaten more than usual because you felt anxious, blue, bored, frustrated or lonely?
+
+7. edeq.felt_anxious_blue_bored.1_baseline
+= Over the past 28 days, on how many days have you: Have you eaten less than usual because you felt anxious, blue, bored, frustrated or lonely?
+
+8. edeq.eating_behaviours_concerns_distressed_baseline
+= Over the past 28 days: How distressed have you been by your eating behaviours, the measures you've taken to control your weight, or concerns about your weight and shape?
+
+9. edeq.actively_been_monitoring_your_shape_or_weight_baseline 
+= Over the past 28 days, how many times per day have you: Actively been monitoring your shape or weight ?
+
+10. edeq.regard_lost_control_eaten_baseline
+= Over the past 28 days, how many times per day have you:Eaten what other people would regard as an unusually large amount of food with a sense of having lost control over your eating?
+
+11. edeq.sick_means_made_shape_baseline
+= Over the past 28 days, how many times per day have you: Made yourself sick as a means of controlling your shape or weight?
+
+12. edeq.diuretics_laxatives_means_shape_baseline
+= Over the past 28 days, how many times per day have you: Taken laxatives, diuretics, or diet pills as a means of controlling your shape or weight?
+
+13. edeq.compulsive_driven_burn_calories_baseline
+= Over the past 28 days, how many times per day have you: Exercised in a “driven” or “compulsive” way as a means of controlling your weight, shape, or amount of fat, or to burn off calories?
+
+
+
+****
+CATEGORIES - distress?
+Should split Qs into categories:
+
+1) Restricting
+
+A. deliberately trying to limit the amount of food you eat to influence your shape or weight 
+edeq.deliberately_limit_amount_influence.1 (retro prepan)
+edeq.deliberately_limit_amount_influence_X (baseline and waves)
+
+B.Eaten less than usual because you felt anxious, blue, bored, frustrated or lonely?
+edeq.felt_anxious_blue_bored.3_baseline (retro prepan)
+edeq.felt_anxious_blue_bored.1 (baseline and waves)
+
+2) Compensating
+A. Made yourself sick as a means of controlling your shape or weight?
+edeq.sick_means_made_shape.1 (retro prepan)
+edeq.sick_means_made_shape_X (baseline and waves)
+
+B. Taken laxatives, diuretics, or diet pills as a means of controlling your shape or weight?
+edeq.diuretics_laxatives_means_shape.1  (retro prepan)
+edeq.diuretics_laxatives_means_shape_x (baseline and waves)
+
+C. Exercised in a “driven” or “compulsive” way as a means of controlling your weight, shape, or amount of fat, or to burn off calories?
+edeq.compulsive_driven_burn_calories.1  (retro prepan)
+edeq.compulsive_driven_burn_calories_X (baseline and waves)
+
+3) Bingeing behaviour (eating more)
+
+A. Picked at, nibbled, or grazed food repeatedly outside of planned meals and snacks?
+edeq.nibbled_picked_snacks_grazed.1 (retro prepan)
+edeq.nibbled_picked_snacks_grazed_X (baseline and waves)
+
+B. Eaten more than usual because you felt anxious, blue, bored, frustrated or lonely?
+edeq.felt_anxious_blue_bored.2 (retro prepan)
+edeq.felt_anxious_blue_bored_X (baseline and waves)
+
+c. Eaten what other people would regard as an unusually large amount of food with a sense of having lost control over your eating?
+edeq.regard_lost_control_eaten.1 (retro prepan)
+edeq.regard_lost_control_eaten_X  (baseline and waves)
+
+4) Body dissatisfaction / cognitive
+
+A. Has thinking about body shape, weight, food, eating, or calories made it very difficult to concentrate on things you are interested in ?
+edeq.calories_made_body_shape.1 (retro prepan)
+edeq.calories_made_body_shape_X (baseline and waves)
+
+B. Has your weight influenced how you think about yourself as a person?
+edeq.weight_influenced_person.1 (retro prepan)
+edeq.weight_influenced_person)X (baseline and waves)
+
+C. How dissatisfied have you been with your weight or shape?
+edeq.weight_influenced_person.1 (retro prepan)
+edeq.weight_influenced_person_X (baseline and waves)
+
+D. Actively been monitoring your shape or weight?
+edeq.actively_been_monitoring_your_shape_or_weight_.1 (retro prepan)
+edeq.actively_been_monitoring_your_shape_or_weight_X (baseline and waves)
+
+
+ALSO - DISTRESS
+
+How distressed have you been by your eating behaviours, the measures you've taken to control your weight, or concerns about your weight and shape?
+edeq.eating_behaviours_concerns_distressed.1 (retro prepan)
+edeq.eating_behaviours_concerns_distressed_X (baseline and waves)
+
+"edeq.felt_anxious_blue_bored.1_.Wavebaseline"                                "edeq.eating_behaviours_concerns_distressed_.Wavebaseline"                   
+[103] "edeq.deliberately_limit_amount_influence.1_.Wavebaseline"                    "edeq.calories_made_body_shape.1_.Wavebaseline"                              
+[105] "edeq.weight_influenced_person.1_.Wavebaseline"                               "edeq.dissatisfied_shape_weight.1_.Wavebaseline"                             
+[107] "edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline"                  "edeq.feelings_pandemic_felt_.Wavebaseline"                                  
+[109] "edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline"            "edeq.regard_lost_control_eaten_.Wavebaseline"                               
+[111] "edeq.sick_means_made_shape_.Wavebaseline"                                    "edeq.diuretics_laxatives_means_shape_.Wavebaseline"                         
+[113] "edeq.compulsive_driven_burn_calories_.Wavebaseline"                          "edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline"                          
+[115] "edeq.felt_anxious_blue_bored.2_.Wavebaseline"                                "edeq.felt_anxious_blue_bored.3_.Wavebaseline"                               
+[117] "edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline"         "edeq.regard_lost_control_eaten.1_.Wavebaseline"                             
+[119] "edeq.sick_means_made_shape.1_.Wavebaseline"                                  "edeq.diuretics_laxatives_means_shape.1_.Wavebaseline"                       
+[121] "edeq.compulsive_driven_burn_calories.1_.Wavebaseline"                
+
+
+##Rename variable names in EDEQ
+```{r}
+dat.taf <- dat.taf %>% 
+  rename(
+    edeq.sick_means_made_shape.1_baseline = edeq.sick_means_made_shape.retroprepan,
+    sepal_width = Sepal.Width
+    )
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##PLOTTING
+
+#. Get rid of NAs and change taf to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.taf[!is.na(dat.taf$taf.worth_living_life_people),]
+
+#change wave to factor
+#dat.no.nas$wave_factor <- as.factor(dat.no.nas$wave)
+
+#change taf to factor
+dat.no.nas$taf.worth_living_life_people <- factor(dat.no.nas$taf.worth_living_life_people)
+```
+
+#.  Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                           "baseline",
+                           "1a",
+                           "1b",
+                           "2a",
+                           "2b",
+                           "3a",
+                           "3b",
+                           "4a",
+                           "4b",
+                           "5",
+                           "6",
+                           "7",
+                           "8"
+                           ))
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave) %>%
+  dplyr::summarise(wcount = table(taf.worth_living_life_people) / sum(table(taf.worth_living_life_people))) %>%
+  ungroup() %>%
+  mutate(taf.worth_living_life_people = rep(levels(dat.no.nas[["taf.worth_living_life_people"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+```{r}
+#reorder wave rows
+dat_plot <- dat_plot[c(49:52, 1:48), ]
+
+#rename
+dat_plot$wave[dat_plot$wave == "1c"] <- "baseline"
+```
+
+
+```{r}
+#plot!
+ggplot(dat_plot,
+       aes(x = taf.worth_living_life_people,
+           y = wcount,
+           fill = wave)) +
+  geom_bar(aes(group = wave),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r eval=FALSE, include=FALSE}
+
+
+table(split(dat.no.nas$wave_factor,
+      dat.no.nas$taf.worth_living_life_people)[["Yes, more than once"]])
+
+install.packages("tidyverse")
+library("tidyverse")
+
+dat_plot <- dat.no.nas %>%
+  group_by(taf.worth_living_life_people) %>%
+  dplyr::summarise(wcount = table(wave_factor) / sum(table(wave_factor))) %>%
+  ungroup() %>%
+  mutate(wave = rep(unique(dat[["wave"]]), length(unique(dat[["taf.worth_living_life_people"]]))))
+
+str(dat.no.nas$taf.worth_living_life_people)
+str(dat.no.nas$wave_factor)
+
+
+dat <- tibble(
+  wave = factor(c(1, 2, 3, 2, 1)),
+  taf = factor(c(1, 2, 1, 2, 1))
+)
+ 
+dat_plot <- dat %>%
+  group_by(taf) %>%
+  summarise(wcount = table(wave) / sum(table(wave))) %>%
+  ungroup() %>%
+  mutate(wave = rep(unique(dat[["wave"]]), length(unique(dat[["taf"]]))))
+ 
+ggplot(dat_plot, aes(x = taf, y = wcount, fill = wave)) +
+  geom_bar(aes(group = wave), stat = "identity", position = "dodge")
 ```
 
 

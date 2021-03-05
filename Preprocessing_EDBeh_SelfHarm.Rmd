@@ -40,10 +40,10 @@ source("./functions.R")
 
 # Specify cohort
 ```{r Specify cohort}
-GLAD = TRUE
+GLAD = FALSE
 EDGI = FALSE
 RAMP = FALSE
-NBR = FALSE
+NBR = TRUE
 COPING = FALSE
 ```
 
@@ -2591,6 +2591,7 @@ nrow(dat.raw.taf.ramp)
 }
 
 ```
+
 ## 6. Change follow up EDEQ RAMP to long format
 ```{r EDEQ RAMP long format}
 if(RAMP == TRUE) {
@@ -2844,14 +2845,6 @@ nrow(dat.raw.taf.coping)
 
 ```
 
-##Remove dup IDs (EDEQ COPING) [not in use]
-```{r identify wave dates edeq coping}
-if (COPING ==TRUE) {
-source("./DupIDs_EDEQ_COPING.R")
-
-}
-
-```
 
 
 ## 6. Change follow up EDE COPING to long format
@@ -3131,7 +3124,7 @@ colnames(dat.raw.edgi)
 ```{r GLAD data frame list}
 if(GLAD == TRUE) {
  
-   glad.1 <-  glad.coping.dem.raw.id %>%
+glad.1 <-  glad.coping.dem.raw.id %>%
      select(ID,
             cohort_name,
             sex,
@@ -3286,6 +3279,8 @@ nbr.2 <- nbr.dem.raw.id.complete %>%
          ethnicity,
          current_country,
          uk_location)
+
+freq(nbr.2$ethnicity)
     
   nbr.3 <- nbr.dem.raw.id %>%
     select(ID,
