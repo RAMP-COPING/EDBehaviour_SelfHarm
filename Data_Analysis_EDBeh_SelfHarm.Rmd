@@ -202,6 +202,7 @@ freq(dat.taf$autism_spectrum_disorder_numeric)
 ##ADHD
 ```{r}
   freq(dat.taf$mhd.attention_deficit_hyperactivity_disorder_numeric)
+
 ```
 
 ##EDEQ
@@ -378,21 +379,21 @@ edeq.eating_behaviours_concerns_distressed_X (baseline and waves)
 
 ##Rename retro prepandemic variable names in EDEQ
 ```{r}
-dat.taf <- dat.taf %>% 
+dat.edeq <- dat.edeq %>% 
   rename(
-    edeq.sick_means_made_shape.Waveretro_prepan = edeq.sick_means_made_shape.1_baseline,
-    edeq.felt_anxious_blue_bored.3.Waveretro_prepan = edeq.felt_anxious_blue_bored.3_baseline,
-    edeq.sick_means_made_shape.1.Waveretro_prepan =  edeq.sick_means_made_shape.1_baseline,
-    edeq.diuretics_laxatives_means_shape.1.Waveretro_prepan= edeq.diuretics_laxatives_means_shape.1_baseline,
-    edeq.compulsive_driven_burn_calories.1.Waveretro_prepan = edeq.compulsive_driven_burn_calories.1_baseline ,
-    edeq.nibbled_picked_snacks_grazed.1.Waveretro_prepan = edeq.nibbled_picked_snacks_grazed.1_baseline,
-    edeq.felt_anxious_blue_bored.2.Waveretro_prepan = edeq.felt_anxious_blue_bored.2_baseline,
-    edeq.regard_lost_control_eaten.1.Waveretro_prepan = edeq.regard_lost_control_eaten.1_baseline,
-    edeq.calories_made_body_shape.1.Waveretro_prepan = edeq.calories_made_body_shape.1_baseline,
-    edeq.weight_influenced_person.1.Waveretro_prepan = edeq.weight_influenced_person.1_baseline,
-    edeq.dissatisfied_shape_weight.1.Waveretro_prepan = edeq.dissatisfied_shape_weight.1_baseline,
-    edeq.actively_been_monitoring_your_shape_or_weight.Waveretro_prepan = edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline,
-    edeq.eating_behaviours_concerns_distressed.Waveretro_prepan = edeq.eating_behaviours_concerns_distressed.1_baseline
+    edeq.sick_means_made_shape_.Waveretro_prepan = edeq.sick_means_made_shape.1_baseline,
+    edeq.felt_anxious_blue_bored.3_.Waveretro_prepan = edeq.felt_anxious_blue_bored.3_baseline,
+    edeq.sick_means_made_shape.1_.Waveretro_prepan =  edeq.sick_means_made_shape.1_baseline,
+    edeq.diuretics_laxatives_means_shape.1_.Waveretro_prepan= edeq.diuretics_laxatives_means_shape.1_baseline,
+    edeq.compulsive_driven_burn_calories.1_.Waveretro_prepan = edeq.compulsive_driven_burn_calories.1_baseline ,
+    edeq.nibbled_picked_snacks_grazed.1_.Waveretro_prepan = edeq.nibbled_picked_snacks_grazed.1_baseline,
+    edeq.felt_anxious_blue_bored.2_.Waveretro_prepan = edeq.felt_anxious_blue_bored.2_baseline,
+    edeq.regard_lost_control_eaten.1_.Waveretro_prepan = edeq.regard_lost_control_eaten.1_baseline,
+    edeq.calories_made_body_shape.1_.Waveretro_prepan = edeq.calories_made_body_shape.1_baseline,
+    edeq.weight_influenced_person.1_.Waveretro_prepan = edeq.weight_influenced_person.1_baseline,
+    edeq.dissatisfied_shape_weight.1_.Waveretro_prepan = edeq.dissatisfied_shape_weight.1_baseline,
+    edeq.actively_been_monitoring_your_shape_or_weight_.Waveretro_prepan = edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline,
+    edeq.eating_behaviours_concerns_distressed_.Waveretro_prepan = edeq.eating_behaviours_concerns_distressed.1_baseline
 
     )
 
@@ -402,64 +403,51 @@ dat.taf <- dat.taf %>%
 
 
     
-
+ "edeq.calories_made_body_shape_.Wavebaseline_numeric"                        
+[123] "edeq.weight_influenced_person_.Wavebaseline_numeric"                         "edeq.dissatisfied_shape_weight_.Wavebaseline_numeric"                       
+[125] "edeq.nibbled_picked_snacks_grazed_.Wavebaseline_numeric"                     "edeq.felt_anxious_blue_bored_.Wavebaseline_numeric"                         
+[127] "edeq.felt_anxious_blue_bored.1_.Wavebaseline_numeric"                        "edeq.eating_behaviours_concerns_distressed_.Wavebaseline_numeric"           
+[129] "edeq.deliberately_limit_amount_influence.1_.Wavebaseline_numeric"            "edeq.calories_made_body_shape.1_.Wavebaseline_numeric"                      
+[131] "edeq.weight_influenced_person.1_.Wavebaseline_numeric"                       "edeq.dissatisfied_shape_weight.1_.Wavebaseline_numeric"                     
+[133] "edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline_numeric"          "edeq.feelings_pandemic_felt_.Wavebaseline_numeric"                          
+[135] "edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric"    "edeq.regard_lost_control_eaten_.Wavebaseline_numeric"                       
+[137] "edeq.sick_means_made_shape_.Wavebaseline_numeric"                            "edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric"                 
+[139] "edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric"                  "edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline_numeric"                  
+[141] "edeq.felt_anxious_blue_bored.2_.Wavebaseline_numeric"                        "edeq.felt_anxious_blue_bored.3_.Wavebaseline_numeric"                       
+[143] "edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline_numeric" "edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric"                     
+[145] "edeq.sick_means_made_shape.1_.Wavebaseline_numeric"                          "edeq.diuretics_laxatives_means_shape.1_.Wavebaseline_numeric"        
 
 
 ##PLOTS - EDEQ
 1. Need to select variables to use (don't want numeric ones in there as then can't re-structure the data)
 ```{r}
-colnames(dat.edeq)
-  
-dat.edeq.plots <- dat.edeq %>% 
-  select(!"edeq.deliberately_limit_amount_influence_.Wavebaseline_numeric",
-         !"edeq.calories_made_body_shape_.Wavebaseline_numeric",                         
-         !"edeq.weight_influenced_person_.Wavebaseline_numeric",                       
-         !"edeq.dissatisfied_shape_weight_.Wavebaseline_numeric",                       
-         !"edeq.nibbled_picked_snacks_grazed_.Wavebaseline_numeric",                    
-         !"edeq.felt_anxious_blue_bored_.Wavebaseline_numeric",                       
-         !"edeq.felt_anxious_blue_bored.1_.Wavebaseline_numeric",                       
-         !"edeq.eating_behaviours_concerns_distressed_.Wavebaseline_numeric",            
-         !"edeq.deliberately_limit_amount_influence.1_.Wavebaseline_numeric",           
-         !"edeq.calories_made_body_shape.1_.Wavebaseline_numeric",                       
-         !"edeq.weight_influenced_person.1_.Wavebaseline_numeric",                      
-         !"edeq.dissatisfied_shape_weight.1_.Wavebaseline_numeric",                      
-         !"edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline_numeric",         
-         !"edeq.feelings_pandemic_felt_.Wavebaseline_numeric",                          
-         !"edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric",   
-         !"edeq.regard_lost_control_eaten_.Wavebaseline_numeric",                        
-         !"edeq.sick_means_made_shape_.Wavebaseline_numeric",                           
-         !"edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric",                  
-         !"edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric",                 
-         !"edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline_numeric",                   
-         !"edeq.felt_anxious_blue_bored.2_.Wavebaseline_numeric",                       
-         !"edeq.felt_anxious_blue_bored.3_.Wavebaseline_numeric",                        
-         !"edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline_numeric",
-         !"edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric",                     
-         !"edeq.sick_means_made_shape.1_.Wavebaseline_numeric",                         
-         !"edeq.diuretics_laxatives_means_shape.1_.Wavebaseline_numeric",                
-         !"edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric" 
-         )
-  
 
-            
-          
+dat.edeq.long.prep1 <- dat.edeq %>% 
+  select(!contains(".Wavebaseline_numeric"))
+
+dat.edeq.long.prep2 <- dat.edeq.long.prep1 %>% 
+  select(!contains("baseline_numeric"))
+
+ colnames(dat.edeq.long.prep2) 
+ 
 ```
-
-
 
  
 ```{r}
-dat.edeq.long <- dat.edeq %>%
+dat.edeq.long <- dat.edeq.long.prep2 %>%
   pivot_longer(
     cols = (starts_with("edeq") &
               contains(".Wave")),
     names_to = "wave_edeq",
     values_to = "value") %>%
-  separate(wave_taf, into = c("edeq", "wave"), sep = "_.Wave", remove = TRUE) %>%
+  separate(wave_edeq, into = c("edeq", "wave"), sep = "_.Wave", remove = TRUE) %>%
   pivot_wider(
      names_from = "edeq",
      values_from = "value")
 
+colnames(dat.edeq.long)
+
+freq(dat.edeq.long$wave)
 ```
 
 
