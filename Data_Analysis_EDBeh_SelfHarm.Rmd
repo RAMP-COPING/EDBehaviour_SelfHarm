@@ -204,43 +204,6 @@ freq(dat.taf$autism_spectrum_disorder_numeric)
   freq(dat.taf$mhd.attention_deficit_hyperactivity_disorder_numeric)
 ```
 
-
-##PLOTS - TAF 
-#First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
-```{r}
-dat.taf <- dat.taf %>%
-  pivot_longer(
-    cols = (starts_with("taf") &
-              contains(".Wave")),
-    names_to = "wave_taf",
-    values_to = "value") %>%
-  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
-  pivot_wider(
-     names_from = "taf",
-     values_from = "value")
-
-```
-
-
-#Plot 1. Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?
-```{r eval=FALSE, include=FALSE}
-##NEEDS TO BE PERCENTAGES!!!!!!!!! change order
-ggplot(subset(dat.taf, !is.na(taf.worth_living_life_people)),
-       aes(taf.worth_living_life_people,
-           group = 1)) +
-  geom_bar(aes(y = ..prop..,
-               fill = wave),
-           stat = "count",
-                 size = 1,
-           shape = 23,
-           colour = "black",
-           position = position_dodge()) +
-  scale_y_continuous(labels = scales::percent) +
-  labs(y = "Percentage of participants",
-       x = "Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?",
-       title = "Life not worth living (past 2 weeks)")
-```
-
 ##EDEQ
 
 *****
@@ -334,6 +297,7 @@ BASELINE + WAVES EDEQ QUESTIONS
 
 
 ****
+NB: ONLY RAMP HAS 'RETROSPECTIVE PREPAN' and BASELINE EDEQ
 CATEGORIES - distress?
 Should split Qs into categories:
 
@@ -344,7 +308,7 @@ edeq.deliberately_limit_amount_influence.1 (retro prepan)
 edeq.deliberately_limit_amount_influence_X (baseline and waves)
 
 B.Eaten less than usual because you felt anxious, blue, bored, frustrated or lonely?
-edeq.felt_anxious_blue_bored.3_baseline (retro prepan)
+edeq.felt_anxious_blue_bored.3_ (retro prepan)
 edeq.felt_anxious_blue_bored.1 (baseline and waves)
 
 2) Compensating
@@ -385,8 +349,8 @@ edeq.weight_influenced_person.1 (retro prepan)
 edeq.weight_influenced_person)X (baseline and waves)
 
 C. How dissatisfied have you been with your weight or shape?
-edeq.weight_influenced_person.1 (retro prepan)
-edeq.weight_influenced_person_X (baseline and waves)
+edeq.dissatisfied_shape_weight.1 (retro prepan)
+edeq.dissatisfied_shape_weight_X (baseline and waves)
 
 D. Actively been monitoring your shape or weight?
 edeq.actively_been_monitoring_your_shape_or_weight_.1 (retro prepan)
@@ -412,13 +376,26 @@ edeq.eating_behaviours_concerns_distressed_X (baseline and waves)
 [121] "edeq.compulsive_driven_burn_calories.1_.Wavebaseline"                
 
 
-##Rename variable names in EDEQ
+##Rename retro prepandemic variable names in EDEQ
 ```{r}
 dat.taf <- dat.taf %>% 
   rename(
-    edeq.sick_means_made_shape.1_baseline = edeq.sick_means_made_shape.retroprepan,
-    sepal_width = Sepal.Width
+    edeq.sick_means_made_shape.Waveretro_prepan = edeq.sick_means_made_shape.1_baseline,
+    edeq.felt_anxious_blue_bored.3.Waveretro_prepan = edeq.felt_anxious_blue_bored.3_baseline,
+    edeq.sick_means_made_shape.1.Waveretro_prepan =  edeq.sick_means_made_shape.1_baseline,
+    edeq.diuretics_laxatives_means_shape.1.Waveretro_prepan= edeq.diuretics_laxatives_means_shape.1_baseline,
+    edeq.compulsive_driven_burn_calories.1.Waveretro_prepan = edeq.compulsive_driven_burn_calories.1_baseline ,
+    edeq.nibbled_picked_snacks_grazed.1.Waveretro_prepan = edeq.nibbled_picked_snacks_grazed.1_baseline,
+    edeq.felt_anxious_blue_bored.2.Waveretro_prepan = edeq.felt_anxious_blue_bored.2_baseline,
+    edeq.regard_lost_control_eaten.1.Waveretro_prepan = edeq.regard_lost_control_eaten.1_baseline,
+    edeq.calories_made_body_shape.1.Waveretro_prepan = edeq.calories_made_body_shape.1_baseline,
+    edeq.weight_influenced_person.1.Waveretro_prepan = edeq.weight_influenced_person.1_baseline,
+    edeq.dissatisfied_shape_weight.1.Waveretro_prepan = edeq.dissatisfied_shape_weight.1_baseline,
+    edeq.actively_been_monitoring_your_shape_or_weight.Waveretro_prepan = edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline,
+    edeq.eating_behaviours_concerns_distressed.Waveretro_prepan = edeq.eating_behaviours_concerns_distressed.1_baseline
+
     )
+
 
 ```
 
@@ -426,6 +403,45 @@ dat.taf <- dat.taf %>%
 
 
 
+
+
+
+
+##PLOTS - TAF 
+#First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
+```{r}
+dat.taf <- dat.taf %>%
+  pivot_longer(
+    cols = (starts_with("taf") &
+              contains(".Wave")),
+    names_to = "wave_taf",
+    values_to = "value") %>%
+  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
+  pivot_wider(
+     names_from = "taf",
+     values_from = "value")
+
+```
+
+
+#Plot 1. Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?
+```{r eval=FALSE, include=FALSE}
+##NEEDS TO BE PERCENTAGES!!!!!!!!! change order
+ggplot(subset(dat.taf, !is.na(taf.worth_living_life_people)),
+       aes(taf.worth_living_life_people,
+           group = 1)) +
+  geom_bar(aes(y = ..prop..,
+               fill = wave),
+           stat = "count",
+                 size = 1,
+           shape = 23,
+           colour = "black",
+           position = position_dodge()) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(y = "Percentage of participants",
+       x = "Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?",
+       title = "Life not worth living (past 2 weeks)")
+```
 
 
 
