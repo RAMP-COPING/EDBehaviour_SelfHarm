@@ -36,8 +36,8 @@ colnames(dat.taf)
 dat.edeq <- readRDS(file = "../data_cleaned/dat.edeq.rds")
 dim(dat.edeq)
 colnames(dat.edeq)
-
 ```
+
 # Colour palettes
 Define colours for plotting this are the standard coping colours
 ```{r Colour palettes: COPING}
@@ -205,7 +205,302 @@ freq(dat.taf$autism_spectrum_disorder_numeric)
 
 ```
 
+
+##PLOTS - TAF 
+
+
+##**RETRO PREPAN - need to rename these the same as baseline / waves
+
+taf.pandemic_felt_.Wavebaseline: Had you felt that way [life not worth living] before the pandemic?
+taf.pandemic_felt.1_.Wavebaseline: Had you felt that way [contemplated harm] before the pandemic?
+taf.meant_end_life_pandemic_.Wavebaseline: Before the pandemic, had you deliberately harmed yourself, whether or not you meant to end your life?
+```{r}
+dat.taf <- dat.taf %>% 
+  rename(
+   taf.worth_living_life_people_.Waveretro_prepan = taf.pandemic_felt_.Wavebaseline,
+   taf.have_you_contemplated_harming_yourself_.Waveretro_prepan = taf.pandemic_felt.1_.Wavebaseline,
+   taf.meant_life_end_weeks_.Waveretro_prepan = taf.meant_end_life_pandemic_.Wavebaseline
+    )
+
+```
+
+
+#1. First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
+```{r}
+dat.taf <- dat.taf %>%
+  pivot_longer(
+    cols = (starts_with("taf") &
+              contains(".Wave")),
+    names_to = "wave_taf",
+    values_to = "value") %>%
+  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
+  pivot_wider(
+     names_from = "taf",
+     values_from = "value")
+
+colnames(dat.taf)
+
+```
+
+
+#2. Get rid of NAs and change taf to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.taf[!is.na(dat.taf$taf.worth_living_life_people),]
+
+#change taf to factor (get rid of 'yes' as its an empty level)
+dat.no.nas$taf.worth_living_life_people_factor <- factor(dat.no.nas$taf.worth_living_life_people)
+```
+
+#3. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "retro_prepan",
+                                  "baseline",
+                           "1a",
+                           "1b",
+                           "2a",
+                           "2b",
+                           "3a",
+                           "3b",
+                           "4a",
+                           "4b",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+levels(dat.no.nas$wave_factor)[1] <- "test"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(taf.worth_living_life_people_factor) / sum(table(taf.worth_living_life_people_factor))) %>%
+  ungroup() %>%
+  mutate(taf.worth_living_life_people_factor = rep(levels(dat.no.nas[["taf.worth_living_life_people_factor"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change taf variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(taf.worth_living_life_people_factor = fct_relevel(taf.worth_living_life_people_factor,
+                           "Prefer not to answer",
+                           "No",
+                           "Yes, once",
+                           "Yes, more than once"))
+
+
+```
+
+
+7. PLOT ! [WHAT TO DO WITH "YES" FROM RAMP RETRO PREPAN?]
+```{r}
+ggplot(dat_plot,
+       aes(x = taf.worth_living_life_people_factor,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent)
+
+```
+
+
+##PLOTS - TAF (LIFE NOT WORTH LIVING, 2 WEEKS)
+### Read in TAF data (again, because variable needs to be renamed again and data restructured)
+```{r}
+dat.taf <- readRDS(file = "../data_cleaned/dat.taf.rds")
+dim(dat.taf)
+colnames(dat.taf)
+
+```
+
+##**RETRO PREPAN - need to rename these the same as baseline / waves
+
+```{r}
+dat.taf <- dat.taf %>% 
+  rename(
+   taf.felt_weeks_past_.Waveretro_prepan = taf.pandemic_felt_.Wavebaseline)
+
+ 
+```
+
+#1. First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
+```{r}
+dat.taf <- dat.taf %>%
+  pivot_longer(
+    cols = (starts_with("taf") &
+              contains(".Wave")),
+    names_to = "wave_taf",
+    values_to = "value") %>%
+  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
+  pivot_wider(
+     names_from = "taf",
+     values_from = "value")
+
+colnames(dat.taf)
+
+```
+
+
+
+#2. Get rid of NAs and change taf to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.taf[!is.na(dat.taf$taf.felt_weeks_past),]
+
+#change taf to factor (get rid of 'yes' as its an empty level)
+dat.no.nas$taf.felt_weeks_past_factor <- factor(dat.no.nas$taf.felt_weeks_past)
+```
+
+#3. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "retro_prepan",
+                                  "baseline",
+                           "1a",
+                           "1b",
+                           "2a",
+                           "2b",
+                           "3a",
+                           "3b",
+                           "4a",
+                           "4b",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+str(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+levels(dat.no.nas$wave_factor)[1] <- "test"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(taf.felt_weeks_past_factor) / sum(table(taf.felt_weeks_past_factor))) %>%
+  ungroup() %>%
+  mutate(taf.felt_weeks_past_factor = rep(levels(dat.no.nas[["taf.felt_weeks_past_factor"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change taf variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(taf.felt_weeks_past_factor = fct_relevel(taf.felt_weeks_past_factor,
+                           "Prefer not to answer",
+                           "No",
+                           "Yes"))
+
+
+
+```
+
+
+7. PLOT ! [WHAT TO DO WITH "YES" FROM RAMP RETRO PREPAN?]
+```{r}
+ggplot(dat_plot,
+       aes(x = taf.felt_weeks_past_factor,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ##EDEQ
+
+##***NEED NUMERIC VERSIONS FOR:
+edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric
+edeq.regard_lost_control_eaten_.Wavebaseline_numeric
+edeq.sick_means_made_shape_.Wavebaseline_numeric
+edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric
+edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric
 
 *****
 "PRE-PANDEMIC" [retrospective] EDEQ BASELINE-SPECIFIC QUESTIONS (*NB: Baseline questions also asks about "Over the past 28 days...")
@@ -364,19 +659,6 @@ How distressed have you been by your eating behaviours, the measures you've take
 edeq.eating_behaviours_concerns_distressed.1 (retro prepan)
 edeq.eating_behaviours_concerns_distressed_X (baseline and waves)
 
-"edeq.felt_anxious_blue_bored.1_.Wavebaseline"                                "edeq.eating_behaviours_concerns_distressed_.Wavebaseline"                   
-[103] "edeq.deliberately_limit_amount_influence.1_.Wavebaseline"                    "edeq.calories_made_body_shape.1_.Wavebaseline"                              
-[105] "edeq.weight_influenced_person.1_.Wavebaseline"                               "edeq.dissatisfied_shape_weight.1_.Wavebaseline"                             
-[107] "edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline"                  "edeq.feelings_pandemic_felt_.Wavebaseline"                                  
-[109] "edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline"            "edeq.regard_lost_control_eaten_.Wavebaseline"                               
-[111] "edeq.sick_means_made_shape_.Wavebaseline"                                    "edeq.diuretics_laxatives_means_shape_.Wavebaseline"                         
-[113] "edeq.compulsive_driven_burn_calories_.Wavebaseline"                          "edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline"                          
-[115] "edeq.felt_anxious_blue_bored.2_.Wavebaseline"                                "edeq.felt_anxious_blue_bored.3_.Wavebaseline"                               
-[117] "edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline"         "edeq.regard_lost_control_eaten.1_.Wavebaseline"                             
-[119] "edeq.sick_means_made_shape.1_.Wavebaseline"                                  "edeq.diuretics_laxatives_means_shape.1_.Wavebaseline"                       
-[121] "edeq.compulsive_driven_burn_calories.1_.Wavebaseline"                
-
-
 ##Rename retro prepandemic variable names in EDEQ
 
 ##**need to rename these the same as baseline / waves
@@ -399,26 +681,7 @@ dat.edeq <- dat.edeq %>%
 
     )
 
-
 ```
-
-
-
-    
- "edeq.calories_made_body_shape_.Wavebaseline_numeric"                        
-[123] "edeq.weight_influenced_person_.Wavebaseline_numeric"                         "edeq.dissatisfied_shape_weight_.Wavebaseline_numeric"                       
-[125] "edeq.nibbled_picked_snacks_grazed_.Wavebaseline_numeric"                     "edeq.felt_anxious_blue_bored_.Wavebaseline_numeric"                         
-[127] "edeq.felt_anxious_blue_bored.1_.Wavebaseline_numeric"                        "edeq.eating_behaviours_concerns_distressed_.Wavebaseline_numeric"           
-[129] "edeq.deliberately_limit_amount_influence.1_.Wavebaseline_numeric"            "edeq.calories_made_body_shape.1_.Wavebaseline_numeric"                      
-[131] "edeq.weight_influenced_person.1_.Wavebaseline_numeric"                       "edeq.dissatisfied_shape_weight.1_.Wavebaseline_numeric"                     
-[133] "edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline_numeric"          "edeq.feelings_pandemic_felt_.Wavebaseline_numeric"                          
-[135] "edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric"    "edeq.regard_lost_control_eaten_.Wavebaseline_numeric"                       
-[137] "edeq.sick_means_made_shape_.Wavebaseline_numeric"                            "edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric"                 
-[139] "edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric"                  "edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline_numeric"                  
-[141] "edeq.felt_anxious_blue_bored.2_.Wavebaseline_numeric"                        "edeq.felt_anxious_blue_bored.3_.Wavebaseline_numeric"                       
-[143] "edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline_numeric" "edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric"                     
-[145] "edeq.sick_means_made_shape.1_.Wavebaseline_numeric"                          "edeq.diuretics_laxatives_means_shape.1_.Wavebaseline_numeric"        
-
 
 ##PLOTS - EDEQ
 1. Need to select variables to use (don't want numeric ones in there as then can't re-structure the data)
@@ -449,172 +712,7 @@ dat.edeq.long <- dat.edeq.long.prep2 %>%
 
 colnames(dat.edeq.long)
 
-
 ```
-
-
-##PLOTS - TAF 
-#1. First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
-```{r}
-dat.taf <- dat.taf %>%
-  pivot_longer(
-    cols = (starts_with("taf") &
-              contains(".Wave")),
-    names_to = "wave_taf",
-    values_to = "value") %>%
-  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
-  pivot_wider(
-     names_from = "taf",
-     values_from = "value")
-
-colnames(dat.taf)
-
-```
-
-
-#2. Get rid of NAs and change taf to factor
-```{r}
-#get rid of nas
-dat.no.nas <- dat.taf[!is.na(dat.taf$taf.worth_living_life_people),]
-
-#change taf to factor (get rid of 'yes' as its an empty level)
-dat.no.nas$taf.worth_living_life_people_factor <- factor(dat.no.nas$taf.worth_living_life_people)
-```
-
-#3. Change wave to factor and re-order
-```{r}
-
-# change order of wave factor 1
-dat.no.nas <- dat.no.nas %>%
- mutate(wave_factor = fct_relevel(wave,
-                                  "baseline",
-                           "1a",
-                           "1b",
-                           "2a",
-                           "2b",
-                           "3a",
-                           "3b",
-                           "4a",
-                           "4b",
-                           "5",
-                           "6",
-                           "7",
-                           "8"))
-
-
-#Check that this worked
-
-summary(dat.no.nas$wave_factor)
-```
-
-#4. Rename waves to dates
-```{r}
-
-##Rename waves
-levels(dat.no.nas$wave_factor)[1] <- "test"
-
-
-```
-
-
-#5. Format data to plot
-```{r}
-#get data in format to plot
-dat_plot <- dat.no.nas %>%
-  group_by(wave_factor) %>%
-  dplyr::summarise(wcount = table(taf.worth_living_life_people_factor) / sum(table(taf.worth_living_life_people_factor))) %>%
-  ungroup() %>%
-  mutate(taf.worth_living_life_people_factor = factor(rep(levels(dat.no.nas[["taf.worth_living_life_people_factor"]])),
-                    length(levels(dat.no.nas[["wave_factor"]]))))
-
-
-```
-
-6. Change taf variable to ordered factor
-```{r}
-
-dat_plot <- dat_plot %>%
-  mutate(taf.worth_living_life_people_factor = fct_relevel(taf.worth_living_life_people_factor,
-                           "Prefer not to answer",
-                           "No",
-                           "Yes, once",
-                           "Yes, more than once"))
-
-
-```
-
-7. PLOT !
-```{r}
-ggplot(dat_plot,
-       aes(x = taf.worth_living_life_people_factor,
-           y = wcount,
-           fill = wave_factor)) +
-  geom_bar(aes(group = wave_factor),
-           stat = "identity",
-           position = "dodge",
-           colour = "black") + 
-  scale_y_continuous(labels = scales::percent)
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r eval=FALSE, include=FALSE}
-
-
-table(split(dat.no.nas$wave_factor,
-      dat.no.nas$taf.worth_living_life_people)[["Yes, more than once"]])
-
-install.packages("tidyverse")
-library("tidyverse")
-
-dat_plot <- dat.no.nas %>%
-  group_by(taf.worth_living_life_people) %>%
-  dplyr::summarise(wcount = table(wave_factor) / sum(table(wave_factor))) %>%
-  ungroup() %>%
-  mutate(wave = rep(unique(dat[["wave"]]), length(unique(dat[["taf.worth_living_life_people"]]))))
-
-str(dat.no.nas$taf.worth_living_life_people)
-str(dat.no.nas$wave_factor)
-
-
-dat <- tibble(
-  wave = factor(c(1, 2, 3, 2, 1)),
-  taf = factor(c(1, 2, 1, 2, 1))
-)
- 
-dat_plot <- dat %>%
-  group_by(taf) %>%
-  summarise(wcount = table(wave) / sum(table(wave))) %>%
-  ungroup() %>%
-  mutate(wave = rep(unique(dat[["wave"]]), length(unique(dat[["taf"]]))))
- 
-ggplot(dat_plot, aes(x = taf, y = wcount, fill = wave)) +
-  geom_bar(aes(group = wave), stat = "identity", position = "dodge")
-```
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
