@@ -435,7 +435,7 @@ dat.edeq.long.prep2 <- dat.edeq.long.prep1 %>%
 ```
 
 2. Restructure data into long 
-```{r}
+```{r eval=FALSE, include=FALSE}
 dat.edeq.long <- dat.edeq.long.prep2 %>%
   pivot_longer(
     cols = (starts_with("edeq") &
@@ -453,89 +453,8 @@ colnames(dat.edeq.long)
 ```
 
 
-##PLOTTING
-
-#. Get rid of NAs and change taf to factor
-```{r}
-#get rid of nas
-dat.no.nas.edeq <- dat.edeq.long[!is.na(dat.edeq.long$edeq.actively_been_monitoring_your_shape_or_weight),]
-
-#change wave to factor
-#dat.no.nas$wave_factor <- as.factor(dat.no.nas$wave)
-
-#change taf to factor
-dat.no.nas.edeq$edeq.actively_been_monitoring_your_shape_or_weight <- factor(dat.no.nas.edeq$edeq.actively_been_monitoring_your_shape_or_weight)
-```
-
-#.  Change wave to factor and re-order
-```{r}
-
-# change order of wave factor 1
-dat.no.nas.edeq <- dat.no.nas.edeq %>%
- mutate(wave_factor = fct_relevel(wave,
-                                  "retro_prepan",
-                           "baseline",
-                           "1b",
-                           "2b",
-                           "3b",
-                           "4b",
-                           "6",
-                           "8"
-                           ))
-
-#Check that this worked
-
-summary(dat.no.nas.edeq$wave_factor)
-
-
-```
-
-
-
-#. Format data to plot
-```{r}
-#get data in format to plot
-dat_plot <- dat.no.nas %>%
-  group_by(wave) %>%
-  dplyr::summarise(wcount = table(taf.worth_living_life_people) / sum(table(taf.worth_living_life_people))) %>%
-  ungroup() %>%
-  mutate(taf.worth_living_life_people = rep(levels(dat.no.nas[["taf.worth_living_life_people"]]),
-                    length(levels(dat.no.nas[["wave_factor"]]))))
-
-
-```
-
-```{r}
-#reorder wave rows
-dat_plot <- dat_plot[c(49:52, 1:48), ]
-
-#rename
-dat_plot$wave[dat_plot$wave == "1c"] <- "baseline"
-```
-
-
-```{r}
-#plot!
-ggplot(dat_plot,
-       aes(x = taf.worth_living_life_people,
-           y = wcount,
-           fill = wave)) +
-  geom_bar(aes(group = wave),
-           stat = "identity",
-           position = "dodge",
-           colour = "black") + 
-  scale_y_continuous(labels = scales::percent)
-```
-
-
-
-
-
-
-
-
 ##PLOTS - TAF 
-#First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
+#1. First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
 ```{r}
 dat.taf <- dat.taf %>%
   pivot_longer(
@@ -549,52 +468,26 @@ dat.taf <- dat.taf %>%
      values_from = "value")
 
 colnames(dat.taf)
+
 ```
 
 
-#Plot 1. Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?
-```{r eval=FALSE, include=FALSE}
-##NEEDS TO BE PERCENTAGES!!!!!!!!! change order
-ggplot(subset(dat.taf, !is.na(taf.worth_living_life_people)),
-       aes(taf.worth_living_life_people,
-           group = 1)) +
-  geom_bar(aes(y = ..prop..,
-               fill = wave),
-           stat = "count",
-                 size = 1,
-           shape = 23,
-           colour = "black",
-           position = position_dodge()) +
-  scale_y_continuous(labels = scales::percent) +
-  labs(y = "Percentage of participants",
-       x = "Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?",
-       title = "Life not worth living (past 2 weeks)")
-```
-
-
-
-
-##PLOTTING
-
-#. Get rid of NAs and change taf to factor
+#2. Get rid of NAs and change taf to factor
 ```{r}
 #get rid of nas
 dat.no.nas <- dat.taf[!is.na(dat.taf$taf.worth_living_life_people),]
 
-#change wave to factor
-#dat.no.nas$wave_factor <- as.factor(dat.no.nas$wave)
-
-#change taf to factor
-dat.no.nas$taf.worth_living_life_people <- factor(dat.no.nas$taf.worth_living_life_people)
+#change taf to factor (get rid of 'yes' as its an empty level)
+dat.no.nas$taf.worth_living_life_people_factor <- factor(dat.no.nas$taf.worth_living_life_people)
 ```
 
-#.  Change wave to factor and re-order
+#3. Change wave to factor and re-order
 ```{r}
 
 # change order of wave factor 1
 dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
-                           "baseline",
+                                  "baseline",
                            "1a",
                            "1b",
                            "2a",
@@ -608,43 +501,52 @@ dat.no.nas <- dat.no.nas %>%
                            "7",
                            "8"))
 
+
 #Check that this worked
 
 summary(dat.no.nas$wave_factor)
 ```
 
-#. Format data to plot
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+levels(dat.no.nas$wave_factor)[1] <- "test"
+
+
+```
+
+
+#5. Format data to plot
 ```{r}
 #get data in format to plot
 dat_plot <- dat.no.nas %>%
   group_by(wave_factor) %>%
-  dplyr::summarise(wcount = table(taf.worth_living_life_people) / sum(table(taf.worth_living_life_people))) %>%
+  dplyr::summarise(wcount = table(taf.worth_living_life_people_factor) / sum(table(taf.worth_living_life_people_factor))) %>%
   ungroup() %>%
-  mutate(taf.worth_living_life_people = rep(levels(dat.no.nas[["taf.worth_living_life_people"]]),
-                    length(levels(dat.no.nas[["wave_factor"]]))))
-
-```
-```{r}
-
-#get data in format to plot
-dat_plot <- dat.no.nas %>%
-  group_by(wave_factor) %>%
-  dplyr::summarise(wcount = (table(dat_pltaf.worth_living_life_people) / sum(table(taf.worth_living_life_people)))[c(2,1,3,4)])   %>%
-  ungroup() %>%
-  mutate(taf.worth_living_life_people = rep(levels(dat.no.nas[["taf.worth_living_life_people"]]),
+  mutate(taf.worth_living_life_people_factor = factor(rep(levels(dat.no.nas[["taf.worth_living_life_people_factor"]])),
                     length(levels(dat.no.nas[["wave_factor"]]))))
 
 
-dat_plot
 ```
 
-
-2. switch order of answers
-3. rename waves etc
+6. Change taf variable to ordered factor
 ```{r}
-#plot!
+
+dat_plot <- dat_plot %>%
+  mutate(taf.worth_living_life_people_factor = fct_relevel(taf.worth_living_life_people_factor,
+                           "Prefer not to answer",
+                           "No",
+                           "Yes, once",
+                           "Yes, more than once"))
+
+
+```
+
+7. PLOT !
+```{r}
 ggplot(dat_plot,
-       aes(x = taf.worth_living_life_people,
+       aes(x = taf.worth_living_life_people_factor,
            y = wcount,
            fill = wave_factor)) +
   geom_bar(aes(group = wave_factor),
@@ -653,7 +555,6 @@ ggplot(dat_plot,
            colour = "black") + 
   scale_y_continuous(labels = scales::percent)
 
-dat_plot
 ```
 
 
