@@ -2462,7 +2462,8 @@ mhd.raw.id %>%
     mhd.posttraumatic_stress_disorder_ptsd_numeric,
     autism_spectrum_disorder_numeric,
     mhd.attention_deficit_hyperactivity_disorder_numeric,
-    mhd.personality_disorder_numeric
+    mhd.personality_disorder_numeric,
+    mhd.suspected_eating_disorder_diagnosed_numeric
   )
 }
 ```

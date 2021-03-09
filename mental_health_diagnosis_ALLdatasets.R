@@ -1343,7 +1343,7 @@ if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE | RAMP == TRUE) {
 
 
 ### Eating disorders
-#There is routing questionnaire if participants have been diagnosed with an eating disorder and afterwards they get asked the specific disorders. Therefore, mhd.suspected_eating_disorder_diagnosed_numeric needs to be recoded as 0 otherwise they would be NAs.
+#There is routing questionnaire if participants SUSPECT  an eating disorder and afterwards they get asked if they have been DIAGNOSED with the specific disorders. Therefore, mhd.suspected_eating_disorder_diagnosed_numeric needs to be recoded as 0 otherwise they would be NAs.
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE) { 
   #Recode as 0 if ppt responds no to screening question (mhd.suspected_eating_disorder_diagnosed_numeric)
   mhd.raw.id <- mhd.raw.id %>%
