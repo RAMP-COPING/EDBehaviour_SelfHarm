@@ -253,32 +253,6 @@ if(GLAD == TRUE){
   
 }
 
-#BDD
-if(GLAD == TRUE){
-  
-  #Body dysmorphic disorder
-  mhd.raw.id <- mhd.raw.id %>%
-    mutate(
-      mhd.body_dysmorphic_disorder_bdd_numeric =
-        case_when(
-          (mhd.bdd_coping_numeric  == "1" & mhd.bdd_signup_numeric == "1" ~ 1),
-          (mhd.bdd_coping_numeric  == "1" | mhd.bdd_signup_numeric == "1" ~ 1),
-          (mhd.bdd_coping_numeric  == "0" & mhd.bdd_signup_numeric == "0" ~ 0)
-        ))
-  mhd.raw.id <- mhd.raw.id %>%
-    mutate(
-      mhd.body_dysmorphic_disorder_bdd =
-        recode_factor(mhd.body_dysmorphic_disorder_bdd_numeric,
-                      "0" = "Not BDD",
-                      "1" = "BDD",
-                      missing = NA_character_
-        )
-    )
-  mhd.raw.id %>%
-    freq(mhd.body_dysmorphic_disorder_bdd,
-         cumul = F)
-  
-}
 
 #PTSD
 if(GLAD == TRUE){

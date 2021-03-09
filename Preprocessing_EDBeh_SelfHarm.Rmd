@@ -2248,11 +2248,12 @@ source("./mental_health_diagnosis_ALLdatasets.R")
 
 ```
 
+
 ### Controls
-##EDGI & NBR controls **NEED to check this for NBR - getting no controls?
+##EDGI 
 These individuals have no self report diagnosis of any kind that we measure.
-```{r mhd control EDGI NBR}
-if(EDGI == TRUE | NBR == TRUE) {
+```{r mhd control EDGI}
+if(EDGI == TRUE) {
 mhd.raw.id <- mhd.raw.id %>%
   mutate(
     control_numeric =
@@ -2295,9 +2296,73 @@ mhd.raw.id %>%
        cumul = F)
 }
 
+
 ```
 
+### Controls
+## NBR controls **NEED to check this for NBR - getting no controls?
+#first need to recode PTSD variable
+```{r}
+if(NBR == TRUE) {
 
+#change ptsd variable to numeric [wrongly coded] 2 == DIAGNOSIS OF PTSD, 1 == NO DIAGNOSIS OF PTSD
+mhd.raw.id <- mhd.raw.id %>%
+    mutate(
+      mhd.posttraumatic_stress_disorder_ptsd_numeric =
+        case_when(
+          mhd.posttraumatic_stress_disorder_ptsd_numeric == "Not PTSD" ~ 0,
+          mhd.posttraumatic_stress_disorder_ptsd_numeric == "PTSD" ~ 1,
+          is.na(mhd.posttraumatic_stress_disorder_ptsd_numeric) ~ NA_real_))
+}
+```
+
+These individuals have no self report diagnosis of any kind that we measure.
+```{r mhd control NBR}
+if(NBR == TRUE) {
+mhd.raw.id <- mhd.raw.id %>%
+  mutate(
+    control_numeric =
+      if_else(
+    depressive_disorders_numeric == "0" &
+    anxiety_disorders_numeric == "0" &
+    eating_disorders_numeric == "0" &
+    obsessive_compulsive_disorders_numeric == "0" &
+    psychotic_disorders_numeric == "0" &
+    mhd.mania_hypomania_bipolar_or_manicdepression_numeric == "0" &
+    mhd.posttraumatic_stress_disorder_ptsd_numeric == "0" &
+    autism_spectrum_disorder_numeric == "0" &
+    mhd.attention_deficit_hyperactivity_disorder_numeric == "0" &
+    mhd.personality_disorder_numeric == "0" &
+    mhd.dont_know_eating_disorder_numeric  == "0" & #**Need to ask why these are here??
+    mhd.prefer_not_to_answer_eating_disorder_numeric  == "0" &
+    mhd.dont_know_numeric  == "0" &
+    mhd.prefer_not_to_answer_numeric  == "0" &
+    mhd.dont_know.1_numeric == "0" &
+    mhd.prefer_not_to_answer.1_numeric  == "0" &
+    (mhd.none_of_the_above.1_numeric == "1" | is.na(mhd.none_of_the_above.1_numeric)) &
+    (mhd.none_of_the_above.2_numeric == "1" | is.na(mhd.none_of_the_above.2_numeric)) &
+    (mhd.none_of_the_above_eating_disorder_numeric == "1" | is.na(mhd.none_of_the_above_eating_disorder_numeric)), #Check this - this would mean 'controls' may have answered 'None of the above' to all but one, in which the remaining one is NA. Does this really make them a control?
+    true = 1,
+    false = 0,
+    NA_real_)
+  )
+
+mhd.raw.id <- mhd.raw.id %>%
+  mutate(
+    control =
+      recode_factor(control_numeric,
+                    "0" = "No control",
+                    "1" = "Control",
+                    missing = NA_character_
+                    )
+  )
+mhd.raw.id %>%
+  freq(control,
+       cumul = F)
+}
+
+
+```
 
 ```{r EDGI NBR mhd check none of the above}
 if(EDGI == TRUE | NBR == TRUE) {
@@ -2311,9 +2376,6 @@ mhd.raw.id %>%
 }
 
 ```
-
-
-
 ##GLAD controls
 ```{r mhd control GLAD }
 if(GLAD == TRUE) {
@@ -2360,6 +2422,8 @@ mhd.raw.id %>%
   freq(control,
        cumul = F)
 }
+
+
 ```
 
 ```{r GLAD mhd check none of the above}
@@ -3598,6 +3662,7 @@ if(RAMP == TRUE) {
 if(NBR == TRUE) {
   saveRDS(object = dat.raw.nbr, file = "../data_cleaned/baseline_nbr.rds")
 }
+
 
 ```
 

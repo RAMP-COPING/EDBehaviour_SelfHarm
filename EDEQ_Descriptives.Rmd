@@ -229,7 +229,6 @@ dat.edeq.all.missing <- dat.edeq %>%
 
 nrow(dat.edeq.all.missing)
 
-
 ```
 
 ```{r}
@@ -303,14 +302,30 @@ freq(dat.edeq$mhd.mania_hypomania_bipolar_or_manicdepression_numeric)
 
 ```
 
+
+
 ##eating disorders
 ```{r}
 freq(dat.edeq$eating_disorders_numeric)
 
+#PARTICIPANTS WITH NO ED DIAGNOSIS
 X <- dat.edeq %>%
   filter(eating_disorders_numeric == 0)
 
 freq(X$cohort_name)
+
+#PARTICIPANTS WHO ANSWERED NO  TO SUSPECTED ED (i.e., should not have answered EDEQ?)
+freq(dat.edeq$mhd.suspected_eating_disorder_diagnosed_numeric)
+
+Y <- dat.edeq %>%
+  filter(mhd.suspected_eating_disorder_diagnosed_numeric == 0)
+
+#PARTICIPANTS WHO are NA for diagnosed ED?
+missing <- dat.edeq %>%
+  filter(is.na(eating_disorders_numeric))
+
+freq(missing$cohort_name)
+freq(missing$mhd.suspected_eating_disorder_diagnosed_numeric)
 
 ```
 
@@ -326,8 +341,14 @@ freq(X$cohort_name)
 ```
 
 ##PTSD
-```{r eval=FALSE, include=FALSE}
-  freq(dat.edeq$mhd.posttraumatic_stress_disorder_ptsd_numeric
+```{r}
+freq(dat.edeq$mhd.posttraumatic_stress_disorder_ptsd_numeric)
+
+
+A <- dat.edeq %>%
+  filter(mhd.posttraumatic_stress_disorder_ptsd_numeric == 2)
+
+A$cohort_name
 ```
 ##Autism
 ```{r}
@@ -336,7 +357,15 @@ freq(dat.edeq$autism_spectrum_disorder_numeric)
 
 ##ADHD
 ```{r}
-  freq(dat.edeq$mhd.attention_deficit_hyperactivity_disorder_numeric)
+freq(dat.edeq$mhd.attention_deficit_hyperactivity_disorder_numeric)
+
+```
+##BDD
+```{r}
 
 ```
 
+##Personality disorder
+```{r}
+freq(dat.edeq$mhd.personality_disorder_numeric)
+```
