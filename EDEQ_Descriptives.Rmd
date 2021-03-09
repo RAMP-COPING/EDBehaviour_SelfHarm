@@ -1,0 +1,342 @@
+---
+title: "EDEQ_Descriptives"
+author: "Helena Davies"
+date: "08/03/2021"
+output: html_document
+---
+
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Delete everything in your global environment
+```{r Delete everything in your global environment}
+remove(list = ls())
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+
+### Read in EDEQ data
+```{r}
+dat.edeq <- readRDS(file = "../data_cleaned/dat.edeq.rds")
+dim(dat.edeq)
+colnames(dat.edeq)
+```
+
+##Exclude participants who are missing for EVERY edeq variable (i.e., retroprepan, baseline, and every wave)
+```{r}
+
+
+##Remove participants who have ALL missing data
+dat.edeq.all.missing <- dat.edeq %>%
+  filter(
+           is.na(`edeq.deliberately_limit_amount_influence_baseline`                           ) &
+           is.na(`edeq.calories_made_body_shape_baseline`                                     ) &
+           is.na(`edeq.weight_influenced_person_baseline`                                      ) &
+           is.na(`edeq.dissatisfied_shape_weight_baseline`                                    ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_baseline`                                  ) &
+           is.na(`edeq.felt_anxious_blue_bored_baseline`                                      ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_baseline`                                     ) &
+           is.na(`edeq.eating_behaviours_concerns_distressed_baseline`                        ) &
+           is.na(`edeq.deliberately_limit_amount_influence.1_baseline`                         ) &
+           is.na(`edeq.calories_made_body_shape.1_baseline`                                   ) &
+           is.na(`edeq.weight_influenced_person.1_baseline`                                    ) &
+           is.na(`edeq.dissatisfied_shape_weight.1_baseline`                                  ) &
+           is.na(`edeq.eating_behaviours_concerns_distressed.1_baseline`                       ) &
+           is.na(`edeq.feelings_pandemic_felt_baseline`                                       ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_baseline`                 ) &
+           is.na(`edeq.regard_lost_control_eaten_baseline`                                    ) &
+           is.na(`edeq.sick_means_made_shape_baseline`                                         ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_baseline`                              ) &
+           is.na(`edeq.compulsive_driven_burn_calories_baseline`                               ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed.1_baseline`                               ) &
+           is.na(`edeq.felt_anxious_blue_bored.2_baseline`                                     ) &
+           is.na(`edeq.felt_anxious_blue_bored.3_baseline`                                    ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline`              ) &
+           is.na(`edeq.regard_lost_control_eaten.1_baseline`                                  ) &
+           is.na(`edeq.sick_means_made_shape.1_baseline`                                       ) &
+           is.na(`edeq.diuretics_laxatives_means_shape.1_baseline`                            ) &
+           is.na(`edeq.compulsive_driven_burn_calories.1_baseline`                             ) &
+           is.na(`edeq.deliberately_limit_amount_influence_baseline_numeric`                  ) &
+           is.na(`edeq.calories_made_body_shape_baseline_numeric`                              ) &
+           is.na(`edeq.weight_influenced_person_baseline_numeric`                             ) &
+           is.na(`edeq.dissatisfied_shape_weight_baseline_numeric`                             ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_baseline_numeric`                         ) &
+           is.na(`edeq.felt_anxious_blue_bored_baseline_numeric`                               ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_baseline_numeric`                            ) &
+           is.na(`edeq.eating_behaviours_concerns_distressed_baseline_numeric`                 ) &
+           is.na(`edeq.deliberately_limit_amount_influence.1_baseline_numeric`                ) &
+           is.na(`edeq.calories_made_body_shape.1_baseline_numeric`                            ) &
+           is.na(`edeq.weight_influenced_person.1_baseline_numeric`                           ) &
+           is.na(`edeq.dissatisfied_shape_weight.1_baseline_numeric`                           ) &
+           is.na(`edeq.eating_behaviours_concerns_distressed.1_baseline_numeric`              ) &
+           is.na(`edeq.feelings_pandemic_felt_baseline_numeric`                                ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_baseline_numeric`        ) &
+           is.na(`edeq.regard_lost_control_eaten_baseline_numeric`                             ) &
+           is.na(`edeq.sick_means_made_shape_baseline_numeric`                                ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_baseline_numeric`                       ) &
+           is.na(`edeq.compulsive_driven_burn_calories_baseline_numeric`                      ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed.1_baseline_numeric`                        ) &
+           is.na(`edeq.felt_anxious_blue_bored.2_baseline_numeric`                            ) &
+           is.na(`edeq.felt_anxious_blue_bored.3_baseline_numeric`                             ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline_numeric`     ) &
+           is.na(`edeq.regard_lost_control_eaten.1_baseline_numeric`                           ) &
+           is.na(`edeq.sick_means_made_shape.1_baseline_numeric`                              ) &
+           is.na(`edeq.diuretics_laxatives_means_shape.1_baseline_numeric`                     ) &
+           is.na(`edeq.compulsive_driven_burn_calories.1_baseline_numeric`                    ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wavebaseline`                      ) &
+           is.na(`edeq.calories_made_body_shape_.Wavebaseline`                                ) &
+           is.na(`edeq.weight_influenced_person_.Wavebaseline`                                 ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wavebaseline`                               ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wavebaseline`       ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wavebaseline`                                 ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wavebaseline`                                ) &
+           is.na(`edeq.eating_behaviours_concerns_distressed_.Wavebaseline`                   ) &
+           is.na(`edeq.deliberately_limit_amount_influence.1_.Wavebaseline`                    ) &
+           is.na(`edeq.calories_made_body_shape.1_.Wavebaseline`                              ) &
+           is.na(`edeq.weight_influenced_person.1_.Wavebaseline`                               ) &
+           is.na(`edeq.dissatisfied_shape_weight.1_.Wavebaseline`                             ) &
+           is.na(`edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline`                  ) &
+           is.na(`edeq.feelings_pandemic_felt_.Wavebaseline`                                  ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline`            ) &
+           is.na(`edeq.regard_lost_control_eaten_.Wavebaseline`                               ) &
+           is.na(`edeq.sick_means_made_shape_.Wavebaseline`                                    ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_.Wavebaseline`                         ) &
+           is.na(`edeq.compulsive_driven_burn_calories_.Wavebaseline`                          ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline`                          ) &
+           is.na(`edeq.felt_anxious_blue_bored.2_.Wavebaseline`                                ) &
+           is.na(`edeq.felt_anxious_blue_bored.3_.Wavebaseline`                               ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline`         ) &
+           is.na(`edeq.regard_lost_control_eaten.1_.Wavebaseline`                             ) &
+           is.na(`edeq.sick_means_made_shape.1_.Wavebaseline`                                  ) &
+           is.na(`edeq.diuretics_laxatives_means_shape.1_.Wavebaseline`                       ) &
+           is.na(`edeq.compulsive_driven_burn_calories.1_.Wavebaseline`                        ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wavebaseline_numeric`             ) &
+           is.na(`edeq.calories_made_body_shape_.Wavebaseline_numeric`                         ) &
+           is.na(`edeq.weight_influenced_person_.Wavebaseline_numeric`                        ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wavebaseline_numeric`                        ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wavebaseline_numeric`                    ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wavebaseline_numeric`                          ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wavebaseline_numeric`                       ) &
+           is.na(`edeq.eating_behaviours_concerns_distressed_.Wavebaseline_numeric`            ) &
+           is.na(`edeq.deliberately_limit_amount_influence.1_.Wavebaseline_numeric`           ) &
+           is.na(`edeq.calories_made_body_shape.1_.Wavebaseline_numeric`                       ) &
+           is.na(`edeq.weight_influenced_person.1_.Wavebaseline_numeric`                      ) &
+           is.na(`edeq.dissatisfied_shape_weight.1_.Wavebaseline_numeric`                      ) &
+           is.na(`edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline_numeric`         ) &
+           is.na(`edeq.feelings_pandemic_felt_.Wavebaseline_numeric`                           ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric`   ) &
+           is.na(`edeq.regard_lost_control_eaten_.Wavebaseline_numeric`                        ) &
+           is.na(`edeq.sick_means_made_shape_.Wavebaseline_numeric`                           ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric`             ) &
+           is.na(`edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric`                 ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline_numeric`                   ) &
+           is.na(`edeq.felt_anxious_blue_bored.2_.Wavebaseline_numeric`                       ) &
+           is.na(`edeq.felt_anxious_blue_bored.3_.Wavebaseline_numeric`                        ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline_numeric`) &
+           is.na(`edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric`                      ) &
+           is.na(`edeq.sick_means_made_shape.1_.Wavebaseline_numeric`                         ) &
+           is.na(`edeq.diuretics_laxatives_means_shape.1_.Wavebaseline_numeric`                ) &
+           is.na(`edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric`               ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 1b`                           ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 2b`                          ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 3b`                           ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 4b`                          ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 6`                            ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 8`                           ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 1b`                                      ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 2b`                                     ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 3b`             ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 4b`                                     ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 6`                                       ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 8`                                      ) &
+           is.na(`edeq.weight_influenced_person_.Wave 1b`                                      ) &
+           is.na(`edeq.weight_influenced_person_.Wave 2b`                                     ) &
+           is.na(`edeq.weight_influenced_person_.Wave 3b`                                      ) &
+           is.na(`edeq.weight_influenced_person_.Wave 4b`                                     ) &
+           is.na(`edeq.weight_influenced_person_.Wave 6`                                       ) &
+           is.na(`edeq.weight_influenced_person_.Wave 8`                                      ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 1b`                                     ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 2b`                                    ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 3b`                                     ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 4b`                                    ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 6`                                      ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 8`                                     ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 1b`                         ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 2b`                        ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 3b`                         ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 4b`                        ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 6`                          ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 8`                         ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 1b`                 ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 2b`                ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 3b`     ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 4b`                ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 6`                  ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 8`                 ) &
+           is.na(`edeq.regard_lost_control_eaten_.Wave 1b`                                     ) &
+           is.na(`edeq.regard_lost_control_eaten_.Wave 2b`                                    ) &
+           is.na(`edeq.regard_lost_control_eaten_.Wave 3b`                                     ) &
+           is.na(`edeq.regard_lost_control_eaten_.Wave 4b`                                    ) &
+           is.na(`edeq.regard_lost_control_eaten_.Wave 6`                                      ) &
+           is.na(`edeq.regard_lost_control_eaten_.Wave 8`                                     ) &
+           is.na(`edeq.sick_means_made_shape_.Wave 1b`                                         ) &
+           is.na(`edeq.sick_means_made_shape_.Wave 2b`                                        ) &
+           is.na(`edeq.sick_means_made_shape_.Wave 3b`                                         ) &
+           is.na(`edeq.sick_means_made_shape_.Wave 4b`                                        ) &
+           is.na(`edeq.sick_means_made_shape_.Wave 6`                                          ) &
+           is.na(`edeq.sick_means_made_shape_.Wave 8`                                         ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 1b`                               ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 2b`                              ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 3b`                               ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 4b`                              ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 6`                                ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 8`                               ) &
+           is.na(`edeq.compulsive_driven_burn_calories_.Wave 1b`                               ) &
+           is.na(`edeq.compulsive_driven_burn_calories_.Wave 2b`                              ) &
+           is.na(`edeq.compulsive_driven_burn_calories_.Wave 3b`                               ) &
+           is.na(`edeq.compulsive_driven_burn_calories_.Wave 4b`                              ) &
+           is.na(`edeq.compulsive_driven_burn_calories_.Wave 6`                                ) &
+           is.na(`edeq.compulsive_driven_burn_calories_.Wave 8`                               ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 1b`                                  ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 2b`                                 ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 3b`                                  ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 4b`                                 ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 6`                                   ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 8`                                  ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 1b`                                       ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 2b`                                      ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 3b`                                       ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 4b`                                      ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 6`                                        ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 8`                                       ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 1b`                                     ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 2b`                                    ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 3b`                                     ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 4b`                                    ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 6`                                      ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 8` ))
+             
+
+nrow(dat.edeq.all.missing)
+
+
+```
+
+```{r}
+##Filter out those with ALL missing data in main dataset
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+dat.edeq <- dat.edeq %>%
+  filter(ID %!in% dat.edeq.all.missing$ID)
+
+nrow(dat.edeq) ##TOTAL == 7457
+
+```
+
+##Demographics - EDEQ
+#cohort
+```{r}
+freq(dat.edeq$cohort_name)
+```
+
+#age
+```{r}
+freq(dat.edeq$age_category)
+```
+
+#gender
+```{r}
+freq(dat.edeq$gender)
+```
+
+#ethnicity
+```{r}
+freq(dat.edeq$ethnicity)
+##Lots of missing data from NBR - have checked ethnicity source script and seems that the original dataset contains a lot of NAs...
+
+##Check which cohort missing data is from
+x <- dat.edeq %>%
+  filter(is.na(ethnicity))
+
+freq(x$cohort_name)
+
+```
+
+#highest level of education
+```{r}
+freq(dat.edeq$highest_education)
+
+##Check which cohort missing data is from
+x <- dat.edeq %>%
+  filter(is.na(highest_education))
+
+freq(x$cohort_name)
+
+```
+
+#Self-reported diagnoses
+##Depression
+```{r}
+freq(dat.edeq$depressive_disorders_numeric) 
+
+```
+
+##Mania
+```{r}
+freq(dat.edeq$mhd.mania_hypomania_bipolar_or_manicdepression_numeric) 
+
+```
+
+##anxiety
+```{r}
+  freq(dat.edeq$anxiety_disorders_numeric)
+
+```
+
+##eating disorders
+```{r}
+freq(dat.edeq$eating_disorders_numeric)
+
+X <- dat.edeq %>%
+  filter(eating_disorders_numeric == 0)
+
+freq(X$cohort_name)
+
+```
+
+##OCD
+```{r}
+  freq(dat.edeq$obsessive_compulsive_disorders_numeric)
+
+```
+
+##Psychotic disorder
+```{r}
+  freq(dat.edeq$psychotic_disorders_numeric)
+```
+
+##PTSD
+```{r eval=FALSE, include=FALSE}
+  freq(dat.edeq$mhd.posttraumatic_stress_disorder_ptsd_numeric
+```
+##Autism
+```{r}
+freq(dat.edeq$autism_spectrum_disorder_numeric)
+```
+
+##ADHD
+```{r}
+  freq(dat.edeq$mhd.attention_deficit_hyperactivity_disorder_numeric)
+
+```
+
