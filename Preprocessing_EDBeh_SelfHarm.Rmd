@@ -2297,6 +2297,8 @@ mhd.raw.id %>%
 
 ```
 
+
+
 ```{r EDGI NBR mhd check none of the above}
 if(EDGI == TRUE | NBR == TRUE) {
 mhd.raw.id %>%
@@ -2462,8 +2464,7 @@ mhd.raw.id %>%
     mhd.posttraumatic_stress_disorder_ptsd_numeric,
     autism_spectrum_disorder_numeric,
     mhd.attention_deficit_hyperactivity_disorder_numeric,
-    mhd.personality_disorder_numeric,
-    mhd.suspected_eating_disorder_diagnosed_numeric
+    mhd.personality_disorder_numeric
   )
 }
 ```
@@ -3044,7 +3045,8 @@ edgi.5 <- mhd.raw.id %>% #3251
          mhd.posttraumatic_stress_disorder_ptsd_numeric, 
          autism_spectrum_disorder_numeric,
          mhd.attention_deficit_hyperactivity_disorder_numeric,
-         mhd.personality_disorder_numeric)
+         mhd.personality_disorder_numeric,
+         mhd.suspected_eating_disorder_diagnosed_numeric)
 
 ##See if IDs match with edgi.5
 x <- edgi.5[edgi.5$ID %in% edgi.4$ID,]
@@ -3181,7 +3183,8 @@ glad.5 <- mhd.raw.id %>%
         mhd.posttraumatic_stress_disorder_ptsd_numeric, 
         autism_spectrum_disorder_numeric,
         mhd.attention_deficit_hyperactivity_disorder_numeric,
-        mhd.personality_disorder_numeric)
+        mhd.personality_disorder_numeric,
+        mhd.suspected_eating_disorder_diagnosed_numeric)
 
 ##See if IDs match with glad.3
 x <- glad.3[glad.3$ID %in% glad.1$ID,]
@@ -3316,7 +3319,8 @@ nbr.5 <- mhd.raw.id %>%
         mhd.posttraumatic_stress_disorder_ptsd_numeric, 
         autism_spectrum_disorder_numeric,
         mhd.attention_deficit_hyperactivity_disorder_numeric,
-        mhd.personality_disorder_numeric)
+        mhd.personality_disorder_numeric,
+        mhd.suspected_eating_disorder_diagnosed_numeric)
 
 #Check nbr mhd data IDs
 x <- nbr.5[nbr.5$ID %in% nbr.1$ID,]
