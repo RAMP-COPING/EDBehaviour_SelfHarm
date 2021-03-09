@@ -3046,7 +3046,21 @@ edgi.5 <- mhd.raw.id %>% #3251
          autism_spectrum_disorder_numeric,
          mhd.attention_deficit_hyperactivity_disorder_numeric,
          mhd.personality_disorder_numeric,
-         mhd.suspected_eating_disorder_diagnosed_numeric)
+         mhd.suspected_eating_disorder_diagnosed_numeric,
+         mhd.body_dysmorphic_disorder_bdd_numeric,
+         mhd.anorexia_nervosa_numeric,
+          mhd.atypical_anorexia_nervosa_numeric,
+          mhd.bulimia_nervosa_numeric, 
+          mhd.atypical_bulimia_nervosa_numeric,  
+          mhd.bingeeating_disorder_numeric, 
+          mhd.atypical_bingeeating_disorder_numeric, 
+          mhd.purging_disorder_numeric, 
+          mhd.night_eating_syndrome_numeric,  
+          mhd.pica_numeric, 
+          mhd.avoidantrestrictive_food_intake_disorder_numeric,
+          mhd.rumination_disorder_numeric, 
+          mhd.feeding_eating_disorder_numeric, 
+          mhd.other_eating_disorder_numeric)
 
 ##See if IDs match with edgi.5
 x <- edgi.5[edgi.5$ID %in% edgi.4$ID,]
@@ -3184,7 +3198,21 @@ glad.5 <- mhd.raw.id %>%
         autism_spectrum_disorder_numeric,
         mhd.attention_deficit_hyperactivity_disorder_numeric,
         mhd.personality_disorder_numeric,
-        mhd.suspected_eating_disorder_diagnosed_numeric)
+        mhd.suspected_eating_disorder_diagnosed_numeric,
+        mhd.body_dysmorphic_disorder_bdd_numeric,
+        mhd.anorexia_nervosa_numeric,
+          mhd.atypical_anorexia_nervosa_numeric,
+          mhd.bulimia_nervosa_numeric, 
+          mhd.atypical_bulimia_nervosa_numeric,  
+          mhd.bingeeating_disorder_numeric, 
+          mhd.atypical_bingeeating_disorder_numeric, 
+          mhd.purging_disorder_numeric, 
+          mhd.night_eating_syndrome_numeric,  
+          mhd.pica_numeric, 
+          mhd.avoidantrestrictive_food_intake_disorder_numeric,
+          mhd.rumination_disorder_numeric, 
+          mhd.feeding_eating_disorder_numeric, 
+          mhd.other_eating_disorder_numeric)
 
 ##See if IDs match with glad.3
 x <- glad.3[glad.3$ID %in% glad.1$ID,]
@@ -3320,7 +3348,25 @@ nbr.5 <- mhd.raw.id %>%
         autism_spectrum_disorder_numeric,
         mhd.attention_deficit_hyperactivity_disorder_numeric,
         mhd.personality_disorder_numeric,
-        mhd.suspected_eating_disorder_diagnosed_numeric)
+        mhd.suspected_eating_disorder_diagnosed_numeric,
+        mhd.body_dysmorphic_disorder_bdd_numeric,
+        mhd.anorexia_nervosa_numeric,
+          mhd.atypical_anorexia_nervosa_numeric,
+          mhd.bulimia_nervosa_numeric, 
+          mhd.atypical_bulimia_nervosa_numeric,  
+          mhd.bingeeating_disorder_numeric, 
+          mhd.atypical_bingeeating_disorder_numeric, 
+          mhd.purging_disorder_numeric, 
+          mhd.night_eating_syndrome_numeric,  
+          mhd.pica_numeric, 
+          mhd.avoidantrestrictive_food_intake_disorder_numeric,
+          mhd.rumination_disorder_numeric, 
+          mhd.feeding_eating_disorder_numeric, 
+          mhd.other_eating_disorder_numeric)
+
+
+
+
 
 #Check nbr mhd data IDs
 x <- nbr.5[nbr.5$ID %in% nbr.1$ID,]
@@ -3437,7 +3483,7 @@ if(RAMP == TRUE) {
   taf.meant_end_life_pandemic_.Wavebaseline)
 
 
-  ramp.4 <- mhd.raw.id %>% ##IDs do not match with others??
+  ramp.4 <- mhd.raw.id %>% 
   select(ID,
          cohort_name,
          control,
@@ -3451,7 +3497,13 @@ if(RAMP == TRUE) {
          mhd.posttraumatic_stress_disorder_ptsd_numeric, 
          autism_spectrum_disorder_numeric,
          mhd.attention_deficit_hyperactivity_disorder_numeric,
-         mhd.personality_disorder_numeric)
+         mhd.personality_disorder_numeric,
+         mhd.body_dysmorphic_disorder_bdd_numeric,
+         mhd.anorexia_nervosa_numeric,
+         mhd.atypical_anorexia_nervosa_numeric,
+         mhd.bulimia_nervosa_numeric,
+         mhd.bingeeating_disorder_numeric)
+
 
   ramp.5 <- edeq.ramp.baseline.raw.id 
    

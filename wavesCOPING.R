@@ -62,7 +62,7 @@ end12 <-  as.POSIXct("2020-12-15")
 
 # DEC - JAN (wave 9) - FOLLOW UP A
 start13 <- as.POSIXct("2020-12-15")
-end13 <-  as.POSIXct("2020-01-11") 
+end13 <-  as.POSIXct("2021-01-11") 
 
 
 #startDate_wavesA_taf - earlier waves (until 29th July?)

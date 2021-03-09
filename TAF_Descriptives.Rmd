@@ -121,10 +121,6 @@ nrow(dat.taf) ##TOTAL == 33,067
 
 ```
 
-
-
-
-
 ##Demographics - TAF
 #cohort
 ```{r}
