@@ -320,6 +320,9 @@ freq(dat.edeq$mhd.suspected_eating_disorder_diagnosed_numeric)
 Y <- dat.edeq %>%
   filter(mhd.suspected_eating_disorder_diagnosed_numeric == 0)
 
+
+freq(Y$cohort_name)
+
 #PARTICIPANTS WHO are NA for diagnosed ED?
 missing <- dat.edeq %>%
   filter(is.na(eating_disorders_numeric))
@@ -344,11 +347,6 @@ freq(missing$mhd.suspected_eating_disorder_diagnosed_numeric)
 ```{r}
 freq(dat.edeq$mhd.posttraumatic_stress_disorder_ptsd_numeric)
 
-
-A <- dat.edeq %>%
-  filter(mhd.posttraumatic_stress_disorder_ptsd_numeric == 2)
-
-A$cohort_name
 ```
 ##Autism
 ```{r}
@@ -360,12 +358,112 @@ freq(dat.edeq$autism_spectrum_disorder_numeric)
 freq(dat.edeq$mhd.attention_deficit_hyperactivity_disorder_numeric)
 
 ```
-##BDD
-```{r}
-
-```
 
 ##Personality disorder
 ```{r}
 freq(dat.edeq$mhd.personality_disorder_numeric)
 ```
+
+##BDD
+```{r}
+freq(dat.edeq$mhd.body_dysmorphic_disorder_bdd_numeric)
+```
+##Anorexia
+```{r}
+freq(dat.edeq$mhd.anorexia_nervosa_numeric)
+```
+
+##Atypical Anorexia
+```{r}
+freq(dat.edeq$mhd.atypical_anorexia_nervosa_numeric)
+```
+
+##Bulimia nervosa
+```{r}
+freq(dat.edeq$mhd.bulimia_nervosa_numeric)
+```
+
+##atypical bulimia
+```{r}
+freq(dat.edeq$mhd.atypical_bulimia_nervosa_numeric)
+```
+
+##atypical bulimia
+```{r}
+freq(dat.edeq$mhd.atypical_bulimia_nervosa_numeric)
+```
+
+##binge-eating disorder (and psychological overeating in RAMP)
+```{r}
+freq(dat.edeq$mhd.bingeeating_disorder_numeric)
+```
+##atypical binge eating disorder
+```{r}
+freq(dat.edeq$mhd.atypical_bingeeating_disorder_numeric)
+```
+
+#Purging disorder
+```{r}
+freq(dat.edeq$mhd.purging_disorder_numeric)
+```
+#Night eating syndrome
+```{r}
+freq(dat.edeq$mhd.night_eating_syndrome_numeric)
+```
+#Pica
+```{r}
+freq(dat.edeq$mhd.pica_numeric)
+```
+#ARFID
+```{r}
+freq(dat.edeq$mhd.avoidantrestrictive_food_intake_disorder_numeric)
+```
+#Rumination disorder
+```{r}
+freq(dat.edeq$mhd.rumination_disorder_numeric)
+```
+#OSFED or EDNOS
+```{r}
+freq(dat.edeq$mhd.feeding_eating_disorder_numeric)
+```
+#OTHER EATING DISORDER
+```{r}
+freq(dat.edeq$mhd.other_eating_disorder_numeric)
+```
+#SUSPECTED EATING DISORDER
+```{r}
+freq(dat.edeq$mhd.suspected_eating_disorder_diagnosed_numeric)
+
+
+x <- dat.edeq %>%
+  filter(is.na(mhd.suspected_eating_disorder_diagnosed_numeric))
+
+freq(x$cohort_name)
+```
+
+
+#NO PSYCHIATRIC DIAGNOSES
+```{r}
+freq(dat.edeq$control_numeric)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

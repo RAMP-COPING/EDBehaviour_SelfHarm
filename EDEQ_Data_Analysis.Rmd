@@ -112,13 +112,6 @@ theme_personal <-  theme(
 
 ##EDEQ
 
-##***NEED NUMERIC VERSIONS FOR:
-edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric
-edeq.regard_lost_control_eaten_.Wavebaseline_numeric
-edeq.sick_means_made_shape_.Wavebaseline_numeric
-edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric
-edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric
-
 *****
 "PRE-PANDEMIC" [retrospective] EDEQ BASELINE-SPECIFIC QUESTIONS (*NB: Baseline questions also asks about "Over the past 28 days...")
 
@@ -206,7 +199,6 @@ BASELINE + WAVES EDEQ QUESTIONS
 
 13. edeq.compulsive_driven_burn_calories_baseline
 = Over the past 28 days, how many times per day have you: Exercised in a “driven” or “compulsive” way as a means of controlling your weight, shape, or amount of fat, or to burn off calories?
-
 
 
 ****
@@ -300,8 +292,23 @@ dat.edeq <- dat.edeq %>%
 
 ```
 
-##PLOTS - EDEQ
+##PLOTS - EDEQ **HLD - need to sort this!
 1. Need to select variables to use (don't want numeric ones in there as then can't re-structure the data)
+
+##***NEED NUMERIC VERSIONS FOR:
+edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric
+edeq.regard_lost_control_eaten_.Wavebaseline_numeric
+edeq.sick_means_made_shape_.Wavebaseline_numeric
+edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric
+edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric
+```{r}
+
+
+```
+
+
+
+
 ```{r}
 
 dat.edeq.long.prep1 <- dat.edeq %>% 
@@ -315,8 +322,8 @@ dat.edeq.long.prep2 <- dat.edeq.long.prep1 %>%
 ```
 
 2. Restructure data into long 
-```{r eval=FALSE, include=FALSE}
-dat.edeq.long <- dat.edeq.long.prep2 %>%
+```{r }
+dat.edeq <- dat.edeq %>%
   pivot_longer(
     cols = (starts_with("edeq") &
               contains(".Wave")),

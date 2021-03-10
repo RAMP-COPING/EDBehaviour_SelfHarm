@@ -153,19 +153,6 @@ nbr_baseline$highest_education_prepan_numeric <- NA
 ##Merge all baseline data
 ```{r glad/edgi/nbr/ramp data frame list}
 
-#change ptsd variable to numeric [wrongly coded] 2 == DIAGNOSIS OF PTSD, 1 == NO DIAGNOSIS OF PTSD
-nbr_baseline <- nbr_baseline %>%
-    mutate(
-      mhd.posttraumatic_stress_disorder_ptsd_numeric =
-        case_when(
-          mhd.posttraumatic_stress_disorder_ptsd_numeric == "Not PTSD" ~ 0,
-          mhd.posttraumatic_stress_disorder_ptsd_numeric == "PTSD" ~ 1,
-          is.na(mhd.posttraumatic_stress_disorder_ptsd_numeric) ~ NA_real_))
-
-##Check 
-freq(nbr_baseline$mhd.posttraumatic_stress_disorder_ptsd_numeric)
-
-
 #bind all baseline data
 dat <- bind_rows(
   glad_baseline,
