@@ -492,45 +492,87 @@ edeq.eating_behaviours_concerns_distressed_X (baseline and waves)
 
 ##Rename retro prepandemic variable names in EDEQ
 
-##**need to rename these the same as baseline / waves
-```{r}
-dat.edeq <- dat.edeq %>% 
-  rename(
-    edeq.sick_means_made_shape_.Waveretro_prepan = edeq.sick_means_made_shape.1_.Wavebaseline_numeric,
-    edeq.felt_anxious_blue_bored.3_.Waveretro_prepan = edeq.felt_anxious_blue_bored.3_.Wavebaseline,
-    edeq.diuretics_laxatives_means_shape.1_.Waveretro_prepan= edeq.diuretics_laxatives_means_shape.1_.Wavebaseline_numeric,
-    edeq.compulsive_driven_burn_calories.1_.Waveretro_prepan = edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric,
-    edeq.nibbled_picked_snacks_grazed.1_.Waveretro_prepan = edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline,
-    edeq.felt_anxious_blue_bored.2_.Waveretro_prepan = edeq.felt_anxious_blue_bored.2_.Wavebaseline,
-    edeq.regard_lost_control_eaten.1_.Waveretro_prepan = edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric,
-    
-    
-    edeq.calories_made_body_shape.1_.Waveretro_prepan = edeq.calories_made_body_shape.1_.Wavebaseline,
-    edeq.weight_influenced_person.1_.Waveretro_prepan = edeq.weight_influenced_person.1_.Wavebaseline,
-    edeq.dissatisfied_shape_weight.1_.Waveretro_prepan = edeq.dissatisfied_shape_weight.1_.Wavebaseline,
-    edeq.actively_been_monitoring_your_shape_or_weight_.Waveretro_prepan = edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline_numeric,
-    edeq.eating_behaviours_concerns_distressed_.Waveretro_prepan = edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline
-
-    )
-
-
-```
-
-##PLOTS - EDEQ 
-1. Need to select variables to use (don't want numeric ones in there as then can't re-structure the data)
-
 ##***NEED NUMERIC VERSIONS FOR:
 edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric
 edeq.regard_lost_control_eaten_.Wavebaseline_numeric
 edeq.sick_means_made_shape_.Wavebaseline_numeric
 edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric
 edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric
+
+NB:
+
+retroprepan 
+edeq.felt_anxious_blue_bored.2 = eaten more
+edeq.felt_anxious_blue_bored.3 = eaten less
+
+
+BASELINE:
+edeq.felt_anxious_blue_bored.1 = Eaten less
+edeq.felt_anxious_blue_bored = eaten MORE
+
+WAVES: 
+edeq.felt_anxious_blue_bored.1 = eaten LESS
+edeq.felt_anxious_blue_bored = eaten MORE
 ```{r}
+dat.edeq <- dat.edeq %>% 
+  rename(
+    #Rename retro prepan waves to be consistent with all wave names
+    edeq.sick_means_made_shape_numeric_.Waveretro_prepan = edeq.sick_means_made_shape.1_.Wavebaseline_numeric,
+    edeq.felt_anxious_blue_bored.1_.Waveretro_prepan = edeq.felt_anxious_blue_bored.3_.Wavebaseline,
+    edeq.diuretics_laxatives_means_shape_numeric_.Waveretro_prepan= edeq.diuretics_laxatives_means_shape.1_.Wavebaseline_numeric,
+    edeq.compulsive_driven_burn_calories_numeric_.Waveretro_prepan = edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric,
+    edeq.nibbled_picked_snacks_grazed_.Waveretro_prepan = edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline,
+    edeq.felt_anxious_blue_bored_.Waveretro_prepan = edeq.felt_anxious_blue_bored.2_.Wavebaseline,
+    edeq.regard_lost_control_eaten_numeric_.Waveretro_prepan = edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric,
+    edeq.calories_made_body_shape_.Waveretro_prepan = edeq.calories_made_body_shape.1_.Wavebaseline,
+    edeq.weight_influenced_person_.Waveretro_prepan = edeq.weight_influenced_person.1_.Wavebaseline,
+    edeq.dissatisfied_shape_weight_.Waveretro_prepan = edeq.dissatisfied_shape_weight.1_.Wavebaseline,
+    edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan = edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline_numeric,
+    edeq.eating_behaviours_distressed_concerns_.Waveretro_prepan = edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline,
+    edeq.deliberately_limit_amount_influence_.Waveretro_prepan = edeq.deliberately_limit_amount_influence.1_.Wavebaseline,
+    
+    ##Rename all baseline waves to be consistent with wave names
+    edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline = edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric,
+    edeq.regard_lost_control_eaten_numeric_.Wavebaseline = edeq.regard_lost_control_eaten_.Wavebaseline_numeric,
+    edeq.sick_means_made_shape_numeric_.Wavebaseline = edeq.sick_means_made_shape_.Wavebaseline_numeric,
+    edeq.diuretics_laxatives_means_shape_numeric_.Wavebaseline = edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric,
+    edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline = edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric,
+    edeq.nibbled_picked_snacks_grazed_.Wavebaseline = edeq.nibbled_picked_snacks_grazed_.Wavebaseline,
+    edeq.felt_anxious_blue_bored_.Wavebaseline = edeq.felt_anxious_blue_bored_.Wavebaseline,
+    edeq.calories_made_body_shape_.Wavebaseline = edeq.calories_made_body_shape_.Wavebaseline,
+    edeq.weight_influenced_person_.Wavebaseline = edeq.weight_influenced_person_.Wavebaseline,
+    edeq.dissatisfied_shape_weight_.Wavebaseline = edeq.dissatisfied_shape_weight_.Wavebaseline,
+    edeq.eating_behaviours_distressed_concerns_.Wavebaseline = edeq.eating_behaviours_concerns_distressed_.Wavebaseline,
+    edeq.felt_anxious_blue_bored.1_.Wavebaseline = edeq.felt_anxious_blue_bored.1_.Wavebaseline,
+    edeq.deliberately_limit_amount_influence_.Wavebaseline = edeq.deliberately_limit_amount_influence_.Wavebaseline
+
+
+)
 
 ```
 
+##Get rid of non-numeric versions of edeq variables
+```{r}
+
+dat.edeq <- dat.edeq %>%
+  select(-c(edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline,
+            edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline,
+            edeq.regard_lost_control_eaten_.Wavebaseline,
+            edeq.regard_lost_control_eaten.1_.Wavebaseline,
+            edeq.sick_means_made_shape_.Wavebaseline,
+            edeq.sick_means_made_shape.1_.Wavebaseline,
+            edeq.diuretics_laxatives_means_shape_.Wavebaseline,
+            edeq.diuretics_laxatives_means_shape.1_.Wavebaseline,
+            edeq.compulsive_driven_burn_calories_.Wavebaseline,
+            edeq.compulsive_driven_burn_calories.1_.Wavebaseline,
+            edeq.feelings_pandemic_felt_.Wavebaseline))
 
 
+
+```
+
+##PLOTS - EDEQ 
+1. Need to select variables to use (don't want _numeric ones in there as then can't re-structure the data)
 ##Variables that have been made numeric AFTER data cleaning
 ```{r}
 
@@ -543,7 +585,256 @@ dat.edeq.long.prep2 <- dat.edeq.long.prep1 %>%
  colnames(dat.edeq.long.prep2) 
  
 ```
+ 
+```{r}
+names(dat.edeq)
+```
+ 
+ 
+ 
+```{r}
 
+dat.edeq <- dat.edeq %>%
+  select(
+    ID,                                                                                                                                            
+         sex,
+         cohort_name,
+         gender_unc,  
+         current_country, 
+         uk_location,
+         age_category,
+         age_category_numeric,
+         highest_education_prepan_numeric,
+         highest_education_numeric,
+         employment_prior_covid,
+         ethnicity,  
+         key_worker, 
+         employment_change, 
+         highest_education_prepan,                                                                                                        
+         highest_education,                                                                                                                  
+         employment_prior_covid_numeric,                                                                                                         
+         employment_change_numeric,                                                                                                                     
+         key_worker_numeric,   
+         control,                                                                     
+         control_numeric,
+         mhd.other_eating_disorder_numeric,
+         depressive_disorders_numeric,
+         eating_disorders_numeric,
+         anxiety_disorders_numeric, 
+         psychotic_disorders_numeric,
+         mhd.suspected_eating_disorder_diagnosed_numeric,
+         obsessive_compulsive_disorders_numeric,
+         mhd.anorexia_nervosa_numeric,
+         mhd.bulimia_nervosa_numeric,
+         mhd.attention_deficit_hyperactivity_disorder_numeric,
+         mhd.posttraumatic_stress_disorder_ptsd_numeric,
+         mhd.bingeeating_disorder_numeric,
+         mhd.purging_disorder_numeric,
+         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,                                                     
+         autism_spectrum_disorder_numeric,                                                                     
+         mhd.personality_disorder_numeric,                                                                          
+         mhd.body_dysmorphic_disorder_bdd_numeric,                                                                                     
+         mhd.atypical_anorexia_nervosa_numeric,                                                                                         
+         mhd.atypical_bulimia_nervosa_numeric,
+         mhd.pica_numeric,
+         mhd.rumination_disorder_numeric,
+         mhd.atypical_bingeeating_disorder_numeric,                                                                                    
+         mhd.night_eating_syndrome_numeric,                                                                                                        
+         mhd.avoidantrestrictive_food_intake_disorder_numeric,                                                                      
+         mhd.feeding_eating_disorder_numeric,
+    `edeq.deliberately_limit_amount_influence_.Waveretro_prepan`,                                            
+         `edeq.deliberately_limit_amount_influence_.Wavebaseline`,  
+         `edeq.deliberately_limit_amount_influence_.Wave 1b`,                          
+         `edeq.deliberately_limit_amount_influence_.Wave 2b`,
+         `edeq.deliberately_limit_amount_influence_.Wave 3b`, 
+         `edeq.deliberately_limit_amount_influence_.Wave 4b`,                                                    
+         `edeq.deliberately_limit_amount_influence_.Wave 8`,  
+         `edeq.deliberately_limit_amount_influence_.Wave 6`,
+         `edeq.calories_made_body_shape_.Waveretro_prepan`,  
+         `edeq.calories_made_body_shape_.Wavebaseline`,                                
+         `edeq.calories_made_body_shape_.Wave 1b`,                                     
+         `edeq.calories_made_body_shape_.Wave 2b`,                                                                          
+         `edeq.calories_made_body_shape_.Wave 4b`,
+         `edeq.calories_made_body_shape_.Wave 8`, 
+         `edeq.calories_made_body_shape_.Wave 3b`,
+         `edeq.calories_made_body_shape_.Wave 6`,
+         `edeq.weight_influenced_person_.Waveretro_prepan`,
+         `edeq.weight_influenced_person_.Wavebaseline`, 
+         `edeq.weight_influenced_person_.Wave 1b`,                                     
+         `edeq.weight_influenced_person_.Wave 2b`, 
+         `edeq.weight_influenced_person_.Wave 3b`,  
+         `edeq.weight_influenced_person_.Wave 4b`,                                                                            
+         `edeq.weight_influenced_person_.Wave 8`,
+         `edeq.weight_influenced_person_.Wave 6`,
+         `edeq.dissatisfied_shape_weight_.Waveretro_prepan`, 
+         `edeq.dissatisfied_shape_weight_.Wavebaseline`, 
+         `edeq.dissatisfied_shape_weight_.Wave 3b`,
+         `edeq.dissatisfied_shape_weight_.Wave 1b`,                                    
+         `edeq.dissatisfied_shape_weight_.Wave 2b`,                                                                         
+         `edeq.dissatisfied_shape_weight_.Wave 4b`,                                                                          
+         `edeq.dissatisfied_shape_weight_.Wave 8`, 
+         `edeq.dissatisfied_shape_weight_.Wave 6`,
+         `edeq.eating_behaviours_distressed_concerns_.Waveretro_prepan`,       
+         `edeq.eating_behaviours_distressed_concerns_.Wavebaseline`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 1b`,                        
+         `edeq.eating_behaviours_distressed_concerns_.Wave 2b`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 3b`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 4b`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 6`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 8`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan`,                  
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline`,   
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1b`,        
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2b`, 
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8`,
+         `edeq.regard_lost_control_eaten_numeric_.Waveretro_prepan`,  
+         `edeq.regard_lost_control_eaten_numeric_.Wavebaseline`,                                                 
+         `edeq.regard_lost_control_eaten_numeric_.Wave 1b`,                            
+         `edeq.regard_lost_control_eaten_numeric_.Wave 2b`, 
+         `edeq.regard_lost_control_eaten_numeric_.Wave 3b`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 4b`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 6`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 8`,
+         `edeq.sick_means_made_shape_numeric_.Waveretro_prepan`,                             
+         `edeq.sick_means_made_shape_numeric_.Wavebaseline`,  
+         `edeq.sick_means_made_shape_numeric_.Wave 1b`,                                
+         `edeq.sick_means_made_shape_numeric_.Wave 2b`,
+         `edeq.sick_means_made_shape_numeric_.Wave 3b`,
+         `edeq.sick_means_made_shape_numeric_.Wave 4b`,
+         `edeq.sick_means_made_shape_numeric_.Wave 6`,                                 
+         `edeq.sick_means_made_shape_numeric_.Wave 8`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Waveretro_prepan`,       
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wavebaseline`, 
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 1b`,                      
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 2b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 3b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 4b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 6`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 8`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Waveretro_prepan`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline`, 
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 1b`,                      
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 2b`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 3b`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 4b`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 6`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 8`,
+         `edeq.nibbled_picked_snacks_grazed_.Waveretro_prepan`,                                                   
+         `edeq.nibbled_picked_snacks_grazed_.Wavebaseline`,    
+         `edeq.nibbled_picked_snacks_grazed_.Wave 1b`,                                 
+         `edeq.nibbled_picked_snacks_grazed_.Wave 2b`, 
+         `edeq.nibbled_picked_snacks_grazed_.Wave 3b`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 4b`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 6`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 8`,
+         `edeq.felt_anxious_blue_bored.1_.Waveretro_prepan`,     
+         `edeq.felt_anxious_blue_bored.1_.Wavebaseline`,                                  
+         `edeq.felt_anxious_blue_bored.1_.Wave 1b`,                                    
+         `edeq.felt_anxious_blue_bored.1_.Wave 2b`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 3b`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 4b`, 
+         `edeq.felt_anxious_blue_bored.1_.Wave 6`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 8`,
+         `edeq.felt_anxious_blue_bored_.Wavebaseline`,     
+         `edeq.felt_anxious_blue_bored_.Waveretro_prepan`,  
+         `edeq.felt_anxious_blue_bored_.Wave 1b`,                                      
+         `edeq.felt_anxious_blue_bored_.Wave 2b`,
+         `edeq.felt_anxious_blue_bored_.Wave 3b`,
+         `edeq.felt_anxious_blue_bored_.Wave 4b`,
+         `edeq.felt_anxious_blue_bored_.Wave 6`,
+         `edeq.felt_anxious_blue_bored_.Wave 8`)
+                                    
+```
+ 
+ Error: Can't combine `edeq.deliberately_limit_amount_influence_.Waveretro_prepan` <factor<6a962>> and `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan` <double>. Run `rlang::last_error()` to see where the error occurred.
+ ##Change numerics to factor for restructuring to long       
+```{r}
+dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan`)                 
+         
+dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline`)                 
+
+dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1b` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1b`)                 
+
+dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2b` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2b`)                 
+
+dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3b` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3b`)                 
+
+dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4b` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4b`)                 
+
+dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6`)                 
+
+dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8`)                 
+
+dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Waveretro_prepan` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Waveretro_prepan`)                 
+
+dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wavebaseline`) 
+
+dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 1b` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 1b`)    
+
+dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 2b` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 2b`)                 
+
+dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 3b` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 3b`)                 
+
+dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 4b` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 4b`)                 
+
+dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 6` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 6`)                 
+
+dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 8` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 8`)                 
+
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Waveretro_prepan` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Waveretro_prepan`)                 
+
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wavebaseline`)                 
+
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 1b` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 1b`)  
+
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 2b` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 2b`)      
+
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 3b` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 3b`)     
+
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 4b` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 4b`)     
+
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 6` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 6`)   
+
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 8` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 8`)                 
+
+dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Waveretro_prepan` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Waveretro_prepan`)                 
+
+dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wavebaseline`) 
+
+dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1b` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1b`)     
+
+dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 2b` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 2b`)      
+
+dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 3b` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 3b`)    
+
+dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 4b` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 4b`)   
+
+dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 6` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 6`)  
+
+dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 8` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 8`)                 
+
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Waveretro_prepan` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Waveretro_prepan`)
+
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline`)                 
+
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 1b` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 1b`)    
+
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 2b` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 2b`)      
+
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 3b` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 3b`) 
+
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 4b` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 4b`)
+
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 6` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 6`)  
+
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 8` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 8`)                 
+
+```
+        
+        
 2. Restructure data into long 
 ```{r }
 dat.edeq <- dat.edeq %>%
@@ -557,23 +848,138 @@ dat.edeq <- dat.edeq %>%
      names_from = "edeq",
      values_from = "value")
 
-colnames(dat.edeq.long)
+colnames(dat.edeq)
 
 ```
 
+FINAL VARIABLES                                                              
 
+1
+"edeq.deliberately_limit_amount_influence_.Waveretro_prepan"                                            
+"edeq.deliberately_limit_amount_influence_.Wavebaseline"  
+"edeq.deliberately_limit_amount_influence_.Wave 1b"                          
+"edeq.deliberately_limit_amount_influence_.Wave 2b"
+"edeq.deliberately_limit_amount_influence_.Wave 3b" 
+"edeq.deliberately_limit_amount_influence_.Wave 4b"                                                    
+"edeq.deliberately_limit_amount_influence_.Wave 8"  
+"edeq.deliberately_limit_amount_influence_.Wave 6"  
 
+2
+"edeq.calories_made_body_shape_.Waveretro_prepan"  
+"edeq.calories_made_body_shape_.Wavebaseline"                                
+"edeq.calories_made_body_shape_.Wave 1b"                                     
+"edeq.calories_made_body_shape_.Wave 2b"                                                                          
+"edeq.calories_made_body_shape_.Wave 4b
+"edeq.calories_made_body_shape_.Wave 8" 
+"edeq.calories_made_body_shape_.Wave 3b"
+"edeq.calories_made_body_shape_.Wave 6"                                      
 
+3
+"edeq.weight_influenced_person_.Waveretro_prepan"
+"edeq.weight_influenced_person_.Wavebaseline" 
+"edeq.weight_influenced_person_.Wave 1b"                                     
+"edeq.weight_influenced_person_.Wave 2b" 
+"edeq.weight_influenced_person_.Wave 3b"  
+"edeq.weight_influenced_person_.Wave 4b"                                                                            
+"edeq.weight_influenced_person_.Wave 8"
+"edeq.weight_influenced_person_.Wave 6"
 
+4
+"edeq.dissatisfied_shape_weight_.Waveretro_prepan" 
+"edeq.dissatisfied_shape_weight_.Wavebaseline" 
+"edeq.dissatisfied_shape_weight_.Wave 3b"
+"edeq.dissatisfied_shape_weight_.Wave 1b"                                    
+"edeq.dissatisfied_shape_weight_.Wave 2b"                                                                         
+"edeq.dissatisfied_shape_weight_.Wave 4b"                                                                          
+"edeq.dissatisfied_shape_weight_.Wave 8" 
+"edeq.dissatisfied_shape_weight_.Wave 6"
 
+5
+"edeq.eating_behaviours_distressed_concerns_.Waveretro_prepan"       
+"edeq.eating_behaviours_distressed_concerns_.Wavebaseline"
+"edeq.eating_behaviours_distressed_concerns_.Wave 1b"                        
+"edeq.eating_behaviours_distressed_concerns_.Wave 2b"
+"edeq.eating_behaviours_distressed_concerns_.Wave 3b"
+"edeq.eating_behaviours_distressed_concerns_.Wave 4b"
+"edeq.eating_behaviours_distressed_concerns_.Wave 6"
+"edeq.eating_behaviours_distressed_concerns_.Wave 8"
 
+6
+"edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan"                  
+"edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline"   
+"edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1b"        
+"edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2b" 
+"edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3b"
+"edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4b"
+"edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6"
+"edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8"
 
+7
+"edeq.regard_lost_control_eaten_numeric_.Waveretro_prepan"  
+"edeq.regard_lost_control_eaten_numeric_.Wavebaseline"                                                 
+"edeq.regard_lost_control_eaten_numeric_.Wave 1b"                            
+"edeq.regard_lost_control_eaten_numeric_.Wave 2b" 
+"edeq.regard_lost_control_eaten_numeric_.Wave 3b"
+"edeq.regard_lost_control_eaten_numeric_.Wave 4b"
+"edeq.regard_lost_control_eaten_numeric_.Wave 6"
+"edeq.regard_lost_control_eaten_numeric_.Wave 8"   
 
+8
+"edeq.sick_means_made_shape_numeric_.Waveretro_prepan"                             
+"edeq.sick_means_made_shape_numeric_.Wavebaseline"  
+"edeq.sick_means_made_shape_numeric_.Wave 1b"                                
+"edeq.sick_means_made_shape_numeric_.Wave 2b"
+"edeq.sick_means_made_shape_numeric_.Wave 3b"
+"edeq.sick_means_made_shape_numeric_.Wave 4b
+"edeq.sick_means_made_shape_numeric_.Wave 6"                                 
+"edeq.sick_means_made_shape_numeric_.Wave 8"
 
+9
+"edeq.diuretics_laxatives_means_shape_numeric_.Waveretro_prepan"       
+"edeq.diuretics_laxatives_means_shape_numeric_.Wavebaseline" 
+"edeq.diuretics_laxatives_means_shape_numeric_.Wave 1b"                      
+"edeq.diuretics_laxatives_means_shape_numeric_.Wave 2b"
+"edeq.diuretics_laxatives_means_shape_numeric_.Wave 3b"
+"edeq.diuretics_laxatives_means_shape_numeric_.Wave 4b"
+"edeq.diuretics_laxatives_means_shape_numeric_.Wave 6"
+"edeq.diuretics_laxatives_means_shape_numeric_.Wave 8"
 
+10
+"edeq.compulsive_driven_burn_calories_numeric_.Waveretro_prepan"
+"edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline" 
+"edeq.compulsive_driven_burn_calories_numeric_.Wave 1b"                      
+"edeq.compulsive_driven_burn_calories_numeric_.Wave 2b"
+"edeq.compulsive_driven_burn_calories_numeric_.Wave 3b"
+"edeq.compulsive_driven_burn_calories_numeric_.Wave 4b"
+"edeq.compulsive_driven_burn_calories_numeric_.Wave 6"
+"edeq.compulsive_driven_burn_calories_numeric_.Wave 8"
 
+11
+"edeq.nibbled_picked_snacks_grazed_.Waveretro_prepan"                                                   
+"edeq.nibbled_picked_snacks_grazed_.Wavebaseline"    
+"edeq.nibbled_picked_snacks_grazed_.Wave 1b"                                 
+"edeq.nibbled_picked_snacks_grazed_.Wave 2b" 
+"edeq.nibbled_picked_snacks_grazed_.Wave 3b"
+"edeq.nibbled_picked_snacks_grazed_.Wave 4b"
+"edeq.nibbled_picked_snacks_grazed_.Wave 6"
+"edeq.nibbled_picked_snacks_grazed_.Wave 8"
 
+12
+"edeq.felt_anxious_blue_bored.1_.Waveretro_prepan"     
+"edeq.felt_anxious_blue_bored.1_.Wavebaseline"                                  
+"edeq.felt_anxious_blue_bored.1_.Wave 1b"                                    
+"edeq.felt_anxious_blue_bored.1_.Wave 2b"
+"edeq.felt_anxious_blue_bored.1_.Wave 3b"
+"edeq.felt_anxious_blue_bored.1_.Wave 4b" 
+"edeq.felt_anxious_blue_bored.1_.Wave 6"
+"edeq.felt_anxious_blue_bored.1_.Wave 8"                               
 
-
-
-
+13
+"edeq.felt_anxious_blue_bored_.Wavebaseline"     
+"edeq.felt_anxious_blue_bored_.Waveretro_prepan"  
+"edeq.felt_anxious_blue_bored_.Wave 1b"                                      
+"edeq.felt_anxious_blue_bored_.Wave 2b"
+"edeq.felt_anxious_blue_bored_.Wave 3b"
+"edeq.felt_anxious_blue_bored_.Wave 4b"
+"edeq.felt_anxious_blue_bored_.Wave 6"
+"edeq.felt_anxious_blue_bored_.Wave 8"                                        
