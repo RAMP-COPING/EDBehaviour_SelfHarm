@@ -179,6 +179,7 @@ dim(taf_ramp)
 
 taf_coping <- readRDS(file = "../data_cleaned/taf_coping.rds")
 dim(taf_coping)
+
 ```
 #Bind coping and ramp's edeq and taf (separately)
 ```{r}

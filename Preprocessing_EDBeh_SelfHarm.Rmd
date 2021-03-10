@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 
@@ -2922,17 +2922,17 @@ if(COPING == TRUE) {
 edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
   group_by(wave_edeq) %>%
   mutate(row = row_number()) %>%
-  tidyr::pivot_wider(names_from = wave_edeq, 
+  tidyr::pivot_wider(names_from = wave_edeq,
                      values_from = c(edeq.deliberately_limit_amount_influence,
                               edeq.calories_made_body_shape,
                               edeq.weight_influenced_person,
                               edeq.dissatisfied_shape_weight,
                               edeq.eating_behaviours_distressed_concerns,
-                              edeq.actively_been_monitoring_your_shape_or_weight,
-                              edeq.regard_lost_control_eaten,
-                              edeq.sick_means_made_shape,
-                              edeq.diuretics_laxatives_means_shape,
-                              edeq.compulsive_driven_burn_calories,
+                              edeq.actively_been_monitoring_your_shape_or_weight_numeric, ##Need numeric version
+                              edeq.regard_lost_control_eaten_numeric, ##Need numeric version
+                              edeq.sick_means_made_shape_numeric, ##Need numeric version
+                              edeq.diuretics_laxatives_means_shape_numeric, ##Need numeric version
+                              edeq.compulsive_driven_burn_calories_numeric, ##Need numeric version
                               edeq.nibbled_picked_snacks_grazed,
                               edeq.felt_anxious_blue_bored,
                               edeq.felt_anxious_blue_bored.1)) %>%
@@ -2972,31 +2972,31 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
          `edeq.eating_behaviours_distressed_concerns_.Wave 4b`,
          `edeq.eating_behaviours_distressed_concerns_.Wave 6`,
          `edeq.eating_behaviours_distressed_concerns_.Wave 8`,
-         `edeq.actively_been_monitoring_your_shape_or_weight_.Wave 2b`,
-         `edeq.actively_been_monitoring_your_shape_or_weight_.Wave 3b`,
-         `edeq.actively_been_monitoring_your_shape_or_weight_.Wave 4b`,
-         `edeq.actively_been_monitoring_your_shape_or_weight_.Wave 6`,
-         `edeq.actively_been_monitoring_your_shape_or_weight_.Wave 8`,
-         `edeq.regard_lost_control_eaten_.Wave 2b`,
-         `edeq.regard_lost_control_eaten_.Wave 3b`,
-         `edeq.regard_lost_control_eaten_.Wave 4b`,
-         `edeq.regard_lost_control_eaten_.Wave 6`,
-         `edeq.regard_lost_control_eaten_.Wave 8`,
-         `edeq.sick_means_made_shape_.Wave 2b`,
-         `edeq.sick_means_made_shape_.Wave 3b`,
-         `edeq.sick_means_made_shape_.Wave 4b`,
-         `edeq.sick_means_made_shape_.Wave 6`,
-         `edeq.sick_means_made_shape_.Wave 8`,
-         `edeq.diuretics_laxatives_means_shape_.Wave 2b`,
-         `edeq.diuretics_laxatives_means_shape_.Wave 3b`,
-         `edeq.diuretics_laxatives_means_shape_.Wave 4b`,
-         `edeq.diuretics_laxatives_means_shape_.Wave 6`,
-         `edeq.diuretics_laxatives_means_shape_.Wave 8`,
-         `edeq.compulsive_driven_burn_calories_.Wave 2b`,
-         `edeq.compulsive_driven_burn_calories_.Wave 3b`,
-         `edeq.compulsive_driven_burn_calories_.Wave 4b`,
-         `edeq.compulsive_driven_burn_calories_.Wave 6`,
-         `edeq.compulsive_driven_burn_calories_.Wave 8`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4b`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 2b`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 3b`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 4b`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 6`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 8`,
+         `edeq.sick_means_made_shape_numeric_.Wave 2b`,
+         `edeq.sick_means_made_shape_numeric_.Wave 3b`,
+         `edeq.sick_means_made_shape_numeric_.Wave 4b`,
+         `edeq.sick_means_made_shape_numeric_.Wave 6`,
+         `edeq.sick_means_made_shape_numeric_.Wave 8`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 2b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 3b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 4b`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 6`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 8`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 2b`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 3b`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 4b`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 6`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 8`,
          `edeq.nibbled_picked_snacks_grazed_.Wave 2b`,
          `edeq.nibbled_picked_snacks_grazed_.Wave 3b`,
          `edeq.nibbled_picked_snacks_grazed_.Wave 4b`,
@@ -3047,6 +3047,7 @@ if(RAMP == TRUE) {
   saveRDS(object = edeq.ramp.followupb.raw.id, file = "../data_cleaned/edeq_ramp.rds")
   
 }
+
 ```
 
 ###JOINING DATASETS - baseline 
@@ -3665,7 +3666,6 @@ if(RAMP == TRUE) {
 if(NBR == TRUE) {
   saveRDS(object = dat.raw.nbr, file = "../data_cleaned/baseline_nbr.rds")
 }
-
 
 ```
 
