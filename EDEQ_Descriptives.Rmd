@@ -177,36 +177,36 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 4b`                        ) &
            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 6`                          ) &
            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 8`                         ) &
-           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 1b`                 ) &
-           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 2b`                ) &
-           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 3b`     ) &
-           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 4b`                ) &
-           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 6`                  ) &
-           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_.Wave 8`                 ) &
-           is.na(`edeq.regard_lost_control_eaten_.Wave 1b`                                     ) &
-           is.na(`edeq.regard_lost_control_eaten_.Wave 2b`                                    ) &
-           is.na(`edeq.regard_lost_control_eaten_.Wave 3b`                                     ) &
-           is.na(`edeq.regard_lost_control_eaten_.Wave 4b`                                    ) &
-           is.na(`edeq.regard_lost_control_eaten_.Wave 6`                                      ) &
-           is.na(`edeq.regard_lost_control_eaten_.Wave 8`                                     ) &
-           is.na(`edeq.sick_means_made_shape_.Wave 1b`                                         ) &
-           is.na(`edeq.sick_means_made_shape_.Wave 2b`                                        ) &
-           is.na(`edeq.sick_means_made_shape_.Wave 3b`                                         ) &
-           is.na(`edeq.sick_means_made_shape_.Wave 4b`                                        ) &
-           is.na(`edeq.sick_means_made_shape_.Wave 6`                                          ) &
-           is.na(`edeq.sick_means_made_shape_.Wave 8`                                         ) &
-           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 1b`                               ) &
-           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 2b`                              ) &
-           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 3b`                               ) &
-           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 4b`                              ) &
-           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 6`                                ) &
-           is.na(`edeq.diuretics_laxatives_means_shape_.Wave 8`                               ) &
-           is.na(`edeq.compulsive_driven_burn_calories_.Wave 1b`                               ) &
-           is.na(`edeq.compulsive_driven_burn_calories_.Wave 2b`                              ) &
-           is.na(`edeq.compulsive_driven_burn_calories_.Wave 3b`                               ) &
-           is.na(`edeq.compulsive_driven_burn_calories_.Wave 4b`                              ) &
-           is.na(`edeq.compulsive_driven_burn_calories_.Wave 6`                                ) &
-           is.na(`edeq.compulsive_driven_burn_calories_.Wave 8`                               ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1b`                 ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2b`                ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3b`     ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4b`                ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6`                  ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8`                 ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 1b`                                     ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 2b`                                    ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 3b`                                     ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 4b`                                    ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 6`                                      ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 8`                                     ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 1b`                                         ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 2b`                                        ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 3b`                                         ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 4b`                                        ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 6`                                          ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 8`                                         ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1b`                               ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 2b`                              ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 3b`                               ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 4b`                              ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 6`                                ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 8`                               ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 1b`                               ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 2b`                              ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 3b`                               ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 4b`                              ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 6`                                ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 8`                               ) &
            is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 1b`                                  ) &
            is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 2b`                                 ) &
            is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 3b`                                  ) &
@@ -226,6 +226,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.felt_anxious_blue_bored.1_.Wave 6`                                      ) &
            is.na(`edeq.felt_anxious_blue_bored.1_.Wave 8` ))
              
+
 
 nrow(dat.edeq.all.missing)
 
