@@ -36,7 +36,7 @@ end2 <-  as.POSIXct("2020-05-19")
 start3 <- as.POSIXct("2020-05-19")
 end3 <-  as.POSIXct("2020-06-02")  
 
-# JUNE 1 (wave 2b) - FOLLOW UP B
+# JUNE 1 (wave 2b) - FOLLOW UP B ##COPING STARTS HERE
 start4 <- as.POSIXct("2020-06-02")
 end4 <-  as.POSIXct("2020-06-16")  
 

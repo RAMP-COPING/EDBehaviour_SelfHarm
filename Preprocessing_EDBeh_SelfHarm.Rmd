@@ -42,7 +42,7 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
 COPING = FALSE
 ```
@@ -1571,10 +1571,12 @@ dim(edeq.ramp.baseline.raw)[1]-dim(edeq.ramp.baseline.raw.id)[1]
 
 ##Check earliest date of baseline being filled in by RAMP participants
 ```{r}
+if(RAMP == TRUE){
+
 x <- as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
 
 min(x )
-
+}
 ```
 
 
@@ -2005,10 +2007,12 @@ dim(taf.ramp.baseline.raw)[1]-dim(taf.ramp.baseline.raw.id)[1]
 
 ##Check earliest date of baseline being filled in by RAMP participants
 ```{r}
+if(RAMP == TRUE){
+
 x <- as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
 
 min(x)
-
+}
 ```
 
 ##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
@@ -3803,6 +3807,7 @@ if(RAMP == TRUE) {
 if(NBR == TRUE) {
   saveRDS(object = dat.raw.nbr, file = "../data_cleaned/baseline_nbr.rds")
 }
+
 
 ```
 

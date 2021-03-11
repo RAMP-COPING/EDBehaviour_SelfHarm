@@ -1029,7 +1029,7 @@ summary(dat.no.nas$wave_factor)
 ##Rename waves
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective pre-pandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "Baseline: 30th April - 18th May (2020)"
+levels(dat.no.nas$wave_factor)[2] <- "Baseline: 7th April - 20th April (2020)"
 
 levels(dat.no.nas$wave_factor)[3] <- "6th May - 19th May (2020)" 
 
@@ -1131,7 +1131,7 @@ summary(dat.no.nas$wave_factor)
 ##Rename waves
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective pre-pandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "Baseline: 30th April - 18th May (2020)"
+levels(dat.no.nas$wave_factor)[2] <- "Baseline: 7th April - 20th April (2020)"
 
 levels(dat.no.nas$wave_factor)[3] <- "6th May - 19th May (2020)" 
 
@@ -1231,7 +1231,7 @@ summary(dat.no.nas$wave_factor)
 ##Rename waves
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective pre-pandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "Baseline: 30th April - 18th May (2020)"
+levels(dat.no.nas$wave_factor)[2] <- "Baseline: 7th April - 20th April (2020)"
 
 levels(dat.no.nas$wave_factor)[3] <- "6th May - 19th May (2020)" 
 
@@ -1265,12 +1265,12 @@ dat_plot <- dat.no.nas %>%
 ```{r}
 dat_plot <- dat_plot %>%
   mutate(edeq.weight_influenced_person = fct_relevel(edeq.weight_influenced_person,
-                           "0",
+                          "Not at all",
                            "1",
                            "2",
                           "3",
                           "4",
-                          "5"))
+                          "Markedly"))
 
 
 ```
@@ -1333,7 +1333,7 @@ summary(dat.no.nas$wave_factor)
 ##Rename waves
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective pre-pandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "Baseline: 30th April - 18th May (2020)"
+levels(dat.no.nas$wave_factor)[2] <- "Baseline: 7th April - 20th April (2020)"
 
 levels(dat.no.nas$wave_factor)[3] <- "6th May - 19th May (2020)" 
 
@@ -1367,12 +1367,12 @@ dat_plot <- dat.no.nas %>%
 ```{r}
 dat_plot <- dat_plot %>%
   mutate(edeq.dissatisfied_shape_weight = fct_relevel(edeq.dissatisfied_shape_weight,
-                           "0",
+                           "Not at all",
                            "1",
                            "2",
                           "3",
                           "4",
-                          "5"))
+                          "Markedly"))
 
 
 ```
@@ -1434,7 +1434,7 @@ summary(dat.no.nas$wave_factor)
 ##Rename waves
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective pre-pandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "Baseline: 30th April - 18th May (2020)"
+levels(dat.no.nas$wave_factor)[2] <- "Baseline: 7th April - 20th April (2020)"
 
 levels(dat.no.nas$wave_factor)[3] <- "6th May - 19th May (2020)" 
 
@@ -1468,13 +1468,12 @@ dat_plot <- dat.no.nas %>%
 ```{r}
 dat_plot <- dat_plot %>%
   mutate(edeq.eating_behaviours_distressed_concerns = fct_relevel(edeq.eating_behaviours_distressed_concerns,
-                           "0",
+                       "Not at all",
                            "1",
                            "2",
                           "3",
                           "4",
-                          "5"))
-
+                          "Markedly"))
 
 ```
 
