@@ -746,10 +746,11 @@ dat.edeq <- dat.edeq %>%
          `edeq.felt_anxious_blue_bored_.Wave 4b`,
          `edeq.felt_anxious_blue_bored_.Wave 6`,
          `edeq.felt_anxious_blue_bored_.Wave 8`)
-                                    
+  
+                              
 ```
  
- Error: Can't combine `edeq.deliberately_limit_amount_influence_.Waveretro_prepan` <factor<6a962>> and `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan` <double>. Run `rlang::last_error()` to see where the error occurred.
+
  ##Change numerics to factor for restructuring to long       
 ```{r}
 dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan`)                 
@@ -833,10 +834,10 @@ dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 6` <- as.factor(dat
 dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 8` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 8`)                 
 
 ```
-        
-        
+
 2. Restructure data into long 
 ```{r }
+
 dat.edeq <- dat.edeq %>%
   pivot_longer(
     cols = (starts_with("edeq") &
@@ -848,9 +849,9 @@ dat.edeq <- dat.edeq %>%
      names_from = "edeq",
      values_from = "value")
 
-colnames(dat.edeq)
 
 ```
+
 
 FINAL VARIABLES                                                              
 
@@ -972,7 +973,8 @@ FINAL VARIABLES
 "edeq.felt_anxious_blue_bored.1_.Wave 3b"
 "edeq.felt_anxious_blue_bored.1_.Wave 4b" 
 "edeq.felt_anxious_blue_bored.1_.Wave 6"
-"edeq.felt_anxious_blue_bored.1_.Wave 8"                               
+"edeq.felt_anxious_blue_bored.1_.Wave 8" 
+
 
 13
 "edeq.felt_anxious_blue_bored_.Wavebaseline"     
@@ -982,12 +984,98 @@ FINAL VARIABLES
 "edeq.felt_anxious_blue_bored_.Wave 3b"
 "edeq.felt_anxious_blue_bored_.Wave 4b"
 "edeq.felt_anxious_blue_bored_.Wave 6"
-"edeq.felt_anxious_blue_bored_.Wave 8"      
+"edeq.felt_anxious_blue_bored_.Wave 8"     
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.edeq <-  droplevels(dat.edeq)
+
+```
+
+##PLOTS - On how many of the past 28 days: Have you been deliberately trying to limit the amount of food you eat to influence your shape or weight ?
+
+#1. Get rid of NAs and change taf to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq[!is.na(dat.edeq$edeq.deliberately_limit_amount_influence),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "retro_prepan",
+                                  "baseline",
+                                  "1b",
+                                  "2b",
+                           "3b",
+                           "4b",
+                           "6",
+                           "8"))
 
 
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+#levels(dat.no.nas$wave_factor)[1] <- "test"
 
 
+```
 
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.deliberately_limit_amount_influence) / sum(table(edeq.deliberately_limit_amount_influence))) %>%
+  ungroup() %>%
+  mutate(edeq.deliberately_limit_amount_influence = rep(levels(dat.no.nas[["edeq.deliberately_limit_amount_influence"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.deliberately_limit_amount_influence = fct_relevel(edeq.deliberately_limit_amount_influence,
+                           "No days",
+                           "1-4 days",
+                           "5-10 days",
+                          "11-16 days",
+                          "17-22 days",
+                          "23-27 days",
+                          "Every day"))
+
+
+```
+
+
+7. PLOT ! 
+```{r}
+ggplot(dat_plot,
+       aes(x = edeq.deliberately_limit_amount_influence,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent)
+
+
+```
 
 
 
