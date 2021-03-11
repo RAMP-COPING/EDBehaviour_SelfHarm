@@ -1589,7 +1589,7 @@ if(RAMP == TRUE){
 as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
 
 edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-05-18"))
+  filter(startDate_baseline < as.Date("2020-04-21"))
 
 #Drop start date baseline column
 
@@ -1759,7 +1759,7 @@ as.Date(taf.glad.coping.baseline.raw.id$startDate_baseline)
 
 
 taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-05-18"))
+  filter(startDate_baseline < as.Date("2020-04-21"))
 
 
 #Drop start date baseline column
@@ -1845,7 +1845,7 @@ as.Date(taf.edgi.coping.baseline.raw.id$startDate_baseline)
 #Filter by people who completed baseline survey before 18th May
 
 taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-05-18"))
+  filter(startDate_baseline < as.Date("2020-04-21"))
 
 
 #Drop start date baseline column
@@ -1931,7 +1931,7 @@ as.Date(taf.nbr.baseline.raw.id$startDate_baseline)
 #Filter by people who completed baseline survey before 18th May
 
 taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-05-18"))
+  filter(startDate_baseline < as.Date("2020-04-21"))
 
 
 #Drop start date baseline column
@@ -2021,7 +2021,7 @@ as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
 
 #Filter by people who completed baseline survey before 18th May
 taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-05-18"))
+  filter(startDate_baseline < as.Date("2020-04-21"))
 
 
 #Drop start date baseline column
