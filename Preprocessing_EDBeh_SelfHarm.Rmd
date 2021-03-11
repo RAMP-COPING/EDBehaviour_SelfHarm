@@ -40,11 +40,11 @@ source("./functions.R")
 
 # Specify cohort
 ```{r Specify cohort}
-GLAD = TRUE
+GLAD = FALSE
 EDGI = FALSE
 RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 
@@ -1516,7 +1516,7 @@ edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw %>% #new dataset with ID
   select(
          ID = `Login ID`, # ID
          cohort_name, # Sample
-         #startDate_baseline = startDate,
+         startDate_baseline = startDate,
          #endDate,
          edeq.deliberately_limit_amount_influence_.Wavebaseline = edeq.deliberately_limit_amount_influence,
          edeq.calories_made_body_shape_.Wavebaseline = edeq.calories_made_body_shape,
@@ -1566,7 +1566,28 @@ colnames(edeq.ramp.baseline.raw.id)
 #Differences
 dim(edeq.ramp.baseline.raw)[1]-dim(edeq.ramp.baseline.raw.id)[1]
 }
+
 ```
+
+##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+1. Change date format
+```{r}
+if(RAMP == TRUE){
+
+as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
+
+edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw.id %>%
+  filter(startDate_baseline < as.Date("2020-05-18"))
+
+#Drop start date baseline column
+
+edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
+
+}
+```
+
 
 # EDEQ
 ## RAMP follow up b
@@ -1714,6 +1735,30 @@ dim(taf.glad.coping.baseline.raw)[1]-dim(taf.glad.coping.baseline.raw.id)[1]
 
 
 ```
+##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+1. Change date format
+```{r}
+if(GLAD == TRUE){
+
+as.Date(taf.glad.coping.baseline.raw.id$startDate_baseline)
+
+
+#Filter by people who completed baseline survey before 18th May
+
+
+taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw.id %>%
+  filter(startDate_baseline < as.Date("2020-05-18"))
+
+
+#Drop start date baseline column
+
+taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
+}
+```
+
+
 
 # TAF - baseline
 ## EDGI  
@@ -1744,7 +1789,7 @@ taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw %>% #new dataset
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         #startDate_baseline = startDate,
+         startDate_baseline = startDate,
          #endDate,
          taf.worth_living_life_people_.Wavebaseline = taf.worth_living_thoughts_life, #renamed to same as follow up
          taf.felt_weeks_past_.Wavebaseline = taf.weeks_past_felt,#renamed to same as follow up
@@ -1776,6 +1821,32 @@ colnames(taf.edgi.coping.baseline.raw.id)
 dim(taf.edgi.coping.baseline.raw)[1]-dim(taf.edgi.coping.baseline.raw.id)[1]
 }
 ```
+
+##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+1. Change date format
+```{r}
+if(EDGI == TRUE){
+
+as.Date(taf.edgi.coping.baseline.raw.id$startDate_baseline)
+
+
+#Filter by people who completed baseline survey before 18th May
+
+taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw.id %>%
+  filter(startDate_baseline < as.Date("2020-05-18"))
+
+
+#Drop start date baseline column
+
+taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
+
+}
+
+```
+
+
 # TAF - baseline 
 ## NBR 
 ### Read in data
@@ -1804,7 +1875,7 @@ taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw %>% #new dataset with ID
   select(
          ID = subjectid, # ID
          cohort_name, # Sample
-         #startDate_baseline = startDate,
+         startDate_baseline = startDate,
          #endDate,
          taf.worth_living_life_people_.Wavebaseline = taf.worth_living_thoughts_life, #renamed to same as follow up
          taf.felt_weeks_past_.Wavebaseline = taf.past_felt_weeks,#renamed to same as follow up
@@ -1836,6 +1907,29 @@ colnames(taf.nbr.baseline.raw.id)
 dim(taf.nbr.baseline.raw)[1]-dim(taf.nbr.baseline.raw.id)[1]
 }
 ```
+
+##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+1. Change date format
+```{r}
+if(NBR == TRUE){
+
+as.Date(taf.nbr.baseline.raw.id$startDate_baseline)
+
+
+#Filter by people who completed baseline survey before 18th May
+
+taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw.id %>%
+  filter(startDate_baseline < as.Date("2020-05-18"))
+
+
+#Drop start date baseline column
+
+taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
+}
+```
+
 # TAF - baseline 
 ## RAMP
 ### Read in data
@@ -1864,7 +1958,7 @@ taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw %>% #new dataset with ID
   select(
          ID = `Login ID`, # ID
          cohort_name, # Sample
-         #startDate_baseline = startDate,
+         startDate_baseline = startDate,
          #endDate,
          taf.worth_living_life_people_.Wavebaseline = taf.worth_living_thoughts_life, #renamed to same as follow up
          taf.felt_weeks_past_.Wavebaseline = taf.past_felt_weeks,#renamed to same as follow up
@@ -1894,6 +1988,29 @@ dim(taf.ramp.baseline.raw.id)
 colnames(taf.ramp.baseline.raw.id)
 #Differences
 dim(taf.ramp.baseline.raw)[1]-dim(taf.ramp.baseline.raw.id)[1]
+}
+```
+
+##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+1. Change date format
+```{r}
+if(RAMP == TRUE){
+
+as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
+
+
+#Filter by people who completed baseline survey before 18th May
+
+
+taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw.id %>%
+  filter(startDate_baseline < as.Date("2020-05-18"))
+
+
+#Drop start date baseline column
+
+taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
 }
 ```
 
