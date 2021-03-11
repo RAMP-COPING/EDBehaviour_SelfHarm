@@ -982,4 +982,15 @@ FINAL VARIABLES
 "edeq.felt_anxious_blue_bored_.Wave 3b"
 "edeq.felt_anxious_blue_bored_.Wave 4b"
 "edeq.felt_anxious_blue_bored_.Wave 6"
-"edeq.felt_anxious_blue_bored_.Wave 8"                                        
+"edeq.felt_anxious_blue_bored_.Wave 8"      
+
+
+
+
+
+
+
+
+
+
+
