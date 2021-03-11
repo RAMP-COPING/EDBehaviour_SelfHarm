@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -1569,6 +1569,18 @@ dim(edeq.ramp.baseline.raw)[1]-dim(edeq.ramp.baseline.raw.id)[1]
 
 ```
 
+##Check earliest date of baseline being filled in by RAMP participants
+```{r}
+x <- as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
+
+min(x )
+
+```
+
+
+
+
+
 ##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
 1. Change date format
 ```{r}
@@ -1991,6 +2003,14 @@ dim(taf.ramp.baseline.raw)[1]-dim(taf.ramp.baseline.raw.id)[1]
 }
 ```
 
+##Check earliest date of baseline being filled in by RAMP participants
+```{r}
+x <- as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
+
+min(x)
+
+```
+
 ##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
 1. Change date format
 ```{r}
@@ -2000,8 +2020,6 @@ as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
 
 
 #Filter by people who completed baseline survey before 18th May
-
-
 taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw.id %>%
   filter(startDate_baseline < as.Date("2020-05-18"))
 
