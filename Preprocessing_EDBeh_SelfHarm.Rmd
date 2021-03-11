@@ -40,11 +40,11 @@ source("./functions.R")
 
 # Specify cohort
 ```{r Specify cohort}
-GLAD = FALSE
+GLAD = TRUE
 EDGI = FALSE
 RAMP = FALSE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -1680,7 +1680,7 @@ taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw %>% #new dataset
   select(
          ID = externalDataReference, # ID
          cohort_name, # Sample
-         #startDate_baseline = startDate,
+         startDate_baseline = startDate,
          #endDate,
          taf.worth_living_life_people_.Wavebaseline = taf.worth_living_life_thoughts, #renamed to same as follow up
          taf.felt_weeks_past_.Wavebaseline = taf.past_felt_weeks,#renamed to same as follow up
@@ -1711,6 +1711,8 @@ colnames(taf.glad.coping.baseline.raw.id)
 #Differences
 dim(taf.glad.coping.baseline.raw)[1]-dim(taf.glad.coping.baseline.raw.id)[1]
 }
+
+
 ```
 
 # TAF - baseline
@@ -3668,6 +3670,7 @@ if(NBR == TRUE) {
 }
 
 ```
+
 
 
 
