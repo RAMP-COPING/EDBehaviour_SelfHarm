@@ -752,10 +752,11 @@ dat.edeq <- dat.edeq %>%
  
 
  ##Change numerics to factor for restructuring to long       
-```{r}
-dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan`)                 
-         
-dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline`)                 
+```{r }
+dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan <- as.factor(dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan)                 
+dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline <- as.factor(dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline)                 
+freq(dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline)
+
 
 dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1b` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1b`)                 
 
@@ -851,6 +852,12 @@ dat.edeq <- dat.edeq %>%
 
 
 ```
+
+
+
+
+
+
 
 
 FINAL VARIABLES                                                              
@@ -1265,16 +1272,25 @@ dat_plot <- dat.no.nas %>%
 ```{r}
 dat_plot <- dat_plot %>%
   mutate(edeq.weight_influenced_person = fct_relevel(edeq.weight_influenced_person,
-                          "Not at all",
+                          "0",
                            "1",
                            "2",
                           "3",
                           "4",
-                          "Markedly"))
+                          "5"))
 
 
 ```
+#4. Rename edeq sliding scale
+```{r}
 
+##Rename sliding scale numbers
+levels(dat_plot$edeq.weight_influenced_person)[1] <- "Not at all"
+
+levels(dat_plot$edeq.weight_influenced_person)[6] <- "Markedly"
+
+
+```
 
 7. PLOT ! Over the past 28 days: Has your weight influenced how you think about yourself as a person?
 ```{r}
@@ -1367,12 +1383,22 @@ dat_plot <- dat.no.nas %>%
 ```{r}
 dat_plot <- dat_plot %>%
   mutate(edeq.dissatisfied_shape_weight = fct_relevel(edeq.dissatisfied_shape_weight,
-                           "Not at all",
+                           "0",
                            "1",
                            "2",
                           "3",
                           "4",
-                          "Markedly"))
+                          "5"))
+
+
+```
+#4. Rename edeq sliding scale
+```{r}
+
+##Rename sliding scale numbers
+levels(dat_plot$edeq.dissatisfied_shape_weight)[1] <- "Not at all"
+
+levels(dat_plot$edeq.dissatisfied_shape_weight)[6] <- "Markedly"
 
 
 ```
@@ -1468,15 +1494,24 @@ dat_plot <- dat.no.nas %>%
 ```{r}
 dat_plot <- dat_plot %>%
   mutate(edeq.eating_behaviours_distressed_concerns = fct_relevel(edeq.eating_behaviours_distressed_concerns,
-                       "Not at all",
+                       "0",
                            "1",
                            "2",
                           "3",
                           "4",
-                          "Markedly"))
+                          "5"))
 
 ```
+#4. Rename edeq sliding scale
+```{r}
 
+##Rename sliding scale numbers
+levels(dat_plot$edeq.eating_behaviours_distressed_concerns)[1] <- "Not at all"
+
+levels(dat_plot$edeq.eating_behaviours_distressed_concerns)[6] <- "Markedly"
+
+
+```
 
 7. PLOT ! Over the past 28 days: How distressed have you been by your eating behaviours, the measures you've taken to control your weight, or concerns about your weight and shape?
 ```{r}
@@ -1492,6 +1527,177 @@ ggplot(dat_plot,
   scale_y_continuous(labels = scales::percent) +
   labs(title = str_wrap("Over the past 28 days: How distressed have you been by your eating behaviours, the measures you've taken to control your weight, or concerns about your weight and shape?", 60),
        x = "Sliding scale",
+       y = "Percentage of participants",
+       fill = "Time of survey") #+
+#scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##PLOTS (for numeric variables) - Over the past 28 days, how many times per day have you: Actively been monitoring your shape or weight ?
+
+# Get rid of NAs and implausible values (convert back to numeric for ease)
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq[!is.na(dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric),]
+
+#change to numeric for cleaing 
+dat.no.nas$edeq.actively_been_monitoring_your_shape_or_weight_numeric <- as.numeric(paste(dat.no.nas$edeq.actively_been_monitoring_your_shape_or_weight_numeric))
+
+#Change -77 to NA
+dat.no.nas$edeq.actively_been_monitoring_your_shape_or_weight_numeric[dat.no.nas$edeq.actively_been_monitoring_your_shape_or_weight_numeric == -77] <- NA_real_
+
+##Change >1 to NA (implausible)
+dat.no.nas$edeq.actively_been_monitoring_your_shape_or_weight_numeric[dat.no.nas$edeq.actively_been_monitoring_your_shape_or_weight_numeric < 1] <- NA_real_
+
+##Change <1000 to NA (implausible)
+dat.no.nas$edeq.actively_been_monitoring_your_shape_or_weight_numeric[dat.no.nas$edeq.actively_been_monitoring_your_shape_or_weight_numeric > 1000] <- NA_real_
+
+##Check 
+freq(dat.no.nas$edeq.actively_been_monitoring_your_shape_or_weight_numeric)
+
+```
+
+
+## Change to categories for plotting, then to factor
+```{r}
+  dat.no.nas <- dat.no.nas %>%
+    mutate(
+      edeq.actively_been_monitoring_your_shape_or_weight_factor =
+        case_when(
+          edeq.actively_been_monitoring_your_shape_or_weight_numeric >= 1 & edeq.actively_been_monitoring_your_shape_or_weight_numeric <= 5 ~ 1,
+          edeq.actively_been_monitoring_your_shape_or_weight_numeric >= 6 & edeq.actively_been_monitoring_your_shape_or_weight_numeric <= 10 ~ 2,
+          edeq.actively_been_monitoring_your_shape_or_weight_numeric >= 11 & edeq.actively_been_monitoring_your_shape_or_weight_numeric <= 15 ~ 3,
+          edeq.actively_been_monitoring_your_shape_or_weight_numeric >= 16 & edeq.actively_been_monitoring_your_shape_or_weight_numeric <= 20 ~ 4,
+          edeq.actively_been_monitoring_your_shape_or_weight_numeric >= 21 & edeq.actively_been_monitoring_your_shape_or_weight_numeric <= 25 ~ 5,
+          edeq.actively_been_monitoring_your_shape_or_weight_numeric >= 26 & edeq.actively_been_monitoring_your_shape_or_weight_numeric <= 30 ~ 6,
+          edeq.actively_been_monitoring_your_shape_or_weight_numeric > 30 ~ 7
+
+
+        )
+    )
+  
+  dat.no.nas <- dat.no.nas %>%
+    mutate(
+      edeq.actively_been_monitoring_your_shape_or_weight_factor =
+        recode_factor(
+          edeq.actively_been_monitoring_your_shape_or_weight_factor,
+          "1" = "1-5",
+          "2" = "6-10",
+          "3" = "11-15",
+          "4" = "16-20",
+          "5" = "21-25",
+          "6" = "26-30",
+          "7" = "30+"
+
+
+        )
+    )
+
+```
+
+##Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "retro_prepan",
+                                  "baseline",
+                                  "1b",
+                                  "2b",
+                           "3b",
+                           "4b",
+                           "6",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+## Rename waves to dates
+```{r}
+
+##Rename waves
+levels(dat.no.nas$wave_factor)[1] <- "Retrospective pre-pandemic"
+
+levels(dat.no.nas$wave_factor)[2] <- "Baseline: 7th April - 20th April (2020)"
+
+levels(dat.no.nas$wave_factor)[3] <- "6th May - 19th May (2020)" 
+
+levels(dat.no.nas$wave_factor)[4] <- "3rd June - 16th June (2020)"
+
+levels(dat.no.nas$wave_factor)[5] <- "31st June - 14th July (2020)"
+
+levels(dat.no.nas$wave_factor)[6] <- "29th July - 25th August (2020)"
+
+levels(dat.no.nas$wave_factor)[7] <- "23rd September - 20th October (2020)"
+
+levels(dat.no.nas$wave_factor)[8] <- "18th November - 15th December (2020)"
+
+```
+
+
+## Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.actively_been_monitoring_your_shape_or_weight_factor) / sum(table(edeq.actively_been_monitoring_your_shape_or_weight_factor))) %>%
+  ungroup() %>%
+  mutate(edeq.actively_been_monitoring_your_shape_or_weight_factor = rep(levels(dat.no.nas[["edeq.actively_been_monitoring_your_shape_or_weight_factor"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+
+```
+## Change edeq to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.actively_been_monitoring_your_shape_or_weight_factor = fct_relevel(edeq.actively_been_monitoring_your_shape_or_weight_factor,
+                       "1-5",
+                       "6-10",
+                       "11-15",
+                       "16-20",
+                       "21-25",
+                       "26-30",
+                       "30+"))
+
+
+
+```
+
+## PLOT ! Over the past 28 days, how many times per day have you: Actively been monitoring your shape or weight ?
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.actively_been_monitoring_your_shape_or_weight_factor,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("Over the past 28 days, how many times per day have you: Actively been monitoring your shape or weight?", 60),
+       x = "Number of times",
        y = "Percentage of participants",
        fill = "Time of survey") #+
 #scale_x_discrete(guide = guide_axis(n.dodge=3))
