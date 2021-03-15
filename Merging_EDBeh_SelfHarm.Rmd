@@ -203,6 +203,9 @@ edeq2 <- bind_rows(
   edeq_ramp_screener,
   edeq_coping_screener)
 
+##Drop cohort name column here
+edeq2<- edeq2[ -c(2) ]
+
 edeq <- bind_rows(
   edeq1,
   edeq2
@@ -223,6 +226,8 @@ colnames(taf)
 
 #check no of participants
 nrow(taf)
+
+
 ```
 
 #Bind edeq with baseline
@@ -232,6 +237,21 @@ dat.edeq <- merge(dat,
                   by = "ID")
 
 ```
+#Remove duplicate IDs EDEQ COPING
+```{r}
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+dat.edeq  <- dat.edeq  %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(dat.edeq)
+
+```
+
+
+
+
 
 #Skim edeq + baseline data
 ```{r Skim edeq + baseline data}
@@ -249,6 +269,7 @@ saveRDS(object = dat.edeq, file = "../data_cleaned/dat.edeq.rds")
 dat.taf <- merge(dat,
                   taf,
                   by = "ID")
+
 
 ```
 
