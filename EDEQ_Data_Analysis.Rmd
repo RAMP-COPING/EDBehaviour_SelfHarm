@@ -41,6 +41,53 @@ colnames(dat.edeq)
 
 ```
 
+##Exclude participants who are missing for EVERY edeq screener variable at every wave
+```{r}
+dat.edeq.screener <- dat.edeq %>%
+  filter(
+    !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 1b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 2b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 3b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 4b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 6`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 8`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 1b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 2b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 3b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 4b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 6`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 8`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 1b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 1b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 8`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 1b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 2b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 3b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 4b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 6`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 8`) 
+  )
+
+nrow(dat.edeq.screener)   
+
+```
+
+```{r}
+##Filter out those with ALL missing data in screener dataset
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+dat.edeq.screener.id <- dat.edeq %>%
+  filter(ID %!in% dat.edeq.screener$ID)
+
+nrow(dat.edeq.screener.id) ##TOTAL == 
+
+```
+
 
 
 ##Exclude participants who are missing for EVERY edeq variable (i.e., retroprepan, baseline, and every wave)

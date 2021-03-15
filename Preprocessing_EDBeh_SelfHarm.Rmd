@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 
@@ -2790,7 +2790,7 @@ source("./wavesRAMP.R")
 ```
 
 ##2. Join TAF follow ups (RAMP)
-```{r RANP join taf data}
+```{r RAMP join taf data}
 if(RAMP == TRUE) {
 dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
     taf.ramp.followupb.raw.id)
@@ -2816,10 +2816,63 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
   
 }
 
+
 ```
 
 ##4. Select variables for dataset TAF RAMP
 ```{r}
+if(RAMP == TRUE) {
+dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
+  select(ID,
+         `taf.worth_living_life_people_.Wave 1`,
+         `taf.worth_living_life_people_.Wave 2`,
+         `taf.worth_living_life_people_.Wave 3`,
+         `taf.worth_living_life_people_.Wave 4`,
+         `taf.worth_living_life_people_.Wave 5`,
+         `taf.worth_living_life_people_.Wave 6`,
+         `taf.worth_living_life_people_.Wave 7`,
+         `taf.worth_living_life_people_.Wave 8`,
+   
+         `taf.felt_weeks_past_.Wave 1`,
+         `taf.felt_weeks_past_.Wave 2`,
+         `taf.felt_weeks_past_.Wave 3`,
+         `taf.felt_weeks_past_.Wave 4`,
+         `taf.felt_weeks_past_.Wave 5`,
+         `taf.felt_weeks_past_.Wave 6`,
+         `taf.felt_weeks_past_.Wave 7`,
+         `taf.felt_weeks_past_.Wave 8`,
+        
+         `taf.have_you_contemplated_harming_yourself_.Wave 1`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 2`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 3`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 4`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 5`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 6`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 7`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 8`,
+        
+         `taf.felt_weeks_past.1_.Wave 1`,
+         `taf.felt_weeks_past.1_.Wave 2`,
+         `taf.felt_weeks_past.1_.Wave 3`,
+         `taf.felt_weeks_past.1_.Wave 4`,
+         `taf.felt_weeks_past.1_.Wave 5`,
+         `taf.felt_weeks_past.1_.Wave 6`,
+         `taf.felt_weeks_past.1_.Wave 7`,
+         `taf.felt_weeks_past.1_.Wave 8`,
+        
+         `taf.meant_life_end_weeks_.Wave 1`,
+         `taf.meant_life_end_weeks_.Wave 2`,
+         `taf.meant_life_end_weeks_.Wave 3`,
+         `taf.meant_life_end_weeks_.Wave 4`,
+         `taf.meant_life_end_weeks_.Wave 5`,
+         `taf.meant_life_end_weeks_.Wave 6`,
+         `taf.meant_life_end_weeks_.Wave 7`,
+         `taf.meant_life_end_weeks_.Wave 8`)
+}
+```
+
+##4. Select variables for dataset TAF RAMP
+```{r eval=FALSE, include=FALSE}
 if(RAMP == TRUE) {
 dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
   select(ID,
@@ -2926,11 +2979,109 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
   
 }
 
-
 ```
 
 ##7. Select variables for dataset EDEQ RAMP
-```{r}
+```{r eval=FALSE, include=FALSE}
+if(RAMP == TRUE) {
+edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id  %>%
+  select(ID,
+         `edeq.deliberately_limit_amount_influence_.Wave 2`,
+         `edeq.deliberately_limit_amount_influence_.Wave 3`,
+         `edeq.deliberately_limit_amount_influence_.Wave 4`,
+         `edeq.deliberately_limit_amount_influence_.Wave 5`,
+         `edeq.deliberately_limit_amount_influence_.Wave 6`,
+         `edeq.deliberately_limit_amount_influence_.Wave 7`,
+         `edeq.deliberately_limit_amount_influence_.Wave 8`,
+         `edeq.calories_made_body_shape_.Wave 2`,
+         `edeq.calories_made_body_shape_.Wave 3`,
+         `edeq.calories_made_body_shape_.Wave 4`,
+         `edeq.calories_made_body_shape_.Wave 5`,
+         `edeq.calories_made_body_shape_.Wave 6`,
+         `edeq.calories_made_body_shape_.Wave 7`,
+         `edeq.calories_made_body_shape_.Wave 8`,
+         `edeq.weight_influenced_person_.Wave 2`,
+         `edeq.weight_influenced_person_.Wave 3`,
+         `edeq.weight_influenced_person_.Wave 4`,
+         `edeq.weight_influenced_person_.Wave 5`,
+         `edeq.weight_influenced_person_.Wave 6`,
+         `edeq.weight_influenced_person_.Wave 7`,
+         `edeq.weight_influenced_person_.Wave 8`,
+         `edeq.dissatisfied_shape_weight_.Wave 2`,
+         `edeq.dissatisfied_shape_weight_.Wave 3`,
+         `edeq.dissatisfied_shape_weight_.Wave 4`,
+         `edeq.dissatisfied_shape_weight_.Wave 5`,
+         `edeq.dissatisfied_shape_weight_.Wave 6`,
+         `edeq.dissatisfied_shape_weight_.Wave 7`,
+         `edeq.dissatisfied_shape_weight_.Wave 8`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 2`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 3`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 4`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 5`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 6`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 7`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 8`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 5`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 7`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 2`,
+          `edeq.regard_lost_control_eaten_numeric_.Wave 3`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 4`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 5`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 6`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 7`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 8`,
+         `edeq.sick_means_made_shape_numeric_.Wave 2`,
+          `edeq.sick_means_made_shape_numeric_.Wave 3`,
+         `edeq.sick_means_made_shape_numeric_.Wave 4`,
+         `edeq.sick_means_made_shape_numeric_.Wave 5`,
+         `edeq.sick_means_made_shape_numeric_.Wave 6`,
+         `edeq.sick_means_made_shape_numeric_.Wave 7`,
+         `edeq.sick_means_made_shape_numeric_.Wave 8`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 2`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 3`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 4`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 5`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 6`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 7`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 8`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 2`,
+          `edeq.compulsive_driven_burn_calories_numeric_.Wave 3`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 4`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 5`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 6`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 7`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 8`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 2`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 3`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 4`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 5`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 6`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 7`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 8`,
+         `edeq.felt_anxious_blue_bored_.Wave 2`,
+          `edeq.felt_anxious_blue_bored_.Wave 3`,
+         `edeq.felt_anxious_blue_bored_.Wave 4`,
+         `edeq.felt_anxious_blue_bored_.Wave 5`,
+         `edeq.felt_anxious_blue_bored_.Wave 6`,
+         `edeq.felt_anxious_blue_bored_.Wave 7`,
+         `edeq.felt_anxious_blue_bored_.Wave 8`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 2`,
+          `edeq.felt_anxious_blue_bored.1_.Wave 3`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 4`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 5`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 6`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 7`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 8`)
+}
+```
+
+##7. Select variables for dataset EDEQ RAMP
+```{r eval=FALSE, include=FALSE}
 if(RAMP == TRUE) {
 edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id  %>%
   select(ID,
@@ -3045,6 +3196,7 @@ edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>%
   select(-row)
   
 }
+
 ```
 
 ##7. Select variables for dataset EDEQ RAMP screener
@@ -3052,31 +3204,33 @@ edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>%
 if(RAMP == TRUE) {
 edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id  %>%
   select(ID,
-         cohort_name,
-         `ed_scid5.regular_episodes_eating_binges_.Wave 1b` ,    
-         `ed_scid5.regular_episodes_eating_binges_.Wave 2b` ,       
-         `ed_scid5.regular_episodes_eating_binges_.Wave 3b`,
-         `ed_scid5.regular_episodes_eating_binges_.Wave 4b`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 2` ,    
+         `ed_scid5.regular_episodes_eating_binges_.Wave 3` ,       
+         `ed_scid5.regular_episodes_eating_binges_.Wave 4`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 5`,
          `ed_scid5.regular_episodes_eating_binges_.Wave 6`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 7`,
          `ed_scid5.regular_episodes_eating_binges_.Wave 8`,
-         `ed_scid5.weigh_weighed_past_month_.Wave 1b` ,             
-         `ed_scid5.weigh_weighed_past_month_.Wave 2b`,               
-         `ed_scid5.weigh_weighed_past_month_.Wave 3b`,               
-         `ed_scid5.weigh_weighed_past_month_.Wave 4b` ,             
+         `ed_scid5.weigh_weighed_past_month_.Wave 2` ,             
+         `ed_scid5.weigh_weighed_past_month_.Wave 3`,               
+         `ed_scid5.weigh_weighed_past_month_.Wave 4` ,             
+         `ed_scid5.weigh_weighed_past_month_.Wave 5`,
          `ed_scid5.weigh_weighed_past_month_.Wave 6`,
+         `ed_scid5.weigh_weighed_past_month_.Wave 7`,
          `ed_scid5.weigh_weighed_past_month_.Wave 8`,
-         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 1b`,
-         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2b`,
-         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3b`,
-         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4b`, 
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 5`, 
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`,  
-         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`,  
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 7`,  
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 8`, 
-         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 1b`,
-         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 2b`,
-         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 3b`,
-         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 4b`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 2`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 3`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 4`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 5`,
          `ed_scid5.weigh_weighed_past_month_numeric_.Wave 6`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 7`,
          `ed_scid5.weigh_weighed_past_month_numeric_.Wave 8`)
 }
 ```
@@ -3136,11 +3290,66 @@ dat.raw.taf.coping <- dat.raw.taf.coping %>%
   select(-row)
   
 }
+
+colnames(dat.raw.taf.coping)
 ```
+
 
 
 ##4. Select variables for dataset TAF COPING
 ```{r}
+if(COPING == TRUE) {
+dat.raw.taf.coping <- dat.raw.taf.coping %>%
+  select(ID,
+         #`taf.worth_living_life_people_.Wave 1`,
+         `taf.worth_living_life_people_.Wave 2`,
+         `taf.worth_living_life_people_.Wave 3`,
+         `taf.worth_living_life_people_.Wave 4`,
+         `taf.worth_living_life_people_.Wave 5`,
+         `taf.worth_living_life_people_.Wave 6`,
+         `taf.worth_living_life_people_.Wave 7`,
+         `taf.worth_living_life_people_.Wave 8`,
+   
+        # `taf.felt_weeks_past_.Wave 1`,
+         `taf.felt_weeks_past_.Wave 2`,
+         `taf.felt_weeks_past_.Wave 3`,
+         `taf.felt_weeks_past_.Wave 4`,
+         `taf.felt_weeks_past_.Wave 5`,
+         `taf.felt_weeks_past_.Wave 6`,
+         `taf.felt_weeks_past_.Wave 7`,
+         `taf.felt_weeks_past_.Wave 8`,
+        
+        # `taf.have_you_contemplated_harming_yourself_.Wave 1`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 2`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 3`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 4`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 5`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 6`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 7`,
+         `taf.have_you_contemplated_harming_yourself_.Wave 8`,
+        
+        # `taf.felt_weeks_past.1_.Wave 1`,
+         `taf.felt_weeks_past.1_.Wave 2`,
+         `taf.felt_weeks_past.1_.Wave 3`,
+         `taf.felt_weeks_past.1_.Wave 4`,
+         `taf.felt_weeks_past.1_.Wave 5`,
+         `taf.felt_weeks_past.1_.Wave 6`,
+         `taf.felt_weeks_past.1_.Wave 7`,
+         `taf.felt_weeks_past.1_.Wave 8`,
+        
+       # `taf.meant_life_end_weeks_.Wave 1`,
+         `taf.meant_life_end_weeks_.Wave 2`,
+         `taf.meant_life_end_weeks_.Wave 3`,
+         `taf.meant_life_end_weeks_.Wave 4`,
+         `taf.meant_life_end_weeks_.Wave 5`,
+         `taf.meant_life_end_weeks_.Wave 6`,
+         `taf.meant_life_end_weeks_.Wave 7`,
+         `taf.meant_life_end_weeks_.Wave 8`)
+}
+```
+
+##4. Select variables for dataset TAF COPING
+```{r eval=FALSE, include=FALSE}
 if(COPING == TRUE) {
 dat.raw.taf.coping <- dat.raw.taf.coping %>%
   select(ID,
@@ -3239,10 +3448,112 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
   
 }
 
+colnames(edeq.coping.followupb.raw.id)
 ```
+
+
 
 ##7. Select variables for dataset EDEQ COPING
 ```{r}
+if(COPING == TRUE) {
+edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
+  select(ID,
+         `edeq.deliberately_limit_amount_influence_.Wave 2`,
+         `edeq.deliberately_limit_amount_influence_.Wave 3`,
+         `edeq.deliberately_limit_amount_influence_.Wave 4`,
+         `edeq.deliberately_limit_amount_influence_.Wave 5`,
+         `edeq.deliberately_limit_amount_influence_.Wave 6`,
+         `edeq.deliberately_limit_amount_influence_.Wave 7`,
+         `edeq.deliberately_limit_amount_influence_.Wave 8`,
+         `edeq.calories_made_body_shape_.Wave 2`,
+         `edeq.calories_made_body_shape_.Wave 3`,
+         `edeq.calories_made_body_shape_.Wave 4`,
+         `edeq.calories_made_body_shape_.Wave 5`,
+         `edeq.calories_made_body_shape_.Wave 6`,
+         `edeq.calories_made_body_shape_.Wave 7`,
+         `edeq.calories_made_body_shape_.Wave 8`,
+         `edeq.weight_influenced_person_.Wave 2`,
+         `edeq.weight_influenced_person_.Wave 3`,
+         `edeq.weight_influenced_person_.Wave 4`,
+         `edeq.weight_influenced_person_.Wave 5`,
+         `edeq.weight_influenced_person_.Wave 6`,
+         `edeq.weight_influenced_person_.Wave 7`,
+         `edeq.weight_influenced_person_.Wave 8`,
+         `edeq.dissatisfied_shape_weight_.Wave 2`,
+         `edeq.dissatisfied_shape_weight_.Wave 3`,
+         `edeq.dissatisfied_shape_weight_.Wave 4`,
+         `edeq.dissatisfied_shape_weight_.Wave 5`,
+         `edeq.dissatisfied_shape_weight_.Wave 6`,
+         `edeq.dissatisfied_shape_weight_.Wave 7`,
+         `edeq.dissatisfied_shape_weight_.Wave 8`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 2`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 3`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 4`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 5`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 6`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 7`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 8`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 5`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 7`,
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 2`,
+          `edeq.regard_lost_control_eaten_numeric_.Wave 3`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 4`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 5`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 6`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 7`,
+         `edeq.regard_lost_control_eaten_numeric_.Wave 8`,
+         `edeq.sick_means_made_shape_numeric_.Wave 2`,
+          `edeq.sick_means_made_shape_numeric_.Wave 3`,
+         `edeq.sick_means_made_shape_numeric_.Wave 4`,
+         `edeq.sick_means_made_shape_numeric_.Wave 5`,
+         `edeq.sick_means_made_shape_numeric_.Wave 6`,
+         `edeq.sick_means_made_shape_numeric_.Wave 7`,
+         `edeq.sick_means_made_shape_numeric_.Wave 8`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 2`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 3`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 4`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 5`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 6`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 7`,
+         `edeq.diuretics_laxatives_means_shape_numeric_.Wave 8`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 2`,
+          `edeq.compulsive_driven_burn_calories_numeric_.Wave 3`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 4`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 5`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 6`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 7`,
+         `edeq.compulsive_driven_burn_calories_numeric_.Wave 8`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 2`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 3`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 4`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 5`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 6`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 7`,
+         `edeq.nibbled_picked_snacks_grazed_.Wave 8`,
+         `edeq.felt_anxious_blue_bored_.Wave 2`,
+          `edeq.felt_anxious_blue_bored_.Wave 3`,
+         `edeq.felt_anxious_blue_bored_.Wave 4`,
+         `edeq.felt_anxious_blue_bored_.Wave 5`,
+         `edeq.felt_anxious_blue_bored_.Wave 6`,
+         `edeq.felt_anxious_blue_bored_.Wave 7`,
+         `edeq.felt_anxious_blue_bored_.Wave 8`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 2`,
+          `edeq.felt_anxious_blue_bored.1_.Wave 3`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 4`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 5`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 6`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 7`,
+         `edeq.felt_anxious_blue_bored.1_.Wave 8`)
+}
+```
+
+##7. Select variables for dataset EDEQ COPING
+```{r eval=FALSE, include=FALSE}
 if(COPING == TRUE) {
 edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
   select(ID,
@@ -3333,8 +3644,46 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id %
 
 ```
 
+
 ##7. Select variables for dataset EDEQ RAMP screener
 ```{r}
+if(COPING == TRUE) {
+edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  %>%
+  select(ID,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 2` ,    
+         `ed_scid5.regular_episodes_eating_binges_.Wave 3` ,       
+         `ed_scid5.regular_episodes_eating_binges_.Wave 4`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 5`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 6`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 7`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 8`,
+         `ed_scid5.weigh_weighed_past_month_.Wave 2` ,             
+         `ed_scid5.weigh_weighed_past_month_.Wave 3`,               
+         `ed_scid5.weigh_weighed_past_month_.Wave 4` ,             
+         `ed_scid5.weigh_weighed_past_month_.Wave 5`,
+         `ed_scid5.weigh_weighed_past_month_.Wave 6`,
+         `ed_scid5.weigh_weighed_past_month_.Wave 7`,
+         `ed_scid5.weigh_weighed_past_month_.Wave 8`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 5`, 
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`,  
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 7`,  
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 8`, 
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 2`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 3`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 4`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 5`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 6`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 7`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 8`)
+}
+```
+
+
+##7. Select variables for dataset EDEQ RAMP screener
+```{r eval=FALSE, include=FALSE}
 if(COPING == TRUE) {
 edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  %>%
   select(ID,
@@ -3395,7 +3744,7 @@ saveRDS(object = dat.raw.taf.ramp, file = "../data_cleaned/taf_ramp.rds")
 
 saveRDS(object = edeq.ramp.followupb.raw.id, file = "../data_cleaned/edeq_ramp.rds")
   
-  saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = "../data_cleaned/edeq_screener_ramp.rds")
+saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = "../data_cleaned/edeq_screener_ramp.rds")
 
 
 }
