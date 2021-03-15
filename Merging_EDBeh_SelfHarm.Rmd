@@ -180,16 +180,33 @@ dim(taf_ramp)
 taf_coping <- readRDS(file = "../data_cleaned/taf_coping.rds")
 dim(taf_coping)
 
+edeq_coping_screener <- readRDS(file = "../data_cleaned/edeq_screener_coping.rds")
+dim(edeq_coping_screener)
+
+
+edeq_ramp_screener <- readRDS(file = "../data_cleaned/edeq_screener_ramp.rds")
+dim(edeq_ramp_screener)
+
+
 ```
 #Bind coping and ramp's edeq and taf (separately)
 ```{r}
 
 #bind all edeq data
-edeq <- bind_rows(
+edeq1 <- bind_rows(
   edeq_ramp,
   edeq_coping
   
 )
+
+edeq2 <- bind_rows(
+  edeq_ramp_screener,
+  edeq_coping_screener)
+
+edeq <- bind_rows(
+  edeq1,
+  edeq2
+  )
 
 #check col names edeq
 colnames(edeq)

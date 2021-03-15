@@ -44,7 +44,7 @@ GLAD = FALSE
 EDGI = FALSE
 RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 
@@ -1489,6 +1489,58 @@ dim(edeq.coping.followupb.raw)[1]-dim(edeq.coping.followupb.raw.id)[1]
 }
 ```
 
+### Read in screener data
+```{r coping edeq follow up b cols}
+if(COPING == TRUE){
+edeq.coping.followupb.screener.raw <- readRDS(file = "../data_raw/coping/ed_scid5_coping_followupb.rds")
+dim(edeq.coping.followupb.screener.raw)
+colnames(edeq.coping.followupb.screener.raw)
+}
+```
+### Select variables
+```{r edeq coping select variables}
+if(COPING == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         ed_scid5.regular_episodes_eating_binges,
+         ed_scid5.weigh_weighed_past_month
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(edeq.coping.followupb.screener.raw.id)
+# Inspect colnames
+colnames(edeq.coping.followupb.screener.raw.id)
+#Differences
+dim(edeq.coping.followupb.screener.raw)[1]-dim(edeq.coping.followupb.screener.raw.id)[1]
+}
+```
+
 # EDEQ
 ## RAMP baseline
 ### Read in data
@@ -1569,6 +1621,59 @@ dim(edeq.ramp.baseline.raw)[1]-dim(edeq.ramp.baseline.raw.id)[1]
 
 ```
 
+### Read in screener data
+```{r RAMP edeq follow up b cols}
+if(RAMP == TRUE){
+edeq.ramp.followupb.screener.raw <- readRDS(file = "../data_raw/ramp/ed_scid5_ramp_followupb.rds")
+dim(edeq.ramp.followupb.screener.raw)
+colnames(edeq.ramp.followupb.screener.raw)
+}
+```
+### Select variables
+```{r RAMP coping select variables}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         ed_scid5.regular_episodes_eating_binges,
+         ed_scid5.weigh_weighed_past_month
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(edeq.ramp.followupb.screener.raw.id)
+# Inspect colnames
+colnames(edeq.ramp.followupb.screener.raw.id)
+#Differences
+dim(edeq.ramp.followupb.screener.raw)[1]-dim(edeq.ramp.followupb.screener.raw.id)[1]
+}
+```
+
+
 ##Check earliest date of baseline being filled in by RAMP participants
 ```{r}
 if(RAMP == TRUE){
@@ -1578,10 +1683,6 @@ x <- as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
 min(x )
 }
 ```
-
-
-
-
 
 ##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
 1. Change date format
@@ -2930,13 +3031,78 @@ nrow(edeq.ramp.followupb.raw.id)
 
 ```
 
+## 6. Change follow up EDEQ RAMP screener to long format
+```{r EDEQ screener RAMP long format}
+if(RAMP == TRUE) {
+edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>%
+  group_by(wave_edeq) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(names_from = wave_edeq, 
+                     values_from = c(ed_scid5.regular_episodes_eating_binges,
+                                     ed_scid5.weigh_weighed_past_month,
+                                     ed_scid5.regular_episodes_eating_binges_numeric,
+                                     ed_scid5.weigh_weighed_past_month_numeric)) %>%
+  select(-row)
+  
+}
+```
+
+##7. Select variables for dataset EDEQ RAMP screener
+```{r}
+if(RAMP == TRUE) {
+edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id  %>%
+  select(ID,
+         cohort_name,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 1b` ,    
+         `ed_scid5.regular_episodes_eating_binges_.Wave 2b` ,       
+         `ed_scid5.regular_episodes_eating_binges_.Wave 3b`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 4b`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 6`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 8`,
+         `ed_scid5.weigh_weighed_past_month_.Wave 1b` ,             
+         `ed_scid5.weigh_weighed_past_month_.Wave 2b`,               
+         `ed_scid5.weigh_weighed_past_month_.Wave 3b`,               
+         `ed_scid5.weigh_weighed_past_month_.Wave 4b` ,             
+         `ed_scid5.weigh_weighed_past_month_.Wave 6`,
+         `ed_scid5.weigh_weighed_past_month_.Wave 8`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 1b`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2b`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3b`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4b`, 
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`,  
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`,  
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 8`, 
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 1b`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 2b`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 3b`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 4b`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 6`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 8`)
+}
+```
+
+##8. Remove duplicate IDs EDEQ RAMP screener
+```{r}
+if(RAMP == TRUE) {
+##Check col names
+colnames(edeq.ramp.followupb.screener.raw.id)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+edeq.ramp.followupb.screener.raw.id  <- edeq.ramp.followupb.screener.raw.id  %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(edeq.ramp.followupb.screener.raw.id)
+}
+
+```
+
 ##1.Create a wave columns in follow up data - COPING
 ```{r identify wave dates coping}
 if (COPING ==TRUE) {
 source("./wavesCOPING.R")
 
 }
-
 ```
 
 ##2. Join TAF follow ups (COPING)
@@ -2955,14 +3121,6 @@ nrow(dat.raw.taf.coping)
 }
 ```
 
-##Remove dup IDs (TAF COPING) [not in use]
-```{r identify wave dates coping, eval=FALSE, include=FALSE}
-if (COPING ==TRUE) {
-source("./DupIDs_TAF_COPING.R")
-
-}
-
-```
 ## 3. Change follow up TAF COPING to long format
 ```{r TAF COPING long format}
 if(COPING == TRUE) {
@@ -3157,18 +3315,66 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
 ```
 
 
+## 6. Change follow up EDE COPING to long format SCREENER
+```{r TAF COPING long format}
+if(COPING == TRUE) {
+edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id %>%
+  group_by(wave_edeq) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(names_from = wave_edeq,
+                     values_from = c(ed_scid5.regular_episodes_eating_binges,
+                     ed_scid5.weigh_weighed_past_month,
+                     ed_scid5.regular_episodes_eating_binges_numeric,
+                     ed_scid5.weigh_weighed_past_month_numeric)) %>%
+  select(-row)
+  
+}
+
+
+```
+
+##7. Select variables for dataset EDEQ RAMP screener
+```{r}
+if(COPING == TRUE) {
+edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  %>%
+  select(ID,
+         cohort_name,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 2b` ,       
+         `ed_scid5.regular_episodes_eating_binges_.Wave 3b`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 4b`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 6`,
+         `ed_scid5.regular_episodes_eating_binges_.Wave 8`,
+         `ed_scid5.weigh_weighed_past_month_.Wave 2b`,               
+         `ed_scid5.weigh_weighed_past_month_.Wave 3b`,               
+         `ed_scid5.weigh_weighed_past_month_.Wave 4b` ,             
+         `ed_scid5.weigh_weighed_past_month_.Wave 6`,
+         `ed_scid5.weigh_weighed_past_month_.Wave 8`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2b`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3b`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4b`, 
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`,  
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`,  
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave 8`, 
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 2b`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 3b`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 4b`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 6`,
+         `ed_scid5.weigh_weighed_past_month_numeric_.Wave 8`)
+}
+```
+
 ##8. Remove duplicate IDs EDEQ COPING
 ```{r}
 if(COPING == TRUE) {
 ##Check col names
-colnames(edeq.coping.followupb.raw.id)
+colnames(edeq.coping.followupb.screener.raw.id)
 
 ##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
-edeq.coping.followupb.raw.id  <- edeq.coping.followupb.raw.id  %>%
+edeq.coping.followupb.screener.raw.id  <- edeq.coping.followupb.screener.raw.id  %>%
   filter(., !duplicated(ID)) 
 
 ##Check number of rows
-nrow(edeq.coping.followupb.raw.id)
+nrow(edeq.coping.followupb.screener.raw.id)
 }
 
 ```
@@ -3180,13 +3386,18 @@ saveRDS(object = edeq.coping.followupb.raw.id, file = "../data_cleaned/edeq_copi
   
 saveRDS(object = dat.raw.taf.coping, file = "../data_cleaned/taf_coping.rds")
 
+saveRDS(object = edeq.coping.followupb.screener.raw.id, file = "../data_cleaned/edeq_screener_coping.rds")
+
 }
 
 if(RAMP == TRUE) {
-  saveRDS(object = dat.raw.taf.ramp, file = "../data_cleaned/taf_ramp.rds")
+saveRDS(object = dat.raw.taf.ramp, file = "../data_cleaned/taf_ramp.rds")
 
-  saveRDS(object = edeq.ramp.followupb.raw.id, file = "../data_cleaned/edeq_ramp.rds")
+saveRDS(object = edeq.ramp.followupb.raw.id, file = "../data_cleaned/edeq_ramp.rds")
   
+  saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = "../data_cleaned/edeq_screener_ramp.rds")
+
+
 }
 
 ```

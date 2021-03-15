@@ -106,3 +106,11 @@ edeq.coping.followupb.raw.id <-
                                   startDate_waves >= start8 & startDate_waves < end8 ~ ".Wave 4b",
                                   startDate_waves >= start10 & startDate_waves < end10 ~ ".Wave 6",
                                   startDate_waves >= start12 & startDate_waves < end12 ~ ".Wave 8"))
+
+edeq.coping.followupb.screener.raw.id <- 
+  edeq.coping.followupb.screener.raw.id %>%
+  mutate(wave_edeq =  case_when(startDate_waves >= start4 & startDate_waves < end4 ~ ".Wave 2b",
+                                startDate_waves >= start6 & startDate_waves < end6 ~ ".Wave 3b",
+                                startDate_waves >= start8 & startDate_waves < end8 ~ ".Wave 4b",
+                                startDate_waves >= start10 & startDate_waves < end10 ~ ".Wave 6",
+                                startDate_waves >= start12 & startDate_waves < end12 ~ ".Wave 8"))
