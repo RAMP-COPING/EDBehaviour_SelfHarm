@@ -586,12 +586,7 @@ dat.edeq.long.prep2 <- dat.edeq.long.prep1 %>%
  
 ```
  
-```{r}
-names(dat.edeq)
-```
- 
- 
- 
+
 ```{r}
 
 dat.edeq <- dat.edeq %>%
@@ -749,7 +744,7 @@ dat.edeq <- dat.edeq %>%
   
                               
 ```
- 
+
 
  ##Change numerics to factor for restructuring to long       
 ```{r }
@@ -992,6 +987,179 @@ FINAL VARIABLES
 "edeq.felt_anxious_blue_bored_.Wave 4b"
 "edeq.felt_anxious_blue_bored_.Wave 6"
 "edeq.felt_anxious_blue_bored_.Wave 8"     
+
+##Check how many participants answered each wave
+```{r}
+
+dat.edeq.retroprepan <- dat.edeq %>%
+  filter(wave == "retro_prepan" &
+           (!is.na(edeq.deliberately_limit_amount_influence) |
+           !is.na(edeq.calories_made_body_shape) |
+           !is.na(edeq.weight_influenced_person) |
+           !is.na(edeq.dissatisfied_shape_weight) |
+           !is.na(edeq.eating_behaviours_distressed_concerns) |
+           !is.na(edeq.actively_been_monitoring_your_shape_or_weight_numeric) |
+           !is.na(edeq.regard_lost_control_eaten_numeric) |
+           !is.na(edeq.sick_means_made_shape_numeric) |
+           !is.na(edeq.diuretics_laxatives_means_shape_numeric) |
+           !is.na(edeq.compulsive_driven_burn_calories_numeric) |
+           !is.na(edeq.nibbled_picked_snacks_grazed) |
+           !is.na(edeq.felt_anxious_blue_bored.1) |
+           !is.na(edeq.felt_anxious_blue_bored))
+  )
+           
+           
+table(dat.edeq.retroprepan$wave)
+
+
+dat.edeq.baseline <- dat.edeq %>%
+  filter(wave == "baseline" &
+           (!is.na(edeq.deliberately_limit_amount_influence) |
+           !is.na(edeq.calories_made_body_shape) |
+           !is.na(edeq.weight_influenced_person) |
+           !is.na(edeq.dissatisfied_shape_weight) |
+           !is.na(edeq.eating_behaviours_distressed_concerns) |
+           !is.na(edeq.actively_been_monitoring_your_shape_or_weight_numeric) |
+           !is.na(edeq.regard_lost_control_eaten_numeric) |
+           !is.na(edeq.sick_means_made_shape_numeric) |
+           !is.na(edeq.diuretics_laxatives_means_shape_numeric) |
+           !is.na(edeq.compulsive_driven_burn_calories_numeric) |
+           !is.na(edeq.nibbled_picked_snacks_grazed) |
+           !is.na(edeq.felt_anxious_blue_bored.1) |
+           !is.na(edeq.felt_anxious_blue_bored))
+  )
+           
+           
+table(dat.edeq.baseline$wave)
+
+
+dat.edeq.1b <- dat.edeq %>%
+  filter(wave == " 1b" &
+           (!is.na(edeq.deliberately_limit_amount_influence) |
+           !is.na(edeq.calories_made_body_shape) |
+           !is.na(edeq.weight_influenced_person) |
+           !is.na(edeq.dissatisfied_shape_weight) |
+           !is.na(edeq.eating_behaviours_distressed_concerns) |
+           !is.na(edeq.actively_been_monitoring_your_shape_or_weight_numeric) |
+           !is.na(edeq.regard_lost_control_eaten_numeric) |
+           !is.na(edeq.sick_means_made_shape_numeric) |
+           !is.na(edeq.diuretics_laxatives_means_shape_numeric) |
+           !is.na(edeq.compulsive_driven_burn_calories_numeric) |
+           !is.na(edeq.nibbled_picked_snacks_grazed) |
+           !is.na(edeq.felt_anxious_blue_bored.1) |
+           !is.na(edeq.felt_anxious_blue_bored))
+  )
+           
+
+table(dat.edeq.1b$wave)
+
+
+dat.edeq.2b <- dat.edeq %>%
+  filter(wave == " 2b" &
+           (!is.na(edeq.deliberately_limit_amount_influence) |
+           !is.na(edeq.calories_made_body_shape) |
+           !is.na(edeq.weight_influenced_person) |
+           !is.na(edeq.dissatisfied_shape_weight) |
+           !is.na(edeq.eating_behaviours_distressed_concerns) |
+           !is.na(edeq.actively_been_monitoring_your_shape_or_weight_numeric) |
+           !is.na(edeq.regard_lost_control_eaten_numeric) |
+           !is.na(edeq.sick_means_made_shape_numeric) |
+           !is.na(edeq.diuretics_laxatives_means_shape_numeric) |
+           !is.na(edeq.compulsive_driven_burn_calories_numeric) |
+           !is.na(edeq.nibbled_picked_snacks_grazed) |
+           !is.na(edeq.felt_anxious_blue_bored.1) |
+           !is.na(edeq.felt_anxious_blue_bored))
+  )
+           
+
+table(dat.edeq.2b$wave)
+
+dat.edeq.3b <- dat.edeq %>%
+  filter(wave == " 3b" &
+           (!is.na(edeq.deliberately_limit_amount_influence) |
+           !is.na(edeq.calories_made_body_shape) |
+           !is.na(edeq.weight_influenced_person) |
+           !is.na(edeq.dissatisfied_shape_weight) |
+           !is.na(edeq.eating_behaviours_distressed_concerns) |
+           !is.na(edeq.actively_been_monitoring_your_shape_or_weight_numeric) |
+           !is.na(edeq.regard_lost_control_eaten_numeric) |
+           !is.na(edeq.sick_means_made_shape_numeric) |
+           !is.na(edeq.diuretics_laxatives_means_shape_numeric) |
+           !is.na(edeq.compulsive_driven_burn_calories_numeric) |
+           !is.na(edeq.nibbled_picked_snacks_grazed) |
+           !is.na(edeq.felt_anxious_blue_bored.1) |
+           !is.na(edeq.felt_anxious_blue_bored))
+  )
+           
+
+table(dat.edeq.3b$wave)
+
+dat.edeq.4b <- dat.edeq %>%
+  filter(wave == " 4b" &
+           (!is.na(edeq.deliberately_limit_amount_influence) |
+           !is.na(edeq.calories_made_body_shape) |
+           !is.na(edeq.weight_influenced_person) |
+           !is.na(edeq.dissatisfied_shape_weight) |
+           !is.na(edeq.eating_behaviours_distressed_concerns) |
+           !is.na(edeq.actively_been_monitoring_your_shape_or_weight_numeric) |
+           !is.na(edeq.regard_lost_control_eaten_numeric) |
+           !is.na(edeq.sick_means_made_shape_numeric) |
+           !is.na(edeq.diuretics_laxatives_means_shape_numeric) |
+           !is.na(edeq.compulsive_driven_burn_calories_numeric) |
+           !is.na(edeq.nibbled_picked_snacks_grazed) |
+           !is.na(edeq.felt_anxious_blue_bored.1) |
+           !is.na(edeq.felt_anxious_blue_bored))
+  )
+           
+
+table(dat.edeq.4b$wave)
+
+dat.edeq.6 <- dat.edeq %>%
+  filter(wave == " 6" &
+           (!is.na(edeq.deliberately_limit_amount_influence) |
+           !is.na(edeq.calories_made_body_shape) |
+           !is.na(edeq.weight_influenced_person) |
+           !is.na(edeq.dissatisfied_shape_weight) |
+           !is.na(edeq.eating_behaviours_distressed_concerns) |
+           !is.na(edeq.actively_been_monitoring_your_shape_or_weight_numeric) |
+           !is.na(edeq.regard_lost_control_eaten_numeric) |
+           !is.na(edeq.sick_means_made_shape_numeric) |
+           !is.na(edeq.diuretics_laxatives_means_shape_numeric) |
+           !is.na(edeq.compulsive_driven_burn_calories_numeric) |
+           !is.na(edeq.nibbled_picked_snacks_grazed) |
+           !is.na(edeq.felt_anxious_blue_bored.1) |
+           !is.na(edeq.felt_anxious_blue_bored))
+  )
+           
+
+table(dat.edeq.6$wave)
+
+
+dat.edeq.8 <- dat.edeq %>%
+  filter(wave == " 8" &
+           (!is.na(edeq.deliberately_limit_amount_influence) |
+           !is.na(edeq.calories_made_body_shape) |
+           !is.na(edeq.weight_influenced_person) |
+           !is.na(edeq.dissatisfied_shape_weight) |
+           !is.na(edeq.eating_behaviours_distressed_concerns) |
+           !is.na(edeq.actively_been_monitoring_your_shape_or_weight_numeric) |
+           !is.na(edeq.regard_lost_control_eaten_numeric) |
+           !is.na(edeq.sick_means_made_shape_numeric) |
+           !is.na(edeq.diuretics_laxatives_means_shape_numeric) |
+           !is.na(edeq.compulsive_driven_burn_calories_numeric) |
+           !is.na(edeq.nibbled_picked_snacks_grazed) |
+           !is.na(edeq.felt_anxious_blue_bored.1) |
+           !is.na(edeq.felt_anxious_blue_bored))
+  )
+           
+
+table(dat.edeq.8$wave)
+
+
+```
+
+
+
 
 Drop empty factor levels across all columns 
 ```{r}
@@ -1488,6 +1656,9 @@ dat_plot <- dat.no.nas %>%
                     length(levels(dat.no.nas[["wave_factor"]]))))
 
 
+##Check number of participants at each answer
+table(dat.no.nas$edeq.eating_behaviours_distressed_concerns)
+
 ```
 
 6. Change edeq variable to ordered factor
@@ -1533,7 +1704,121 @@ ggplot(dat_plot,
 
 ```
 
+##PLOTS - CONTROLS - Over the past 28 days: How distressed have you been by your eating behaviours, the measures you've taken to control your weight, or concerns about your weight and shape?
 
+#1. Get rid of NAs and change edeq to factor
+```{r}
+##Filter so that dataset contains only controls
+dat.controls <- dat.edeq %>%
+  filter(control_numeric == 1)
+
+#get rid of nas
+dat.no.nas <- dat.controls[!is.na(dat.controls$edeq.eating_behaviours_distressed_concerns),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "retro_prepan",
+                                  "baseline",
+                                  "1b",
+                                  "2b",
+                           "3b",
+                           "4b",
+                           "6",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+levels(dat.no.nas$wave_factor)[1] <- "Retrospective pre-pandemic"
+
+levels(dat.no.nas$wave_factor)[2] <- "Baseline: 7th April - 20th April (2020)"
+
+levels(dat.no.nas$wave_factor)[3] <- "6th May - 19th May (2020)" 
+
+levels(dat.no.nas$wave_factor)[4] <- "3rd June - 16th June (2020)"
+
+levels(dat.no.nas$wave_factor)[5] <- "31st June - 14th July (2020)"
+
+levels(dat.no.nas$wave_factor)[6] <- "29th July - 25th August (2020)"
+
+levels(dat.no.nas$wave_factor)[7] <- "23rd September - 20th October (2020)"
+
+levels(dat.no.nas$wave_factor)[8] <- "18th November - 15th December (2020)"
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.eating_behaviours_distressed_concerns) / sum(table(edeq.eating_behaviours_distressed_concerns))) %>%
+  ungroup() %>%
+  mutate(edeq.eating_behaviours_distressed_concerns = rep(levels(dat.no.nas[["edeq.eating_behaviours_distressed_concerns"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+##Check number of participants at each answer
+table(dat.no.nas$edeq.eating_behaviours_distressed_concerns)
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.eating_behaviours_distressed_concerns = fct_relevel(edeq.eating_behaviours_distressed_concerns,
+                       "0",
+                           "1",
+                           "2",
+                          "3",
+                          "4",
+                          "5"))
+
+```
+#4. Rename edeq sliding scale
+```{r}
+
+##Rename sliding scale numbers
+levels(dat_plot$edeq.eating_behaviours_distressed_concerns)[1] <- "Not at all"
+
+levels(dat_plot$edeq.eating_behaviours_distressed_concerns)[6] <- "Markedly"
+
+
+```
+
+7. PLOT ! Over the past 28 days: How distressed have you been by your eating behaviours, the measures you've taken to control your weight, or concerns about your weight and shape?
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.eating_behaviours_distressed_concerns,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("CONTROLS - Over the past 28 days: How distressed have you been by your eating behaviours, the measures you've taken to control your weight, or concerns about your weight and shape?", 60),
+       x = "Sliding scale",
+       y = "Percentage of control participants",
+       fill = "Time of survey") #+
+#scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
 
 
 
