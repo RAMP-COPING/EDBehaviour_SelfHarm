@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -3291,7 +3291,6 @@ dat.raw.taf.coping <- dat.raw.taf.coping %>%
   
 }
 
-colnames(dat.raw.taf.coping)
 ```
 
 
@@ -3448,7 +3447,6 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
   
 }
 
-colnames(edeq.coping.followupb.raw.id)
 ```
 
 

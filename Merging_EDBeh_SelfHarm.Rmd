@@ -203,8 +203,6 @@ edeq2 <- bind_rows(
   edeq_ramp_screener,
   edeq_coping_screener)
 
-##Drop cohort name column here
-edeq2<- edeq2[ -c(2) ]
 
 edeq <- bind_rows(
   edeq1,
@@ -229,6 +227,18 @@ nrow(taf)
 
 
 ```
+```{r}
+#drop column names
+edeq <- edeq[ -c(17,25,33,41, 49, 57,65,73,81, 89, 97, 105, 113 ) ]
+
+
+#Check names
+colnames(edeq)
+```
+
+
+
+
 
 #Bind edeq with baseline
 ```{r}
@@ -249,10 +259,6 @@ nrow(dat.edeq)
 
 ```
 
-
-
-
-
 #Skim edeq + baseline data
 ```{r Skim edeq + baseline data}
 #look at the data
@@ -269,7 +275,6 @@ saveRDS(object = dat.edeq, file = "../data_cleaned/dat.edeq.rds")
 dat.taf <- merge(dat,
                   taf,
                   by = "ID")
-
 
 ```
 

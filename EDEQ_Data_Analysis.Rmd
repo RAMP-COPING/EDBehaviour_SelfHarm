@@ -43,39 +43,43 @@ colnames(dat.edeq)
 
 ##Exclude participants who are missing for EVERY edeq screener variable at every wave
 ```{r}
-dat.edeq.screener <- dat.edeq %>%
+
+dat.edeq.screener <- edeq.coping.followupb.screener.raw.id %>%
   filter(
-    !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 1b`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 2b`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 3b`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 4b`) |
+    !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 2`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 3`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 4`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 5`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 6`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 7`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 8`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 1b`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 2b`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 3b`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 4b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 2`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 3`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 4`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 5`) |
       !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 6`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 7`) |
       !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 8`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 1b`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2b`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 1b`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2b`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3b`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4b`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 5`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 7`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 8`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 1b`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 2b`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 3b`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 4b`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 2`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 3`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 4`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 5`) |
       !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 6`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 7`) |
       !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 8`) 
   )
 
 nrow(dat.edeq.screener)   
 
 ```
+
 
 ```{r}
 ##Filter out those with ALL missing data in screener dataset
