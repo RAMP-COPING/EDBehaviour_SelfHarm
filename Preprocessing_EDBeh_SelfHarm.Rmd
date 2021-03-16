@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 
@@ -3623,6 +3623,21 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id  %>%
 }
 ```
 
+##5. Remove duplicate IDs EDEQ COPING
+```{r}
+if(COPING == TRUE) {
+##Check col names
+colnames(edeq.coping.followupb.raw.id)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+edeq.coping.followupb.raw.id  <- edeq.coping.followupb.raw.id  %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(edeq.coping.followupb.raw.id)
+}
+
+```
 
 ## 6. Change follow up EDE COPING to long format SCREENER
 ```{r TAF COPING long format}

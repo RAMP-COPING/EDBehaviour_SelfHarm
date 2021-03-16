@@ -39,12 +39,14 @@ dim(dat.edeq)
 # Inspect colnames
 colnames(dat.edeq)
 
+nrow(dat.edeq)
+
 ```
 
 ##Exclude participants who are missing for EVERY edeq screener variable at every wave
 ```{r}
 
-dat.edeq.screener <- edeq.coping.followupb.screener.raw.id %>%
+dat.edeq.screener <- dat.edeq %>%
   filter(
     !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 2`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 3`) |

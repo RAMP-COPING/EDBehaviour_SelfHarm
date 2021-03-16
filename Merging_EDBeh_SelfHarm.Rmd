@@ -187,8 +187,9 @@ dim(edeq_coping_screener)
 edeq_ramp_screener <- readRDS(file = "../data_cleaned/edeq_screener_ramp.rds")
 dim(edeq_ramp_screener)
 
-
 ```
+
+
 #Bind coping and ramp's edeq and taf (separately)
 ```{r}
 
@@ -213,7 +214,7 @@ edeq <- bind_rows(
 colnames(edeq)
 
 #check no of participants edeq
-nrow(edeq)
+nrow(edeq1)
 
 #bind all taf data
 taf <- bind_rows(taf_ramp,
@@ -227,6 +228,10 @@ nrow(taf)
 
 
 ```
+
+
+
+
 ```{r}
 #drop column names
 edeq <- edeq[ -c(17,25,33,41, 49, 57,65,73,81, 89, 97, 105, 113 ) ]
@@ -234,19 +239,64 @@ edeq <- edeq[ -c(17,25,33,41, 49, 57,65,73,81, 89, 97, 105, 113 ) ]
 
 #Check names
 colnames(edeq)
+
 ```
-
-
 
 
 
 #Bind edeq with baseline
 ```{r}
+edeq$cohort_name <- NULL
+edeq$startDate_waves <- NULL
+
+nrow(edeq)
+
+
 dat.edeq <- merge(dat,
                   edeq,
                   by = "ID")
 
 ```
+
+
+##Exclude participants who are missing for EVERY edeq screener variable at every wave
+```{r}
+
+test <- dat.edeq %>%
+  filter(
+    !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 2`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 3`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 4`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 5`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 6`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 7`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 8`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 2`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 3`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 4`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 5`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 6`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 7`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 8`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 5`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 7`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 8`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 2`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 3`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 4`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 5`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 6`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 7`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 8`) 
+  )
+
+nrow(test)   
+```
+
 #Remove duplicate IDs EDEQ COPING
 ```{r}
 
@@ -256,6 +306,8 @@ dat.edeq  <- dat.edeq  %>%
 
 ##Check number of rows
 nrow(dat.edeq)
+
+
 
 ```
 
