@@ -1,5 +1,4 @@
 
-
 ## APRIL 1
 start1 <- as.POSIXct("2020-04-01")
 end1 <-  as.POSIXct("2020-04-30") 
