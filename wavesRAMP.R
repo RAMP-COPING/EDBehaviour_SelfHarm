@@ -1,4 +1,3 @@
-
 ## APRIL 1
 start1 <- as.POSIXct("2020-04-01")
 end1 <-  as.POSIXct("2020-04-30") 
@@ -8,36 +7,38 @@ start2 <- as.POSIXct("2020-05-01")
 end2 <-  as.POSIXct("2020-05-31")  ## both RAMP and COPING ended by now, new RAMP started at 30 June
 
 # JUNE 3 
-start2 <- as.POSIXct("2020-06-01")
-end2 <-  as.POSIXct("2020-06-30")  ## both RAMP and COPING ended by now, new RAMP started at 30 June
+start3 <- as.POSIXct("2020-06-01")
+end3 <-  as.POSIXct("2020-06-30")  ## both RAMP and COPING ended by now, new RAMP started at 30 June
 
 #July 4
-start3 <- as.POSIXct("2020-06-30")
-end3 <-  as.POSIXct("2020-07-27")
+start4 <- as.POSIXct("2020-06-30")
+end4 <-  as.POSIXct("2020-07-27")
 
 #August 5
-start4 <- as.POSIXct("2020-07-28")
-end4 <-  as.POSIXct("2020-09-01")
+start5 <- as.POSIXct("2020-07-28")
+end5 <-  as.POSIXct("2020-09-01")
 
 #September 6
-start5 <- as.POSIXct("2020-09-01")
-end5 <-  as.POSIXct("2020-10-01")
+start6 <- as.POSIXct("2020-09-01")
+end6 <-  as.POSIXct("2020-10-01")
 
 #October 7
-start6 <- as.POSIXct("2020-10-01")
-end6 <-   as.POSIXct("2020-11-01") 
+start7 <- as.POSIXct("2020-10-01")
+end7 <-   as.POSIXct("2020-11-01") 
 
 #November 8
-start7 <- as.POSIXct("2020-11-01")
-end7 <-   as.POSIXct("2020-12-01") 
+start8 <- as.POSIXct("2020-11-01")
+end8 <-   as.POSIXct("2020-12-01") 
 
 #December 9 
-start8 <- as.POSIXct("2020-12-01")
-end8 <-   as.POSIXct("2021-01-01") 
+start9 <- as.POSIXct("2020-12-01")
+end9 <-   as.POSIXct("2021-01-01") 
 
 #January 10
-start9 <- as.POSIXct("2021-01-01")
-end9 <-   as.POSIXct("2021-02-01") 
+start10 <- as.POSIXct("2021-01-01")
+end10 <-   as.POSIXct("2021-02-01") 
+
+
 
 
 ##Follow up A and B can overlap in time, but follow up A can not overlap with the timing of another follow up A
@@ -56,7 +57,8 @@ taf.ramp.followupa.raw.id <-  taf.ramp.followupa.raw.id %>%
                                startDate_waves >= start6 & startDate_waves < end6 ~ ".Wave 6",
                                startDate_waves >= start7 & startDate_waves < end7 ~ ".Wave 7",
                                startDate_waves >= start8 & startDate_waves < end8 ~ ".Wave 8",
-                               startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave 9"))
+                               startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave 9",
+                               startDate_waves >= start10 & startDate_waves < end10 ~ ".Wave 10"))
 
 taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw.id %>%
   mutate(wave_taf =  case_when(startDate_waves >= start1 & startDate_waves < end1 ~ ".Wave 1",
@@ -67,7 +69,8 @@ taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw.id %>%
                                startDate_waves >= start6 & startDate_waves < end6 ~ ".Wave 6",
                                startDate_waves >= start7 & startDate_waves < end7 ~ ".Wave 7",
                                startDate_waves >= start8 & startDate_waves < end8 ~ ".Wave 8",
-                               startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave 9"))
+                               startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave 9",
+                               startDate_waves >= start10 & startDate_waves < end10 ~ ".Wave 10"))
 
 
 edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
@@ -79,7 +82,8 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
                                 startDate_waves >= start6 & startDate_waves < end6 ~ ".Wave 6",
                                 startDate_waves >= start7 & startDate_waves < end7 ~ ".Wave 7",
                                 startDate_waves >= start8 & startDate_waves < end8 ~ ".Wave 8",
-                                startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave 9"))
+                                startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave 9",
+                                startDate_waves >= start10 & startDate_waves < end10 ~ ".Wave 10"))
 
 edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>%
   mutate(wave_edeq =  case_when(startDate_waves >= start1 & startDate_waves < end1 ~ ".Wave 1",
@@ -90,4 +94,5 @@ edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>%
                                 startDate_waves >= start6 & startDate_waves < end6 ~ ".Wave 6",
                                 startDate_waves >= start7 & startDate_waves < end7 ~ ".Wave 7",
                                 startDate_waves >= start8 & startDate_waves < end8 ~ ".Wave 8",
-                                startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave 9"))
+                                startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave 9",
+                                startDate_waves >= start10 & startDate_waves < end10 ~ ".Wave 10"))
