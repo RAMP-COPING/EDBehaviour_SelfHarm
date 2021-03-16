@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 
@@ -1680,21 +1680,25 @@ if(RAMP == TRUE){
 
 x <- as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
 
-min(x )
+min(x)
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
 1. Change date format
 ```{r}
 if(RAMP == TRUE){
 
 as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
 
-edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw.id %>%
+edeq.ramp.baseline.CUTOFF.raw.id <- edeq.ramp.baseline.raw.id %>%
   filter(startDate_baseline < as.Date("2020-04-21"))
 
-#Drop start date baseline column
+#Drop start date baseline column in both 
+
+edeq.ramp.baseline.CUTOFF.raw.id <- edeq.ramp.baseline.CUTOFF.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
 
 edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw.id %>%
   select(-c(startDate_baseline,
@@ -1850,7 +1854,8 @@ dim(taf.glad.coping.baseline.raw)[1]-dim(taf.glad.coping.baseline.raw.id)[1]
 
 
 ```
-##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+
+##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
 1. Change date format
 ```{r}
 if(GLAD == TRUE){
@@ -1858,14 +1863,16 @@ if(GLAD == TRUE){
 as.Date(taf.glad.coping.baseline.raw.id$startDate_baseline)
 
 
-#Filter by people who completed baseline survey before 18th May
-
-
-taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw.id %>%
+#Filter by people who completed baseline survey before 21st april
+taf.glad.coping.baseline.CUTOFF.raw.id <- taf.glad.coping.baseline.raw.id %>%
   filter(startDate_baseline < as.Date("2020-04-21"))
 
 
 #Drop start date baseline column
+
+taf.glad.coping.baseline.CUTOFF.raw.id <- taf.glad.coping.baseline.CUTOFF.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
 
 taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw.id %>%
   select(-c(startDate_baseline,
@@ -1937,7 +1944,7 @@ dim(taf.edgi.coping.baseline.raw)[1]-dim(taf.edgi.coping.baseline.raw.id)[1]
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
 1. Change date format
 ```{r}
 if(EDGI == TRUE){
@@ -1945,13 +1952,18 @@ if(EDGI == TRUE){
 as.Date(taf.edgi.coping.baseline.raw.id$startDate_baseline)
 
 
-#Filter by people who completed baseline survey before 18th May
+#Filter by people who completed baseline survey before 21st april
 
-taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw.id %>%
+taf.edgi.coping.baseline.CUTOFF.raw.id <- taf.edgi.coping.baseline.raw.id %>%
   filter(startDate_baseline < as.Date("2020-04-21"))
 
 
 #Drop start date baseline column
+
+
+taf.edgi.coping.baseline.CUTOFF.raw.id <- taf.edgi.coping.baseline.CUTOFF.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
 
 taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw.id %>%
   select(-c(startDate_baseline,
@@ -2023,7 +2035,7 @@ dim(taf.nbr.baseline.raw)[1]-dim(taf.nbr.baseline.raw.id)[1]
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
 1. Change date format
 ```{r}
 if(NBR == TRUE){
@@ -2031,13 +2043,16 @@ if(NBR == TRUE){
 as.Date(taf.nbr.baseline.raw.id$startDate_baseline)
 
 
-#Filter by people who completed baseline survey before 18th May
+#Filter by people who completed baseline survey before 21st april
 
-taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw.id %>%
+taf.nbr.baseline.CUTOFF.raw.id <- taf.nbr.baseline.raw.id %>%
   filter(startDate_baseline < as.Date("2020-04-21"))
 
 
 #Drop start date baseline column
+taf.nbr.baseline.CUTOFF.raw.id <- taf.nbr.baseline.CUTOFF.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
 
 taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw.id %>%
   select(-c(startDate_baseline,
@@ -2116,7 +2131,7 @@ min(x)
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 18th May (first follow up questinnaire sent out on 19th May)
+##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
 1. Change date format
 ```{r}
 if(RAMP == TRUE){
@@ -2124,12 +2139,15 @@ if(RAMP == TRUE){
 as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
 
 
-#Filter by people who completed baseline survey before 18th May
-taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw.id %>%
+#Filter by people who completed baseline survey before 21st april
+taf.ramp.baseline.CUTOFF.raw.id <- taf.ramp.baseline.raw.id %>%
   filter(startDate_baseline < as.Date("2020-04-21"))
 
 
 #Drop start date baseline column
+taf.ramp.baseline.CUTOFF.raw.id <- taf.ramp.baseline.CUTOFF.raw.id %>%
+  select(-c(startDate_baseline,
+            startDate_baseline_numeric))
 
 taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw.id %>%
   select(-c(startDate_baseline,
@@ -2380,6 +2398,23 @@ colnames(taf.ramp.followupa.raw.id)
 dim(taf.ramp.followupa.raw)[1]-dim(taf.ramp.followupa.raw.id)[1]
 }
 ```
+##Check earliest date of follow up A TAF (this will be used as cutoff for 'baseline', i.e., baseline entries only count BEFORE this date)
+```{r}
+if(RAMP == TRUE){
+
+x <- as.Date(taf.ramp.followupa.raw.id$startDate_waves)
+
+min(x) #2020-04-21
+
+}
+```
+
+
+
+
+
+
+
 # TAF - follow up B
 ## RAMP
 ### Read in data
@@ -2815,7 +2850,6 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
   select(-row)
   
 }
-dat.raw.taf.ramp$
 ```
 
 ##4. Select variables for dataset TAF RAMP
@@ -3847,12 +3881,9 @@ edgi.4 <- taf.edgi.coping.baseline.raw.id %>% #590
   cohort_name,
   taf.worth_living_life_people_.Wavebaseline,
   taf.felt_weeks_past_.Wavebaseline,
-  taf.pandemic_felt_.Wavebaseline,
   taf.have_you_contemplated_harming_yourself_.Wavebaseline,
   taf.felt_weeks_past.1_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_life_end_weeks_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
+  taf.meant_life_end_weeks_.Wavebaseline)
 
 
 edgi.5 <- mhd.raw.id %>% #3251
@@ -3886,6 +3917,14 @@ edgi.5 <- mhd.raw.id %>% #3251
           mhd.feeding_eating_disorder_numeric, 
           mhd.other_eating_disorder_numeric)
 
+
+edgi.6 <- taf.edgi.coping.baseline.CUTOFF.raw.id %>% #590
+  select(ID,
+  cohort_name,
+  taf.pandemic_felt_.Wavebaseline,
+  taf.pandemic_felt.1_.Wavebaseline,
+  taf.meant_end_life_pandemic_.Wavebaseline)
+
 ##See if IDs match with edgi.5
 x <- edgi.5[edgi.5$ID %in% edgi.4$ID,]
 
@@ -3916,7 +3955,8 @@ dfs.list <- list(
   edgi.2,
   edgi.3,
   edgi.4,
-  edgi.5
+  edgi.5,
+  edgi.6
 )
 }
 
@@ -3999,12 +4039,9 @@ glad.4 <- taf.glad.coping.baseline.raw.id %>%
   cohort_name,
   taf.worth_living_life_people_.Wavebaseline,
   taf.felt_weeks_past_.Wavebaseline,
-  taf.pandemic_felt_.Wavebaseline,
   taf.have_you_contemplated_harming_yourself_.Wavebaseline,
   taf.felt_weeks_past.1_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_life_end_weeks_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
+  taf.meant_life_end_weeks_.Wavebaseline)
 
 
 glad.5 <- mhd.raw.id %>%
@@ -4038,6 +4075,14 @@ glad.5 <- mhd.raw.id %>%
           mhd.feeding_eating_disorder_numeric, 
           mhd.other_eating_disorder_numeric)
 
+
+glad.6 <- taf.glad.coping.baseline.CUTOFF.raw.id %>%
+  select(ID,
+  cohort_name,
+  taf.pandemic_felt_.Wavebaseline,
+  taf.pandemic_felt.1_.Wavebaseline,
+  taf.meant_end_life_pandemic_.Wavebaseline)
+
 ##See if IDs match with glad.3
 x <- glad.3[glad.3$ID %in% glad.1$ID,]
 
@@ -4066,7 +4111,8 @@ dfs.list <- list(
   glad.2,
   glad.3,
   glad.4,
-  glad.5
+  glad.5,
+  glad.6
 )
 }
 
@@ -4136,8 +4182,7 @@ nbr.2 <- nbr.dem.raw.id.complete %>%
          current_country,
          uk_location)
 
-freq(nbr.2$ethnicity)
-    
+
   nbr.3 <- nbr.dem.raw.id %>%
     select(ID,
            cohort_name,
@@ -4149,12 +4194,9 @@ nbr.4 <- taf.nbr.baseline.raw.id %>%
   cohort_name,
   taf.worth_living_life_people_.Wavebaseline,
   taf.felt_weeks_past_.Wavebaseline,
-  taf.pandemic_felt_.Wavebaseline,
   taf.have_you_contemplated_harming_yourself_.Wavebaseline,
   taf.felt_weeks_past.1_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_life_end_weeks_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
+  taf.meant_life_end_weeks_.Wavebaseline)
 
 
 nbr.5 <- mhd.raw.id %>% 
@@ -4188,7 +4230,12 @@ nbr.5 <- mhd.raw.id %>%
           mhd.feeding_eating_disorder_numeric, 
           mhd.other_eating_disorder_numeric)
 
-
+nbr.6 <- taf.nbr.baseline.CUTOFF.raw.id %>% 
+  select(ID,
+  cohort_name,
+  taf.pandemic_felt_.Wavebaseline,
+  taf.pandemic_felt.1_.Wavebaseline,
+  taf.meant_end_life_pandemic_.Wavebaseline)
 
 
 
@@ -4228,7 +4275,8 @@ dfs.list <- list(
   nbr.2,
   nbr.3,
   nbr.4,
-  nbr.5
+  nbr.5,
+  nbr.6
 )
 }
 ```
@@ -4294,17 +4342,23 @@ if(RAMP == TRUE) {
            key_worker,
            key_worker_numeric)
    
-  ramp.3 <- taf.ramp.baseline.raw.id %>%
+  ramp.3 <- edeq.ramp.baseline.raw.id %>% #retro prepan
   select(ID,
   cohort_name,
-  taf.worth_living_life_people_.Wavebaseline,
-  taf.felt_weeks_past_.Wavebaseline,
-  taf.pandemic_felt_.Wavebaseline,
-  taf.have_you_contemplated_harming_yourself_.Wavebaseline,
-  taf.felt_weeks_past.1_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_life_end_weeks_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
+  edeq.deliberately_limit_amount_influence.1_.Wavebaseline,
+edeq.calories_made_body_shape.1_.Wavebaseline,
+edeq.weight_influenced_person.1_.Wavebaseline,
+edeq.dissatisfied_shape_weight.1_.Wavebaseline,
+edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline,
+edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline,
+edeq.felt_anxious_blue_bored.2_.Wavebaseline,
+edeq.felt_anxious_blue_bored.3_.Wavebaseline,
+edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline,
+edeq.regard_lost_control_eaten.1_.Wavebaseline,
+edeq.sick_means_made_shape.1_.Wavebaseline,
+edeq.diuretics_laxatives_means_shape.1_.Wavebaseline,
+edeq.compulsive_driven_burn_calories.1_.Wavebaseline
+  )
 
 
   ramp.4 <- mhd.raw.id %>% 
@@ -4329,8 +4383,42 @@ if(RAMP == TRUE) {
          mhd.bingeeating_disorder_numeric)
 
 
-  ramp.5 <- edeq.ramp.baseline.raw.id 
+ramp.5 <- taf.ramp.baseline.raw.id %>% #for retro prepan
+  select(ID,
+         cohort_name,
+         taf.worth_living_life_people_.Wavebaseline,
+  taf.felt_weeks_past_.Wavebaseline,
+  taf.have_you_contemplated_harming_yourself_.Wavebaseline,
+  taf.felt_weeks_past.1_.Wavebaseline,
+  taf.meant_life_end_weeks_.Wavebaseline)
+  
+ramp.6 <- taf.ramp.baseline.CUTOFF.raw.id %>% #for baseline cut off at 21st April
+  select(ID,
+  cohort_name,
+  taf.pandemic_felt_.Wavebaseline,
+  taf.pandemic_felt.1_.Wavebaseline,
+  taf.meant_end_life_pandemic_.Wavebaseline)
+
+
+ramp.7 <- edeq.ramp.baseline.CUTOFF.raw.id %>% #Baseline BEFORE 21st April
+  select(ID,
+  cohort_name,
+  edeq.deliberately_limit_amount_influence_.Wavebaseline,
+         edeq.calories_made_body_shape_.Wavebaseline ,
+         edeq.weight_influenced_person_.Wavebaseline,
+         edeq.dissatisfied_shape_weight_.Wavebaseline ,
+         edeq.nibbled_picked_snacks_grazed_.Wavebaseline ,
+         edeq.felt_anxious_blue_bored_.Wavebaseline ,
+         edeq.felt_anxious_blue_bored.1_.Wavebaseline ,
+         edeq.eating_behaviours_concerns_distressed_.Wavebaseline ,
+         edeq.feelings_pandemic_felt_.Wavebaseline,
+         edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline,
+         edeq.regard_lost_control_eaten_.Wavebaseline,
+         edeq.sick_means_made_shape_.Wavebaseline,
+         edeq.diuretics_laxatives_means_shape_.Wavebaseline ,
+         edeq.compulsive_driven_burn_calories_.Wavebaseline )
    
+
 #Check ramp.4 has same IDs as other datasets
 x <- ramp.4[ramp.4$ID %in% ramp.1$ID,]
 
@@ -4361,7 +4449,9 @@ dfs.list <- list(
   ramp.2,
   ramp.3,
   ramp.4,
-  ramp.5
+  ramp.5,
+  ramp.6,
+  ramp.7
   
 )
 }
@@ -4387,8 +4477,6 @@ if(RAMP == TRUE) {
 dat.raw.ramp$ID.dup <- duplicated(dat.raw.ramp$ID)
 
 summary(as.factor(dat.raw.ramp$ID.dup))
-
-select(dat.raw.ramp)
 
  #Check for duplicate names of columns
 names_freq <- as.data.frame(table(names(dat.raw.ramp)))
