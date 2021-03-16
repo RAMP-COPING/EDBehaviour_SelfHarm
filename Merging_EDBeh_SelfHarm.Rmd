@@ -189,7 +189,6 @@ dim(edeq_ramp_screener)
 
 ```
 
-
 #Bind coping and ramp's edeq and taf (separately)
 ```{r}
 
@@ -204,17 +203,17 @@ edeq2 <- bind_rows(
   edeq_ramp_screener,
   edeq_coping_screener)
 
+#
+edeq <- merge(edeq1,
+                  edeq2,
+                  by = "ID")
 
-edeq <- bind_rows(
-  edeq1,
-  edeq2
-  )
 
 #check col names edeq
 colnames(edeq)
 
 #check no of participants edeq
-nrow(edeq1)
+nrow(edeq)
 
 #bind all taf data
 taf <- bind_rows(taf_ramp,
@@ -233,15 +232,26 @@ nrow(taf)
 
 
 ```{r}
-#drop column names
-edeq <- edeq[ -c(17,25,33,41, 49, 57,65,73,81, 89, 97, 105, 113 ) ]
+#drop NA column names
+
+edeq$edeq.calories_made_body_shape_NA <-  NULL
+edeq$edeq.calories_made_body_shape_NA<-  NULL
+edeq$edeq.weight_influenced_person_NA<-  NULL
+edeq$edeq.dissatisfied_shape_weight_NA<-  NULL
+edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_NA <-  NULL
+edeq$edeq.regard_lost_control_eaten_numeric_NA <-  NULL
+edeq$edeq.sick_means_made_shape_numeric_NA <-  NULL
+edeq$edeq.compulsive_driven_burn_calories_numeric_NA <-  NULL
+edeq$edeq.diuretics_laxatives_means_shape_numeric_NA  <-  NULL
+edeq$edeq.nibbled_picked_snacks_grazed_NA <-  NULL
+edeq$edeq.felt_anxious_blue_bored_NA <-  NULL
+edeq$edeq.felt_anxious_blue_bored.1_NA <-  NULL
 
 
 #Check names
 colnames(edeq)
 
 ```
-
 
 
 #Bind edeq with baseline
