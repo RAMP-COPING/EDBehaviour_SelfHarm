@@ -1171,8 +1171,6 @@ table(dat.edeq.8$wave)
 ```
 
 
-
-
 Drop empty factor levels across all columns 
 ```{r}
 
