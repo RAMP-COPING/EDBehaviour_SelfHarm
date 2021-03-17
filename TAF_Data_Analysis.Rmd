@@ -32,84 +32,6 @@ colnames(dat.taf)
 ```
 
 
-
-# Colour palettes
-Define colours for plotting this are the standard coping colours
-```{r Colour palettes: COPING}
-COPINGpalette2 <- c("#78D9C5",
-                    "#F5BE5E")
-COPINGpalette3 <- c("#78D9C5",
-                    "#F5BE5E",
-                    "#EEB6E9")
-COPINGpalette4 <- c("#78D9C5",
-                    "#F5BE5E",
-                    "#EEB6E9",
-                    "#DBDB73")
-COPINGpalette5 <- c("#78D9C5",
-                    "#F5BE5E",
-                    "#EEB6E9",
-                    "#DBDB73",
-                    "#FFED98")
-COPINGpalette6 <- c("#78D9C5",
-                    "#F5BE5E",
-                    "#EEB6E9",
-                    "#DBDB73",
-                    "#FFED98",
-                    "#BFD2EB")
-COPINGpalette7 <- c("#78D9C5",
-                    "#F5BE5E",
-                    "#EEB6E9",
-                    "#DBDB73",
-                    "#FFED98",
-                    "#BFD2EB",
-                    "#808080")
-COPINGpaletteGRAD <- c("#F5BE5E",
-                       "#FFD284",
-                       "#FFEED1",
-                       "#B5B5B5",
-                       "#DEFFF8",
-                       "#94F6E1",
-                       "#78D9C5")
-COPINGNeuCenterpalette <- c("#78D9C5",
-                            "#808080",
-                            "#F5BE5E")
-RAMPworseGRADpalette <- c("#78D9C5",
-                          "#FFEED1",
-                          "#F5BE5E",
-                          "#FFB1B5")
-GLADpalette = c("#efc00b",
-                "#b7dee8")
-```
-
-Choose in this chunk which palette to use
-04.07.2020 - Default to 2 colour COPING palette
-```{r Choose colour palette}
-palette = COPINGpalette2
-```
-
-# ggplot theme
-Set up ggplot theme for the plots
-```{r ggplot theme}
-theme_personal <-  theme(
-    text = element_text(color = "black"),
-    axis.title = element_text(color = "black"),
-    axis.text = element_text(color = "black"),
-    axis.title.y = element_blank(),
-    legend.background = element_blank(),
-    legend.box.background = element_blank(),
-    panel.background = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    panel.grid.major.x = element_line(
-      colour = "gray",
-      linetype = "dashed",
-      size = 0.2
-      ),
-    axis.ticks = element_blank()
-    )
-```
-
-
-
 ##PLOTS - TAF 
 
 
@@ -129,7 +51,7 @@ dat.taf <- dat.taf %>%
 ```
 
 
-#1. First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
+#1. First, need to re-structure data so that "wave" is a single column with rows of "1", "2", "3", and each taf item is a separate column in which rows are values
 ```{r}
 dat.taf <- dat.taf %>%
   pivot_longer(
@@ -145,7 +67,6 @@ dat.taf <- dat.taf %>%
 colnames(dat.taf)
 
 ```
-
 
 #2. Get rid of NAs and change taf to factor
 ```{r}
@@ -164,18 +85,17 @@ dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                           "1a",
-                           "1b",
-                           "2a",
-                           "2b",
-                           "3a",
-                           "3b",
-                           "4a",
-                           "4b",
+                                  "0",
+                           "1",
+                           "2",
+                           "3",
+                           "4",
                            "5",
                            "6",
                            "7",
-                           "8"))
+                           "8",
+                           "9")
+        )
 
 
 #Check that this worked
