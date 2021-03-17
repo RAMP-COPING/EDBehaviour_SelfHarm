@@ -85,6 +85,25 @@ dat.edeq.screener <- dat.edeq %>%
 nrow(dat.edeq.screener)   
 
 ```
+##Look at numbers for sample sizes of stratified plots
+```{r}
+
+dat.edeq.screener %>%
+  freq(control)
+
+dat.edeq.screener %>%
+  freq(gender_unc)
+
+dat.edeq.screener %>%
+  freq(age_category)
+
+
+dat.edeq.screener %>%
+  freq(cohort_name)
+```
+
+
+##rename columns
 ```{r}
 dat.edeq.screener <- dat.edeq.screener %>% 
   rename(
@@ -476,6 +495,331 @@ dat.edeq.screener <- dat.edeq.screener %>%
 
 ```
 
+##Check how many participants answered each wave - BINGE EATING RAMP
+```{r}
+
+dat.edeq.1 <- dat.edeq.screener %>%
+  filter(wave == " 1" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.1$wave)
+
+
+dat.edeq.2 <- dat.edeq.screener %>%
+  filter(wave == " 2" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.2$wave)
+
+dat.edeq.3 <- dat.edeq.screener %>%
+  filter(wave == " 3" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.3$wave)
+
+
+dat.edeq.4 <- dat.edeq.screener %>%
+  filter(wave == " 4" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.4$wave)
+
+dat.edeq.5 <- dat.edeq.screener %>%
+  filter(wave == " 5" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.5$wave)
+
+
+dat.edeq.6 <- dat.edeq.screener %>%
+  filter(wave == " 6" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.6$wave)
+
+dat.edeq.7 <- dat.edeq.screener %>%
+  filter(wave == " 7" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.7$wave)
+
+dat.edeq.8 <- dat.edeq.screener %>%
+  filter(wave == " 8" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.8$wave)
+```
+##Check how many participants answered each wave - BINGE EATING COPING
+```{r}
+
+dat.edeq.1 <- dat.edeq.screener %>%
+  filter(wave == " 1" &
+           (cohort_name == "nbr" |
+           cohort_name == "coping_edgi" |
+           cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.1$wave)
+
+
+dat.edeq.2 <- dat.edeq.screener %>%
+  filter(wave == " 2" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.2$wave)
+
+dat.edeq.3 <- dat.edeq.screener %>%
+  filter(wave == " 3" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.3$wave)
+
+
+dat.edeq.4 <- dat.edeq.screener %>%
+  filter(wave == " 4" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.4$wave)
+
+dat.edeq.5 <- dat.edeq.screener %>%
+  filter(wave == " 5" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.5$wave)
+
+
+dat.edeq.6 <- dat.edeq.screener %>%
+  filter(wave == " 6" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.6$wave)
+
+dat.edeq.7 <- dat.edeq.screener %>%
+  filter(wave == " 7" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.7$wave)
+
+dat.edeq.8 <- dat.edeq.screener %>%
+  filter(wave == " 8" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.regular_episodes_eating_binges)
+         )
+  
+
+table(dat.edeq.8$wave)
+```
+
+
+##Check how many participants answered each wave - LOW WEIGHT RAMP
+```{r}
+
+dat.edeq.1 <- dat.edeq.screener %>%
+  filter(wave == " 1" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.1$wave)
+
+
+dat.edeq.2 <- dat.edeq.screener %>%
+  filter(wave == " 2" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.2$wave)
+
+dat.edeq.3 <- dat.edeq.screener %>%
+  filter(wave == " 3" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.3$wave)
+
+
+dat.edeq.4 <- dat.edeq.screener %>%
+  filter(wave == " 4" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.4$wave)
+
+dat.edeq.5 <- dat.edeq.screener %>%
+  filter(wave == " 5" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.5$wave)
+
+
+dat.edeq.6 <- dat.edeq.screener %>%
+  filter(wave == " 6" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.6$wave)
+
+dat.edeq.7 <- dat.edeq.screener %>%
+  filter(wave == " 7" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.7$wave)
+
+dat.edeq.8 <- dat.edeq.screener %>%
+  filter(wave == " 8" &
+           cohort_name == "ramp" &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.8$wave)
+```
+
+##Check how many participants answered each wave - LOW WEIGHT COPING
+```{r}
+
+dat.edeq.1 <- dat.edeq.screener %>%
+  filter(wave == " 1" &
+           (cohort_name == "nbr" |
+           cohort_name == "coping_edgi" |
+           cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.1$wave)
+
+
+dat.edeq.2 <- dat.edeq.screener %>%
+  filter(wave == " 2" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.2$wave)
+
+dat.edeq.3 <- dat.edeq.screener %>%
+  filter(wave == " 3" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.3$wave)
+
+
+dat.edeq.4 <- dat.edeq.screener %>%
+  filter(wave == " 4" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.4$wave)
+
+dat.edeq.5 <- dat.edeq.screener %>%
+  filter(wave == " 5" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.5$wave)
+
+
+dat.edeq.6 <- dat.edeq.screener %>%
+  filter(wave == " 6" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.6$wave)
+
+dat.edeq.7 <- dat.edeq.screener %>%
+  filter(wave == " 7" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.7$wave)
+
+dat.edeq.8 <- dat.edeq.screener %>%
+  filter(wave == " 8" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(edeq.ed_scid5.weigh_weighed_past_month)
+         )
+  
+
+table(dat.edeq.8$wave)
+```
+
+
+
+
+
+
 Drop empty factor levels across all columns 
 ```{r}
 
@@ -787,7 +1131,7 @@ ggplot(dat_plot,
            position = "dodge",
            colour = "black") + 
   scale_y_continuous(labels = scales::percent) +
-  labs(title = str_wrap("CASES ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+  labs(title = str_wrap("SELF-REPORTED DIAGNOSIS OF PSYCH DISORDER ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
        x = "Binge eating",
        y = "Percentage of participants",
        fill = "Time of survey") +
@@ -800,7 +1144,6 @@ scale_x_discrete(guide = guide_axis(n.dodge=3))
 
 dat.edeq.controls2 <- dat.edeq.screener %>%
   filter(control_numeric == 1)
-
 
 ```
 
@@ -897,7 +1240,7 @@ ggplot(dat_plot,
            position = "dodge",
            colour = "black") + 
   scale_y_continuous(labels = scales::percent) +
-  labs(title = str_wrap("CONTROLS ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+  labs(title = str_wrap("NO SELF-REPORTED PSYCH DISORDER ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
        x = "Binge eating",
        y = "Percentage of participants",
        fill = "Time of survey") +
@@ -1126,11 +1469,13 @@ scale_x_discrete(guide = guide_axis(n.dodge=3))
 
 ```
 
-##Filter by MALE
+##Filter by FEMALE
 ```{r}
 
 dat.edeq.females <- dat.edeq.screener %>%
-  filter(sex == "Female")
+  filter(gender_unc == "Female")
+
+
 
 ```
 
@@ -1225,7 +1570,117 @@ ggplot(dat_plot,
            position = "dodge",
            colour = "black") + 
   scale_y_continuous(labels = scales::percent) +
-  labs(title = str_wrap("NO EATING DISORDER CASES: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+  labs(title = str_wrap("WOMEN ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+
+##Filter by MALE
+```{r}
+
+dat.edeq.males <- dat.edeq.screener %>%
+  filter(gender_unc == "Male")
+
+
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.males[!is.na(dat.edeq.males$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("MEN ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
        x = "Binge eating",
        y = "Percentage of participants",
        fill = "Time of survey") +
@@ -1235,3 +1690,1213 @@ scale_x_discrete(guide = guide_axis(n.dodge=3))
 
 
 
+##Filter by AGE, 16-18
+
+16-18     
+19-25
+26-35    
+36-45    
+46-55    
+56-65    
+66-70    
+71-75  
+76-80  
+81-85  
+86-90
+91-100
+ 100+  
+```{r}
+
+dat.edeq.1618 <- dat.edeq.screener %>%
+  filter(age_category == "16-18")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.1618[!is.na(dat.edeq.1618$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("16-18 year olds ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by AGE, 16-25
+
+16-18     
+19-25
+26-35    
+36-45    
+46-55    
+56-65    
+66-70    
+71-75  
+76-80  
+81-85  
+86-90
+91-100
+ 100+  
+```{r}
+
+dat.edeq.1625 <- dat.edeq.screener %>%
+  filter(age_category == "16-18" |
+           age_category == "19-25")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.1625[!is.na(dat.edeq.1625$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("16-25 year olds ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+
+
+##Filter by AGE, 26-35
+
+16-18     
+19-25
+26-35    
+36-45    
+46-55    
+56-65    
+66-70    
+71-75  
+76-80  
+81-85  
+86-90
+91-100
+ 100+  
+```{r}
+
+dat.edeq.2635 <- dat.edeq.screener %>%
+  filter(age_category == "26-35")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.2635[!is.na(dat.edeq.2635$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("26-35 year olds ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by AGE, 36-45
+
+16-18     
+19-25
+26-35    
+36-45    
+46-55    
+56-65    
+66-70    
+71-75  
+76-80  
+81-85  
+86-90
+91-100
+ 100+  
+```{r}
+
+dat.edeq.3645 <- dat.edeq.screener %>%
+  filter(age_category == "36-45")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.3645[!is.na(dat.edeq.3645$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("36-45 year olds ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by AGE, 26-35
+
+16-18     
+19-25
+26-35    
+36-45    
+46-55    
+56-65    
+66-70    
+71-75  
+76-80  
+81-85  
+86-90
+91-100
+ 100+  
+```{r}
+
+dat.edeq.2635 <- dat.edeq.screener %>%
+  filter(age_category == "26-35")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.2635[!is.na(dat.edeq.2635$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("26-35 year olds ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by AGE, 46-55
+
+16-18     
+19-25
+26-35    
+36-45    
+46-55    
+56-65    
+66-70    
+71-75  
+76-80  
+81-85  
+86-90
+91-100
+ 100+  
+```{r}
+
+dat.edeq.4655 <- dat.edeq.screener %>%
+  filter(age_category == "46-55")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.4655[!is.na(dat.edeq.4655$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("46-55 year olds ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+
+
+##Filter by AGE, 56-65  
+
+16-18     
+19-25
+26-35    
+36-45    
+46-55    
+56-65    
+66-70    
+71-75  
+76-80  
+81-85  
+86-90
+91-100
+ 100+  
+```{r}
+
+dat.edeq.5665 <- dat.edeq.screener %>%
+  filter(age_category == "56-65")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.5665[!is.na(dat.edeq.5665$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("56-65 year olds ONLY: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+
+##Filter by AGE, 70+
+
+```{r}
+
+dat.edeq.70 <- dat.edeq.screener %>%
+  filter(age_category == "66-70" |
+           age_category == "71-75" | 
+           age_category == "76-80" | 
+         age_category == "81-85" | 
+         age_category == "86-90" |
+           age_category == "91-100" |
+           age_category == "100+")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.70[!is.na(dat.edeq.70$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.no.nas <-  droplevels(dat.no.nas)
+
+```
+
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("70+ year olds only: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+
+##Filter by cohort - RAMP
+```{r}
+
+dat.edeq.ramp <- dat.edeq.screener %>%
+  filter(cohort_name == "ramp")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.ramp[!is.na(dat.edeq.ramp$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.no.nas <-  droplevels(dat.no.nas)
+
+```
+
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("RAMP only: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by cohort - COPING
+```{r}
+
+dat.edeq.coping <- dat.edeq.screener %>%
+  filter(cohort_name == "coping_edgi" | 
+           cohort_name == "coping_glad" |
+         cohort_name == "nbr")
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.coping[!is.na(dat.edeq.coping$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.no.nas <-  droplevels(dat.no.nas)
+
+```
+
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+#levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[1] <- "June" 
+
+levels(dat.no.nas$wave_factor)[2] <- "July "
+
+levels(dat.no.nas$wave_factor)[3] <- "August"
+
+levels(dat.no.nas$wave_factor)[4] <- "September"
+
+levels(dat.no.nas$wave_factor)[5] <- "October"
+
+levels(dat.no.nas$wave_factor)[6] <- "November"
+
+levels(dat.no.nas$wave_factor)[7] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("COPING only: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+#######
+#######
