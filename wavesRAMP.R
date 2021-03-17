@@ -1,5 +1,5 @@
 ## APRIL 1
-start0 <- as.POSIXct("2020-04-01")
+start0 <- as.POSIXct("2020-04-21") ##earliest follow up filled in here
 end0 <-  as.POSIXct("2020-04-30") 
 
 # MAY 2

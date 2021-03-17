@@ -1,5 +1,5 @@
 ## APRIL 1
-start0 <- as.POSIXct("2020-04-01")
+start0 <- as.POSIXct("2020-04-21") ##earliest wave filled in 21st april
 end0 <-  as.POSIXct("2020-04-30") 
 
 # MAY 2

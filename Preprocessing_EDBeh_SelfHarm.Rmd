@@ -41,8 +41,8 @@ source("./functions.R")
 # Specify cohort
 ```{r Specify cohort}
 GLAD = FALSE
-EDGI = FALSE
-RAMP = TRUE
+EDGI = TRUE
+RAMP = FALSE
 NBR = FALSE
 COPING = FALSE
 ```
@@ -1684,7 +1684,7 @@ min(x)
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
+##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
 1. Change date format
 ```{r}
 if(RAMP == TRUE){
@@ -1692,7 +1692,7 @@ if(RAMP == TRUE){
 as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
 
 edeq.ramp.baseline.CUTOFF.raw.id <- edeq.ramp.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-21"))
+  filter(startDate_baseline < as.Date("2020-04-30"))
 
 #Drop start date baseline column in both 
 
@@ -1855,7 +1855,7 @@ dim(taf.glad.coping.baseline.raw)[1]-dim(taf.glad.coping.baseline.raw.id)[1]
 
 ```
 
-##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
+##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
 1. Change date format
 ```{r}
 if(GLAD == TRUE){
@@ -1863,9 +1863,9 @@ if(GLAD == TRUE){
 as.Date(taf.glad.coping.baseline.raw.id$startDate_baseline)
 
 
-#Filter by people who completed baseline survey before 21st april
+#Filter by people who completed baseline survey before 30th april
 taf.glad.coping.baseline.CUTOFF.raw.id <- taf.glad.coping.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-21"))
+  filter(startDate_baseline < as.Date("2020-04-30"))
 
 
 #Drop start date baseline column
@@ -1944,7 +1944,7 @@ dim(taf.edgi.coping.baseline.raw)[1]-dim(taf.edgi.coping.baseline.raw.id)[1]
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
+##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
 1. Change date format
 ```{r}
 if(EDGI == TRUE){
@@ -1952,10 +1952,10 @@ if(EDGI == TRUE){
 as.Date(taf.edgi.coping.baseline.raw.id$startDate_baseline)
 
 
-#Filter by people who completed baseline survey before 21st april
+#Filter by people who completed baseline survey before 30th april
 
 taf.edgi.coping.baseline.CUTOFF.raw.id <- taf.edgi.coping.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-21"))
+  filter(startDate_baseline < as.Date("2020-04-30"))
 
 
 #Drop start date baseline column
@@ -2035,7 +2035,7 @@ dim(taf.nbr.baseline.raw)[1]-dim(taf.nbr.baseline.raw.id)[1]
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
+##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
 1. Change date format
 ```{r}
 if(NBR == TRUE){
@@ -2043,10 +2043,10 @@ if(NBR == TRUE){
 as.Date(taf.nbr.baseline.raw.id$startDate_baseline)
 
 
-#Filter by people who completed baseline survey before 21st april
+#Filter by people who completed baseline survey before 30th april
 
 taf.nbr.baseline.CUTOFF.raw.id <- taf.nbr.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-21"))
+  filter(startDate_baseline < as.Date("2020-04-30"))
 
 
 #Drop start date baseline column
@@ -2131,7 +2131,7 @@ min(x)
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 21st April (earliest follow up questionnaire filled out 21st April)
+##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
 1. Change date format
 ```{r}
 if(RAMP == TRUE){
@@ -2139,9 +2139,9 @@ if(RAMP == TRUE){
 as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
 
 
-#Filter by people who completed baseline survey before 21st april
+#Filter by people who completed baseline survey before 30th april
 taf.ramp.baseline.CUTOFF.raw.id <- taf.ramp.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-21"))
+  filter(startDate_baseline < as.Date("2020-04-30"))
 
 
 #Drop start date baseline column
@@ -4407,7 +4407,7 @@ ramp.5 <- taf.ramp.baseline.raw.id %>% #for retro prepan
   taf.felt_weeks_past.1_.Wavebaseline,
   taf.meant_life_end_weeks_.Wavebaseline)
   
-ramp.6 <- taf.ramp.baseline.CUTOFF.raw.id %>% #for baseline cut off at 21st April
+ramp.6 <- taf.ramp.baseline.CUTOFF.raw.id %>% #for baseline cut off at 30th April
   select(ID,
   cohort_name,
   taf.pandemic_felt_.Wavebaseline,
@@ -4415,7 +4415,7 @@ ramp.6 <- taf.ramp.baseline.CUTOFF.raw.id %>% #for baseline cut off at 21st Apri
   taf.meant_end_life_pandemic_.Wavebaseline)
 
 
-ramp.7 <- edeq.ramp.baseline.CUTOFF.raw.id %>% #Baseline BEFORE 21st April
+ramp.7 <- edeq.ramp.baseline.CUTOFF.raw.id %>% #Baseline BEFORE 30th April
   select(ID,
   cohort_name,
   edeq.deliberately_limit_amount_influence_.Wavebaseline,

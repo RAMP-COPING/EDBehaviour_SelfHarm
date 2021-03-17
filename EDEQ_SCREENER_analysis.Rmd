@@ -3179,8 +3179,6 @@ scale_x_discrete(guide = guide_axis(n.dodge=3))
 ```
 
 
-
-
 ##Filter by EATING DISORDER CASES
 ```{r}
 

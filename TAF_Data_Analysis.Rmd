@@ -31,9 +31,29 @@ colnames(dat.taf)
 
 ```
 
+##Look at numbers for sample sizes of stratified plots - BINGE EATING 
+```{r}
 
-##PLOTS - TAF 
+dat.taf %>%
+  freq(control)
 
+dat.taf %>%
+  freq(eating_disorders_numeric)
+
+dat.taf %>%
+  freq(gender_unc)
+
+dat.taf %>%
+  freq(age_category)
+
+dat.taf %>%
+  freq(cohort_name)
+```
+
+
+#######PLOTS - TAF 
+
+#PLOT - Many people have thoughts that life is not worth living. Have you felt that way?
 
 ##**RETRO PREPAN - need to rename these the same as baseline / waves
 
@@ -51,7 +71,7 @@ dat.taf <- dat.taf %>%
 ```
 
 
-#1. First, need to re-structure data so that "wave" is a single column with rows of "1", "2", "3", and each taf item is a separate column in which rows are values
+# First, need to re-structure data so that "wave" is a single column with rows of "1", "2", "3", and each taf item is a separate column in which rows are values
 ```{r}
 dat.taf <- dat.taf %>%
   pivot_longer(
@@ -68,7 +88,8 @@ colnames(dat.taf)
 
 ```
 
-#2. Get rid of NAs and change taf to factor
+
+# Get rid of NAs and change taf to factor
 ```{r}
 #get rid of nas
 dat.no.nas <- dat.taf[!is.na(dat.taf$taf.worth_living_life_people),]
@@ -77,7 +98,7 @@ dat.no.nas <- dat.taf[!is.na(dat.taf$taf.worth_living_life_people),]
 dat.no.nas$taf.worth_living_life_people_factor <- factor(dat.no.nas$taf.worth_living_life_people)
 ```
 
-#3. Change wave to factor and re-order
+#2. Change wave to factor and re-order
 ```{r}
 
 # change order of wave factor 1
@@ -103,17 +124,39 @@ dat.no.nas <- dat.no.nas %>%
 summary(dat.no.nas$wave_factor)
 ```
 
-#4. Rename waves to dates
+#3. Rename waves to dates
 ```{r}
 
 ##Rename waves
-levels(dat.no.nas$wave_factor)[1] <- "test"
 
+levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
+
+levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+
+levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+
+levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+
+levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+
+levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+
+levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+
+levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+
+levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+
+levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+
+levels(dat.no.nas$wave_factor)[11] <- "December 2020"
+
+levels(dat.no.nas$wave_factor)[12] <- "January 2020"
 
 ```
 
 
-#5. Format data to plot
+#4. Format data to plot
 ```{r}
 #get data in format to plot
 dat_plot <- dat.no.nas %>%
@@ -126,7 +169,7 @@ dat_plot <- dat.no.nas %>%
 
 ```
 
-6. Change taf variable to ordered factor
+5. Change taf variable to ordered factor
 ```{r}
 dat_plot <- dat_plot %>%
   mutate(taf.worth_living_life_people_factor = fct_relevel(taf.worth_living_life_people_factor,
@@ -139,7 +182,7 @@ dat_plot <- dat_plot %>%
 ```
 
 
-7. PLOT ! [WHAT TO DO WITH "YES" FROM RAMP RETRO PREPAN?]
+6. PLOT ! [**WHAT TO DO WITH "YES" FROM RAMP RETRO PREPAN?]
 ```{r}
 ggplot(dat_plot,
        aes(x = taf.worth_living_life_people_factor,
@@ -149,7 +192,12 @@ ggplot(dat_plot,
            stat = "identity",
            position = "dodge",
            colour = "black") + 
-  scale_y_continuous(labels = scales::percent)
+  scale_y_continuous(labels = scales::percent)+ 
+  labs(title = str_wrap("Many people have thoughts that life is not worth living. Have you felt that way?", 60),
+       x = "Life not worth living",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
 
 ```
 
@@ -159,7 +207,7 @@ ggplot(dat_plot,
 ```{r}
 dat.taf <- readRDS(file = "../data_cleaned/dat.taf.rds")
 dim(dat.taf)
-colnames(dat.taf)
+#colnames(dat.taf)
 
 ```
 
@@ -190,9 +238,7 @@ colnames(dat.taf)
 
 ```
 
-
-
-#2. Get rid of NAs and change taf to factor
+# Get rid of NAs and change taf to factor
 ```{r}
 #get rid of nas
 dat.no.nas <- dat.taf[!is.na(dat.taf$taf.felt_weeks_past),]
@@ -201,7 +247,7 @@ dat.no.nas <- dat.taf[!is.na(dat.taf$taf.felt_weeks_past),]
 dat.no.nas$taf.felt_weeks_past_factor <- factor(dat.no.nas$taf.felt_weeks_past)
 ```
 
-#3. Change wave to factor and re-order
+# Change wave to factor and re-order
 ```{r}
 
 # change order of wave factor 1
@@ -209,60 +255,445 @@ dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                           "1a",
-                           "1b",
-                           "2a",
-                           "2b",
-                           "3a",
-                           "3b",
-                           "4a",
-                           "4b",
+                                  "0",
+                           "1",
+                           "2",
+                           "3",
+                           "4",
                            "5",
                            "6",
                            "7",
-                           "8"))
+                           "8",
+                           "9")
+        )
 
 
 #Check that this worked
-str(dat.no.nas$wave_factor)
+
+summary(dat.no.nas$wave_factor)
 ```
 
-#4. Rename waves to dates
+#3. Rename waves to dates
 ```{r}
 
 ##Rename waves
-levels(dat.no.nas$wave_factor)[1] <- "test"
 
-"21st April - 5th May (2020)" A
+levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
 
-"6th May - 19th May (2020)" B
+levels(dat.no.nas$wave_factor)[2] <- "March 2020"
 
-"20th May - 2nd June (2020)"
+levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
 
-"3rd June - 16th June (2020)"
+levels(dat.no.nas$wave_factor)[4] <- "May 2020"
 
-"17th June - 30th June (2020)"
+levels(dat.no.nas$wave_factor)[5] <- "June 2020"
 
-"31st June - 14th July (2020)"
+levels(dat.no.nas$wave_factor)[6] <- "July 2020"
 
-"15th July - 28th July (2020)"
+levels(dat.no.nas$wave_factor)[7] <- "August 2020"
 
-"29th July - 25th August (2020)"
+levels(dat.no.nas$wave_factor)[8] <- "September 2020"
 
-"26th August - 22nd September (2020)"
+levels(dat.no.nas$wave_factor)[9] <- "October 2020"
 
-"23rd September - 20th October (2020)"
+levels(dat.no.nas$wave_factor)[10] <- "November 2020"
 
-"23rd September - 20th October (2020)"
+levels(dat.no.nas$wave_factor)[11] <- "December 2020"
 
-"21st October - 17th November (2020)"
-
-"18th November - 15th December (2020)"
-
-"16th December - 11th January (2021)"
+levels(dat.no.nas$wave_factor)[12] <- "January 2020"
 
 ```
 
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(taf.felt_weeks_past_factor) / sum(table(taf.felt_weeks_past_factor))) %>%
+  ungroup() %>%
+  mutate(taf.felt_weeks_past_factor = rep(levels(dat.no.nas[["taf.felt_weeks_past_factor"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change taf variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(taf.felt_weeks_past_factor = fct_relevel(taf.felt_weeks_past_factor,
+                           "Prefer not to answer",
+                           "No",
+                           "Yes"))
+
+
+
+```
+
+7. PLOT !
+```{r}
+ggplot(dat_plot,
+       aes(x = taf.felt_weeks_past_factor,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) + 
+  labs(title = str_wrap("Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?", 60),
+       x = "Life not worth living (past 2 weeks)",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Check how many participants answered each wave RAMP: taf.felt_weeks_past
+```{r}
+
+dat.taf.retroprepan <- dat.taf %>%
+  filter(wave == "retro_prepan" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.retroprepan$wave)
+
+
+dat.taf.baseline <- dat.taf %>%
+  filter(wave == "baseline" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.baseline$wave)
+
+dat.taf.0 <- dat.taf %>%
+  filter(wave == " 0" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.0$wave)
+
+dat.taf.1 <- dat.taf %>%
+  filter(wave == " 1" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.1$wave)
+
+dat.taf.2 <- dat.taf %>%
+  filter(wave == " 2" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+
+
+table(dat.taf.2$wave)
+
+
+dat.taf.3 <- dat.taf %>%
+  filter(wave == " 3" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.3$wave)
+
+dat.taf.4 <- dat.taf %>%
+  filter(wave == " 4" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.4$wave)
+
+
+dat.taf.5 <- dat.taf %>%
+  filter(wave == " 5" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.5$wave)
+
+dat.taf.6 <- dat.taf %>%
+  filter(wave == " 6" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.6$wave)
+
+dat.taf.7 <- dat.taf %>%
+  filter(wave == " 7" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.7$wave)
+
+dat.taf.8 <- dat.taf %>%
+  filter(wave == " 8" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.8$wave)
+
+dat.taf.9 <- dat.taf %>%
+  filter(wave == " 9" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.9$wave)
+```
+##Check how many participants answered each wave COPING: taf.felt_weeks_past
+```{r}
+
+dat.taf.retroprepan <- dat.taf %>%
+  filter(wave == "retro_prepan" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.retroprepan$wave)
+
+
+dat.taf.baseline <- dat.taf %>%
+  filter(wave == "baseline" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.baseline$wave)
+
+dat.taf.0 <- dat.taf %>%
+  filter(wave == " 0" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.0$wave)
+
+dat.taf.1 <- dat.taf %>%
+  filter(wave == " 1" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.1$wave)
+
+dat.taf.2 <- dat.taf %>%
+  filter(wave == " 2" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+
+
+table(dat.taf.2$wave)
+
+
+dat.taf.3 <- dat.taf %>%
+  filter(wave == " 3" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.3$wave)
+
+dat.taf.4 <- dat.taf %>%
+  filter(wave == " 4" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.4$wave)
+
+
+dat.taf.5 <- dat.taf %>%
+  filter(wave == " 5" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.5$wave)
+
+dat.taf.6 <- dat.taf %>%
+  filter(wave == " 6" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.6$wave)
+
+dat.taf.7 <- dat.taf %>%
+  filter(wave == " 7" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.7$wave)
+
+dat.taf.8 <- dat.taf %>%
+  filter(wave == " 8" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.8$wave)
+
+dat.taf.9 <- dat.taf %>%
+  filter(wave == " 9" &
+           ((cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad")) &
+           !is.na(taf.felt_weeks_past)
+         )
+  
+
+table(dat.taf.9$wave)
+```
+
+
+######STRATIFIED - LIFE NOT WORTH LIVING , 2 WEEKS##########
+
+
+1. PSYCH DISORDERS
+
+##PLOTS - TAF (LIFE NOT WORTH LIVING, 2 WEEKS) 
+### Read in TAF data (again, because variable needs to be renamed again and data restructured)
+```{r}
+dat.taf <- readRDS(file = "../data_cleaned/dat.taf.rds")
+dim(dat.taf)
+#colnames(dat.taf)
+
+```
+
+##Filter by PSYCH DISORDER CASES
+```{r}
+
+dat.taf <- dat.taf %>%
+  filter(control_numeric == 0)
+
+nrow(dat.taf)
+
+```
+
+##**RETRO PREPAN - need to rename these the same as baseline / waves
+
+```{r}
+dat.taf <- dat.taf %>% 
+  rename(
+   taf.felt_weeks_past_.Waveretro_prepan = taf.pandemic_felt_.Wavebaseline)
+
+ 
+```
+
+#1. First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
+```{r}
+dat.taf <- dat.taf %>%
+  pivot_longer(
+    cols = (starts_with("taf") &
+              contains(".Wave")),
+    names_to = "wave_taf",
+    values_to = "value") %>%
+  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
+  pivot_wider(
+     names_from = "taf",
+     values_from = "value")
+
+colnames(dat.taf)
+
+```
+
+# Get rid of NAs and change taf to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.taf[!is.na(dat.taf$taf.felt_weeks_past),]
+
+#change taf to factor (get rid of 'yes' as its an empty level)
+dat.no.nas$taf.felt_weeks_past_factor <- factor(dat.no.nas$taf.felt_weeks_past)
+```
+
+# Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "retro_prepan",
+                                  "baseline",
+                                  "0",
+                           "1",
+                           "2",
+                           "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8",
+                           "9")
+        )
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#3. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
+
+levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+
+levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+
+levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+
+levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+
+levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+
+levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+
+levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+
+levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+
+levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+
+levels(dat.no.nas$wave_factor)[11] <- "December 2020"
+
+levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+
+```
 
 #5. Format data to plot
 ```{r}
@@ -300,11 +731,481 @@ ggplot(dat_plot,
            stat = "identity",
            position = "dodge",
            colour = "black") + 
-  scale_y_continuous(labels = scales::percent)
+  scale_y_continuous(labels = scales::percent) + 
+  labs(title = str_wrap("SELF-REPORTED PSYCH DISORDER ONLY: Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?", 60),
+       x = "Life not worth living (past 2 weeks)",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
 
 ```
 
 
+1. NO PSYCH DISORDERS
+
+##PLOTS - TAF (LIFE NOT WORTH LIVING, 2 WEEKS) 
+### Read in TAF data (again, because variable needs to be renamed again and data restructured)
+```{r}
+dat.taf <- readRDS(file = "../data_cleaned/dat.taf.rds")
+dim(dat.taf)
+#colnames(dat.taf)
+
+```
+
+##Filter by PSYCH DISORDER CASES
+```{r}
+
+dat.taf <- dat.taf %>%
+  filter(control_numeric == 1)
+
+nrow(dat.taf)
+
+```
+
+##**RETRO PREPAN - need to rename these the same as baseline / waves
+
+```{r}
+dat.taf <- dat.taf %>% 
+  rename(
+   taf.felt_weeks_past_.Waveretro_prepan = taf.pandemic_felt_.Wavebaseline)
+
+ 
+```
+
+#1. First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
+```{r}
+dat.taf <- dat.taf %>%
+  pivot_longer(
+    cols = (starts_with("taf") &
+              contains(".Wave")),
+    names_to = "wave_taf",
+    values_to = "value") %>%
+  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
+  pivot_wider(
+     names_from = "taf",
+     values_from = "value")
+
+colnames(dat.taf)
+
+```
+
+# Get rid of NAs and change taf to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.taf[!is.na(dat.taf$taf.felt_weeks_past),]
+
+#change taf to factor (get rid of 'yes' as its an empty level)
+dat.no.nas$taf.felt_weeks_past_factor <- factor(dat.no.nas$taf.felt_weeks_past)
+```
+
+# Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "retro_prepan",
+                                  "baseline",
+                                  "0",
+                           "1",
+                           "2",
+                           "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8",
+                           "9")
+        )
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#3. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
+
+levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+
+levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+
+levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+
+levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+
+levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+
+levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+
+levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+
+levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+
+levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+
+levels(dat.no.nas$wave_factor)[11] <- "December 2020"
+
+levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+
+```
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(taf.felt_weeks_past_factor) / sum(table(taf.felt_weeks_past_factor))) %>%
+  ungroup() %>%
+  mutate(taf.felt_weeks_past_factor = rep(levels(dat.no.nas[["taf.felt_weeks_past_factor"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change taf variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(taf.felt_weeks_past_factor = fct_relevel(taf.felt_weeks_past_factor,
+                           "Prefer not to answer",
+                           "No",
+                           "Yes"))
+
+
+
+```
+
+
+7. PLOT !
+```{r}
+ggplot(dat_plot,
+       aes(x = taf.felt_weeks_past_factor,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) + 
+  labs(title = str_wrap("NO SELF-REPORTED PSYCH DISORDER ONLY: Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?", 60),
+       x = "Life not worth living (past 2 weeks)",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##PLOTS - TAF (CONTEMPLATED HARM, 2 WEEKS)
+### Read in TAF data (again, because variable needs to be renamed again and data restructured)
+```{r}
+dat.taf <- readRDS(file = "../data_cleaned/dat.taf.rds")
+dim(dat.taf)
+colnames(dat.taf)
+
+```
+
+##**RETRO PREPAN - need to rename these the same as baseline / waves
+
+```{r}
+dat.taf <- dat.taf %>% 
+  rename(
+   taf.felt_weeks_past.1_.Waveretro_prepan = taf.pandemic_felt.1_.Wavebaseline)
+
+ 
+```
+
+#1. First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
+```{r}
+dat.taf <- dat.taf %>%
+  pivot_longer(
+    cols = (starts_with("taf") &
+              contains(".Wave")),
+    names_to = "wave_taf",
+    values_to = "value") %>%
+  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
+  pivot_wider(
+     names_from = "taf",
+     values_from = "value")
+
+#colnames(dat.taf)
+
+```
+
+# Get rid of NAs and change taf to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.taf[!is.na(dat.taf$taf.felt_weeks_past.1),]
+
+#change taf to factor
+dat.no.nas$taf.felt_weeks_past.1_factor <- factor(dat.no.nas$taf.felt_weeks_past.1)
+```
+
+# Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "retro_prepan",
+                                  "baseline",
+                                  "0",
+                           "1",
+                           "2",
+                           "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8",
+                           "9")
+        )
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#3. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
+
+levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+
+levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+
+levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+
+levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+
+levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+
+levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+
+levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+
+levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+
+levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+
+levels(dat.no.nas$wave_factor)[11] <- "December 2020"
+
+levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+
+```
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(taf.felt_weeks_past.1_factor) / sum(table(taf.felt_weeks_past.1_factor))) %>%
+  ungroup() %>%
+  mutate(taf.felt_weeks_past.1_factor = rep(levels(dat.no.nas[["taf.felt_weeks_past.1_factor"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change taf variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(taf.felt_weeks_past.1_factor = fct_relevel(taf.felt_weeks_past.1_factor,
+                           "Prefer not to answer",
+                           "No",
+                           "Yes"))
+
+
+
+```
+
+
+7. PLOT !
+```{r}
+ggplot(dat_plot,
+       aes(x = taf.felt_weeks_past.1_factor,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) + 
+  labs(title = str_wrap("Have you contemplated harming yourself in the last two weeks?", 60),
+       x = "Contemplated harming yourself (past 2 weeks)",
+       y = "Percentage of participants",
+       fill = "Time of survey") 
+
+```
+##PLOTS - TAF (ACTUAL HARM, 2 WEEKS)
+### Read in TAF data (again, because variable needs to be renamed again and data restructured)
+taf.meant_life_end_weeks
+```{r}
+dat.taf <- readRDS(file = "../data_cleaned/dat.taf.rds")
+dim(dat.taf)
+colnames(dat.taf)
+
+```
+
+##**RETRO PREPAN - need to rename these the same as baseline / waves
+
+```{r}
+dat.taf <- dat.taf %>% 
+  rename(
+   taf.meant_life_end_weeks_.Waveretro_prepan = taf.meant_end_life_pandemic_.Wavebaseline)
+
+```
+
+#1. First, need to re-structure data so that "wave" is a single column with rows of "baseline, 2a, 2b etc", and each taf item is a separate column in which rows are values
+```{r}
+dat.taf <- dat.taf %>%
+  pivot_longer(
+    cols = (starts_with("taf") &
+              contains(".Wave")),
+    names_to = "wave_taf",
+    values_to = "value") %>%
+  separate(wave_taf, into = c("taf", "wave"), sep = "_.Wave", remove = TRUE) %>%
+  pivot_wider(
+     names_from = "taf",
+     values_from = "value")
+
+#colnames(dat.taf)
+
+```
+
+# Get rid of NAs and change taf to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.taf[!is.na(dat.taf$taf.meant_life_end_weeks),]
+
+#change taf to factor
+dat.no.nas$taf.meant_life_end_weeks_factor <- factor(dat.no.nas$taf.meant_life_end_weeks)
+```
+
+# Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "retro_prepan",
+                                  "baseline",
+                                  "0",
+                           "1",
+                           "2",
+                           "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8",
+                           "9")
+        )
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+#3. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
+
+levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+
+levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+
+levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+
+levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+
+levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+
+levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+
+levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+
+levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+
+levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+
+levels(dat.no.nas$wave_factor)[11] <- "December 2020"
+
+levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+
+```
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(taf.meant_life_end_weeks_factor) / sum(table(taf.meant_life_end_weeks_factor))) %>%
+  ungroup() %>%
+  mutate(taf.meant_life_end_weeks_factor = rep(levels(dat.no.nas[["taf.meant_life_end_weeks_factor"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change taf variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(taf.meant_life_end_weeks_factor = fct_relevel(taf.meant_life_end_weeks_factor,
+                           "Prefer not to answer",
+                           "No",
+                           "Yes"))
+
+
+
+```
+
+
+7. PLOT !
+```{r}
+ggplot(dat_plot,
+       aes(x = taf.meant_life_end_weeks_factor,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) + 
+  labs(title = str_wrap("In the last two weeks, have you deliberately harmed yourself, whether or not you meant to end your life?", 60),
+       x = "Contemplated harming yourself (past 2 weeks)",
+       y = "Percentage of participants",
+       fill = "Time of survey") 
+
+```
 
 
 
