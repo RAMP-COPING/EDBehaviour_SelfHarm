@@ -81,10 +81,151 @@ dat.edeq.screener <- dat.edeq %>%
 nrow(dat.edeq.screener)   
 
 ```
-
-
 ##Exclude participants who are missing for EVERY edeq variable (i.e., retroprepan, baseline, and every wave)
 ```{r}
+
+##Remove participants who have ALL missing data
+dat.edeq.all.missing <- dat.edeq %>%
+  filter(
+    is.na(edeq.deliberately_limit_amount_influence.1_.Wavebaseline) &
+is.na(edeq.calories_made_body_shape.1_.Wavebaseline) &
+is.na(edeq.weight_influenced_person.1_.Wavebaseline) &
+is.na(edeq.dissatisfied_shape_weight.1_.Wavebaseline) &
+is.na(edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline) &
+is.na(edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline) &
+is.na(edeq.felt_anxious_blue_bored.2_.Wavebaseline) &
+is.na(edeq.felt_anxious_blue_bored.3_.Wavebaseline) &
+is.na(edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline) &
+is.na(edeq.regard_lost_control_eaten.1_.Wavebaseline) &
+is.na(edeq.sick_means_made_shape.1_.Wavebaseline) &
+is.na(edeq.diuretics_laxatives_means_shape.1_.Wavebaseline) &
+is.na(edeq.compulsive_driven_burn_calories.1_.Wavebaseline)&
+is.na(edeq.deliberately_limit_amount_influence_.Wavebaseline) &
+is.na(edeq.calories_made_body_shape_.Wavebaseline ) &
+is.na(edeq.weight_influenced_person_.Wavebaseline) &
+is.na(edeq.dissatisfied_shape_weight_.Wavebaseline ) &
+is.na(edeq.nibbled_picked_snacks_grazed_.Wavebaseline ) &
+is.na(edeq.felt_anxious_blue_bored_.Wavebaseline ) &
+is.na(edeq.felt_anxious_blue_bored.1_.Wavebaseline ) &
+is.na(edeq.eating_behaviours_concerns_distressed_.Wavebaseline ) &
+is.na(edeq.feelings_pandemic_felt_.Wavebaseline) &
+is.na(edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline) &
+is.na(edeq.regard_lost_control_eaten_.Wavebaseline) &
+is.na(edeq.sick_means_made_shape_.Wavebaseline) &
+is.na(edeq.diuretics_laxatives_means_shape_.Wavebaseline ) &
+is.na(edeq.compulsive_driven_burn_calories_.Wavebaseline ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 1`                           ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 2`                           ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 3`                          ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 4`                           ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 5`                          ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 6`                            ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 7`                            ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 8`                           ) &
+            is.na(`edeq.calories_made_body_shape_.Wave 1`                                     ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 2`                                     ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 3`             ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 4`                                     ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 6`                                       ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 7`                                       ) &
+           is.na(`edeq.calories_made_body_shape_.Wave 8`                                      ) &
+            is.na(`edeq.weight_influenced_person_.Wave 1`                                      ) &
+           is.na(`edeq.weight_influenced_person_.Wave 2`                                      ) &
+           is.na(`edeq.weight_influenced_person_.Wave 3`                                     ) &
+           is.na(`edeq.weight_influenced_person_.Wave 4`                                      ) &
+           is.na(`edeq.weight_influenced_person_.Wave 5`                                     ) &
+           is.na(`edeq.weight_influenced_person_.Wave 6`                                       ) &
+           is.na(`edeq.weight_influenced_person_.Wave 7`                                       ) &
+           is.na(`edeq.weight_influenced_person_.Wave 8`                                      ) &
+          is.na(`edeq.dissatisfied_shape_weight_.Wave 1`                                     ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 2`                                     ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 3`                                    ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 4`                                     ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 5`                                    ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 6`                                      ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 7`                                      ) &
+           is.na(`edeq.dissatisfied_shape_weight_.Wave 8`                                     ) &
+            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 1`                         ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 2`                         ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 3`                         ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 4`                        ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 5`                         ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 6`                        ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 7`                          ) &
+           is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 8`                         ) &
+          is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1`                 ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2`                 ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3`                ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4`     ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 5`                ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6`                  ) &
+             is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 7`                  ) &
+           is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8`                 ) &
+          is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 1`                                     ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 2`                                     ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 3`                                    ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 4`                                     ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 5`                                    ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 6`                                      ) &
+             is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 7`                                      ) &
+           is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 8`                                     ) &
+          is.na(`edeq.sick_means_made_shape_numeric_.Wave 1`                                         ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 2`                                         ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 3`                                        ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 4`                                         ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 5`                                        ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 6`                                          ) &
+             is.na(`edeq.sick_means_made_shape_numeric_.Wave 7`                                          ) &
+           is.na(`edeq.sick_means_made_shape_numeric_.Wave 8`                                         ) &
+          is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1`                               ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 2`                               ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 3`                              ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 4`                               ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 5`                              ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 6`                                ) &
+             is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 7`                                ) &
+           is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 8`                               ) &
+            is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 1`                               ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 2`                               ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 3`                              ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 4`                               ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 5`                              ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 6`                                ) &
+             is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 7`                                ) &
+           is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 8`                               ) &
+            is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 1`                               ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 2`                                  ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 3`                                 ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 4`                                  ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 5`                                 ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 6`                                   ) &
+             is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 7`                                   ) &
+           is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 8`                                  ) &
+          is.na(`edeq.felt_anxious_blue_bored_.Wave 1`                                       ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 2`                                       ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 3`                                      ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 4`                                       ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 5`                                      ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 6`                                        ) &
+             is.na(`edeq.felt_anxious_blue_bored_.Wave 7`                                        ) &
+           is.na(`edeq.felt_anxious_blue_bored_.Wave 8`                                       ) &
+          is.na(`edeq.felt_anxious_blue_bored.1_.Wave 1`                                     ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 2`                                     ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 3`                                    ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 4`                                     ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 5`                                    ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 6`                                      ) &
+             is.na(`edeq.felt_anxious_blue_bored.1_.Wave 7`                                      ) &
+           is.na(`edeq.felt_anxious_blue_bored.1_.Wave 8` ))
+             
+
+
+nrow(dat.edeq.all.missing)
+
+```
+
+##Exclude participants who are missing for EVERY edeq variable (i.e., retroprepan, baseline, and every wave)
+```{r eval=FALSE, include=FALSE}
 
 ##Remove participants who have ALL missing data
 dat.edeq.all.missing <- dat.edeq %>%
@@ -197,6 +338,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.sick_means_made_shape.1_.Wavebaseline_numeric`                         ) &
            is.na(`edeq.diuretics_laxatives_means_shape.1_.Wavebaseline_numeric`                ) &
            is.na(`edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric`               ) &
+           is.na(`edeq.deliberately_limit_amount_influence_.Wave 1`                           ) &
            is.na(`edeq.deliberately_limit_amount_influence_.Wave 2`                           ) &
            is.na(`edeq.deliberately_limit_amount_influence_.Wave 3`                          ) &
            is.na(`edeq.deliberately_limit_amount_influence_.Wave 4`                           ) &
@@ -204,12 +346,14 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.deliberately_limit_amount_influence_.Wave 6`                            ) &
            is.na(`edeq.deliberately_limit_amount_influence_.Wave 7`                            ) &
            is.na(`edeq.deliberately_limit_amount_influence_.Wave 8`                           ) &
+            is.na(`edeq.calories_made_body_shape_.Wave 1`                                     ) &
            is.na(`edeq.calories_made_body_shape_.Wave 2`                                     ) &
            is.na(`edeq.calories_made_body_shape_.Wave 3`             ) &
            is.na(`edeq.calories_made_body_shape_.Wave 4`                                     ) &
            is.na(`edeq.calories_made_body_shape_.Wave 6`                                       ) &
            is.na(`edeq.calories_made_body_shape_.Wave 7`                                       ) &
            is.na(`edeq.calories_made_body_shape_.Wave 8`                                      ) &
+            is.na(`edeq.weight_influenced_person_.Wave 1`                                      ) &
            is.na(`edeq.weight_influenced_person_.Wave 2`                                      ) &
            is.na(`edeq.weight_influenced_person_.Wave 3`                                     ) &
            is.na(`edeq.weight_influenced_person_.Wave 4`                                      ) &
@@ -217,6 +361,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.weight_influenced_person_.Wave 6`                                       ) &
            is.na(`edeq.weight_influenced_person_.Wave 7`                                       ) &
            is.na(`edeq.weight_influenced_person_.Wave 8`                                      ) &
+          is.na(`edeq.dissatisfied_shape_weight_.Wave 1`                                     ) &
            is.na(`edeq.dissatisfied_shape_weight_.Wave 2`                                     ) &
            is.na(`edeq.dissatisfied_shape_weight_.Wave 3`                                    ) &
            is.na(`edeq.dissatisfied_shape_weight_.Wave 4`                                     ) &
@@ -224,6 +369,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.dissatisfied_shape_weight_.Wave 6`                                      ) &
            is.na(`edeq.dissatisfied_shape_weight_.Wave 7`                                      ) &
            is.na(`edeq.dissatisfied_shape_weight_.Wave 8`                                     ) &
+            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 1`                         ) &
            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 2`                         ) &
            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 3`                         ) &
            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 4`                        ) &
@@ -231,6 +377,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 6`                        ) &
            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 7`                          ) &
            is.na(`edeq.eating_behaviours_distressed_concerns_.Wave 8`                         ) &
+          is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1`                 ) &
            is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2`                 ) &
            is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3`                ) &
            is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4`     ) &
@@ -238,6 +385,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 6`                  ) &
              is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 7`                  ) &
            is.na(`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8`                 ) &
+          is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 1`                                     ) &
            is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 2`                                     ) &
            is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 3`                                    ) &
            is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 4`                                     ) &
@@ -245,6 +393,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 6`                                      ) &
              is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 7`                                      ) &
            is.na(`edeq.regard_lost_control_eaten_numeric_.Wave 8`                                     ) &
+          is.na(`edeq.sick_means_made_shape_numeric_.Wave 1`                                         ) &
            is.na(`edeq.sick_means_made_shape_numeric_.Wave 2`                                         ) &
            is.na(`edeq.sick_means_made_shape_numeric_.Wave 3`                                        ) &
            is.na(`edeq.sick_means_made_shape_numeric_.Wave 4`                                         ) &
@@ -252,6 +401,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.sick_means_made_shape_numeric_.Wave 6`                                          ) &
              is.na(`edeq.sick_means_made_shape_numeric_.Wave 7`                                          ) &
            is.na(`edeq.sick_means_made_shape_numeric_.Wave 8`                                         ) &
+          is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1`                               ) &
            is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 2`                               ) &
            is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 3`                              ) &
            is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 4`                               ) &
@@ -259,6 +409,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 6`                                ) &
              is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 7`                                ) &
            is.na(`edeq.diuretics_laxatives_means_shape_numeric_.Wave 8`                               ) &
+            is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 1`                               ) &
            is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 2`                               ) &
            is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 3`                              ) &
            is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 4`                               ) &
@@ -266,6 +417,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 6`                                ) &
              is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 7`                                ) &
            is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 8`                               ) &
+            is.na(`edeq.compulsive_driven_burn_calories_numeric_.Wave 1`                               ) &
            is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 2`                                  ) &
            is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 3`                                 ) &
            is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 4`                                  ) &
@@ -273,6 +425,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 6`                                   ) &
              is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 7`                                   ) &
            is.na(`edeq.nibbled_picked_snacks_grazed_.Wave 8`                                  ) &
+          is.na(`edeq.felt_anxious_blue_bored_.Wave 1`                                       ) &
            is.na(`edeq.felt_anxious_blue_bored_.Wave 2`                                       ) &
            is.na(`edeq.felt_anxious_blue_bored_.Wave 3`                                      ) &
            is.na(`edeq.felt_anxious_blue_bored_.Wave 4`                                       ) &
@@ -280,6 +433,7 @@ dat.edeq.all.missing <- dat.edeq %>%
            is.na(`edeq.felt_anxious_blue_bored_.Wave 6`                                        ) &
              is.na(`edeq.felt_anxious_blue_bored_.Wave 7`                                        ) &
            is.na(`edeq.felt_anxious_blue_bored_.Wave 8`                                       ) &
+          is.na(`edeq.felt_anxious_blue_bored.1_.Wave 1`                                     ) &
            is.na(`edeq.felt_anxious_blue_bored.1_.Wave 2`                                     ) &
            is.na(`edeq.felt_anxious_blue_bored.1_.Wave 3`                                    ) &
            is.na(`edeq.felt_anxious_blue_bored.1_.Wave 4`                                     ) &
@@ -525,7 +679,7 @@ dat.edeq <- dat.edeq %>%
 
 ```
 
-##Get rid of non-numeric versions of edeq variables
+##Get rid of non-numeric versions of edeq variables that are not needed
 ```{r}
 
 dat.edeq <- dat.edeq %>%
@@ -612,7 +766,8 @@ dat.edeq <- dat.edeq %>%
          mhd.avoidantrestrictive_food_intake_disorder_numeric,                                                                      
          mhd.feeding_eating_disorder_numeric,
     `edeq.deliberately_limit_amount_influence_.Waveretro_prepan`,                                            
-         `edeq.deliberately_limit_amount_influence_.Wavebaseline`,  
+         `edeq.deliberately_limit_amount_influence_.Wavebaseline`, 
+     `edeq.deliberately_limit_amount_influence_.Wave 1`, 
          `edeq.deliberately_limit_amount_influence_.Wave 2`,                          
          `edeq.deliberately_limit_amount_influence_.Wave 3`,
          `edeq.deliberately_limit_amount_influence_.Wave 4`, 
@@ -621,7 +776,8 @@ dat.edeq <- dat.edeq %>%
          `edeq.deliberately_limit_amount_influence_.Wave 7`,
          `edeq.deliberately_limit_amount_influence_.Wave 8`,
          `edeq.calories_made_body_shape_.Waveretro_prepan`,  
-         `edeq.calories_made_body_shape_.Wavebaseline`,                                
+         `edeq.calories_made_body_shape_.Wavebaseline`,  
+         `edeq.calories_made_body_shape_.Wave 1`,
          `edeq.calories_made_body_shape_.Wave 2`,                                     
          `edeq.calories_made_body_shape_.Wave 3`,                                                                          
          `edeq.calories_made_body_shape_.Wave 4`,
@@ -631,6 +787,7 @@ dat.edeq <- dat.edeq %>%
          `edeq.calories_made_body_shape_.Wave 8`,
          `edeq.weight_influenced_person_.Waveretro_prepan`,
          `edeq.weight_influenced_person_.Wavebaseline`, 
+         `edeq.weight_influenced_person_.Wave 1`,
          `edeq.weight_influenced_person_.Wave 2`,                                     
          `edeq.weight_influenced_person_.Wave 3`, 
          `edeq.weight_influenced_person_.Wave 4`,  
@@ -640,6 +797,7 @@ dat.edeq <- dat.edeq %>%
           `edeq.weight_influenced_person_.Wave 8`,
          `edeq.dissatisfied_shape_weight_.Waveretro_prepan`, 
          `edeq.dissatisfied_shape_weight_.Wavebaseline`, 
+          `edeq.dissatisfied_shape_weight_.Wave 1`,
          `edeq.dissatisfied_shape_weight_.Wave 2`,                                    
          `edeq.dissatisfied_shape_weight_.Wave 3`,                                                                         
          `edeq.dissatisfied_shape_weight_.Wave 4`,                                                                          
@@ -649,6 +807,7 @@ dat.edeq <- dat.edeq %>%
          `edeq.dissatisfied_shape_weight_.Wave 8`,
          `edeq.eating_behaviours_distressed_concerns_.Waveretro_prepan`,       
          `edeq.eating_behaviours_distressed_concerns_.Wavebaseline`,
+         `edeq.eating_behaviours_distressed_concerns_.Wave 1`,
          `edeq.eating_behaviours_distressed_concerns_.Wave 2`,                        
          `edeq.eating_behaviours_distressed_concerns_.Wave 3`,
          `edeq.eating_behaviours_distressed_concerns_.Wave 4`,
@@ -657,7 +816,8 @@ dat.edeq <- dat.edeq %>%
           `edeq.eating_behaviours_distressed_concerns_.Wave 7`,
          `edeq.eating_behaviours_distressed_concerns_.Wave 8`,
          `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan`,                  
-         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline`,   
+         `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline`,  
+    `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1`,
          `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2`,        
          `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 3`, 
          `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 4`,
@@ -666,7 +826,8 @@ dat.edeq <- dat.edeq %>%
     `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 7`,
          `edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 8`,
          `edeq.regard_lost_control_eaten_numeric_.Waveretro_prepan`,  
-         `edeq.regard_lost_control_eaten_numeric_.Wavebaseline`,                                                 
+         `edeq.regard_lost_control_eaten_numeric_.Wavebaseline`,  
+    `edeq.regard_lost_control_eaten_numeric_.Wave 1`,
          `edeq.regard_lost_control_eaten_numeric_.Wave 2`,                            
          `edeq.regard_lost_control_eaten_numeric_.Wave 3`, 
          `edeq.regard_lost_control_eaten_numeric_.Wave 4`,
@@ -675,7 +836,8 @@ dat.edeq <- dat.edeq %>%
     `edeq.regard_lost_control_eaten_numeric_.Wave 7`,
          `edeq.regard_lost_control_eaten_numeric_.Wave 8`,
          `edeq.sick_means_made_shape_numeric_.Waveretro_prepan`,                             
-         `edeq.sick_means_made_shape_numeric_.Wavebaseline`,  
+         `edeq.sick_means_made_shape_numeric_.Wavebaseline`, 
+    `edeq.sick_means_made_shape_numeric_.Wave 1`,
          `edeq.sick_means_made_shape_numeric_.Wave 2`,                                
          `edeq.sick_means_made_shape_numeric_.Wave 3`,
          `edeq.sick_means_made_shape_numeric_.Wave 4`,
@@ -685,6 +847,7 @@ dat.edeq <- dat.edeq %>%
          `edeq.sick_means_made_shape_numeric_.Wave 8`,
          `edeq.diuretics_laxatives_means_shape_numeric_.Waveretro_prepan`,       
          `edeq.diuretics_laxatives_means_shape_numeric_.Wavebaseline`, 
+    `edeq.diuretics_laxatives_means_shape_numeric_.Wave 1`,
          `edeq.diuretics_laxatives_means_shape_numeric_.Wave 2`,                      
          `edeq.diuretics_laxatives_means_shape_numeric_.Wave 3`,
          `edeq.diuretics_laxatives_means_shape_numeric_.Wave 4`,
@@ -694,6 +857,7 @@ dat.edeq <- dat.edeq %>%
          `edeq.diuretics_laxatives_means_shape_numeric_.Wave 8`,
          `edeq.compulsive_driven_burn_calories_numeric_.Waveretro_prepan`,
          `edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline`, 
+     `edeq.compulsive_driven_burn_calories_numeric_.Wave 1`, 
          `edeq.compulsive_driven_burn_calories_numeric_.Wave 2`,                      
          `edeq.compulsive_driven_burn_calories_numeric_.Wave 3`,
          `edeq.compulsive_driven_burn_calories_numeric_.Wave 4`,
@@ -703,6 +867,7 @@ dat.edeq <- dat.edeq %>%
          `edeq.compulsive_driven_burn_calories_numeric_.Wave 8`,
          `edeq.nibbled_picked_snacks_grazed_.Waveretro_prepan`,                                                   
          `edeq.nibbled_picked_snacks_grazed_.Wavebaseline`,    
+     `edeq.nibbled_picked_snacks_grazed_.Wave 1`, 
          `edeq.nibbled_picked_snacks_grazed_.Wave 2`,                                 
          `edeq.nibbled_picked_snacks_grazed_.Wave 3`, 
          `edeq.nibbled_picked_snacks_grazed_.Wave 4`,
@@ -711,7 +876,8 @@ dat.edeq <- dat.edeq %>%
     `edeq.nibbled_picked_snacks_grazed_.Wave 7`,
          `edeq.nibbled_picked_snacks_grazed_.Wave 8`,
          `edeq.felt_anxious_blue_bored.1_.Waveretro_prepan`,     
-         `edeq.felt_anxious_blue_bored.1_.Wavebaseline`,                                  
+         `edeq.felt_anxious_blue_bored.1_.Wavebaseline`,
+    `edeq.felt_anxious_blue_bored.1_.Wave 1`,
          `edeq.felt_anxious_blue_bored.1_.Wave 2`,                                    
          `edeq.felt_anxious_blue_bored.1_.Wave 3`,
          `edeq.felt_anxious_blue_bored.1_.Wave 4`,
@@ -720,7 +886,8 @@ dat.edeq <- dat.edeq %>%
          `edeq.felt_anxious_blue_bored.1_.Wave 7`,
          `edeq.felt_anxious_blue_bored.1_.Wave 8`,
          `edeq.felt_anxious_blue_bored_.Wavebaseline`,     
-         `edeq.felt_anxious_blue_bored_.Waveretro_prepan`,  
+         `edeq.felt_anxious_blue_bored_.Waveretro_prepan`, 
+    `edeq.felt_anxious_blue_bored_.Wave 1`,
          `edeq.felt_anxious_blue_bored_.Wave 2`,                                      
          `edeq.felt_anxious_blue_bored_.Wave 3`,
          `edeq.felt_anxious_blue_bored_.Wave 4`,
@@ -736,8 +903,10 @@ dat.edeq <- dat.edeq %>%
  ##Change numerics to factor for restructuring to long       
 ```{r }
 dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan <- as.factor(dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Waveretro_prepan)                 
+
 dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline <- as.factor(dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline)                 
-freq(dat.edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wavebaseline)
+
+dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1`)                 
 
 
 dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2` <- as.factor(dat.edeq$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 2`)                 
@@ -759,6 +928,9 @@ dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Waveretro_prepan` <- as.factor
 
 dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wavebaseline`) 
 
+dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 1` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 1`)    
+
+
 dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 2` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 2`)    
 
 dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 3` <- as.factor(dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 3`)                 
@@ -776,7 +948,10 @@ dat.edeq$`edeq.regard_lost_control_eaten_numeric_.Wave 8` <- as.factor(dat.edeq$
 
 dat.edeq$`edeq.sick_means_made_shape_numeric_.Waveretro_prepan` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Waveretro_prepan`)                 
 
-dat.edeq$`edeq.sick_means_made_shape_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wavebaseline`)                 
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wavebaseline`)    
+
+dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 1` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 1`)  
+
 
 dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 2` <- as.factor(dat.edeq$`edeq.sick_means_made_shape_numeric_.Wave 2`)  
 
@@ -796,6 +971,9 @@ dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Waveretro_prepan` <- as.
 
 dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wavebaseline`) 
 
+dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1`)     
+
+
 dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 2` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 2`)     
 
 dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 3` <- as.factor(dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 3`)      
@@ -813,7 +991,10 @@ dat.edeq$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 8` <- as.factor(dat
 
 dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Waveretro_prepan` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Waveretro_prepan`)
 
-dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline`)                 
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wavebaseline`)       
+
+dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 1` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 1`)    
+
 
 dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 2` <- as.factor(dat.edeq$`edeq.compulsive_driven_burn_calories_numeric_.Wave 2`)    
 
@@ -1026,8 +1207,27 @@ dat.edeq.baseline <- dat.edeq %>%
            
 table(dat.edeq.baseline$wave)
 
+dat.edeq.1 <- dat.edeq %>%
+  filter(wave == " 1" &
+           (!is.na(edeq.deliberately_limit_amount_influence) |
+           !is.na(edeq.calories_made_body_shape) |
+           !is.na(edeq.weight_influenced_person) |
+           !is.na(edeq.dissatisfied_shape_weight) |
+           !is.na(edeq.eating_behaviours_distressed_concerns) |
+           !is.na(edeq.actively_been_monitoring_your_shape_or_weight_numeric) |
+           !is.na(edeq.regard_lost_control_eaten_numeric) |
+           !is.na(edeq.sick_means_made_shape_numeric) |
+           !is.na(edeq.diuretics_laxatives_means_shape_numeric) |
+           !is.na(edeq.compulsive_driven_burn_calories_numeric) |
+           !is.na(edeq.nibbled_picked_snacks_grazed) |
+           !is.na(edeq.felt_anxious_blue_bored.1) |
+           !is.na(edeq.felt_anxious_blue_bored))
+  )
+           
 
-dat.edeq.1b <- dat.edeq %>%
+table(dat.edeq.1$wave)
+
+dat.edeq.2 <- dat.edeq %>%
   filter(wave == " 2" &
            (!is.na(edeq.deliberately_limit_amount_influence) |
            !is.na(edeq.calories_made_body_shape) |
@@ -1045,10 +1245,10 @@ dat.edeq.1b <- dat.edeq %>%
   )
            
 
-table(dat.edeq.1b$wave)
+table(dat.edeq.2$wave)
 
 
-dat.edeq.2b <- dat.edeq %>%
+dat.edeq.3 <- dat.edeq %>%
   filter(wave == " 3" &
            (!is.na(edeq.deliberately_limit_amount_influence) |
            !is.na(edeq.calories_made_body_shape) |
@@ -1066,9 +1266,9 @@ dat.edeq.2b <- dat.edeq %>%
   )
            
 
-table(dat.edeq.2b$wave)
+table(dat.edeq.3$wave)
 
-dat.edeq.3b <- dat.edeq %>%
+dat.edeq.4 <- dat.edeq %>%
   filter(wave == " 4" &
            (!is.na(edeq.deliberately_limit_amount_influence) |
            !is.na(edeq.calories_made_body_shape) |
@@ -1088,7 +1288,7 @@ dat.edeq.3b <- dat.edeq %>%
 
 table(dat.edeq.3b$wave)
 
-dat.edeq.4b <- dat.edeq %>%
+dat.edeq.5 <- dat.edeq %>%
   filter(wave == " 5" &
            (!is.na(edeq.deliberately_limit_amount_influence) |
            !is.na(edeq.calories_made_body_shape) |
@@ -1106,7 +1306,7 @@ dat.edeq.4b <- dat.edeq %>%
   )
            
 
-table(dat.edeq.4b$wave)
+table(dat.edeq.5$wave)
 
 dat.edeq.6 <- dat.edeq %>%
   filter(wave == " 6" &
@@ -1124,7 +1324,9 @@ dat.edeq.6 <- dat.edeq %>%
            !is.na(edeq.felt_anxious_blue_bored.1) |
            !is.na(edeq.felt_anxious_blue_bored))
   )
-       
+      
+
+table(dat.edeq.6$wave) 
 
 dat.edeq.7 <- dat.edeq %>%
   filter(wave == " 7" &

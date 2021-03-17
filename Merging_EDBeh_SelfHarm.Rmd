@@ -330,6 +330,7 @@ skimr::skim(dat.edeq)
 #Save taf+baseline
 ```{r Save edeq + baseline rds file}
 saveRDS(object = dat.edeq, file = "../data_cleaned/dat.edeq.rds")
+
 ```
 
 #Bind taf with baseline
@@ -344,8 +345,6 @@ dat.taf <- merge(dat,
 ```{r Skim taf + baseline data}
 #look at the data
 skimr::skim(dat.taf)
-
-
 ```
 
 #Save taf+baseline

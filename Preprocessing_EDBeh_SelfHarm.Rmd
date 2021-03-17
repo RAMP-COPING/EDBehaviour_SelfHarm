@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -4357,9 +4357,24 @@ edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline,
 edeq.regard_lost_control_eaten.1_.Wavebaseline,
 edeq.sick_means_made_shape.1_.Wavebaseline,
 edeq.diuretics_laxatives_means_shape.1_.Wavebaseline,
-edeq.compulsive_driven_burn_calories.1_.Wavebaseline
+edeq.compulsive_driven_burn_calories.1_.Wavebaseline,
+  
+  edeq.deliberately_limit_amount_influence.1_.Wavebaseline_numeric,
+edeq.calories_made_body_shape.1_.Wavebaseline_numeric,
+edeq.weight_influenced_person.1_.Wavebaseline_numeric,
+edeq.dissatisfied_shape_weight.1_.Wavebaseline_numeric,
+edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline_numeric,
+edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline_numeric,
+edeq.felt_anxious_blue_bored.2_.Wavebaseline_numeric,
+edeq.felt_anxious_blue_bored.3_.Wavebaseline_numeric,
+edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline_numeric,
+edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric,
+edeq.sick_means_made_shape.1_.Wavebaseline_numeric,
+edeq.diuretics_laxatives_means_shape.1_.Wavebaseline_numeric,
+edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric
   )
 
+  
 
   ramp.4 <- mhd.raw.id %>% 
   select(ID,
@@ -4410,14 +4425,28 @@ ramp.7 <- edeq.ramp.baseline.CUTOFF.raw.id %>% #Baseline BEFORE 21st April
          edeq.nibbled_picked_snacks_grazed_.Wavebaseline ,
          edeq.felt_anxious_blue_bored_.Wavebaseline ,
          edeq.felt_anxious_blue_bored.1_.Wavebaseline ,
-         edeq.eating_behaviours_concerns_distressed_.Wavebaseline ,
-         edeq.feelings_pandemic_felt_.Wavebaseline,
+         edeq.eating_behaviours_concerns_distressed_.Wavebaseline,
          edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline,
          edeq.regard_lost_control_eaten_.Wavebaseline,
          edeq.sick_means_made_shape_.Wavebaseline,
-         edeq.diuretics_laxatives_means_shape_.Wavebaseline ,
-         edeq.compulsive_driven_burn_calories_.Wavebaseline )
-   
+         edeq.diuretics_laxatives_means_shape_.Wavebaseline,
+         edeq.compulsive_driven_burn_calories_.Wavebaseline,
+  
+   edeq.deliberately_limit_amount_influence_.Wavebaseline_numeric,
+         edeq.calories_made_body_shape_.Wavebaseline_numeric,
+         edeq.weight_influenced_person_.Wavebaseline_numeric,
+         edeq.dissatisfied_shape_weight_.Wavebaseline_numeric ,
+         edeq.nibbled_picked_snacks_grazed_.Wavebaseline_numeric ,
+         edeq.felt_anxious_blue_bored_.Wavebaseline_numeric ,
+         edeq.felt_anxious_blue_bored.1_.Wavebaseline_numeric ,
+         edeq.eating_behaviours_concerns_distressed_.Wavebaseline_numeric ,
+         edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric,
+         edeq.regard_lost_control_eaten_.Wavebaseline_numeric,
+         edeq.sick_means_made_shape_.Wavebaseline_numeric,
+         edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric ,
+         edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric 
+  )
+
 
 #Check ramp.4 has same IDs as other datasets
 x <- ramp.4[ramp.4$ID %in% ramp.1$ID,]
