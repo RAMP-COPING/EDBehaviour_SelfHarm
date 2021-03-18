@@ -41,10 +41,10 @@ source("./functions.R")
 # Specify cohort
 ```{r Specify cohort}
 GLAD = FALSE
-EDGI = TRUE
+EDGI = FALSE
 RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 
@@ -57,6 +57,7 @@ glad.coping.dem.raw <- readRDS(file = "../data_raw/glad/dem_coping_glad.rds")
 dim(glad.coping.dem.raw)
 colnames(glad.coping.dem.raw)
 }
+
 ```
 
 ### Select variables
@@ -3876,7 +3877,7 @@ edgi.3 <- edgi.coping.dem4.employ.raw.id %>% #590
   key_worker,
   key_worker_numeric)
   
-edgi.4 <- taf.edgi.coping.baseline.raw.id %>% #590
+edgi.4 <- taf.edgi.coping.baseline.CUTOFF.raw.id %>% #590
   select(ID,
   cohort_name,
   taf.worth_living_life_people_.Wavebaseline,
@@ -3918,7 +3919,7 @@ edgi.5 <- mhd.raw.id %>% #3251
           mhd.other_eating_disorder_numeric)
 
 
-edgi.6 <- taf.edgi.coping.baseline.CUTOFF.raw.id %>% #590
+edgi.6 <- taf.edgi.coping.baseline.raw.id %>% #590
   select(ID,
   cohort_name,
   taf.pandemic_felt_.Wavebaseline,
@@ -4034,7 +4035,7 @@ glad.3 <- glad.coping.dem4.employ.raw.id %>%
          key_worker,
          key_worker_numeric)
 
-glad.4 <- taf.glad.coping.baseline.raw.id %>%
+glad.4 <- taf.glad.coping.baseline.CUTOFF.raw.id%>%
   select(ID,
   cohort_name,
   taf.worth_living_life_people_.Wavebaseline,
@@ -4042,6 +4043,13 @@ glad.4 <- taf.glad.coping.baseline.raw.id %>%
   taf.have_you_contemplated_harming_yourself_.Wavebaseline,
   taf.felt_weeks_past.1_.Wavebaseline,
   taf.meant_life_end_weeks_.Wavebaseline)
+
+glad.6 <- taf.glad.coping.baseline.raw.id  %>%
+  select(ID,
+  cohort_name,
+  taf.pandemic_felt_.Wavebaseline,
+  taf.pandemic_felt.1_.Wavebaseline,
+  taf.meant_end_life_pandemic_.Wavebaseline)
 
 
 glad.5 <- mhd.raw.id %>%
@@ -4076,12 +4084,6 @@ glad.5 <- mhd.raw.id %>%
           mhd.other_eating_disorder_numeric)
 
 
-glad.6 <- taf.glad.coping.baseline.CUTOFF.raw.id %>%
-  select(ID,
-  cohort_name,
-  taf.pandemic_felt_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
 
 ##See if IDs match with glad.3
 x <- glad.3[glad.3$ID %in% glad.1$ID,]
@@ -4189,7 +4191,7 @@ nbr.2 <- nbr.dem.raw.id.complete %>%
            age_category,
            age_category_numeric)
 
-nbr.4 <- taf.nbr.baseline.raw.id %>%
+nbr.4 <- taf.nbr.baseline.CUTOFF.raw.id %>%
   select(ID,
   cohort_name,
   taf.worth_living_life_people_.Wavebaseline,
@@ -4197,6 +4199,15 @@ nbr.4 <- taf.nbr.baseline.raw.id %>%
   taf.have_you_contemplated_harming_yourself_.Wavebaseline,
   taf.felt_weeks_past.1_.Wavebaseline,
   taf.meant_life_end_weeks_.Wavebaseline)
+
+
+
+nbr.6 <- taf.nbr.baseline.raw.id %>% 
+  select(ID,
+  cohort_name,
+  taf.pandemic_felt_.Wavebaseline,
+  taf.pandemic_felt.1_.Wavebaseline,
+  taf.meant_end_life_pandemic_.Wavebaseline)
 
 
 nbr.5 <- mhd.raw.id %>% 
@@ -4230,12 +4241,6 @@ nbr.5 <- mhd.raw.id %>%
           mhd.feeding_eating_disorder_numeric, 
           mhd.other_eating_disorder_numeric)
 
-nbr.6 <- taf.nbr.baseline.CUTOFF.raw.id %>% 
-  select(ID,
-  cohort_name,
-  taf.pandemic_felt_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
 
 
 
@@ -4398,7 +4403,7 @@ edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric
          mhd.bingeeating_disorder_numeric)
 
 
-ramp.5 <- taf.ramp.baseline.raw.id %>% #for retro prepan
+ramp.5 <- taf.ramp.baseline.CUTOFF.raw.id  %>% #for baseline cut off at 30th April
   select(ID,
          cohort_name,
          taf.worth_living_life_people_.Wavebaseline,
@@ -4407,7 +4412,7 @@ ramp.5 <- taf.ramp.baseline.raw.id %>% #for retro prepan
   taf.felt_weeks_past.1_.Wavebaseline,
   taf.meant_life_end_weeks_.Wavebaseline)
   
-ramp.6 <- taf.ramp.baseline.CUTOFF.raw.id %>% #for baseline cut off at 30th April
+ramp.6 <- taf.ramp.baseline.raw.id %>% #for retro prepan
   select(ID,
   cohort_name,
   taf.pandemic_felt_.Wavebaseline,

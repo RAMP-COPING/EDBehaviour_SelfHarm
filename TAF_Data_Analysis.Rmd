@@ -50,6 +50,176 @@ dat.taf %>%
   freq(cohort_name)
 ```
 
+##Check number of people with non-missing data at each wave - LIFE NOT WORTH LIVING 2 WEEKS
+```{r}
+
+##Life not worth living (past 2 weeks)
+
+
+##Retro prepan
+x <- dat.taf %>%
+  filter(!is.na(`taf.pandemic_felt_.Wavebaseline`))
+
+freq(x$cohort_name)
+
+##Baseline
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wavebaseline`))
+
+freq(x$cohort_name)
+
+##Wave 0 (i.e., baseline) **why only RAMP?
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 0`))
+
+freq(x$cohort_name)
+
+##Wave 1 
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 1`))
+
+freq(x$cohort_name)
+
+##Wave 2
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 2`))
+
+freq(x$cohort_name)
+
+##Wave 3
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 3`))
+
+freq(x$cohort_name)
+
+##Wave 4
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 4`))
+
+freq(x$cohort_name)
+
+##Wave 5
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 5`))
+
+freq(x$cohort_name)
+
+##Wave 6
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 6`))
+
+freq(x$cohort_name)
+
+##Wave 7
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 7`))
+
+freq(x$cohort_name)
+
+##Wave 8
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 8`))
+
+freq(x$cohort_name)
+
+##Wave 9
+x <- dat.taf %>%
+  filter(!is.na(`taf.felt_weeks_past_.Wave 9`))
+
+freq(x$cohort_name)
+
+```
+##Check number of people with non-missing data at each wave - LIFE NOT WORTH LIVING (lifetime)
+```{r}
+
+##Life not worth living (lifetime)
+
+##Retro prepan **why only RAMP???
+x <- dat.taf %>%
+  filter(!is.na(`taf.pandemic_felt_.Wavebaseline`))
+
+freq(x$cohort_name)
+
+##Baseline
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wavebaseline`))
+
+freq(x$cohort_name)
+
+##Wave 0 (i.e., baseline) **why only RAMP? **NEED TO CHECK THAT PEOPLE AREN'T DUPLICATED IN WAVE 0 AND BASELINE!
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 0`))
+
+freq(x$cohort_name)
+
+##Wave 1 
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 1`))
+
+freq(x$cohort_name)
+
+##Wave 2
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 2`))
+
+freq(x$cohort_name)
+
+
+##Wave 3
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 3`))
+
+freq(x$cohort_name)
+
+
+##Wave 4
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 4`))
+
+freq(x$cohort_name)
+
+##Wave 5
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 5`))
+
+freq(x$cohort_name)
+
+##Wave 6
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 6`))
+
+freq(x$cohort_name)
+
+
+##Wave 7
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 7`))
+
+freq(x$cohort_name)
+
+##Wave 8
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 8`))
+
+freq(x$cohort_name)
+
+15+148+80
+
+##Wave 9
+x <- dat.taf %>%
+  filter(!is.na(`taf.worth_living_life_people_.Wave 9`))
+
+freq(x$cohort_name)
+
+103+57+4
+
+```
+
+
+
+
+
+
 
 #######PLOTS - TAF 
 
@@ -88,6 +258,11 @@ colnames(dat.taf)
 
 ```
 
+##Wave 0 (21st - 30th April) should be renamed to baseline (baseline = all entries before 30th April). This combined wave will be called "April"
+```{r}
+
+dat.taf$wave[dat.taf$wave == " 0"] <- "baseline"
+```
 
 # Get rid of NAs and change taf to factor
 ```{r}
@@ -106,7 +281,6 @@ dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                                  "0",
                            "1",
                            "2",
                            "3",
@@ -131,27 +305,25 @@ summary(dat.no.nas$wave_factor)
 
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+levels(dat.no.nas$wave_factor)[2] <- "April 2020" 
 
-levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+levels(dat.no.nas$wave_factor)[3] <- "May 2020"
 
-levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+levels(dat.no.nas$wave_factor)[4] <- "June 2020"
 
-levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+levels(dat.no.nas$wave_factor)[5] <- "July 2020"
 
-levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+levels(dat.no.nas$wave_factor)[6] <- "August 2020"
 
-levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+levels(dat.no.nas$wave_factor)[7] <- "September 2020"
 
-levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+levels(dat.no.nas$wave_factor)[8] <- "October 2020"
 
-levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
-levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "December 2020"
-
-levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2020"
 
 ```
 
@@ -238,6 +410,12 @@ colnames(dat.taf)
 
 ```
 
+##Wave 0 (21st - 30th April) should be renamed to baseline (baseline = all entries before 30th April). This combined wave will be called "April"
+```{r}
+
+dat.taf$wave[dat.taf$wave == " 0"] <- "baseline"
+```
+
 # Get rid of NAs and change taf to factor
 ```{r}
 #get rid of nas
@@ -255,7 +433,6 @@ dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                                  "0",
                            "1",
                            "2",
                            "3",
@@ -280,27 +457,25 @@ summary(dat.no.nas$wave_factor)
 
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+levels(dat.no.nas$wave_factor)[2] <- "April 2020" 
 
-levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+levels(dat.no.nas$wave_factor)[3] <- "May 2020"
 
-levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+levels(dat.no.nas$wave_factor)[4] <- "June 2020"
 
-levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+levels(dat.no.nas$wave_factor)[5] <- "July 2020"
 
-levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+levels(dat.no.nas$wave_factor)[6] <- "August 2020"
 
-levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+levels(dat.no.nas$wave_factor)[7] <- "September 2020"
 
-levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+levels(dat.no.nas$wave_factor)[8] <- "October 2020"
 
-levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
-levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "December 2020"
-
-levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2020"
 
 ```
 
@@ -370,14 +545,6 @@ dat.taf.baseline <- dat.taf %>%
 
 table(dat.taf.baseline$wave)
 
-dat.taf.0 <- dat.taf %>%
-  filter(wave == " 0" &
-           cohort_name == "ramp" &
-           !is.na(taf.felt_weeks_past)
-         )
-  
-
-table(dat.taf.0$wave)
 
 dat.taf.1 <- dat.taf %>%
   filter(wave == " 1" &
@@ -467,7 +634,9 @@ table(dat.taf.9$wave)
 
 dat.taf.retroprepan <- dat.taf %>%
   filter(wave == "retro_prepan" &
-           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           (cohort_name == "nbr" | 
+              cohort_name == "coping_edgi" | 
+              cohort_name == "coping_glad") &
            !is.na(taf.felt_weeks_past)
          )
   
