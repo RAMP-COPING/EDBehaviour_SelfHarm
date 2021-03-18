@@ -45,7 +45,6 @@ nrow(dat.edeq)
 
 ##Exclude participants who are missing for EVERY edeq screener variable at every wave
 ```{r}
-
 dat.edeq.screener <- dat.edeq %>%
   filter(
     !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 1`) |
@@ -65,7 +64,11 @@ dat.edeq.screener <- dat.edeq %>%
       !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 7`) |
       !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 8`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 1`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`) |
+```
+
+
+```{r}
+!is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 5`) |
@@ -85,7 +88,9 @@ dat.edeq.screener <- dat.edeq %>%
 nrow(dat.edeq.screener)   
 
 ```
-##Exclude participants who are missing for EVERY edeq screener variable at every wave - BINGE EATING
+
+
+#Exclude participants who are missing for EVERY edeq screener variable at every wave - BINGE EATING
 ```{r}
 
 dat.binge.eating <- dat.edeq %>%
@@ -552,6 +557,15 @@ dat.edeq.screener <- dat.edeq.screener %>%
      values_from = "value")
 
 
+
+```
+
+
+```{r}
+
+dat.edeq.screener %>%
+  group_by(wave, cohort_name) %>%
+  count()
 ```
 
 ##Check how many participants answered each wave - BINGE EATING RAMP

@@ -203,7 +203,7 @@ edeq2 <- bind_rows(
   edeq_ramp_screener,
   edeq_coping_screener)
 
-#
+
 edeq <- merge(edeq1,
                   edeq2,
                   by = "ID")

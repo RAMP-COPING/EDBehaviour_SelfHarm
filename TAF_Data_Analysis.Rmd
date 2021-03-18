@@ -211,7 +211,6 @@ x <- dat.taf %>%
 
 freq(x$cohort_name)
 
-103+57+4
 
 ```
 

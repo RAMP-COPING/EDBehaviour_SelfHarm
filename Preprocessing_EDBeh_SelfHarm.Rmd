@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -2842,13 +2842,13 @@ if(RAMP == TRUE) {
 dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
   group_by(wave_taf) %>%
   mutate(row = row_number()) %>%
-  tidyr::pivot_wider(names_from = wave_taf, 
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_taf, 
                      values_from = c(taf.worth_living_life_people,
                               taf.felt_weeks_past,
                               taf.have_you_contemplated_harming_yourself,
                               taf.felt_weeks_past.1,
-                              taf.meant_life_end_weeks)) %>%
-  select(-row)
+                              taf.meant_life_end_weeks)) 
   
 }
 ```
@@ -3000,7 +3000,8 @@ if(RAMP == TRUE) {
 edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
   group_by(wave_edeq) %>%
   mutate(row = row_number()) %>%
-  tidyr::pivot_wider(names_from = wave_edeq, 
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_edeq, 
                      values_from = c(edeq.deliberately_limit_amount_influence,
                               edeq.calories_made_body_shape,
                               edeq.weight_influenced_person,
@@ -3013,8 +3014,7 @@ edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>%
                               edeq.compulsive_driven_burn_calories_numeric, ##Need numeric version
                               edeq.nibbled_picked_snacks_grazed,
                               edeq.felt_anxious_blue_bored,
-                              edeq.felt_anxious_blue_bored.1)) %>%
-  select(-row)
+                              edeq.felt_anxious_blue_bored.1))
   
 }
 
@@ -3253,12 +3253,12 @@ if(RAMP == TRUE) {
 edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>%
   group_by(wave_edeq) %>%
   mutate(row = row_number()) %>%
-  tidyr::pivot_wider(names_from = wave_edeq, 
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_edeq, 
                      values_from = c(ed_scid5.regular_episodes_eating_binges,
                                      ed_scid5.weigh_weighed_past_month,
                                      ed_scid5.regular_episodes_eating_binges_numeric,
-                                     ed_scid5.weigh_weighed_past_month_numeric)) %>%
-  select(-row)
+                                     ed_scid5.weigh_weighed_past_month_numeric)) 
   
 }
 
@@ -3349,23 +3349,26 @@ nrow(dat.raw.taf.coping)
 }
 ```
 
-## 3. Change follow up TAF COPING to long format
+## 3. Change follow up TAF COPING to wide format
 ```{r TAF COPING long format}
 if(COPING == TRUE) {
-dat.raw.taf.coping <- dat.raw.taf.coping %>%
+dat.raw.taf.coping.long <- dat.raw.taf.coping %>%
   group_by(wave_taf) %>%
   mutate(row = row_number()) %>%
-  tidyr::pivot_wider(names_from = wave_taf, 
+  tidyr::pivot_wider(id_cols = ID,
+                     names_from = wave_taf,
                      values_from = c(taf.worth_living_life_people,
                               taf.felt_weeks_past,
                               taf.have_you_contemplated_harming_yourself,
                               taf.felt_weeks_past.1,
-                              taf.meant_life_end_weeks)) %>%
-  select(-row)
+                              taf.meant_life_end_weeks))
+
   
 }
-```
 
+
+```
+##Remove dup IDs from early waves (were every two weeks - should take later entry) ***HLD
 
 
 ##4. Select variables for dataset TAF COPING
@@ -3501,14 +3504,14 @@ nrow(dat.raw.taf.coping)
 ```
 
 
-
 ## 6. Change follow up EDE COPING to long format
 ```{r TAF COPING long format}
 if(COPING == TRUE) {
 edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
   group_by(wave_edeq) %>%
   mutate(row = row_number()) %>%
-  tidyr::pivot_wider(names_from = wave_edeq,
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_edeq,
                      values_from = c(edeq.deliberately_limit_amount_influence,
                               edeq.calories_made_body_shape,
                               edeq.weight_influenced_person,
@@ -3521,8 +3524,7 @@ edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>%
                               edeq.compulsive_driven_burn_calories_numeric, ##Need numeric version
                               edeq.nibbled_picked_snacks_grazed,
                               edeq.felt_anxious_blue_bored,
-                              edeq.felt_anxious_blue_bored.1)) %>%
-  select(-row)
+                              edeq.felt_anxious_blue_bored.1)) 
   
 }
 
@@ -3723,12 +3725,12 @@ if(COPING == TRUE) {
 edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id %>%
   group_by(wave_edeq) %>%
   mutate(row = row_number()) %>%
-  tidyr::pivot_wider(names_from = wave_edeq,
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_edeq,
                      values_from = c(ed_scid5.regular_episodes_eating_binges,
                      ed_scid5.weigh_weighed_past_month,
                      ed_scid5.regular_episodes_eating_binges_numeric,
-                     ed_scid5.weigh_weighed_past_month_numeric)) %>%
-  select(-row)
+                     ed_scid5.weigh_weighed_past_month_numeric))
   
 }
 
@@ -4468,7 +4470,9 @@ length(unique(x$ID))
 
 x <- ramp.4[ramp.4$ID %in% ramp.5$ID,]
 
-length(unique(x$ID))        
+length(unique(x$ID))    
+
+
 }
 
 #NO SEX
