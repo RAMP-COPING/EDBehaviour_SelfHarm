@@ -188,9 +188,30 @@ edeq_ramp_screener <- readRDS(file = "../data_cleaned/edeq_screener_ramp.rds")
 dim(edeq_ramp_screener)
 
 ```
+##Create empty wave 1s in COPING to merge with RAMP 
+
+```{r}
+edeq_coping$`edeq.deliberately_limit_amount_influence_.Wave 1` <- NULL 
+edeq_coping$`edeq.calories_made_body_shape_.Wave 1` <- NULL 
+edeq_coping$`edeq.weight_influenced_person_.Wave 1` <- NULL 
+edeq_coping$`edeq.dissatisfied_shape_weight_.Wave 1` <- NULL 
+edeq_coping$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.regard_lost_control_eaten_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.eating_behaviours_distressed_concerns_.Wave 1` <- NULL 
+edeq_coping$`edeq.sick_means_made_shape_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.compulsive_driven_burn_calories_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.nibbled_picked_snacks_grazed_.Wave 1` <- NULL 
+edeq_coping$`edeq.felt_anxious_blue_bored_.Wave 1` <- NULL 
+edeq_coping$`edeq.felt_anxious_blue_bored.1_.Wave 1` <- NULL 
+
+
+```
 
 #Bind coping and ramp's edeq and taf (separately)
 ```{r}
+
+##*****NEED TO CHANGE TO FACTOR 
 
 #bind all edeq data
 edeq1 <- bind_rows(

@@ -69,6 +69,8 @@ taf.coping.followupb.raw.id <-
                                startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave 9",
                                startDate_waves >= start0 & startDate_waves < end0 ~ ".Wave 0"))
 
+##For the early waves, there will be two instances of the TAF
+
 
 edeq.coping.followupb.raw.id <- 
   edeq.coping.followupb.raw.id %>%

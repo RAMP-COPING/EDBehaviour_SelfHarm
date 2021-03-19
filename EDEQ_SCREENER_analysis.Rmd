@@ -542,7 +542,7 @@ dat.edeq.screener$`edeq.compulsive_driven_burn_calories_numeric_.Wave 8` <- as.f
 ```
 
 
-## Restructure data into long 
+## Restructure data into long ADD ID COLS = ID HERE ***HLD 
 ```{r }
 
 dat.edeq.screener <- dat.edeq.screener %>%

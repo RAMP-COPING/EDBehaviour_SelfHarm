@@ -2835,6 +2835,54 @@ dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
 colnames(dat.raw.taf.ramp)
 }
 ```
+##checking for number of entries per wave!
+
+```{r}
+if(RAMP == TRUE) {
+
+
+dat.raw.taf.ramp %>%
+  group_by(wave_taf) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single wave
+```{r}
+if(RAMP == TRUE) {
+
+##Identify dup IDs in a single wave 
+dat.raw.taf.ramp %>%
+   group_by(wave_taf, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+##Want the LATER data entry from people who answered twice within a single wave 
+
+[want ID AND wave to be unique]
+```{r}
+if(RAMP == TRUE) {
+
+ ##FOLLOW UP A
+##confirm number of rows in current dataset (= 50503)
+nrow(dat.raw.taf.ramp)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.raw.taf.ramp <- dat.raw.taf.ramp %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_taf,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering (should be 50503 - 14,717)
+nrow(dat.raw.taf.ramp)
+}
+```
+
 
 ## 3. Change follow up TAF RAMP to long format
 ```{r TAF COPING long format}
@@ -2852,6 +2900,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
   
 }
 ```
+
 
 ##4. Select variables for dataset TAF RAMP
 ```{r}
@@ -2992,6 +3041,53 @@ dat.raw.taf.ramp  <- dat.raw.taf.ramp %>%
 nrow(dat.raw.taf.ramp)
 }
 
+```
+
+##FIRST - checking for number of entries per wave!
+
+```{r}
+if(RAMP == TRUE) {
+
+edeq.ramp.followupb.raw.id %>%
+  group_by(wave_edeq) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single wave
+```{r}
+if(RAMP == TRUE) {
+
+##Identify dup IDs in a single wave 
+edeq.ramp.followupb.raw.id %>%
+   group_by(wave_edeq, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+##Want the LATER data entry from people who answered twice within a single wave 
+
+[want ID AND wave to be unique]
+```{r}
+if(RAMP == TRUE) {
+
+ ##FOLLOW UP B EDEQ
+##confirm number of rows in current dataset (= 26411)
+nrow(edeq.ramp.followupb.raw.id)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw.id %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_edeq,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering (should be 26411 - 41)
+nrow(edeq.ramp.followupb.raw.id)
+}
 ```
 
 ## 6. Change follow up EDEQ RAMP to long format
@@ -3247,6 +3343,55 @@ nrow(edeq.ramp.followupb.raw.id)
 
 ```
 
+
+##FIRST - checking for number of entries per wave!
+
+```{r}
+if(RAMP == TRUE) {
+
+edeq.ramp.followupb.screener.raw.id %>%
+  group_by(wave_edeq) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single wave
+```{r}
+if(RAMP == TRUE) {
+
+##Identify dup IDs in a single wave
+edeq.ramp.followupb.screener.raw.id %>%
+   group_by(wave_edeq, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+##Want the LATER data entry from people who answered twice within a single wave 
+
+[want ID AND wave to be unique]
+```{r}
+if(RAMP == TRUE) {
+
+ ##FOLLOW UP B EDEQ SCREENER
+##confirm number of rows in current dataset (= 26411)
+nrow(edeq.ramp.followupb.screener.raw.id)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_edeq,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering (should be 26411 - 41)
+nrow(edeq.ramp.followupb.screener.raw.id)
+}
+```
+
+
 ## 6. Change follow up EDEQ RAMP screener to long format
 ```{r EDEQ screener RAMP long format}
 if(RAMP == TRUE) {
@@ -3349,6 +3494,53 @@ nrow(dat.raw.taf.coping)
 }
 ```
 
+##FIRST - checking for number of entries per wave!
+
+```{r}
+if(COPING == TRUE) {
+
+dat.raw.taf.coping %>%
+  group_by(wave_taf) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single wave
+```{r}
+if(COPING == TRUE) {
+
+##Identify dup IDs in a single wave
+dat.raw.taf.coping %>%
+   group_by(wave_taf, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+##Want the LATER data entry from people who answered twice within a single wave 
+
+[want ID AND wave to be unique]
+```{r}
+if(COPING == TRUE) {
+
+ ##FOLLOW UP B EDEQ SCREENER
+##confirm number of rows in current dataset
+nrow(dat.raw.taf.coping)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.raw.taf.coping <- dat.raw.taf.coping %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_taf,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(dat.raw.taf.coping)
+}
+```
+
 ## 3. Change follow up TAF COPING to wide format
 ```{r TAF COPING long format}
 if(COPING == TRUE) {
@@ -3368,13 +3560,14 @@ dat.raw.taf.coping.long <- dat.raw.taf.coping %>%
 
 
 ```
+
 ##Remove dup IDs from early waves (were every two weeks - should take later entry) ***HLD
 
 
 ##4. Select variables for dataset TAF COPING
 ```{r}
 if(COPING == TRUE) {
-dat.raw.taf.coping <- dat.raw.taf.coping %>%
+dat.raw.taf.coping <- dat.raw.taf.coping.long %>%
   select(ID,
           `taf.worth_living_life_people_.Wave 1`,
          `taf.worth_living_life_people_.Wave 2`,
@@ -3503,6 +3696,52 @@ nrow(dat.raw.taf.coping)
 
 ```
 
+##FIRST - checking for number of entries per wave!
+
+```{r}
+if(COPING == TRUE) {
+
+edeq.coping.followupb.raw.id %>%
+  group_by(wave_edeq) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single wave
+```{r}
+if(COPING == TRUE) {
+
+##Identify dup IDs in a single wave
+edeq.coping.followupb.raw.id %>%
+   group_by(wave_edeq, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+##Want the LATER data entry from people who answered twice within a single wave 
+
+[want ID AND wave to be unique]
+```{r}
+if(COPING == TRUE) {
+
+ ##FOLLOW UP B EDEQ SCREENER
+##confirm number of rows in current dataset
+nrow(edeq.coping.followupb.raw.id)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw.id %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_edeq,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering (84728 - 206)
+nrow(edeq.coping.followupb.raw.id)
+}
+```
 
 ## 6. Change follow up EDE COPING to long format
 ```{r TAF COPING long format}
@@ -3717,6 +3956,53 @@ edeq.coping.followupb.raw.id  <- edeq.coping.followupb.raw.id  %>%
 nrow(edeq.coping.followupb.raw.id)
 }
 
+```
+
+##FIRST - checking for number of entries per wave!
+
+```{r}
+if(COPING == TRUE) {
+
+edeq.coping.followupb.screener.raw.id %>%
+  group_by(wave_edeq) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single wave
+```{r}
+if(COPING == TRUE) {
+
+##Identify dup IDs in a single wave
+edeq.coping.followupb.screener.raw.id %>%
+   group_by(wave_edeq, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+##Want the LATER data entry from people who answered twice within a single wave 
+
+[want ID AND wave to be unique]
+```{r}
+if(COPING == TRUE) {
+
+ ##FOLLOW UP B EDEQ SCREENER
+##confirm number of rows in current dataset
+nrow(edeq.coping.followupb.screener.raw.id)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_edeq,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering (84728 - 206)
+nrow(edeq.coping.followupb.screener.raw.id)
+}
 ```
 
 ## 6. Change follow up EDE COPING to long format SCREENER
