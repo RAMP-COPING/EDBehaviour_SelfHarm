@@ -203,7 +203,6 @@ x <- dat.taf %>%
 
 freq(x$cohort_name)
 
-15+148+80
 
 ##Wave 9
 x <- dat.taf %>%
@@ -256,12 +255,47 @@ dat.taf <- dat.taf %>%
 colnames(dat.taf)
 
 ```
+##Check names of waves
+```{r}
+freq(dat.taf$wave)
+```
+
 
 ##Wave 0 (21st - 30th April) should be renamed to baseline (baseline = all entries before 30th April). This combined wave will be called "April"
 ```{r}
 
 dat.taf$wave[dat.taf$wave == " 0"] <- "baseline"
 ```
+
+##Merging of baseline and wave 0 means we will have some duplicate IDs, i.e., people who filled out the baseline before 30th April and then also filled out the first wave before the 30th April
+```{r}
+
+##Identify dup IDs in baseline (**this gives ALL people, including people with missing data??)
+dat.taf %>%
+   group_by(wave, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+
+```
+##
+```{r}
+
+##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(dat.taf)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.taf <- dat.taf %>% 
+    group_by(wave) %>% 
+    filter(!duplicated(ID,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(dat.taf)
+
+```
+
 
 # Get rid of NAs and change taf to factor
 ```{r}
@@ -274,21 +308,20 @@ dat.no.nas$taf.worth_living_life_people_factor <- factor(dat.no.nas$taf.worth_li
 
 #2. Change wave to factor and re-order
 ```{r}
-
 # change order of wave factor 1
 dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                           "1",
-                           "2",
-                           "3",
-                           "4",
-                           "5",
-                           "6",
-                           "7",
-                           "8",
-                           "9")
+                           ".1",
+                           ".2",
+                           ".3",
+                           ".4",
+                           ".5",
+                           ".6",
+                           ".7",
+                           ".8",
+                           ".9")
         )
 
 
@@ -415,6 +448,35 @@ colnames(dat.taf)
 dat.taf$wave[dat.taf$wave == " 0"] <- "baseline"
 ```
 
+##Merging of baseline and wave 0 means we will have some duplicate IDs, i.e., people who filled out the baseline before 30th April and then also filled out the first wave before the 30th April
+```{r}
+
+##Identify dup IDs in baseline (**this gives ALL people, including people with missing data??)
+dat.taf %>%
+   group_by(wave, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+
+```
+##
+```{r}
+
+##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(dat.taf)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.taf <- dat.taf %>% 
+    group_by(wave) %>% 
+    filter(!duplicated(ID,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(dat.taf)
+
+```
+
 # Get rid of NAs and change taf to factor
 ```{r}
 #get rid of nas
@@ -432,15 +494,15 @@ dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                           "1",
-                           "2",
-                           "3",
-                           "4",
-                           "5",
-                           "6",
-                           "7",
-                           "8",
-                           "9")
+                           ".1",
+                           ".2",
+                           ".3",
+                           ".4",
+                           ".5",
+                           ".6",
+                           ".7",
+                           ".8",
+                           ".9")
         )
 
 
@@ -796,7 +858,40 @@ dat.taf <- dat.taf %>%
 colnames(dat.taf)
 
 ```
+##Wave 0 (21st - 30th April) should be renamed to baseline (baseline = all entries before 30th April). This combined wave will be called "April"
+```{r}
 
+dat.taf$wave[dat.taf$wave == " 0"] <- "baseline"
+```
+
+##Merging of baseline and wave 0 means we will have some duplicate IDs, i.e., people who filled out the baseline before 30th April and then also filled out the first wave before the 30th April
+```{r}
+
+##Identify dup IDs in baseline (**this gives ALL people, including people with missing data??)
+dat.taf %>%
+   group_by(wave, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+
+```
+##
+```{r}
+
+##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(dat.taf)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.taf <- dat.taf %>% 
+    group_by(wave) %>% 
+    filter(!duplicated(ID,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(dat.taf)
+
+```
 # Get rid of NAs and change taf to factor
 ```{r}
 #get rid of nas
@@ -814,16 +909,15 @@ dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                                  "0",
-                           "1",
-                           "2",
-                           "3",
-                           "4",
-                           "5",
-                           "6",
-                           "7",
-                           "8",
-                           "9")
+                           ".1",
+                           ".2",
+                           ".3",
+                           ".4",
+                           ".5",
+                           ".6",
+                           ".7",
+                           ".8",
+                           ".9")
         )
 
 
@@ -839,27 +933,25 @@ summary(dat.no.nas$wave_factor)
 
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+levels(dat.no.nas$wave_factor)[2] <- "April 2020" 
 
-levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+levels(dat.no.nas$wave_factor)[3] <- "May 2020"
 
-levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+levels(dat.no.nas$wave_factor)[4] <- "June 2020"
 
-levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+levels(dat.no.nas$wave_factor)[5] <- "July 2020"
 
-levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+levels(dat.no.nas$wave_factor)[6] <- "August 2020"
 
-levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+levels(dat.no.nas$wave_factor)[7] <- "September 2020"
 
-levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+levels(dat.no.nas$wave_factor)[8] <- "October 2020"
 
-levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
-levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "December 2020"
-
-levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2020"
 
 ```
 
@@ -957,6 +1049,41 @@ colnames(dat.taf)
 
 ```
 
+##Wave 0 (21st - 30th April) should be renamed to baseline (baseline = all entries before 30th April). This combined wave will be called "April"
+```{r}
+
+dat.taf$wave[dat.taf$wave == " 0"] <- "baseline"
+```
+
+##Merging of baseline and wave 0 means we will have some duplicate IDs, i.e., people who filled out the baseline before 30th April and then also filled out the first wave before the 30th April
+```{r}
+
+##Identify dup IDs in baseline (**this gives ALL people, including people with missing data??)
+dat.taf %>%
+   group_by(wave, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+
+```
+##
+```{r}
+
+##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(dat.taf)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.taf <- dat.taf %>% 
+    group_by(wave) %>% 
+    filter(!duplicated(ID,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(dat.taf)
+
+```
+
 # Get rid of NAs and change taf to factor
 ```{r}
 #get rid of nas
@@ -974,16 +1101,15 @@ dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                                  "0",
-                           "1",
-                           "2",
-                           "3",
-                           "4",
-                           "5",
-                           "6",
-                           "7",
-                           "8",
-                           "9")
+                           ".1",
+                           ".2",
+                           ".3",
+                           ".4",
+                           ".5",
+                           ".6",
+                           ".7",
+                           ".8",
+                           ".9")
         )
 
 
@@ -999,27 +1125,25 @@ summary(dat.no.nas$wave_factor)
 
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+levels(dat.no.nas$wave_factor)[2] <- "April 2020" 
 
-levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+levels(dat.no.nas$wave_factor)[3] <- "May 2020"
 
-levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+levels(dat.no.nas$wave_factor)[4] <- "June 2020"
 
-levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+levels(dat.no.nas$wave_factor)[5] <- "July 2020"
 
-levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+levels(dat.no.nas$wave_factor)[6] <- "August 2020"
 
-levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+levels(dat.no.nas$wave_factor)[7] <- "September 2020"
 
-levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+levels(dat.no.nas$wave_factor)[8] <- "October 2020"
 
-levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
-levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "December 2020"
-
-levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2020"
 
 ```
 
@@ -1068,22 +1192,6 @@ scale_x_discrete(guide = guide_axis(n.dodge=3))
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ##PLOTS - TAF (CONTEMPLATED HARM, 2 WEEKS)
 ### Read in TAF data (again, because variable needs to be renamed again and data restructured)
 ```{r}
@@ -1120,6 +1228,41 @@ dat.taf <- dat.taf %>%
 
 ```
 
+##Wave 0 (21st - 30th April) should be renamed to baseline (baseline = all entries before 30th April). This combined wave will be called "April"
+```{r}
+
+dat.taf$wave[dat.taf$wave == " 0"] <- "baseline"
+```
+
+##Merging of baseline and wave 0 means we will have some duplicate IDs, i.e., people who filled out the baseline before 30th April and then also filled out the first wave before the 30th April
+```{r}
+
+##Identify dup IDs in baseline (**this gives ALL people, including people with missing data??)
+dat.taf %>%
+   group_by(wave, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+
+```
+##
+```{r}
+
+##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(dat.taf)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.taf <- dat.taf %>% 
+    group_by(wave) %>% 
+    filter(!duplicated(ID,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(dat.taf)
+
+```
+
 # Get rid of NAs and change taf to factor
 ```{r}
 #get rid of nas
@@ -1137,16 +1280,15 @@ dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                                  "0",
-                           "1",
-                           "2",
-                           "3",
-                           "4",
-                           "5",
-                           "6",
-                           "7",
-                           "8",
-                           "9")
+                           ".1",
+                           ".2",
+                           ".3",
+                           ".4",
+                           ".5",
+                           ".6",
+                           ".7",
+                           ".8",
+                           ".9")
         )
 
 
@@ -1162,27 +1304,25 @@ summary(dat.no.nas$wave_factor)
 
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+levels(dat.no.nas$wave_factor)[2] <- "April 2020" 
 
-levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+levels(dat.no.nas$wave_factor)[3] <- "May 2020"
 
-levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+levels(dat.no.nas$wave_factor)[4] <- "June 2020"
 
-levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+levels(dat.no.nas$wave_factor)[5] <- "July 2020"
 
-levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+levels(dat.no.nas$wave_factor)[6] <- "August 2020"
 
-levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+levels(dat.no.nas$wave_factor)[7] <- "September 2020"
 
-levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+levels(dat.no.nas$wave_factor)[8] <- "October 2020"
 
-levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
-levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "December 2020"
-
-levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2020"
 
 ```
 
@@ -1265,6 +1405,41 @@ dat.taf <- dat.taf %>%
 
 ```
 
+##Wave 0 (21st - 30th April) should be renamed to baseline (baseline = all entries before 30th April). This combined wave will be called "April"
+```{r}
+
+dat.taf$wave[dat.taf$wave == " 0"] <- "baseline"
+```
+
+##Merging of baseline and wave 0 means we will have some duplicate IDs, i.e., people who filled out the baseline before 30th April and then also filled out the first wave before the 30th April
+```{r}
+
+##Identify dup IDs in baseline (**this gives ALL people, including people with missing data??)
+dat.taf %>%
+   group_by(wave, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+
+```
+##
+```{r}
+
+##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(dat.taf)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.taf <- dat.taf %>% 
+    group_by(wave) %>% 
+    filter(!duplicated(ID,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(dat.taf)
+
+```
+
 # Get rid of NAs and change taf to factor
 ```{r}
 #get rid of nas
@@ -1282,16 +1457,15 @@ dat.no.nas <- dat.no.nas %>%
  mutate(wave_factor = fct_relevel(wave,
                                   "retro_prepan",
                                   "baseline",
-                                  "0",
-                           "1",
-                           "2",
-                           "3",
-                           "4",
-                           "5",
-                           "6",
-                           "7",
-                           "8",
-                           "9")
+                           ".1",
+                           ".2",
+                           ".3",
+                           ".4",
+                           ".5",
+                           ".6",
+                           ".7",
+                           ".8",
+                           ".9")
         )
 
 
@@ -1307,27 +1481,25 @@ summary(dat.no.nas$wave_factor)
 
 levels(dat.no.nas$wave_factor)[1] <- "Retrospective prepandemic"
 
-levels(dat.no.nas$wave_factor)[2] <- "March 2020"
+levels(dat.no.nas$wave_factor)[2] <- "April 2020" 
 
-levels(dat.no.nas$wave_factor)[3] <- "April 2020" 
+levels(dat.no.nas$wave_factor)[3] <- "May 2020"
 
-levels(dat.no.nas$wave_factor)[4] <- "May 2020"
+levels(dat.no.nas$wave_factor)[4] <- "June 2020"
 
-levels(dat.no.nas$wave_factor)[5] <- "June 2020"
+levels(dat.no.nas$wave_factor)[5] <- "July 2020"
 
-levels(dat.no.nas$wave_factor)[6] <- "July 2020"
+levels(dat.no.nas$wave_factor)[6] <- "August 2020"
 
-levels(dat.no.nas$wave_factor)[7] <- "August 2020"
+levels(dat.no.nas$wave_factor)[7] <- "September 2020"
 
-levels(dat.no.nas$wave_factor)[8] <- "September 2020"
+levels(dat.no.nas$wave_factor)[8] <- "October 2020"
 
-levels(dat.no.nas$wave_factor)[9] <- "October 2020"
+levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
-levels(dat.no.nas$wave_factor)[10] <- "November 2020"
+levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "December 2020"
-
-levels(dat.no.nas$wave_factor)[12] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2020"
 
 ```
 

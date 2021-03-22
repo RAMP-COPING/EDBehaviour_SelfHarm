@@ -64,11 +64,7 @@ dat.edeq.screener <- dat.edeq %>%
       !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 7`) |
       !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 8`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 1`) |
-```
-
-
-```{r}
-!is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4`) |
       !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 5`) |
@@ -542,6 +538,7 @@ dat.edeq.screener$`edeq.compulsive_driven_burn_calories_numeric_.Wave 8` <- as.f
 ```
 
 
+
 ## Restructure data into long ADD ID COLS = ID HERE ***HLD 
 ```{r }
 
@@ -556,17 +553,9 @@ dat.edeq.screener <- dat.edeq.screener %>%
      names_from = "edeq",
      values_from = "value")
 
-
-
 ```
 
 
-```{r}
-
-dat.edeq.screener %>%
-  group_by(wave, cohort_name) %>%
-  count()
-```
 
 ##Check how many participants answered each wave - BINGE EATING RAMP
 ```{r}
