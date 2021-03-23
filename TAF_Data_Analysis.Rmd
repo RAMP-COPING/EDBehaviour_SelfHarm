@@ -55,7 +55,6 @@ dat.taf %>%
 
 ##Life not worth living (past 2 weeks)
 
-
 ##Retro prepan
 x <- dat.taf %>%
   filter(!is.na(`taf.pandemic_felt_.Wavebaseline`))
@@ -134,7 +133,7 @@ freq(x$cohort_name)
 
 ##Life not worth living (lifetime)
 
-##Retro prepan **why only RAMP???
+##Retro prepan 
 x <- dat.taf %>%
   filter(!is.na(`taf.pandemic_felt_.Wavebaseline`))
 
@@ -142,9 +141,10 @@ freq(x$cohort_name)
 
 ##Baseline
 x <- dat.taf %>%
-  filter(!is.na(`taf.worth_living_life_people_.Wavebaseline`))
+  filter(!is.na(taf.worth_living_life_people_.Wavebaseline))
 
 freq(x$cohort_name)
+
 
 ##Wave 0 (i.e., baseline) **why only RAMP? **NEED TO CHECK THAT PEOPLE AREN'T DUPLICATED IN WAVE 0 AND BASELINE!
 x <- dat.taf %>%

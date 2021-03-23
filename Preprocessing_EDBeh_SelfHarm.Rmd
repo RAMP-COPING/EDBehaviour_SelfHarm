@@ -2883,7 +2883,6 @@ nrow(dat.raw.taf.ramp)
 }
 ```
 
-
 ## 3. Change follow up TAF RAMP to long format
 ```{r TAF COPING long format}
 if(RAMP == TRUE) {
@@ -3389,6 +3388,66 @@ edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>%
 ##confirm number of rows in dataset after filtering (should be 26411 - 41)
 nrow(edeq.ramp.followupb.screener.raw.id)
 }
+```
+
+### CHECKING DUPS IN BASELINE ### i.e., seeeing if two people have been assigned the same ID
+```{r}
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "1125b21bce6837c04a2d25e594f6")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "243ee9773c50486a347ee2f669dc")
+
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "535dc8c1b776fc5451e8d24b922f")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "b9cb44638fc728f7ade0b43419bd")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "5842dd2523474a35f849d7105152")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "b9cb44638fc728f7ade0b43419bd")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "fc97d7705ab0ec4bf95fa3eea814")
+
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "0f0965788de87a3fad79aba14085")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "1125b21bce6837c04a2d25e594f6")
+
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "1a47ff6555d71515aa20484e59c4")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "2d6f692405cebd783448d2d3bcdd")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "5842dd2523474a35f849d7105152")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "58f9100b53025dbe08d6ee148502") #ONLY ONE
+	
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "7023d347374e2fdd77ea1270c3fe") #ONLY ONE
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "b5e2e62f0a2c261807caa1ac90b5")
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "d301f9a79573ee7b36d5736eb298")
+
+
+edeq.ramp.baseline.raw %>%
+  filter(`Login ID` == "fc97d7705ab0ec4bf95fa3eea814")
+
 ```
 
 
