@@ -465,68 +465,75 @@ dim(dat.be.nbr)[1]-dim(dat.be.nbr.id )[1]
 
 ```
 
-
-
-
-
-
-
-##Merge data
+##Merge data - GLAD
 ```{r}
 
-##AN data
-dat.an1 <- rbind(dat.an.nbr.coping.id,
-                  dat.an.glad.coping.id
+##GLAD data 1
+dat.glad.1 <- left_join(dat.an.glad.coping.id,
+                  dat.be.glad.id,
+                  by = "ID"
                 )
 
 ##colnames 
-colnames(dat.an1)
+colnames(dat.glad.1)
 
 ##number of people
-nrow(dat.an1)
+nrow(dat.glad.1)
 
-
-#BE data
-dat.an2 <- rbind(dat.be.nbr.id,
-                  dat.be.glad.id
+##GLAD data 2
+dat.glad.2 <- left_join(dat.glad.1,
+                        dat.icb.glad.id,
+                        by = "ID"
                 )
 
 ##colnames 
-colnames(dat.an2)
+colnames(dat.glad.2)
 
 ##number of people
-nrow(dat.an2)
+nrow(dat.glad.2)
 
+```
 
-##ICB data
-dat.an3 <- rbind(dat.icb.nbr.id,
-                  dat.icb.glad.id
+##Merge data - NBR
+```{r}
+##NBR data 1
+dat.nbr.1 <- left_join(dat.an.nbr.coping.id,
+                  dat.be.nbr.id,
+                  by = "ID"
                 )
 
 ##colnames 
-colnames(dat.an3)
+colnames(dat.nbr.1)
 
 ##number of people
-nrow(dat.an3)
+nrow(dat.nbr.1)
 
-##First merge             
-dat.an4 <- merge(dat.an1,
-                  dat.an2,
-                  by = "ID")
+##GLAD data 2
+dat.nbr.2 <- left_join(dat.nbr.1,
+                        dat.icb.nbr.id,
+                        by = "ID"
+                )
 
-colnames(dat.an4)
+##colnames 
+colnames(dat.nbr.2)
 
-##Final merge
-dat.an <- merge(dat.an4,
-                dat.an3,
-                by = "ID")
+##number of people
+nrow(dat.nbr.2)
+```
+##Merge data - GLAD + NBR
+```{r}
+##NBR data 1
+dat.an <- rbind(dat.nbr.2,
+                   dat.glad.2
+                )
 
-##check columns
+##colnames 
 colnames(dat.an)
 
-##check number of rows
+##number of people
 nrow(dat.an)
 ```
+
 
 ############# AN RESTRICTING #####################
 
