@@ -99,6 +99,57 @@ dim(dat.an.glad.coping)[1]-dim(dat.an.glad.coping.id)[1]
 
 
 ```
+### Read in ED data: AN GLAD ED100K 
+```{r}
+dat.an.glad.ed100k <- readRDS(file = "../data_raw/diagnostics/an_glad_ed.rds")
+
+# Inspect dimensions
+dim(dat.an.glad.ed100k)
+# Inspect colnames
+colnames(dat.an.glad.ed100k)
+
+nrow(dat.an.glad.ed100k)
+
+```
+
+
+
+### Select variables: GLAD ED100K  ***Need to find the equivalent in the NBR dataset
+```{r glad select variables}
+
+exclude_cols_dem <- c("ID",
+                  "cohort_name")
+
+dat.an.glad.ed100k.id <- dat.an.glad.ed100k %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE) %>% 
+  add_column(cohort_name = "coping_glad", .before = "an.1.people_thought_weigh_weighed") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         cohort_name, # Sample
+        an.1.people_thought_weigh_weighed       
+       ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(dat.an.glad.ed100k.id)
+# Inspect colnames
+colnames(dat.an.glad.ed100k.id)
+#Differences
+dim(dat.an.glad.ed100k)[1]-dim(dat.an.glad.ed100k.id)[1]
+
+```
 
 ### Read in ED data: GLAD ICB 
 ```{r}
@@ -122,10 +173,10 @@ exclude_cols_dem <- c("ID",
 dat.icb.glad.id <- dat.icb.glad %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   distinct(externalDataReference, .keep_all = TRUE) %>% 
-  add_column(cohort_name = "coping_glad", .before = "icb.making_yourself_vomit") %>% #create new column 
+#  add_column(cohort_name = "coping_glad", .before = "icb.making_yourself_vomit") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
+     #    cohort_name, # Sample
         icb.making_yourself_vomit,
         icb.laxatives,
         icb.diuretics,
@@ -191,10 +242,10 @@ exclude_cols_dem <- c("ID",
 dat.be.glad.id <- dat.be.glad %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   distinct(externalDataReference, .keep_all = TRUE) %>% 
-  add_column(cohort_name = "coping_glad", .before = "be.experience_regular_episodes_binge") %>% #create new column 
+ # add_column(cohort_name = "coping_glad", .before = "be.experience_regular_episodes_binge") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
+       #  cohort_name, # Sample
         be.experience_regular_episodes_binge                    
        
          ) %>%
@@ -316,10 +367,10 @@ exclude_cols_dem <- c("ID",
 dat.icb.nbr.id <- dat.icb.nbr %>% #new dataset with ID
   drop_na(subjectid) %>% # Drop NAs
   distinct(subjectid, .keep_all = TRUE) %>% 
-  add_column(cohort_name = "coping_nbr", .before = "icb.making_yourself_vomit") %>% #create new column 
+ # add_column(cohort_name = "coping_nbr", .before = "icb.making_yourself_vomit") %>% #create new column 
   select(
          ID = subjectid,# ID
-         cohort_name, # Sample
+      #   cohort_name, # Sample
         icb.making_yourself_vomit,
         icb.laxatives,
         icb.diuretics,
@@ -385,10 +436,10 @@ exclude_cols_dem <- c("ID",
 dat.be.nbr.id <- dat.be.nbr %>% #new dataset with ID
   drop_na(subjectid) %>% # Drop NAs
   distinct(subjectid, .keep_all = TRUE) %>% 
-  add_column(cohort_name = "coping_nbr", .before = "be.experience_regular_episodes_binge") %>% #create new column 
+  #add_column(cohort_name = "coping_nbr", .before = "be.experience_regular_episodes_binge") %>% #create new column 
   select(
          ID = subjectid,# ID
-         cohort_name, # Sample
+        # cohort_name, # Sample
         be.experience_regular_episodes_binge                    
        
          ) %>%
@@ -416,12 +467,59 @@ dim(dat.be.nbr)[1]-dim(dat.be.nbr.id )[1]
 
 
 
+
+
+
+
 ##Merge data
 ```{r}
-dat.an <- rbind(dat.an.nbr.coping.id,
-                  dat.an.glad.coping.id)
+
+##AN data
+dat.an1 <- rbind(dat.an.nbr.coping.id,
+                  dat.an.glad.coping.id
+                )
+
+##colnames 
+colnames(dat.an1)
+
+##number of people
+nrow(dat.an1)
 
 
+#BE data
+dat.an2 <- rbind(dat.be.nbr.id,
+                  dat.be.glad.id
+                )
+
+##colnames 
+colnames(dat.an2)
+
+##number of people
+nrow(dat.an2)
+
+
+##ICB data
+dat.an3 <- rbind(dat.icb.nbr.id,
+                  dat.icb.glad.id
+                )
+
+##colnames 
+colnames(dat.an3)
+
+##number of people
+nrow(dat.an3)
+
+##First merge             
+dat.an4 <- merge(dat.an1,
+                  dat.an2,
+                  by = "ID")
+
+colnames(dat.an4)
+
+##Final merge
+dat.an <- merge(dat.an4,
+                dat.an3,
+                by = "ID")
 
 ##check columns
 colnames(dat.an)
@@ -587,12 +685,98 @@ dat.an$bmi_unc <-
 summary(dat.an$bmi_unc)
 
 ```
+### AN RESTRICTING ALGORITHM ###
+```{r}
+
+dat.an$ed.DSM5_AN_restricting_binary_numeric <- 
+  with(dat.an,
+  dplyr::if_else(
+   ##**Add actual screener question (need to find this in NBR)
+    
+    ##When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
+    dat.an$an.1.lowest_weight_weigh_weighed == "No" &
+    
+    #BMI of under 18.55 when at this low weight
+    (dat.an$bmi_unc <= 18.55 |
+       dat.an$bmi_unc <= 18.55 |
+       dat.an$bmi_unc <= 18.55) &
+      
+    #Roughly how old were you at your lowest weight? **Topher
+      
+      
+      #Fear of gaining weight (During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?_
+      (
+        dat.an$an.1.gain_weight_low_weight == "Slightly afraid" |
+      dat.an$an.1.gain_weight_low_weight == "Somewhat afraid" |
+      dat.an$an.1.gain_weight_low_weight == "Very afraid" |
+      dat.an$an.1.gain_weight_low_weight == "Extremely afraid"
+      ) &
+      
+    #INAPPROPRIATE COMPENSATORY BEH - fasting and excessive exercise but NOT vomit or laxatives/diet pills/drugs/diuretics etc (During your period of low weight, have you?)
+      dat.an$icb.laxatives.1
+      
+      
+      icb.making_yourself_vomit.1
+icb.laxatives.1
+icb.diuretics.1
+icb.weight_loss_pills.1
+icb.excessive_exercise.1
+icb.fasting.1
+icb.other_methods.1
+icb.none.1
 
 
 
+1E During your period of low weight, have you?
+(Select all responses that apply)
+•	a) Fasted for 8 waking hours or longer - YES
+•	b) Made yourself vomit - NO
+•	c) Used diet pills, laxatives, diuretics, drugs - NO
+•	d) Exercised excessively or compulsively - YES
 
+   
+#Self-worth dependent on body shape or weight
+   ((ed.AN_lowt_selfworth == "4" | #***CHECK SCALE #***Ask Molly re. logic 
+      ed.AN_lowt_selfworth == "5" |
+      ed.AN_lowt_selfworth == "6" |
+      ed.AN_lowt_selfworth == "7 Completely dependent") | 
+#Felt fat at low weight 
+   (ed.AN_feel_fat == "Somewhat" |
+      ed.AN_feel_fat == "Very" |
+      ed.AN_feel_fat == "Extremely") |
+#Perceived no negative consequences of low weight
+      ed.AN_lowt_negconseq == "Not at all" |
+#Perceived body parts to be larger than they were 
+  (ed.AN_lowt_bodydysmorphia == "Somewhat" | 
+     ed.AN_lowt_bodydysmorphia == "Very much")) &
+#the individual has not engaged in recurrent episodes of binge eating at low weight
+  (ed.BE_onlylowt == "No" |
+     is.na(ed.BE_onlylowt)) & #***Perhaps don't include NA??
+##No vomiting, laxatives, or diuretics to control body shape or weight (at low weight)
+  (ed.ICB_lowt_vomit == "No" |
+     is.na(ed.ICB_lowt_vomit)) & #***HLD: Added NA - 100 more cases!
+  (ed.ICB_lowt_laxative == "No"
+| is.na(ed.ICB_lowt_laxative)) &
+  (ed.ICB_lowt_diuretic == "No" |
+     is.na(ed.ICB_lowt_diuretic)) &  #+++CH: lots of them seem to use diuretics (n = 63)
+#This subtype describes presentations in which weight loss is accomplished primarily through dieting, fasting, and/or excessive exercise
+  (ed.ICB_lowt_exercise == "Yes" |
+     ed.ICB_lowt_fasting == "Yes"),
+    true = 1,
+    false = 0,
+    missing = NA_real_)
+  )
+  
+#Recode numeric to factor
+ED.cc$ed.DSM5_AN_restricting_binary <-
+  recode_factor(ED.cc$ed.DSM5_AN_restricting_binary_numeric,
+                "0" = "No DSM5 AN restricting",
+                "1" = "DSM5 AN restricting"
+                )
 
-
+#Summary
+freq(ED.cc$ed.DSM5_AN_restricting_binary)
+```
 
 
 
@@ -606,16 +790,10 @@ AND
 
 1C Roughly how much did you weigh at your lowest weight? / HEIGHT ^ 2 
 
-[an.1.low_weight_time - STONE
-an.1.low_weight_time.1 - POUNDS
-an.1.low_weight_time.2 -  KILOS]
 
-[an.1.how_tall_were_you_then - Feet (ft)
-an.1.how_tall_were_you_then.1  - Inches (In)             
-an.1.how_tall_were_you_then.2 - Centimeters (cm) ] 
+AND 
 
-
-AND 1D Roughly how old were you at your lowest weight?
+1D Roughly how old were you at your lowest weight?
 ●	___ years
 
 [an.1.how_old_were_you_then.txt]
