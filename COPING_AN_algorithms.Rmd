@@ -432,13 +432,8 @@ nrow(dat.an)
 
 ############# AN RESTRICTING #####################
 
-###Work out BMI 
+#Work out BMI 
 BMI = kg/m2 
-
-
-[an.1.low_weight_time - STONE
-an.1.low_weight_time.1 - POUNDS
-an.1.low_weight_time.2 -  KILOS]
 
 ##Weight in kg
 ```{r}
@@ -507,29 +502,97 @@ summary(dat.an$weight_kg_unc)
   
 ```
 
-
-
-
+##Height in m
 ```{r}
+
+##Change character variables to numeric
+dat.an$height_inches_numeric <- as.numeric(dat.an$an.1.how_tall_were_you_then.1_numeric)
+
+dat.an$height_cm_numeric <- as.numeric(dat.an$an.1.how_tall_were_you_then.2_numeric)
+
+
 # Feet and inches to metres
-ED.cc$ed.height_current_metres <- 
+dat.an$height_m <- NA
+
+
+dat.an$height_m <- 
   if_else(
-    condition = is.na(ED.cc$ed.height_current_metres),
-    true = (ED.cc$ed.height_ft*0.3048) + (ED.cc$ed.height_in*0.0254),
+    condition = is.na(dat.an$height_m),
+    true = (
+      (dat.an$an.1.how_tall_were_you_then_numeric*0.3048) +
+      (dat.an$height_inches_numeric*0.0254)
+       ),
     false = NA_real_,
     missing = NA_real_
     )
 
 # Centimetres to metres
-ED.cc$ed.height_current_metres <- 
+dat.an$height_m_unc <- 
   if_else(
-    condition = is.na(ED.cc$ed.height_current_metres),
-    true = ED.cc$ed.height_cm/100,
-    false = ED.cc$ed.height_current_metres)
+    condition = is.na(dat.an$height_m),
+    true = dat.an$height_cm_numeric/100,
+    false = dat.an$height_m)
 
 # Summary
-summary(ED.cc$ed.height_current_metres)
+summary(dat.an$height_m_unc)
 ```
+## Clean height in m
+```{r}
+#Height outlier
+  # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
+  height_lower_limit = 1
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.an$weight_kg_unc > height_upper_limit |
+        dat.an$weight_kg_unc < height_lower_limit
+    )
+  )
+  
+  #Remove height outliers
+  dat.an <- dat.an %>%
+    mutate(
+     height_m_final =
+        if_else(
+          height_m_unc > height_upper_limit |
+            height_m_unc < height_lower_limit,
+          true = NA_real_,
+          false = height_m_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.an %>%
+    freq(height_m_final)
+  
+  
+```
+
+## Work out BMI
+```{r}
+
+# Calculated from height and weight **This should be based on min weight and height - have quite low values <10 - need to check
+dat.an$bmi_unc <- NA
+
+dat.an$bmi_unc <- 
+  if_else(condition = is.na(dat.an$bmi_unc), 
+         true = dat.an$weight_kg_final/dat.an$height_m_final^2, 
+         false = NA_real_,
+         missing = NA_real_)
+
+# Summary
+summary(dat.an$bmi_unc)
+
+```
+
+
+
+
+
+
 
 
 
@@ -547,7 +610,9 @@ AND
 an.1.low_weight_time.1 - POUNDS
 an.1.low_weight_time.2 -  KILOS]
 
-**NEED HEIGHT FROM GLAD DATA
+[an.1.how_tall_were_you_then - Feet (ft)
+an.1.how_tall_were_you_then.1  - Inches (In)             
+an.1.how_tall_were_you_then.2 - Centimeters (cm) ] 
 
 
 AND 1D Roughly how old were you at your lowest weight?
