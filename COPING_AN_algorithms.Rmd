@@ -193,7 +193,8 @@ dat.icb.glad.id <- dat.icb.glad %>% #new dataset with ID
         icb.fasting.1,
         icb.other_methods.1,
         icb.none.1,
-        icb.average_made_low_weight                      
+        icb.average_made_low_weight,
+     icb.binge_eating_wasthere_made
        
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
@@ -387,7 +388,8 @@ dat.icb.nbr.id <- dat.icb.nbr %>% #new dataset with ID
         icb.fasting.1,
         icb.other_methods.1,
         icb.none.1,
-        icb.average_made_low_weight = icb.made_average_low_weight                
+        icb.average_made_low_weight = icb.made_average_low_weight,
+      icb.binge_eating_wasthere_made
        
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
@@ -701,90 +703,173 @@ dat.an$ed.DSM5_AN_restricting_binary_numeric <-
    ##**Add actual screener question (need to find this in NBR)
     
     ##When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
-    dat.an$an.1.lowest_weight_weigh_weighed == "No" &
+    an.1.lowest_weight_weigh_weighed == "No" &
     
     #BMI of under 18.55 when at this low weight
-    (dat.an$bmi_unc <= 18.55 |
-       dat.an$bmi_unc <= 18.55 |
-       dat.an$bmi_unc <= 18.55) &
+    (bmi_unc <= 18.55 |
+       bmi_unc <= 18.55 |
+       bmi_unc <= 18.55) &
       
     #Roughly how old were you at your lowest weight? **Topher
       
       
       #Fear of gaining weight (During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?_
       (
-        dat.an$an.1.gain_weight_low_weight == "Slightly afraid" |
-      dat.an$an.1.gain_weight_low_weight == "Somewhat afraid" |
-      dat.an$an.1.gain_weight_low_weight == "Very afraid" |
-      dat.an$an.1.gain_weight_low_weight == "Extremely afraid"
+        an.1.gain_weight_low_weight == "Slightly afraid" |
+      an.1.gain_weight_low_weight == "Somewhat afraid" |
+      an.1.gain_weight_low_weight == "Very afraid" |
+      an.1.gain_weight_low_weight == "Extremely afraid"
       ) &
       
-    #INAPPROPRIATE COMPENSATORY BEH - fasting and excessive exercise but NOT vomit or laxatives/diet pills/drugs/diuretics etc (During your period of low weight, have you?)
-      dat.an$icb.laxatives.1
-      
-      
-      icb.making_yourself_vomit.1
-icb.laxatives.1
-icb.diuretics.1
-icb.weight_loss_pills.1
-icb.excessive_exercise.1
-icb.fasting.1
-icb.other_methods.1
-icb.none.1
-
-
-
-1E During your period of low weight, have you?
-(Select all responses that apply)
-•	a) Fasted for 8 waking hours or longer - YES
-•	b) Made yourself vomit - NO
-•	c) Used diet pills, laxatives, diuretics, drugs - NO
-•	d) Exercised excessively or compulsively - YES
-
-   
-#Self-worth dependent on body shape or weight
-   ((ed.AN_lowt_selfworth == "4" | #***CHECK SCALE #***Ask Molly re. logic 
-      ed.AN_lowt_selfworth == "5" |
-      ed.AN_lowt_selfworth == "6" |
-      ed.AN_lowt_selfworth == "7 Completely dependent") | 
-#Felt fat at low weight 
-   (ed.AN_feel_fat == "Somewhat" |
-      ed.AN_feel_fat == "Very" |
-      ed.AN_feel_fat == "Extremely") |
-#Perceived no negative consequences of low weight
-      ed.AN_lowt_negconseq == "Not at all" |
-#Perceived body parts to be larger than they were 
-  (ed.AN_lowt_bodydysmorphia == "Somewhat" | 
-     ed.AN_lowt_bodydysmorphia == "Very much")) &
-#the individual has not engaged in recurrent episodes of binge eating at low weight
-  (ed.BE_onlylowt == "No" |
-     is.na(ed.BE_onlylowt)) & #***Perhaps don't include NA??
-##No vomiting, laxatives, or diuretics to control body shape or weight (at low weight)
-  (ed.ICB_lowt_vomit == "No" |
-     is.na(ed.ICB_lowt_vomit)) & #***HLD: Added NA - 100 more cases!
-  (ed.ICB_lowt_laxative == "No"
-| is.na(ed.ICB_lowt_laxative)) &
-  (ed.ICB_lowt_diuretic == "No" |
-     is.na(ed.ICB_lowt_diuretic)) &  #+++CH: lots of them seem to use diuretics (n = 63)
-#This subtype describes presentations in which weight loss is accomplished primarily through dieting, fasting, and/or excessive exercise
-  (ed.ICB_lowt_exercise == "Yes" |
-     ed.ICB_lowt_fasting == "Yes"),
+    #INAPPROPRIATE COMPENSATORY BEH
+      #During the period of time when you were at your lowest weight, did you use any of the following as a way to control yourweight or shape? .)
+     (
+       icb.excessive_exercise.1 == "Excessive exercise" |
+        icb.fasting.1 == "Fasting"
+     ) &
+    
+       (icb.laxatives.1 == "Not Laxatives" &
+        icb.diuretics.1 == "Not Diuretics" &
+        icb.weight_loss_pills.1 == "Not Weight loss pills" &
+        icb.making_yourself_vomit.1 == "Not Making yourself vomit"
+        ) &
+       
+      #Have you ever used any of the following to compensate for episodes of binge eating or overeating? ***Don't think this should be included
+      (
+        icb.making_yourself_vomit == "Not Making yourself vomit" &
+        icb.laxatives == "Not Laxatives" & 
+        icb.diuretics == "Not Diuretics" &
+        icb.weight_loss_pills == "Not Weight loss pills"
+      ) &
+    
+    #Was there ever a time when you made yourself vomit, used laxatives, or used diuretics, on average, at least once a week for 3 months when you were not at low weight? 
+    icb.average_made_low_weight == "No, at times when I made myself vomit, used laxatives, or used diuretics, it was always during periods of low weight." &
+    
+    # Was there ever a time when you made yourself vomit, used laxatives, or used diuretics at least once a week for 3 months when you were not also binge eating? ##**What about weight loss pills?
+    
+      icb.binge_eating_wasthere_made == "No" &
+    
+  
+#Self-worth dependent on body shape or weight **What cutoff are we using here?
+  (
+    an.1.not_at_all_dependentcompletely_dependent == "1" |
+    an.1.not_at_all_dependentcompletely_dependent == "2" | 
+    an.1.not_at_all_dependentcompletely_dependent == "3" |
+      an.1.not_at_all_dependentcompletely_dependent == "4" |
+      an.1.not_at_all_dependentcompletely_dependent == "5" |
+      an.1.not_at_all_dependentcompletely_dependent == "Completely Dependent"
+  )
+ &
+  ##No binge eating behaviour **Shouldn't this just be whilst at low weight?
+  
+  #Did you experience regular episodes of binge eating while at your lowest weight?
+  (
+    be.experience_regular_episodes_binge== "No" |
+      be.experience_regular_episodes_binge == "At times of low weight and at times outside of low weight"
+  ),
     true = 1,
     false = 0,
     missing = NA_real_)
   )
   
 #Recode numeric to factor
-ED.cc$ed.DSM5_AN_restricting_binary <-
-  recode_factor(ED.cc$ed.DSM5_AN_restricting_binary_numeric,
+dat.an$ed.DSM5_AN_restricting_binary <-
+  recode_factor(dat.an$ed.DSM5_AN_restricting_binary_numeric,
                 "0" = "No DSM5 AN restricting",
                 "1" = "DSM5 AN restricting"
                 )
 
 #Summary
-freq(ED.cc$ed.DSM5_AN_restricting_binary)
+freq(dat.an$ed.DSM5_AN_restricting_binary)
 ```
+### AN BINGE-EATING/PURGING ALGORITHM ###
+```{r}
 
+dat.an$ed.DSM5_AN_binge_purge_binary_numeric <- 
+  with(dat.an,
+  dplyr::if_else(
+   ##**Add actual screener question (need to find this in NBR)
+    
+    ##When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
+    an.1.lowest_weight_weigh_weighed == "No" &
+    
+    #BMI of under 18.55 when at this low weight
+    (bmi_unc <= 18.55 |
+       bmi_unc <= 18.55 |
+       bmi_unc <= 18.55) &
+      
+    #Roughly how old were you at your lowest weight? **Topher
+      
+      
+      #Fear of gaining weight (During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?_
+      (
+        an.1.gain_weight_low_weight == "Slightly afraid" |
+      an.1.gain_weight_low_weight == "Somewhat afraid" |
+      an.1.gain_weight_low_weight == "Very afraid" |
+      an.1.gain_weight_low_weight == "Extremely afraid"
+      ) &
+      
+    #INAPPROPRIATE COMPENSATORY BEH
+      #During the period of time when you were at your lowest weight, did you use any of the following as a way to control yourweight or shape? .)
+     (
+       icb.excessive_exercise.1 == "Excessive exercise" |
+        icb.fasting.1 == "Fasting"
+     ) &
+    
+       (icb.laxatives.1 == "Not Laxatives" &
+        icb.diuretics.1 == "Not Diuretics" &
+        icb.weight_loss_pills.1 == "Not Weight loss pills" &
+        icb.making_yourself_vomit.1 == "Not Making yourself vomit"
+        ) &
+       
+      #Have you ever used any of the following to compensate for episodes of binge eating or overeating? ***Don't think this should be included
+      (
+        icb.making_yourself_vomit == "Not Making yourself vomit" &
+        icb.laxatives == "Not Laxatives" & 
+        icb.diuretics == "Not Diuretics" &
+        icb.weight_loss_pills == "Not Weight loss pills"
+      ) &
+    
+    #Was there ever a time when you made yourself vomit, used laxatives, or used diuretics, on average, at least once a week for 3 months when you were not at low weight? 
+    icb.average_made_low_weight == "No, at times when I made myself vomit, used laxatives, or used diuretics, it was always during periods of low weight." &
+    
+    # Was there ever a time when you made yourself vomit, used laxatives, or used diuretics at least once a week for 3 months when you were not also binge eating? ##**What about weight loss pills?
+    
+      icb.binge_eating_wasthere_made == "No" &
+    
+  
+#Self-worth dependent on body shape or weight **What cutoff are we using here?
+  (
+    an.1.not_at_all_dependentcompletely_dependent == "1" |
+    an.1.not_at_all_dependentcompletely_dependent == "2" | 
+    an.1.not_at_all_dependentcompletely_dependent == "3" |
+      an.1.not_at_all_dependentcompletely_dependent == "4" |
+      an.1.not_at_all_dependentcompletely_dependent == "5" |
+      an.1.not_at_all_dependentcompletely_dependent == "Completely Dependent"
+  )
+ &
+  ##No binge eating behaviour **Shouldn't this just be whilst at low weight?
+  
+  #Did you experience regular episodes of binge eating while at your lowest weight?
+  (
+    be.experience_regular_episodes_binge== "No" |
+      be.experience_regular_episodes_binge == "At times of low weight and at times outside of low weight"
+  ),
+    true = 1,
+    false = 0,
+    missing = NA_real_)
+  )
+  
+#Recode numeric to factor
+dat.an$ed.DSM5_AN_restricting_binary <-
+  recode_factor(dat.an$ed.DSM5_AN_restricting_binary_numeric,
+                "0" = "No DSM5 AN restricting",
+                "1" = "DSM5 AN restricting"
+                )
+
+#Summary
+freq(dat.an$ed.DSM5_AN_restricting_binary)
+```
 
 
 1. LOW WEIGHT:
@@ -849,8 +934,6 @@ icb.excessive_exercise
 icb.fasting
 icb.other_methods
 icb.none
-
-
 
 AND
 4 Independent from low weight or excessive overeating, have you used any of the following at least once a week for at least 3 months, to control your weight or shape?
