@@ -31,7 +31,7 @@ colnames(dat.taf)
 
 ```
 
-##Look at numbers for sample sizes of stratified plots - BINGE EATING 
+##Look at numbers for sample sizes of stratified plots - 
 ```{r}
 
 dat.taf %>%
@@ -128,6 +128,29 @@ x <- dat.taf %>%
 freq(x$cohort_name)
 
 ```
+##Check no. of participants who are NOT missing for EVERY life not worth living 2 weeks variable at EVERY wave
+```{r}
+
+dat.life.worth.living.2.weeks <- dat.taf %>%
+  filter(
+    !is.na(taf.pandemic_felt_.Wavebaseline) |
+    !is.na(taf.felt_weeks_past_.Wavebaseline) |
+    !is.na(`taf.felt_weeks_past_.Wave 0`) |
+    !is.na(`taf.felt_weeks_past_.Wave 1`) |
+    !is.na(`taf.felt_weeks_past_.Wave 2`) |
+      !is.na(`taf.felt_weeks_past_.Wave 3`) |
+      !is.na(`taf.felt_weeks_past_.Wave 4`) |
+      !is.na(`taf.felt_weeks_past_.Wave 5`) |
+      !is.na(`taf.felt_weeks_past_.Wave 6`) |
+      !is.na(`taf.felt_weeks_past_.Wave 7`) |
+      !is.na(`taf.felt_weeks_past_.Wave 8`) |
+      !is.na(`taf.felt_weeks_past_.Wave 9`)
+  )
+
+nrow(dat.life.worth.living.2.weeks)   
+
+```
+
 ##Check number of people with non-missing data at each wave - LIFE NOT WORTH LIVING (lifetime)
 ```{r}
 
@@ -214,7 +237,29 @@ freq(x$cohort_name)
 ```
 
 
+##Check no. of participants who are NOT missing for EVERY contemplated harm 2 weeks variable at EVERY wave
+```{r}
 
+dat.contemplated.harm.2.weeks <- dat.taf %>%
+  filter(
+    !is.na(taf.pandemic_felt.1_.Wavebaseline) |
+    !is.na(taf.felt_weeks_past.1_.Wavebaseline) |
+    !is.na(`taf.felt_weeks_past.1_.Wave 0`) |
+    !is.na(`taf.felt_weeks_past.1_.Wave 1`) |
+    !is.na(`taf.felt_weeks_past.1_.Wave 2`) |
+      !is.na(`taf.felt_weeks_past.1_.Wave 3`) |
+      !is.na(`taf.felt_weeks_past.1_.Wave 4`) |
+      !is.na(`taf.felt_weeks_past.1_.Wave 5`) |
+      !is.na(`taf.felt_weeks_past.1_.Wave 6`) |
+      !is.na(`taf.felt_weeks_past.1_.Wave 7`) |
+      !is.na(`taf.felt_weeks_past.1_.Wave 8`) |
+      !is.na(`taf.felt_weeks_past.1_.Wave 9`)
+  )
+
+nrow(dat.contemplated.harm.2.weeks)  
+
+
+```
 
 
 
@@ -355,7 +400,7 @@ levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
 levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2021"
 
 ```
 
@@ -536,7 +581,7 @@ levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
 levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2021"
 
 ```
 
@@ -830,6 +875,11 @@ dat.taf <- dat.taf %>%
 
 nrow(dat.taf)
 
+##Check number of psych disorder cases in people wiht non-missing data
+dat.life.worth.living.2.weeks.psych <- dat.life.worth.living.2.weeks %>%
+  filter(control_numeric == 0)
+
+nrow(dat.life.worth.living.2.weeks.psych)
 ```
 
 ##**RETRO PREPAN - need to rename these the same as baseline / waves
@@ -951,7 +1001,7 @@ levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
 levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2021"
 
 ```
 
@@ -1020,6 +1070,12 @@ dat.taf <- dat.taf %>%
 
 nrow(dat.taf)
 
+##Check number of psych disorder cases in people wiht non-missing data
+dat.life.worth.living.2.weeks.psych1 <- dat.life.worth.living.2.weeks %>%
+  filter(control_numeric == 1)
+
+nrow(dat.life.worth.living.2.weeks.psych1)
+
 ```
 
 ##**RETRO PREPAN - need to rename these the same as baseline / waves
@@ -1143,7 +1199,7 @@ levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
 levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2021"
 
 ```
 
@@ -1322,7 +1378,7 @@ levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
 levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2021"
 
 ```
 
@@ -1369,6 +1425,238 @@ ggplot(dat_plot,
        fill = "Time of survey") 
 
 ```
+##Check how many participants answered each wave RAMP: taf.felt_weeks_past.1
+```{r}
+
+dat.taf.retroprepan <- dat.taf %>%
+  filter(wave == "retro_prepan" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+
+
+table(dat.taf.retroprepan$wave)
+
+
+dat.taf.baseline <- dat.taf %>%
+  filter(wave == "baseline" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.baseline$wave)
+
+
+dat.taf.1 <- dat.taf %>%
+  filter(wave == " 1" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.1$wave)
+
+dat.taf.2 <- dat.taf %>%
+  filter(wave == " 2" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+
+
+table(dat.taf.2$wave)
+
+
+dat.taf.3 <- dat.taf %>%
+  filter(wave == " 3" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.3$wave)
+
+dat.taf.4 <- dat.taf %>%
+  filter(wave == " 4" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.4$wave)
+
+
+dat.taf.5 <- dat.taf %>%
+  filter(wave == " 5" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.5$wave)
+
+dat.taf.6 <- dat.taf %>%
+  filter(wave == " 6" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.6$wave)
+
+dat.taf.7 <- dat.taf %>%
+  filter(wave == " 7" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.7$wave)
+
+dat.taf.8 <- dat.taf %>%
+  filter(wave == " 8" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.8$wave)
+
+dat.taf.9 <- dat.taf %>%
+  filter(wave == " 9" &
+           cohort_name == "ramp" &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.9$wave)
+```
+##Check how many participants answered each wave COPING: taf.felt_weeks_past.1
+```{r}
+
+dat.taf.retroprepan <- dat.taf %>%
+  filter(wave == "retro_prepan" &
+           (cohort_name == "nbr" | 
+              cohort_name == "coping_edgi" | 
+              cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.retroprepan$wave)
+
+
+dat.taf.baseline <- dat.taf %>%
+  filter(wave == "baseline" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.baseline$wave)
+
+dat.taf.0 <- dat.taf %>%
+  filter(wave == " 0" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.0$wave)
+
+dat.taf.1 <- dat.taf %>%
+  filter(wave == " 1" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.1$wave)
+
+dat.taf.2 <- dat.taf %>%
+  filter(wave == " 2" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+
+
+table(dat.taf.2$wave)
+
+
+dat.taf.3 <- dat.taf %>%
+  filter(wave == " 3" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.3$wave)
+
+dat.taf.4 <- dat.taf %>%
+  filter(wave == " 4" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.4$wave)
+
+
+dat.taf.5 <- dat.taf %>%
+  filter(wave == " 5" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.5$wave)
+
+dat.taf.6 <- dat.taf %>%
+  filter(wave == " 6" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.6$wave)
+
+dat.taf.7 <- dat.taf %>%
+  filter(wave == " 7" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.7$wave)
+
+dat.taf.8 <- dat.taf %>%
+  filter(wave == " 8" &
+           (cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad") &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.8$wave)
+
+dat.taf.9 <- dat.taf %>%
+  filter(wave == " 9" &
+           ((cohort_name == "nbr" |            cohort_name == "coping_edgi" |            cohort_name == "coping_glad")) &
+           !is.na(taf.felt_weeks_past.1)
+         )
+  
+
+table(dat.taf.9$wave)
+```
+
+
+
+
+
+
+
+
+
+
 ##PLOTS - TAF (ACTUAL HARM, 2 WEEKS)
 ### Read in TAF data (again, because variable needs to be renamed again and data restructured)
 taf.meant_life_end_weeks
@@ -1499,7 +1787,7 @@ levels(dat.no.nas$wave_factor)[9] <- "November 2020"
 
 levels(dat.no.nas$wave_factor)[10] <- "December 2020"
 
-levels(dat.no.nas$wave_factor)[11] <- "January 2020"
+levels(dat.no.nas$wave_factor)[11] <- "January 2021"
 
 ```
 

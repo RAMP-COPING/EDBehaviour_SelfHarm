@@ -1,0 +1,176 @@
+---
+title: "Checking dup IDs"
+author: "Helena Davies"
+date: "26/03/2021"
+output: html_document
+---
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Delete everything in your global environment
+```{r Delete everything in your global environment}
+remove(list = ls())
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
+
+IDs that are duplicated in EDEQ RAMP waves AND RAMP baseline
+"1125b21bce6837c04a2d25e594f6"
+"243ee9773c50486a347ee2f669dc"
+"535dc8c1b776fc5451e8d24b922f"
+"B9cb44638fc728f7ade0b43419bd" -- not in baseline?
+"5842dd2523474a35f849d7105152"
+"Fc97d7705ab0ec4bf95fa3eea814"
+"0f0965788de87a3fad79aba14085"
+"1a47ff6555d71515aa20484e59c4"
+"2d6f692405cebd783448d2d3bcdd"
+"5842dd2523474a35f849d7105152"
+"b5e2e62f0a2c261807caa1ac90b5" 
+"d301f9a79573ee7b36d5736eb298"
+"fc97d7705ab0ec4bf95fa3eea814"
+
+
+# Demographics 
+## RAMP
+### Read in data
+```{r ramp dem cols}
+
+ramp.dem.raw <- readRDS(file = "../data_raw/ramp/dem_ramp.rds")
+dim(ramp.dem.raw)
+colnames(ramp.dem.raw)
+
+```
+
+1. 1125b21bce6837c04a2d25e594f6
+
+Different 1) age, 2) marital status, 3) relationship with people they're living with, 4) whether they live with pets, 5) member of vulnerable group, etc
+```{r}
+
+ramp.dem.raw %>%
+  filter(`Login ID` == "1125b21bce6837c04a2d25e594f6")
+
+
+```
+
+2. 243ee9773c50486a347ee2f669dc
+
+Different 1) age, 2) gender, 3) marital status
+```{r}
+
+ramp.dem.raw %>%
+  filter(`Login ID` == "243ee9773c50486a347ee2f669dc")
+
+```
+3. 535dc8c1b776fc5451e8d24b922f
+
+Different 1) age, 2) marital status, 3) member of vulnerable group
+```{r}
+
+ramp.dem.raw %>%
+  filter(`Login ID` == "535dc8c1b776fc5451e8d24b922f")
+
+
+```
+
+4. B9cb44638fc728f7ade0b43419bd
+
+Different 1) age, 2) marital status, 3) member of vulnerable group
+```{r}
+
+ramp.dem.raw %>%
+  filter(`Login ID` == "d301f9a79573ee7b36d5736eb298")
+
+
+```
+
+# Demographics 
+## COPING NBR
+### Read in data
+```{r}
+nbr.dem.raw <- readRDS(file = "../data_raw/nbr/demographics_coping_nbr.rds")
+dim(nbr.dem.raw)
+colnames(nbr.dem.raw)
+
+```
+
+##Idenfitying duplicate IDs in BASELINE
+```{r}
+##Identify dup IDs in baseline
+nbr.dem.raw %>%
+   group_by(subjectid) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+
+```
+
+##Dup IDs at baseline
+00a413507bcf49e779fbeafcd17a			
+0293a9c8fcb9bfe99aa9549cde6a			
+040ee95bb4cec8404a12173c3dac			
+0453d89659acba2bdc59431bb2e1		
+053f9ade945d23c679cfc3c854b5			
+058350a67b100df156b55cfb8979			
+069a1280a6f43fe5a9feb78f8ca4			
+07a0206753423fb55e65d26dab90			
+0b8dd8c25b78600ae4ae37e70098	
+0d43a8f9414ec930a5bb11fa1a86
+
+1. 00a413507bcf49e779fbeafcd17a
+
+Likely same person
+```{r}
+
+nbr.dem.raw %>%
+  filter(subjectid == "00a413507bcf49e779fbeafcd17a")
+
+
+```
+2. 0293a9c8fcb9bfe99aa9549cde6a
+
+Likely same person
+```{r}
+
+nbr.dem.raw %>%
+  filter(subjectid == "0293a9c8fcb9bfe99aa9549cde6a")
+
+
+```
+
+3. 069a1280a6f43fe5a9feb78f8ca4
+
+Likely same person
+```{r}
+
+nbr.dem.raw %>%
+  filter(subjectid == "069a1280a6f43fe5a9feb78f8ca4")
+
+
+```
+
+4. 0d43a8f9414ec930a5bb11fa1a86
+
+Likely same person
+```{r}
+
+nbr.dem.raw %>%
+  filter(subjectid == "0d43a8f9414ec930a5bb11fa1a86")
+
+
+```
