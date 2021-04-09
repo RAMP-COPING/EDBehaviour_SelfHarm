@@ -1,5 +1,5 @@
 ---
-title: "COPING ED algorithms"
+title: "COPING (NBR + GLAD algorithms; RAMP + EDGI self-report) ED algorithms"
 author: "Helena Davies"
 date: "22/03/2021"
 output: html_document
@@ -29,1017 +29,7 @@ source("./libraries.R")
 source("./functions.R")
 ```
 
-## Read in data - BE ED100K GLAD
-```{r Read in data}
-
-BE_symptom_data_GLAD <- readRDS(file = "../data_raw/glad/be_glad_ed.rds") #Add your data file here
-
-```
-
-#Select columns
-```{r Read in data}
-
-exclude_cols_dem <- c("externalDataReference",
-                      "cohort_name")
-
-BE_symptom_data_GLAD.id <- BE_symptom_data_GLAD  %>% 
-  drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE)  %>%
-  add_column(cohort_name = "glad", .before = "be.short_period_ate_regard") %>% #create new column 
-  select(
-         ID = externalDataReference,# ID
-         cohort_name, # Sample
-         be.short_period_ate_regard,
-         be.binge_eating_stop_eating,
-         be.binge_eating_episodes_experience.txt,
-         be.long_experience_regularly_occurring,
-         be.long_experience_regularly_occurring.1,
-         be.began_roughly_regular_episodes.txt,
-         be.feel_distressed_episodes_eating,
-         be.not_at_all_dependentcompletely_dependent,
-         be.experience_regular_episodes_lowest,
-         be.binge_eating_distressed_make,
-         be.a_eat_much_more_rapidly_than_usual,
-         be.a_eat_much_more_rapidly_than_usual.1,
-         be.a_eat_much_more_rapidly_than_usual.2,
-         be.b_eat_until_you_felt_uncomfortably_full,
-         be.b_eat_until_you_felt_uncomfortably_full.1,
-         be.rapidly_usual_eat,
-         be.eat_felt_uncomfortably_full,
-         be.didn39_food_eat_large,
-         be.embarrassed_eat_eating.3,
-         be.feel_ashamed_disgusted_guilty.3,
-         be.control_feel_eating,
-         be.shape_means_make_control,
-         be.binge_eating_experience_episodes.txt,
-         be.binge_eating_experience_episodes.txt.1,
-         be.binge_eating_stopped_regular) %>%
-    add_numeric(., exclude = exclude_cols_dem) %>%
-mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
-# Inspect dimensions
-dim(BE_symptom_data_GLAD.id)
-# Inspect colnames
-colnames(BE_symptom_data_GLAD.id)
-#Differences
-dim(BE_symptom_data_GLAD.id)[1]-dim(BE_symptom_data_GLAD.id)[1]
-
-```
-
-## Read in data - BE ED100K EDGI
-```{r Read in data}
-
-BE_symptom_data_EDGI <- readRDS(file = "../data_raw/edgi/be_edgi.rds") #Add your data file here
-
-colnames(BE_symptom_data_EDGI)
-```
-
-## Select columns
-```{r Read in data}
-
-exclude_cols_dem <- c("externalDataReference",
-                      "cohort_name")
-
-BE_symptom_data_EDGI.id <- BE_symptom_data_EDGI %>% 
-  drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE)  %>%
-  add_column(cohort_name = "edgi", .before = "be.short_period_ate_regard") %>% #create new column 
-  select(
-         ID = externalDataReference,# ID
-         cohort_name, # Sample
-         be.short_period_ate_regard,
-         be.binge_eating_stop_eating,
-         be.binge_eating_episodes_experience.txt = be.follow_binge_eating_question.txt,
-         be.long_experience_regularly_occurring,
-         be.long_experience_regularly_occurring.1,
-         be.began_roughly_regular_episodes.txt,
-         be.feel_distressed_episodes_eating = be.feel_distressed_overeating_episodes,
-         be.not_at_all_dependentcompletely_dependent,
-         be.experience_regular_episodes_lowest,
-         be.binge_eating_distressed_make,
-         be.a_eat_much_more_rapidly_than_usual,
-         be.a_eat_much_more_rapidly_than_usual.1,
-         be.a_eat_much_more_rapidly_than_usual.2,
-         be.b_eat_until_you_felt_uncomfortably_full,
-         be.b_eat_until_you_felt_uncomfortably_full.1,
-         be.rapidly_usual_eat,
-         be.eat_felt_uncomfortably_full,
-         be.didn39_food_eat_large,
-         be.embarrassed_eat_eating.3,
-         be.feel_ashamed_disgusted_guilty.3,
-         be.control_feel_eating,
-         be.shape_means_make_control,
-         be.binge_eating_experience_episodes.txt.1 = be.binge_eating_experience_episodes.txt, 
-         be.binge_eating_experience_episodes.txt = be.follow_binge_eating_question.txt.1,
-         be.binge_eating_stopped_regular) %>%
-    add_numeric(., exclude = exclude_cols_dem) %>%
-mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
-# Inspect dimensions
-dim(BE_symptom_data_EDGI.id)
-# Inspect colnames
-colnames(BE_symptom_data_EDGI.id)
-#Differences
-dim(BE_symptom_data_EDGI.id)[1]-dim(BE_symptom_data_EDGI.id)[1]
-
-```
-
-##Merge GLAD and EDGI BE data
-```{r}
-dat.be <- rbind(BE_symptom_data_EDGI.id,
-                   BE_symptom_data_GLAD.id
-                )
-
-##colnames 
-colnames(dat.be)
-
-##number of people
-nrow(dat.be)
-```
-## Read in data - ICB ED100K GLAD
-```{r Read in data}
-
-ICB_symptom_data_GLAD <- readRDS(file = "../data_raw/glad/icb_glad_ed.rds") #Add your data file here
-```
-
-##Select columns
-```{r Read in data}
-
-exclude_cols_dem <- c("externalDataReference")
-
-ICB_symptom_data_GLAD.id <- ICB_symptom_data_GLAD %>% 
-  drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE)  %>%
-  add_column(cohort_name = "glad", .before = "icb.b_used_laxatives") %>% #create new column 
-  select(
-         ID = externalDataReference,# ID
-         cohort_name, # Sample
-         icb.b_used_laxatives,
-         icb.b_used_laxatives.1,
-         icb.b_used_laxatives.2, 
-         icb.a_made_yourself_vomit,
-         icb.a_made_yourself_vomit.1,
-         icb.a_made_yourself_vomit.2,
-         icb.engage_fasting_time_period,
-         icb.engage_fasting_time_period.1,
-         icb.fasted_time.txt,
-         icb.time_diet_pills.txt,
-         icb.long_time_period_diet,
-         icb.long_time_period_diet.1,
-         icb.body_shape_felt_compelled,
-         icb.felt_uneasy_unable_distressed,
-        # icb.friends_order_exercise_times,
-         icb.injury_prevented_illness_exercised,
-       #  icb.shape_compelled_unable_distressed.txt,
-         icb.feel_compelled_felt_distressed,
-         icb.feel_compelled_felt_distressed.1,
-         icb.began_time_inducing_vomiting.txt,
-         icb.engaging_long_time_period,
-         icb.engaging_long_time_period.1,
-         icb.laxatives_time.txt,
-         icb.long_laxatives_time_period,
-         icb.long_laxatives_time_period.1,
-         icb.diuretics_time.txt,
-         icb.long_diuretics_time_period,
-         icb.long_diuretics_time_period.1,
-         icb.making_yourself_vomit,
-         icb.laxatives,
-         icb.diuretics,
-         icb.weight_loss_pills,
-         icb.excessive_exercise,
-         icb.fasting,
-         icb.other_methods,
-         icb.none_of_the_above,
-         icb.making_yourself_vomit.1,
-         icb.laxatives.1,
-         icb.diuretics_water_pills,
-         icb.weight_loss_pills.1,
-         icb.excessive_exercise.1,
-         icb.fasting.1,
-         icb.other_methods.1,
-         icb.none_of_the_above.1,
-         icb.week_periods_induce_vomiting,
-         icb.lasted_binge_eating_episodes,
-         icb.eating_habits_modified_reason,
-        # icb.compensate_state_binge_eating.txt,
-         icb.state_methods_shape_control.txt,
-         icb.month_periods_induce_vomiting,
-         icb.year_periods_induce_vomiting,
-         icb.3months_average_time_week,
-         icb.wasthere_average_binge_engaged,
-         icb.laxatives_week_periods,
-         icb.month_laxatives_periods,
-         icb.laxatives_year_periods,
-         icb.diuretics_week_periods,
-         icb.month_diuretics_periods,
-         icb.diuretics_year_periods,
-         icb.week_periods_diet_pills,
-         icb.month_periods_diet_pills,
-         icb.year_periods_diet_pills,
-         icb.exercise_week_periods,
-         icb.month_exercise_periods,
-         icb.exercise_year_periods,
-         icb.fast_week_periods,
-       #  icb.month_fast_periods,
-         icb.fast_year_periods
-         ) %>%
-    add_numeric(., exclude = exclude_cols_dem) %>%
-  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
-# Inspect dimensions
-dim(ICB_symptom_data_GLAD.id)
-# Inspect colnames
-colnames(ICB_symptom_data_GLAD.id)
-#Differences
-dim(ICB_symptom_data_GLAD)[1]-dim(ICB_symptom_data_GLAD.id)[1]
-
-```
-
-## Read in data - ICB ED100K EDGI
-```{r Read in data}
-
-ICB_symptom_data_EDGI <- readRDS(file = "../data_raw/edgi/icb_edgi.rds") #Add your data file here
-```
-
-##Select columns
-```{r Read in data}
-
-exclude_cols_dem <- c("externalDataReference")
-
-ICB_symptom_data_EDGI.id <- ICB_symptom_data_EDGI %>% 
-  drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE)  %>%
-  add_column(cohort_name = "edgi", .before = "icb.exercised_excessively.1") %>% #create new column 
-  select(
-         ID = externalDataReference,# ID
-         cohort_name, # Sample
-         icb.b_used_laxatives = icb.exercised_excessively.1,
-         icb.b_used_laxatives.1 = icb.exercised_excessively.2,
-         icb.b_used_laxatives.2 = icb.fasted_or_did_not_eat.2, 
-         icb.a_made_yourself_vomit = icb.made_yourself_vomit.1,
-         icb.a_made_yourself_vomit.1 = icb.any_other_methods_not_previously_listed,
-         icb.a_made_yourself_vomit.2 = icb.any_other_methods_not_previously_listed.1,
-         icb.engage_fasting_time_period = icb.engage_fasting_period_periods,
-         icb.engage_fasting_time_period.1 = icb.engage_fasting_period_periods.1,
-         icb.fasted_time.txt,
-         icb.time_diet_pills.txt,
-         icb.long_time_period_diet,
-         icb.long_time_period_diet.1,
-         icb.body_shape_felt_compelled,
-         icb.felt_uneasy_unable_distressed,
-       #  icb.friends_order_exercise_times = icb.order_friends_exercise_times,
-         icb.injury_prevented_illness_exercised,
-       #  icb.shape_compelled_unable_distressed.txt = icb.compelled_shape_unable_distressed.txt,
-         icb.feel_compelled_felt_distressed,
-         icb.feel_compelled_felt_distressed.1,
-         icb.began_time_inducing_vomiting.txt = icb.time_induced_vomiting.txt,
-         icb.engaging_long_time_period,
-         icb.engaging_long_time_period.1,
-         icb.laxatives_time.txt,
-         icb.long_laxatives_time_period,
-         icb.long_laxatives_time_period.1,
-         icb.diuretics_time.txt,
-         icb.long_diuretics_time_period,
-         icb.long_diuretics_time_period.1,
-         icb.making_yourself_vomit,
-         icb.laxatives,
-         icb.diuretics,
-         icb.weight_loss_pills,
-         icb.excessive_exercise,
-         icb.fasting,
-         icb.other_methods,
-         icb.none_of_the_above = icb.none,
-         icb.making_yourself_vomit.1,
-         icb.laxatives.1,
-         icb.diuretics_water_pills = icb.diuretics.1,
-         icb.weight_loss_pills.1,
-         icb.excessive_exercise.1,
-         icb.fasting.1,
-         icb.other_methods.1,
-         icb.none_of_the_above.1 = icb.none.1,
-         icb.week_periods_induce_vomiting,
-         icb.lasted_binge_eating_episodes1 = icb.icb_bingeing_engage_months,
-         icb.lasted_binge_eating_episodes2 = icb.icb_bingeing_engage_months.1,
-         icb.lasted_binge_eating_episodes3 = icb.dont_know,
-         icb.eating_habits_modified_reason,
-        # icb.compensate_state_binge_eating.txt = icb.compensate_binge_eating_state.txt,
-         icb.state_methods_shape_control.txt,
-         icb.month_periods_induce_vomiting,
-         icb.year_periods_induce_vomiting,
-         icb.3months_average_time_week = icb.binge_eating_average_months,
-         icb.wasthere_average_binge_engaged = icb.binge_eating_wasthere_made,
-         icb.laxatives_week_periods,
-         icb.month_laxatives_periods,
-         icb.laxatives_year_periods,
-         icb.diuretics_week_periods,
-         icb.month_diuretics_periods,
-         icb.diuretics_year_periods,
-         icb.week_periods_diet_pills,
-         icb.month_periods_diet_pills,
-         icb.year_periods_diet_pills,
-         icb.exercise_week_periods,
-         icb.month_exercise_periods,
-         icb.exercise_year_periods,
-         icb.fast_week_periods,
-        # icb.month_fast_periods = icb.fast_month_periods,
-         icb.fast_year_periods
-         ) %>%
-    add_numeric(., exclude = exclude_cols_dem) %>%
-  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
-# Inspect dimensions
-dim(ICB_symptom_data_EDGI.id)
-# Inspect colnames
-colnames(ICB_symptom_data_EDGI.id)
-#Differences
-dim(ICB_symptom_data_EDGI)[1]-dim(ICB_symptom_data_EDGI.id)[1]
-
-```
-
-##Merge ICB and BED - GLAD
-```{r}
-dfs.list <- list(
- BE_symptom_data_GLAD.id,
-  ICB_symptom_data_GLAD.id)
-
-#Merge
-GLAD_BE_ICB_symptom_data.id <- plyr::join_all(dfs.list,
-                                      by = c("ID"))
-
-
-#Check
-nrow(GLAD_BE_ICB_symptom_data.id)
-```
-##Merge ICB and BED - EDGI
-```{r}
-dfs.list <- list(
- BE_symptom_data_EDGI.id,
-  ICB_symptom_data_EDGI.id)
-
-#Merge
-EDGI_BE_ICB_symptom_data.id <- plyr::join_all(dfs.list,
-                                      by = c("ID"))
-
-
-#Check
-nrow(EDGI_BE_ICB_symptom_data.id)
-```
-
-## Derived variables (GLAD + EDGI)
-
-##NB: Naming in data dictionary is wrong - use the following:
-be.a_eat_much_more_rapidly_than_usual = a) Eat much more rapidly than usual?
-
-be.a_eat_much_more_rapidly_than_usual.1 = b) Eat until you felt uncomfortably full?
-
-be.a_eat_much_more_rapidly_than_usual.2 = c) Eat large amounts of food when you didnt feel physically hungry?
-
-be.b_eat_until_you_felt_uncomfortably_full = d) Eat alone because you were embarrassed by what/how much you were eating?
-
-be.b_eat_until_you_felt_uncomfortably_full.1 e) Feel ashamed/disgusted with yourself, depressed, or very guilty after overeating?
-
-
-#BE Behaviour score - Number of BE behaviours [EDGI & GLAD]
-```{r ed.BE_behaviour_sum_numeric}
-
-#Sum of binge eating behaviours
-GLAD_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric <- rowSums(GLAD_BE_ICB_symptom_data.id[ ,
-                                 c("be.a_eat_much_more_rapidly_than_usual_numeric",
-                                   "be.a_eat_much_more_rapidly_than_usual.1_numeric",
-                                   "be.a_eat_much_more_rapidly_than_usual.2_numeric",
-                                   "be.b_eat_until_you_felt_uncomfortably_full_numeric",
-                                   "be.b_eat_until_you_felt_uncomfortably_full.1_numeric")],
-                                  na.rm = TRUE)
-
-#Summary
-freq(GLAD_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric)         
-
-colnames(GLAD_BE_ICB_symptom_data.id)
-
-#Sum of binge eating behaviours
-EDGI_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric <- rowSums(EDGI_BE_ICB_symptom_data.id[ ,
-                                 c("be.a_eat_much_more_rapidly_than_usual_numeric",
-                                   "be.a_eat_much_more_rapidly_than_usual.1_numeric",
-                                   "be.a_eat_much_more_rapidly_than_usual.2_numeric",
-                                   "be.b_eat_until_you_felt_uncomfortably_full_numeric",
-                                   "be.b_eat_until_you_felt_uncomfortably_full.1_numeric")],
-                                  na.rm = TRUE)
-
-#Summary
-freq(EDGI_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric)         
-
-colnames(EDGI_BE_ICB_symptom_data.id)
-```
-
-##Binge eating FREQUENCY
-One year = 52.1429 weeks
-One month = 4.34524 weeks 
-```{r ed.BE_freq conversion}
-#GLAD
-GLAD_BE_ICB_symptom_data.id$ed.BE_freq_per_week <- NA
-
-# Calculate frequency per week
-GLAD_BE_ICB_symptom_data.id$ed.BE_freq_per_week <- 
-  with(GLAD_BE_ICB_symptom_data.id,
-    case_when(
-      be.binge_eating_experience_episodes.txt.1_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt.1_numeric/52.1429, digits = 2),
-      be.binge_eating_experience_episodes.txt_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt_numeric/4.34524, digits = 2), 
-      be.binge_eating_episodes_experience.txt_numeric > 0 ~ be.binge_eating_episodes_experience.txt_numeric
-      )
-  )
-  
-#Summary
-freq(GLAD_BE_ICB_symptom_data.id$ed.BE_freq_per_week) 
-
-#EDGI
-EDGI_BE_ICB_symptom_data.id$ed.BE_freq_per_week <- NA
-
-# Calculate frequency per week
-EDGI_BE_ICB_symptom_data.id$ed.BE_freq_per_week <- 
-  with(EDGI_BE_ICB_symptom_data.id,
-    case_when(
-      be.binge_eating_experience_episodes.txt.1_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt.1_numeric/52.1429, digits = 2),
-      be.binge_eating_experience_episodes.txt_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt_numeric/4.34524, digits = 2), 
-      be.binge_eating_episodes_experience.txt_numeric > 0 ~ be.binge_eating_episodes_experience.txt_numeric
-      )
-  )
-  
-#Summary
-freq(EDGI_BE_ICB_symptom_data.id$ed.BE_freq_per_week) 
-```
-
-#Binge eating DURATION
-Converting to smallest unit first gives you more accurate estimates
-One year = 365.25 days; One month = 30.4167 days
-```{r ed.BE_duration conversion}
-
-##GLAD
-GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months <- NA
-
-# Sum years and months into months
-GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months <- 
-  if_else(condition = is.na(GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months),
-         true = ((GLAD_BE_ICB_symptom_data.id$be.long_experience_regularly_occurring_numeric*365.25) + (GLAD_BE_ICB_symptom_data.id$be.long_experience_regularly_occurring.1_numeric*30.4167)) / 30.4167, 
-        false = NA_real_,
-        missing = NA_real_)
-
-# Summary
-freq(GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months)
-
-##Change below 0 to NA
-GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months[GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months < 0] <- NA_real_
-
-# Check
-freq(GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months)
-
-
-##EDGI
-EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months <- NA
-
-#Change to numeric
-freq(EDGI_BE_ICB_symptom_data.id$be.duration_years_numeric) <- as.numeric(EDGI_BE_ICB_symptom_data.id$be.long_experience_regularly_occurring_numeric)
-
-EDGI_BE_ICB_symptom_data.id$be.duration_months_numeric <- as.numeric(EDGI_BE_ICB_symptom_data.id$be.long_experience_regularly_occurring.1_numeric)
-
-# Sum years and months into months
-EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months <- 
-  if_else(condition = is.na(EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months),
-         true = ((EDGI_BE_ICB_symptom_data.id$be.duration_years_numeric*365.25) + (EDGI_BE_ICB_symptom_data.id$be.duration_months_numeric*30.4167)) / 30.4167, 
-        false = NA_real_,
-        missing = NA_real_)
-
-# Summary
-freq(EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months)
-
-
-##Change below 0 to NA
-EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months[EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months < 0] <- NA_real_
-
-# Check
-freq(EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months)
-```
-
-
-#DSM5 BED ALGORITHM - GLAD
-```{r}
-
-#BED numeric variable
-GLAD_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric <- 
-  with(GLAD_BE_ICB_symptom_data.id,
-  dplyr::if_else(
-
-    #A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
-#1)Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most people would eat in a similar period of time under similar circumstances
-    be.short_period_ate_regard == "Yes" & 
-
-      #2)A sense of lack of control over eating during the episode (e.g., a feeling that one cannot stop eating or control what or how much one is eating)
-      (be.binge_eating_stop_eating == "Slightly" | #*** Should this be "slightly" for a more lenient algorithm? ***Difference between inclusion criteria and actual diagnositics?
-       be.binge_eating_stop_eating == "Somewhat" |
-       be.binge_eating_stop_eating == "Very" |
-       be.binge_eating_stop_eating == "Extremely") & 
-
-  #B. The binge-eating episodes are associated with three (or more) of the following:
-#1. Eating much more rapidly than normal.
-#2. Eating until feeling uncomfortably full.
-#3. Eating large amounts of food when not feeling physically hungry.
-#4. Eating alone because of feeling embarrassed by how much one is eating.
-#5. Feeling disgusted with oneself, depressed, or very guilty afterward.
-  ed.BE_behaviour_sum_numeric >= 3 & 
-
-  #C. Marked distress regarding binge eating is present.       
-  (be.binge_eating_distressed_make == "Slightly" |  #*** Should this be "slightly" for a more lenient algorithm? Difference between inclusion criteria and actual diagnositics?
-         be.binge_eating_distressed_make == "Somewhat" |
-         be.binge_eating_distressed_make == "Very" |
-         be.binge_eating_distressed_make == "Extremely") & 
-
-  #D. The binge eating occurs, on average, at least once a week for 3 months.
-  (ed.BE_freq_per_week >= 0.95 & # Binge eating per week 
-      ed.BE_duration_months >= 2.95) & # Binge eating total duration 
-
-  #E. The binge eating is not associated with the recurrent use of inappropriate compensatory behavior as in bulimia nervosa... "Did you ever have periods of time that lasted three months or more when you had binge-eating episodes without regularly engaging in any of the following: making yourself vomit, laxative use, diuretic use, taking weight loss pills, excessively exercising ?"
-  (icb.lasted_binge_eating_episodes == "Yes" | 
-        icb.none_of_the_above.1 == "Yes"  |
-     is.na(icb.lasted_binge_eating_episodes)) &  #***ask Molly about the logic of this question - does everyone get asked this?
-
-  #...and does not occur exclusively during the course of bulimia nervosa or anorexia nervosa.  
-  (be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" |
-     be.experience_regular_episodes_lowest == "No" |
-     is.na(be.experience_regular_episodes_lowest)),
-    true = 1,
-    false = 0,
-    missing = NA_real_)
-    )
-    
-#Recode numeric to factor
-GLAD_BE_ICB_symptom_data.id$ed.DSM5_BED_binary <-
-  recode_factor(GLAD_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric,
-                "0" = "No DSM-5 BED",
-                "1" = "DSM-5 BED")
-
-#Summary
-freq(GLAD_BE_ICB_symptom_data.id$ed.DSM5_BED_binary)
-
-```
-#DSM5 BED ALGORITHM - EDGI
-```{r}
-
-#BED numeric variable
-EDGI_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric <- 
-  with(EDGI_BE_ICB_symptom_data.id,
-  dplyr::if_else(
-
-    #A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
-#1)Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most people would eat in a similar period of time under similar circumstances
-    be.short_period_ate_regard == "Yes" & 
-
-      #2)A sense of lack of control over eating during the episode (e.g., a feeling that one cannot stop eating or control what or how much one is eating)
-      (be.binge_eating_stop_eating == "Slightly" | 
-       be.binge_eating_stop_eating == "Somewhat" |
-       be.binge_eating_stop_eating == "Very" |
-       be.binge_eating_stop_eating == "Extremely") & 
-
-  #B. The binge-eating episodes are associated with three (or more) of the following:
-#1. Eating much more rapidly than normal.
-#2. Eating until feeling uncomfortably full.
-#3. Eating large amounts of food when not feeling physically hungry.
-#4. Eating alone because of feeling embarrassed by how much one is eating.
-#5. Feeling disgusted with oneself, depressed, or very guilty afterward.
-  ed.BE_behaviour_sum_numeric >= 3 & 
-
-  #C. Marked distress regarding binge eating is present.       
-  (be.binge_eating_distressed_make == "Slightly" |  #*** Should this be "slightly" for a more lenient algorithm? Difference between inclusion criteria and actual diagnositics?
-         be.binge_eating_distressed_make == "Somewhat" |
-         be.binge_eating_distressed_make == "Very" |
-         be.binge_eating_distressed_make == "Extremely") & 
-
-  #D. The binge eating occurs, on average, at least once a week for 3 months.
-  (ed.BE_freq_per_week >= 0.95 & # Binge eating per week 
-      ed.BE_duration_months >= 2.95) & # Binge eating total duration 
-
-  #E. The binge eating is not associated with the recurrent use of inappropriate compensatory behavior as in bulimia nervosa... "Did you ever have periods of time that lasted three months or more when you had binge-eating episodes without regularly engaging in any of the following: making yourself vomit, laxative use, diuretic use, taking weight loss pills, excessively exercising ?"
-  (
-  (
-    icb.lasted_binge_eating_episodes1 == "Yes, 3 months DID NOT engage in ICB while bingeing" | 
-        icb.none_of_the_above.1 == "Yes"
-    ) |
-  
-  (
-    is.na(icb.lasted_binge_eating_episodes1) & #***Is this right?
-     is.na(icb.lasted_binge_eating_episodes2) &
-     is.na(icb.lasted_binge_eating_episodes3)
-     )
-  ) & 
-
-  #...and does not occur exclusively during the course of bulimia nervosa or anorexia nervosa.  
-  (be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" |
-     be.experience_regular_episodes_lowest == "No" |
-     is.na(be.experience_regular_episodes_lowest)),
-    true = 1,
-    false = 0,
-    missing = NA_real_)
-    )
-    
-#Recode numeric to factor
-EDGI_BE_ICB_symptom_data.id$ed.DSM5_BED_binary <-
-  recode_factor(EDGI_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric,
-                "0" = "No DSM-5 BED",
-                "1" = "DSM-5 BED")
-
-#Summary
-freq(EDGI_BE_ICB_symptom_data.id$ed.DSM5_BED_binary)
-
-```
-##DSM-5 BN - GLAD
-
-NB: ICBs mislabelled in data dictionary
-icb.b_used_laxatives = Fasted or did not eat
-icb.b_used_laxatives.1 = Used diet pills
-icb.b_used_laxatives.2 = Exercised excessively
-icb.a_made_yourself_vomit = Made yourself vomit
-icb.a_made_yourself_vomit.1 = Used laxatives
-icb.a_made_yourself_vomit.2 =  Used diuretics
-```{r ed.BN_DSM5_binary}
-
-#Bulimia nervosa numeric variable
-GLAD_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric <- 
-  with(GLAD_BE_ICB_symptom_data.id,
-  dplyr::if_else(
-
-#A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
-
-    #1. Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most individuals would eat in a similar period of time under similar circumstances.
-    
-    ##Have you ever had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?
-    be.short_period_ate_regard == "Yes" & 
-
-      #2. A sense of lack of control over eating during the episode (e.g., a feeling that one cannot stop eating or control what or how much one is eating).
-      
-      #When you were having regularly occurring episodes of binge eating or overeating, did you feel that your eating was out of control such that you felt you could not stop eating, or that you could not control what or how much you were eating?
-      
-        (
-          be.binge_eating_stop_eating == "Slightly" | #**Check cut off!
-         be.binge_eating_stop_eating == "Somewhat" |
-         be.binge_eating_stop_eating == "Very" |
-         be.binge_eating_stop_eating == "Extremely"
-         ) & 
-
-      #B. Recurrent inappropriate compensatory behaviors in order to prevent weight gain, such as self-induced vomiting; misuse of laxatives, diuretics, or other medications; fasting; or excessive exercise. [these variables are referring to ICBs to control weight or shape, i.e. not necessarily in response to binge eating]
-          (
-            icb.a_made_yourself_vomit == "A few times" |  #Vomiting
-          icb.a_made_yourself_vomit == "Often" | 
-            
-          icb.a_made_yourself_vomit.1 == "A few times" | #Laxtives
-          icb.a_made_yourself_vomit.1 == "Often" |
-            
-          icb.a_made_yourself_vomit.2  == "A few times" | #Diuretics
-          icb.a_made_yourself_vomit.2  =="Often" |
-            
-          icb.b_used_laxatives.1 == "A few times" | #Diet pills
-          icb.b_used_laxatives.1 == "Often" |
-            
-          icb.b_used_laxatives.2 == "A few times" | #Excessive exercise
-          icb.b_used_laxatives.2 == "Often" |
-            
-          icb.b_used_laxatives == "A few times" | #Fasting
-          icb.b_used_laxatives == "Often"
-          ) & 
-
-      #C. The binge eating and inappropriate compensatory behaviors both occur, on average, at least once a week for 3 months.
-      (
-        ed.BE_freq_per_week >= 0.95 & # Binge eating per week 
-      ed.BE_duration_months >= 2.95 # Binge eating total duration 
-      ) & 
-
-      #B. Recurrent inappropriate compensatory behaviors in order to prevent weight gain, such as self-induced vomiting; misuse of laxatives, diuretics, or other medications; fasting; or excessive exercise. [these variables are referring to ICBs in response to binge eating]
-        (
-          icb.making_yourself_vomit.1 == "Making yourself vomit" |
-        icb.laxatives.1 == "Laxatives (including pills or liquids meant to stimulate bowel movements)" |
-        icb.diuretics_water_pills == "Diuretics (water pills)" |
-        icb.weight_loss_pills.1 == "Weight loss pills (over the counter or prescription)" |
-        icb.excessive_exercise.1 == "Excessive exercise (e.g. feel compelled to exercise, feel uneasy or distressed if unable to exercise)" |
-        icb.fasting.1 == "Fasting (not eating for 8 waking hours or more)"
-        ) & 
-
-      #C. The binge eating and inappropriate compensatory behaviors both occur, on average, at least once a week for 3 months.
-      
-  #Did the binge eating and compensatory behaviours occur at the same time, on average, once a week for 3 months?
-      
-      (
-        icb.3months_average_time_week == "Yes" | 
-  is.na(icb.3months_average_time_week)
-  ) & 
-
-    #D. Self-evaluation is unduly influenced by body shape and weight.
-         
-    #During the time when you were binge eating, how dependent was your self-worth on your body shape or weight?
-    (
-    be.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
-    be.not_at_all_dependentcompletely_dependent == "2" | 
-    be.not_at_all_dependentcompletely_dependent == "3" |
-      be.not_at_all_dependentcompletely_dependent == "4" |
-      be.not_at_all_dependentcompletely_dependent == "5" |
-      be.not_at_all_dependentcompletely_dependent == "Completely Dependent"
-  ) &
-
-    #E. The disturbance does not occur exclusively during episodes of anorexia nervosa.
-        (
-          be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" | 
-         be.experience_regular_episodes_lowest == "No" |
-         is.na(be.experience_regular_episodes_lowest)
-         ),
-    true = 1,
-    false = 0,
-    missing = NA_real_)
-  )
-  
-#Recode numeric variable to factor
-GLAD_BE_ICB_symptom_data.id$ed.DSM5_BN_binary <-
-  recode_factor(GLAD_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric,
-                "0" = "No DSM-5 BN",
-                "1" = "DSM-5 BN")
-
-#Summary
-freq(GLAD_BE_ICB_symptom_data.id$ed.DSM5_BN_binary)
-```
-
-
-##DSM-5 BN - EDGI
-
-NB: ICBs mislabelled in data dictionary
-
-icb.exercised_excessively.1 = Fasted or did not eat
-icb.exercised_excessively.2 = Used diet pills
-icb.fasted_or_did_not_eat.2 = Exercised excessively
-icb.made_yourself_vomit.1 = Made yourself vomit
-icb.any_other_methods_not_previously_listed = Used laxatives
-icb.any_other_methods_not_previously_listed.1 =  Used diuretics
-
-```{r ed.BN_DSM5_binary}
-
-#Bulimia nervosa numeric variable
-EDGI_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric <- 
-  with(EDGI_BE_ICB_symptom_data.id,
-  dplyr::if_else(
-
-#A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
-
-    #1. Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most individuals would eat in a similar period of time under similar circumstances.
-    
-    ##Have you ever had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?
-    be.short_period_ate_regard == "Yes" & 
-
-      #2. A sense of lack of control over eating during the episode (e.g., a feeling that one cannot stop eating or control what or how much one is eating).
-      
-      #When you were having regularly occurring episodes of binge eating or overeating, did you feel that your eating was out of control such that you felt you could not stop eating, or that you could not control what or how much you were eating?
-      
-        (
-          be.binge_eating_stop_eating == "Slightly" | #**Check cut off!
-         be.binge_eating_stop_eating == "Somewhat" |
-         be.binge_eating_stop_eating == "Very" |
-         be.binge_eating_stop_eating == "Extremely"
-         ) & 
-
-      #B. Recurrent inappropriate compensatory behaviors in order to prevent weight gain, such as self-induced vomiting; misuse of laxatives, diuretics, or other medications; fasting; or excessive exercise. [these variables are referring to ICBs to control weight or shape, i.e. not necessarily in response to binge eating]
-          (
-            icb.a_made_yourself_vomit == "A few times" |  #Vomiting
-          icb.a_made_yourself_vomit == "Often" | 
-            
-          icb.a_made_yourself_vomit.1 == "A few times" | #Laxtives
-          icb.a_made_yourself_vomit.1 == "Often" |
-            
-          icb.a_made_yourself_vomit.2  == "A few times" | #Diuretics
-          icb.a_made_yourself_vomit.2  =="Often" |
-            
-          icb.b_used_laxatives.1 == "A few times" | #Diet pills
-          icb.b_used_laxatives.1 == "Often" |
-            
-          icb.b_used_laxatives.2 == "A few times" | #Excessive exercise
-          icb.b_used_laxatives.2 == "Often" |
-            
-          icb.b_used_laxatives == "A few times" | #Fasting
-          icb.b_used_laxatives == "Often"
-          ) & 
-
-      #C. The binge eating and inappropriate compensatory behaviors both occur, on average, at least once a week for 3 months.
-      (
-        ed.BE_freq_per_week >= 0.95 & # Binge eating per week 
-      ed.BE_duration_months >= 2.95 # Binge eating total duration 
-      ) & 
-
-      #B. Recurrent inappropriate compensatory behaviors in order to prevent weight gain, such as self-induced vomiting; misuse of laxatives, diuretics, or other medications; fasting; or excessive exercise. [these variables are referring to ICBs in response to binge eating]
-        (
-          icb.making_yourself_vomit.1 == "Making yourself vomit" |
-        icb.laxatives.1 == "Laxatives" |
-        icb.diuretics_water_pills == "Diuretics" |
-        icb.weight_loss_pills.1 == "Weight loss pills" |
-        icb.excessive_exercise.1 == "Excessive exercise" |
-        icb.fasting.1 == "Fasting"
-        ) & 
-
-      #C. The binge eating and inappropriate compensatory behaviors both occur, on average, at least once a week for 3 months.
-      
-  #Did the binge eating and compensatory behaviours occur at the same time, on average, once a week for 3 months?
-      
-      (
-        icb.3months_average_time_week == "Yes" | 
-  is.na(icb.3months_average_time_week)
-  ) & 
-
-    #D. Self-evaluation is unduly influenced by body shape and weight.
-         
-    #During the time when you were binge eating, how dependent was your self-worth on your body shape or weight?
-    (
-    be.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
-    be.not_at_all_dependentcompletely_dependent == "2" | 
-    be.not_at_all_dependentcompletely_dependent == "3" |
-      be.not_at_all_dependentcompletely_dependent == "4" |
-      be.not_at_all_dependentcompletely_dependent == "5" |
-      be.not_at_all_dependentcompletely_dependent == "Completely Dependent"
-  ) &
-
-    #E. The disturbance does not occur exclusively during episodes of anorexia nervosa.
-        (
-          be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" | 
-         be.experience_regular_episodes_lowest == "No" |
-         is.na(be.experience_regular_episodes_lowest)
-         ),
-    true = 1,
-    false = 0,
-    missing = NA_real_)
-  )
-  
-#Recode numeric variable to factor
-EDGI_BE_ICB_symptom_data.id$ed.DSM5_BN_binary <-
-  recode_factor(EDGI_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric,
-                "0" = "No DSM-5 BN",
-                "1" = "DSM-5 BN")
-
-#Summary
-freq(EDGI_BE_ICB_symptom_data.id$ed.DSM5_BN_binary)
-```
-
-
-
-
-
-##GLAD MHD
-```{r}
- glad.mhd.raw <- readRDS(file = "../data_raw/glad/mhd_glad.rds")
-  dim(glad.mhd.raw)
-  colnames(glad.mhd.raw)
-```
-
-
-
-
-
-
-
-
-##Select columns
-```{r}
-exclude_cols <- c("ID",
-                  "cohort_name")
-
-glad.mhd.raw.id <- glad.mhd.raw %>%
-    drop_na(externalDataReference) %>% # Drop NAs
-    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "glad", .before = "mhd.an") %>% #create new column 
-    select(
-      ID = externalDataReference, # ID
-      cohort_name, # Sample
-      mhd.anorexia_signup = mhd.an,
-      mhd.bulimia_signup = mhd.bn,
-      mhd.bed_signup = mhd.bed
-
-    ) %>%
-    add_numeric(., exclude = exclude_cols) %>%
-    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-    mutate_if(is.numeric, ~na_if(., -99)) %>%
-    mutate_if(is.numeric, ~na_if(., -77)) %>%
-    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-  # Inspect dimensions
-  dim(glad.mhd.raw.id)
-  # Inspect colnames
-  colnames(glad.mhd.raw.id)
-  #Differences
-  dim(glad.mhd.raw)[1]-dim(glad.mhd.raw.id)[1]
-```
-##GLAD MHD
-```{r}
-edgi.mhd.raw <- readRDS(file = "../data_raw/edgi/mhd_edgi.rds")
-  dim(edgi.mhd.raw)
-  colnames(edgi.mhd.raw)
-```
-
-##Select columns
-```{r}
-exclude_cols <- c("ID",
-                  "cohort_name")
-
-edgi.mhd.raw.id <- edgi.mhd.raw %>%
-    drop_na(externalDataReference) %>% # Drop NAs
-    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "edgi", .before = "mhd.anorexia_nervosa") %>% #create new column 
-    select(
-      ID = externalDataReference, # ID
-      cohort_name, # Sample
-      mhd.anorexia_signup = mhd.anorexia_nervosa,
-      mhd.bulimia_signup = mhd.bulimia_nervosa,
-      mhd.bed_signup = mhd.bingeeating_disorder
-
-    ) %>%
-    add_numeric(., exclude = exclude_cols) %>%
-    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-    mutate_if(is.numeric, ~na_if(., -99)) %>%
-    mutate_if(is.numeric, ~na_if(., -77)) %>%
-    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-  # Inspect dimensions
-  dim(glad.mhd.raw.id)
-  # Inspect colnames
-  colnames(glad.mhd.raw.id)
-  #Differences
-  dim(glad.mhd.raw)[1]-dim(glad.mhd.raw.id)[1]
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+############ COPING ALGORITHMS ################
 
 ### Read in ED data: AN GLAD COPING
 ```{r}
@@ -1054,7 +44,7 @@ nrow(dat.ed.glad.coping)
 
 ```
 
-### Select variables: GLAD AN
+### Select variables: GLAD COPING AN
 ```{r glad select variables}
 
 exclude_cols_dem <- c("ID",
@@ -1112,7 +102,7 @@ dim(dat.ed.glad.coping)[1]-dim(dat.ed.glad.coping.id)[1]
 
 ```
 
-### Read in ED data: GLAD ICB 
+### Read in ED data: GLAD COPING ICB 
 ```{r}
 dat.icb.glad <- readRDS(file = "../data_raw/diagnostics/icb_coping_glad.rds")
 
@@ -1125,7 +115,7 @@ nrow(dat.icb.glad)
 
 ```
 
-### Select variables: GLAD ICB
+### Select variables: GLAD COPING ICB
 ```{r glad select variables}
 
 exclude_cols_dem <- c("ID",
@@ -1189,10 +179,11 @@ colnames(dat.icb.glad.id)
 #Differences
 dim(dat.icb.glad)[1]-dim(dat.icb.glad.id)[1]
 
+dat.icb.glad
 ```
 
 
-### Read in ED data: GLAD BE
+### Read in ED data: GLAD COPING BE
 ```{r}
 dat.be.glad <- readRDS(file = "../data_raw/diagnostics/be_coping_glad.rds")
 
@@ -1206,7 +197,7 @@ nrow(dat.be.glad)
 ```
 
 
-### Select variables: GLAD BE
+### Select variables: GLAD COPING BE
 ```{r glad select variables}
 
 exclude_cols_dem <- c("ID",
@@ -1274,7 +265,7 @@ nrow(dat.ed.nbr.coping)
 
 ```
 
-### Select variables: NBR AN
+### Select variables: NBR COPING AN
 ```{r glad select variables}
 
 exclude_cols_dem <- c("ID",
@@ -1334,7 +325,7 @@ dim(dat.ed.nbr.coping)[1]-dim(dat.ed.nbr.coping.id)[1]
 
 
 
-### Read in ED data: NBR ICB 
+### Read in ED data: NBR COPING ICB 
 ```{r}
 dat.icb.nbr <- readRDS(file = "../data_raw/diagnostics/icb_coping_nbr.rds")
 
@@ -1347,7 +338,7 @@ nrow(dat.icb.nbr)
 
 ```
 
-### Select variables: NBR ICB
+### Select variables: NBR COPING ICB
 ```{r glad select variables}
 
 exclude_cols_dem <- c("ID",
@@ -1413,7 +404,7 @@ dim(dat.icb.nbr)[1]-dim(dat.icb.nbr.id)[1]
 ```
 
 
-### Read in ED data: GLAD BE
+### Read in ED data: GLAD COPING BE
 ```{r}
 dat.be.nbr <- readRDS(file = "../data_raw/diagnostics/be_coping_nbr.rds")
 
@@ -1427,7 +418,7 @@ nrow(dat.be.nbr)
 ```
 
 
-### Select variables: NBR BE
+### Select variables: NBR COPING BE
 ```{r glad select variables}
 
 exclude_cols_dem <- c("ID",
@@ -1476,6 +467,24 @@ dim(dat.be.nbr.id )
 colnames(dat.be.nbr.id )
 #Differences
 dim(dat.be.nbr)[1]-dim(dat.be.nbr.id )[1]
+
+```
+##Check IDs match
+```{r}
+#AN data and BE data
+matched_IDS_1 <- dat.ed.glad.coping.id[dat.ed.glad.coping.id$ID %in% dat.be.glad.id$ID,]
+
+length(unique(matched_IDS_1$ID))
+
+#AN data and ICB data
+matched_IDS_2 <- dat.ed.glad.coping.id[dat.ed.glad.coping.id$ID %in% dat.icb.glad.id$ID,]
+
+length(unique(matched_IDS_2$ID))
+
+#BE data and ICB data
+matched_IDS_3 <- dat.be.glad.id[dat.be.glad.id$ID %in% dat.icb.glad.id$ID,]
+
+length(unique(matched_IDS_3$ID))
 
 ```
 
@@ -1549,7 +558,7 @@ nrow(dat.ed)
 ```
 
 
-############# DERIVED VARIABLES #####################
+############# DERIVED VARIABLES - COPING #####################
 
 #Work out BMI 
 BMI = kg/m2 
@@ -1707,6 +716,7 @@ summary(dat.ed$bmi_unc)
 
 ```
 #Frequency binge eating [GLAD+NBR]
+
 Question: "How many episodes of binge eating would you usually experience in one month/one year/one week?"
 
 One year = 52.1429 weeks
@@ -1737,7 +747,8 @@ dat.ed$ed.BE_freq_per_week <-
 freq(dat.ed$ed.BE_freq_per_week) 
 ```
 
-#Binge eating duration (BE) [EDGI & GLAD]
+#Binge eating duration (BE) 
+
 Converting to smallest unit first gives you more accurate estimates
 One year = 365.25 days; One month = 30.4167 days
 ```{r ed.BE_duration conversion}
@@ -1789,7 +800,7 @@ dat.ed$ed.BE_behaviour_sum_numeric <- rowSums(dat.ed[ ,
 freq(dat.ed$ed.BE_behaviour_sum_numeric)                                 
 ```
 
-#### DSM 5 AN restricting
+#### DSM 5 AN restricting - COPING 
 A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
 
 B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
@@ -1917,7 +928,7 @@ ANR_cases <- dat.ed %>%
 
 freq(ANR_cases$cohort_name)
 ```
-#### DSM 5 AN binge eating/purging
+#### DSM 5 AN binge eating/purging - COPING 
 
 A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
 
@@ -2035,7 +1046,7 @@ freq(ANBP_cases$cohort_name)
 ```
 
 
-##DSM 5 BULIMIA NERVOSA
+##DSM 5 BULIMIA NERVOSA - COPING
 A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
 
   1. Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most individuals would eat in a similar period of time under similar circumstances.
@@ -2162,9 +1173,15 @@ dat.ed$ed.DSM5_BN_binary <-
 
 #Summary
 freq(dat.ed$ed.DSM5_BN_binary)
+
+#Check which cohort they are from
+BN_cases <- dat.ed %>%
+  filter(ed.DSM5_BN_binary == "DSM-5 BN")
+
+freq(BN_cases$cohort_name)
 ```
 
-#DSM-5 BED algorithm [EDGI]
+#DSM-5 BED algorithm - COPING 
 A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
   1. Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most people would eat in a similar period of time under similar circumstances.
 
@@ -2241,20 +1258,21 @@ freq(dat.ed$ed.DSM5_BED_binary)
 
 ```
 
-## SELF-REPORTED DIAGNOSES ##
+## SELF-REPORTED DIAGNOSES - COPING ##
 
+#Import GLAD COPING self-report data
 ```{r}
  glad.coping.mhd.raw <- readRDS(file = "../data_raw/glad/mhd_coping_glad.rds")
   dim(glad.coping.mhd.raw)
   colnames(glad.coping.mhd.raw)
 ```
-
+#Select columns from GLAD COPING self-report data
 ```{r}
 
 exclude_cols <- c("cohort_name",
                   "ID")
 
- glad.coping.mhd.raw.id <- glad.coping.mhd.raw  %>%
+glad.coping.mhd.raw.id <- glad.coping.mhd.raw  %>%
     drop_na(externalDataReference) %>% # Drop NAs
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
@@ -2289,14 +1307,14 @@ exclude_cols <- c("cohort_name",
   
 ```
 
-
+#Import NBR COPING self-report data
 ```{r}
 nbr.mhd.raw <- readRDS(file = "../data_raw/nbr/mhd_coping_nbr.rds")
   dim(nbr.mhd.raw)
   colnames(nbr.mhd.raw)
 ```
 
-
+#Select columns from NBR COPING self-report data
 ```{r}
 exclude_cols <- c("cohort_name",
                     "ID")
@@ -2334,20 +1352,21 @@ exclude_cols <- c("cohort_name",
   dim(nbr.mhd.raw)[1]-dim(nbr.mhd.raw.id)[1]
 ```
 
-## RAMP MHD
+##Import RAMP MHD self-report data
 ```{r}
 ramp.mhd.raw <- readRDS(file = "../data_raw/ramp/health_mhq_ramp.rds")
   dim(ramp.mhd.raw)
   colnames(ramp.mhd.raw)
 ```
 
-# Select columns
+# Select columns from RAMP self-report data
+NB: This is the only ED data RAMP has (i.e., no sx-level info other than the EDEQ)
 ```{r}
   
-  exclude_cols <- c("cohort_name",
+exclude_cols <- c("cohort_name",
                     "ID")
   
-  ramp.mhd.raw.id <- ramp.mhd.raw %>%
+ramp.mhd.raw.id <- ramp.mhd.raw %>%
     drop_na(`Login ID`) %>% # Drop NAs
     distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(`Login ID`, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
@@ -2380,14 +1399,14 @@ ramp.mhd.raw <- readRDS(file = "../data_raw/ramp/health_mhq_ramp.rds")
   #Differences
   dim(ramp.mhd.raw)[1]-dim(ramp.mhd.raw.id)[1]
 ```
-##EDGI MHD
+##Import EDGI MHD self-report data
 ```{r}
  edgi.mhd.raw <- readRDS(file = "../data_raw/edgi/mhd_edgi.rds")
   dim(edgi.mhd.raw)
   colnames(edgi.mhd.raw)
 ```
 
-## select columns 
+## select columns EDGI self-report data
 ```{r}
 edgi.mhd.raw.id <- edgi.mhd.raw %>%
     drop_na(externalDataReference) %>% # Drop NAs
@@ -2464,10 +1483,7 @@ colnames(all_mhd)
 nrow(all_mhd)
 ```
 
-
-
 ##Merge MHD data with ED data - ALL datasets
-
 ```{r}
 dat.ed <- left_join(all_mhd,
                     dat.ed,
@@ -2490,7 +1506,7 @@ dat.ed %>%
   freq(mhd.anorexia_nervosa) #2760
 
 ```
-## New column: self-reported AND/OR algorithm-derived ANR/ANBP
+## New column: self-reported AND/OR algorithm-derived ANR/ANBP (COPING)
 ```{r}
 
 dat.ed <- dat.ed %>%
@@ -2529,5 +1545,104 @@ dat.ed <- dat.ed %>%
     freq(anorexia_group,
          cumul = F)
   
+  
+#Check which cohort/s cases are from
+  dat.ed %>%
+    filter(anorexia_group_numeric == 1) %>%
+    group_by(cohort_name) %>%
+    count()
+  
+```
+## New column: self-reported AND/OR algorithm-derived BN (COPING)
+```{r}
+
+
+dat.ed <- dat.ed %>%
+  mutate(
+    bulimia_group_numeric =
+           case_when(mhd.bulimia_nervosa_numeric == 1 |
+                       ed.DSM5_BN_binary_numeric == 1 ~ 1,
+                     mhd.bulimia_nervosa_numeric == 0 &
+                       ed.DSM5_BN_binary_numeric == 0 ~ 0,
+                     mhd.bulimia_nervosa_numeric == 0 &
+                       is.na(ed.DSM5_BN_binary_numeric) ~ 0,
+                     is.na(mhd.bulimia_nervosa_numeric)  &
+                       ed.DSM5_BN_binary_numeric == 0 ~ 0,
+                     is.na(mhd.bulimia_nervosa_numeric) &
+                       is.na(ed.DSM5_BN_binary_numeric) ~ NA_real_
+           )
+  )
+
+#Check freq                    
+dat.ed %>%
+  freq(bulimia_group_numeric)
+           
+#Add factor variable 
+dat.ed <- dat.ed %>%
+    mutate(
+      bulimia_group =
+        recode_factor(bulimia_group_numeric,
+                      "0" = "No bulimia nervosa",
+                      "1" = "Self-reported and/or algorithm derived bulimia",
+                      missing = NA_character_
+        )
+    )
+
+#Check freq #1550 with BN
+  dat.ed %>%
+    freq(bulimia_group,
+         cumul = F)
+  
+#Check which cohort/s cases are from
+  dat.ed %>%
+    filter(bulimia_group_numeric == 1) %>%
+    group_by(cohort_name) %>%
+    count()
+  
 ```
 
+## New column: self-reported AND/OR algorithm-derived BED (COPING)
+```{r}
+dat.ed <- dat.ed %>%
+  mutate(
+    bed_group_numeric =
+           case_when(mhd.bingeeating_disorder_numeric == 1 |
+                       ed.DSM5_BED_binary_numeric == 1 ~ 1,
+                     mhd.bingeeating_disorder_numeric == 0 &
+                       ed.DSM5_BED_binary_numeric == 0 ~ 0,
+                     mhd.bingeeating_disorder_numeric == 0 &
+                       is.na(ed.DSM5_BED_binary_numeric) ~ 0,
+                     is.na(mhd.bingeeating_disorder_numeric)  &
+                       ed.DSM5_BED_binary_numeric == 0 ~ 0,
+                     is.na(mhd.bingeeating_disorder_numeric) &
+                       is.na(ed.DSM5_BED_binary_numeric) ~ NA_real_
+           )
+  )
+
+#Check freq                    
+dat.ed %>%
+  freq(bed_group_numeric)
+           
+#Add factor variable 
+dat.ed <- dat.ed %>%
+    mutate(
+      bed_group =
+        recode_factor(bed_group_numeric,
+                      "0" = "No binge-eating disorder",
+                      "1" = "Self-reported and/or algorithm derived BED",
+                      missing = NA_character_
+        )
+    )
+
+#Check freq #1550 with BN
+  dat.ed %>%
+    freq(bed_group,
+         cumul = F)
+  
+#Check which cohort/s cases are from
+  dat.ed %>%
+    filter(bed_group_numeric == 1) %>%
+    group_by(cohort_name) %>%
+    count()
+  
+```
