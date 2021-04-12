@@ -647,7 +647,7 @@ dat.ed$height_m <-
   if_else(
     condition = is.na(dat.ed$height_m),
     true = (
-      (dat.ed$an.1.how_tall_were_you_then_numeric*0.3048) +
+      (dat.ed$an.1.how_tall_were_you_then_numeric*0.3048) + #Height in ft
       (dat.ed$height_inches_numeric*0.0254)
        ),
     false = NA_real_,
@@ -674,8 +674,8 @@ summary(dat.ed$height_m_unc)
   #Identify number of outliers
   length(
     which(
-      dat.ed$weight_kg_unc > height_upper_limit |
-        dat.ed$weight_kg_unc < height_lower_limit
+      dat.ed$height_m_unc > height_upper_limit |
+        dat.ed$height_m_unc < height_lower_limit
     )
   )
   

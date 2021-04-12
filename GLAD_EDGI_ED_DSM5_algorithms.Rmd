@@ -45,7 +45,7 @@ nrow(AN_symptom_data_GLAD)
 #Select columns
 ```{r Read in data}
 
-exclude_cols_dem <- c("externalDataReference",
+exclude_cols_dem <- c("ID",
                       "cohort_name")
 
 AN_symptom_data_GLAD.id <- AN_symptom_data_GLAD  %>% 
@@ -101,7 +101,7 @@ nrow(AN_symptom_data_EDGI)
 #Select columns
 ```{r Read in data}
 
-exclude_cols_dem <- c("externalDataReference",
+exclude_cols_dem <- c("ID",
                       "cohort_name")
 
 AN_symptom_data_EDGI.id <- AN_symptom_data_EDGI %>% 
@@ -157,8 +157,7 @@ nrow(BE_symptom_data_GLAD)
 #Select columns
 ```{r Read in data}
 
-exclude_cols_dem <- c("externalDataReference",
-                      "cohort_name")
+exclude_cols_dem <- c("ID")
 
 BE_symptom_data_GLAD.id <- BE_symptom_data_GLAD  %>% 
   drop_na(externalDataReference) %>% # Drop NAs
@@ -166,7 +165,7 @@ BE_symptom_data_GLAD.id <- BE_symptom_data_GLAD  %>%
   add_column(cohort_name = "glad", .before = "be.short_period_ate_regard") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
+       #  cohort_name, # Sample
          be.short_period_ate_regard,
          be.binge_eating_stop_eating,
          be.binge_eating_episodes_experience.txt,
@@ -229,8 +228,7 @@ nrow(BE_symptom_data_EDGI)
 ## Select columns
 ```{r Read in data}
 
-exclude_cols_dem <- c("externalDataReference",
-                      "cohort_name")
+exclude_cols_dem <- c("ID")
 
 BE_symptom_data_EDGI.id <- BE_symptom_data_EDGI %>% 
   drop_na(externalDataReference) %>% # Drop NAs
@@ -238,7 +236,7 @@ BE_symptom_data_EDGI.id <- BE_symptom_data_EDGI %>%
   add_column(cohort_name = "edgi", .before = "be.short_period_ate_regard") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
+        # cohort_name, # Sample
          be.short_period_ate_regard,
          be.binge_eating_stop_eating,
          be.binge_eating_episodes_experience.txt = be.follow_binge_eating_question.txt,
@@ -300,7 +298,7 @@ nrow(ICB_symptom_data_GLAD)
 ##Select columns
 ```{r Read in data}
 
-exclude_cols_dem <- c("externalDataReference")
+exclude_cols_dem <- c("ID")
 
 ICB_symptom_data_GLAD.id <- ICB_symptom_data_GLAD %>% 
   drop_na(externalDataReference) %>% # Drop NAs
@@ -308,7 +306,7 @@ ICB_symptom_data_GLAD.id <- ICB_symptom_data_GLAD %>%
   add_column(cohort_name = "glad", .before = "icb.b_used_laxatives") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
+        # cohort_name, # Sample
          icb.b_used_laxatives,
          icb.b_used_laxatives.1,
          icb.b_used_laxatives.2, 
@@ -416,7 +414,7 @@ nrow(ICB_symptom_data_EDGI)
 ##Select columns
 ```{r Read in data}
 
-exclude_cols_dem <- c("externalDataReference")
+exclude_cols_dem <- c("ID")
 
 ICB_symptom_data_EDGI.id <- ICB_symptom_data_EDGI %>% 
   drop_na(externalDataReference) %>% # Drop NAs
@@ -424,7 +422,7 @@ ICB_symptom_data_EDGI.id <- ICB_symptom_data_EDGI %>%
   add_column(cohort_name = "edgi", .before = "icb.exercised_excessively.1") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
+       #  cohort_name, # Sample
          icb.b_used_laxatives = icb.exercised_excessively.1,
          icb.b_used_laxatives.1 = icb.exercised_excessively.2,
          icb.b_used_laxatives.2 = icb.fasted_or_did_not_eat.2, 
@@ -533,7 +531,7 @@ nrow(dem_GLAD_ED)
 ##Select columns
 ```{r Read in data}
 
-exclude_cols_dem <- c("externalDataReference")
+exclude_cols_dem <- c("ID")
 
 dem_GLAD_ED.id <- dem_GLAD_ED %>% 
   drop_na(externalDataReference) %>% # Drop NAs
@@ -541,7 +539,7 @@ dem_GLAD_ED.id <- dem_GLAD_ED %>%
   add_column(cohort_name = "glad", .before = "demographics.what_was_your_biological_sex_at_birth") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
+       #  cohort_name, # Sample
          demographics.what_was_your_biological_sex_at_birth,
          demographics.what_is_your_current_height,
          demographics.what_is_your_current_height.1,
@@ -602,7 +600,7 @@ nrow(dem_EDGI_ED)
 ##Select columns
 ```{r Read in data}
 
-exclude_cols_dem <- c("externalDataReference")
+exclude_cols_dem <- c("ID")
 
 dem_EDGI_ED.id <- dem_EDGI_ED %>% 
   drop_na(externalDataReference) %>% # Drop NAs
@@ -610,7 +608,7 @@ dem_EDGI_ED.id <- dem_EDGI_ED %>%
   add_column(cohort_name = "glad", .before = "an.lowest_weight_people_thought") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
+      #   cohort_name, # Sample
          an.lowest_weight_people_thought,
          an.how_old_were_you_then.txt,
          an.low_weight_time,
@@ -663,26 +661,50 @@ dfs.list <- list(
   ICB_symptom_data_GLAD.id)
 
 #Merge
-dat.ed.GLAD.isds <- plyr::join_all(dfs.list,
+dat.ed.GLAD.id <- plyr::join_all(dfs.list,
                                       by = c("ID"))
 
 
-#Check
-nrow(dat.ed.GLAD.isds)
+#Check rows
+nrow(dat.ed.GLAD.id)
+
+#Check columns
+colnames(dat.ed.GLAD.id)
 ```
+
 ##Merge ICB and BED with AN - GLAD
 ```{r}
 dfs.list <- list(
- dat.ed.GLAD.isds,
+ dat.ed.GLAD.id,
   AN_symptom_data_GLAD.id)
+
+#Merge
+dat.ed.GLAD1 <- plyr::join_all(dfs.list,
+                                      by = c("ID"))
+
+
+#Check rows
+nrow(dat.ed.GLAD1)
+
+#Check columns
+colnames(dat.ed.GLAD1)
+```
+##final - Merge ICB and BED and AN with GLAD demographics - GLAD
+```{r}
+dfs.list <- list(
+ dat.ed.GLAD1,
+  dem_GLAD_ED.id)
 
 #Merge
 dat.ed.GLAD <- plyr::join_all(dfs.list,
                                       by = c("ID"))
 
 
-#Check
+#Check rows
 nrow(dat.ed.GLAD)
+
+#Check columns
+colnames(dat.ed.GLAD)
 ```
 
 ##Merge ICB and BED - EDGI
@@ -696,64 +718,379 @@ ICB_BE_symptom_EDGI.id <- plyr::join_all(dfs.list,
                                       by = c("ID"))
 
 
-#Check
-nrow(ICB_BE_symptom_EDGI.id )
+#Check rows
+nrow(ICB_BE_symptom_EDGI.id)
+
+#Check columns
+colnames(ICB_BE_symptom_EDGI.id)
 ```
+
+
 ##Merge ICB and BED with AN - EDGI
 ```{r}
 dfs.list <- list(
- ICB_BE_symptom_EDGI.id ,
+  ICB_symptom_data_EDGI.id,
   AN_symptom_data_EDGI.id)
+
+#Merge
+dat.ed.EDGI1 <- plyr::join_all(dfs.list,
+                                      by = c("ID"))
+
+
+#Check rows
+nrow(dat.ed.EDGI1)
+
+#Check columns
+colnames(dat.ed.EDGI1)
+```
+
+
+##Final - Merge ICB and BED and AN with EDGI demographics 
+```{r}
+dfs.list <- list(
+ dat.ed.EDGI1,
+  dem_EDGI_ED.id)
 
 #Merge
 dat.ed.EDGI <- plyr::join_all(dfs.list,
                                       by = c("ID"))
 
 
-#Check
+#Check rows
 nrow(dat.ed.EDGI)
+
+#Check columns
+colnames(dat.ed.EDGI)
 ```
 
+
 ## Derived variables (GLAD + EDGI)
+
 NB: Have written the algorithms separately (despite trying to merge the data) because of the different way these variables - icb.lasted_binge_eating_episodes1, icb.lasted_binge_eating_episodes2, icb.lasted_binge_eating_episodes3 - have been stored
 
 #Work out BMI 
 BMI = kg/m2 
 
-##Weight in kg
-
+##Weight in kg (EDGI)
 ```{r}
 
-##First need all numeric variables (lbs and kg are character for some reason)
-dat.ed$weight_lbs_raw <- as.numeric(dat.ed$an.1.low_weight_time.1_numeric)
+##First need all numeric variables (all are currently factor variables...)
+dat.ed.EDGI$weight_stone <- as.numeric(dat.ed.EDGI$an.low_weight_time_numeric)
 
-dat.ed$weight_kg_raw <- as.numeric(dat.ed$an.1.low_weight_time.2_numeric)
-  
+dat.ed.EDGI$weight_lbs <- as.numeric(dat.ed.EDGI$an.low_weight_time.1_numeric)
+
+dat.ed.EDGI$weight_kg <- as.numeric(dat.ed.EDGI$an.low_weight_time.2_numeric)
+
 ##To convert stone to kg, multiply by 6.35029
-dat.ed$weight_kg <- NA_real_
+dat.ed.EDGI$weight_kg_converted <- NA_real_
 
-dat.ed$weight_kg <-
-  if_else(condition = is.na(dat.ed$weight_kg), 
+dat.ed.EDGI$weight_kg_converted <-
+  if_else(condition = is.na(dat.ed.EDGI$weight_kg_converted), 
          true = (
-           (dat.ed$an.1.low_weight_time_numeric*6.35029) + 
-             (dat.ed$weight_lbs_raw*0.453592)
+           (dat.ed.EDGI$weight_stone*6.35029) + 
+             (dat.ed.EDGI$weight_lbs*0.453592)
            ), #weight in st and lbs converted to kg
          false = NA_real_,
          missing = NA_real_)
 
 
 # Kilograms
-dat.ed$weight_kg_unc <- 
-  if_else(condition = is.na(dat.ed$weight_kg), 
-         true = dat.ed$weight_kg_raw, #weight in kilos
-         false = dat.ed$weight_kg,
+dat.ed.EDGI$weight_kg_unc <- 
+  if_else(condition = is.na(dat.ed.EDGI$weight_kg_converted), 
+         true = dat.ed.EDGI$weight_kg, #weight in kilos
+         false = dat.ed.EDGI$weight_kg_converted,
          missing = NA_real_) 
 
 # Summary
-summary(dat.ed$weight_kg_unc)
+summary(dat.ed.EDGI$weight_kg_unc)
+
+```
+## Clean weight in kg (EDGI)
+```{r}
+#Weight outlier
+  # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  weight_upper_limit = 150 
+  weight_lower_limit = 25
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.EDGI$weight_kg_unc > weight_upper_limit |
+        dat.ed.EDGI$weight_kg_unc < weight_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  dat.ed.EDGI <- dat.ed.EDGI %>%
+    mutate(
+      weight_kg_final =
+        if_else(
+          weight_kg_unc > weight_upper_limit |
+            weight_kg_unc < weight_lower_limit,
+          true = NA_real_,
+          false = weight_kg_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.EDGI %>%
+    freq(weight_kg_final)
+
+  
+```
+
+
+##Height in m (EDGI)
+```{r}
+
+##Change character variables to numeric / rename
+dat.ed.EDGI$height_inches_numeric <- as.numeric(dat.ed.EDGI$an.how_tall_were_you_then.1_numeric)
+
+dat.ed.EDGI$height_cm_numeric <- as.numeric(dat.ed.EDGI$an.how_tall_were_you_then.2_numeric)
+
+dat.ed.EDGI$height_ft_numeric <- as.numeric(dat.ed.EDGI$an.how_tall_were_you_then)
+
+# Feet and inches to metres
+dat.ed.EDGI$height_m <- NA
+
+dat.ed.EDGI$height_m <- 
+  if_else(
+    condition = is.na(dat.ed.EDGI$height_m),
+    true = (
+      (dat.ed.EDGI$height_ft_numeric*0.3048) +
+      (dat.ed.EDGI$height_inches_numeric*0.0254)
+       ),
+    false = NA_real_,
+    missing = NA_real_
+    )
+
+# Centimetres to metres
+dat.ed.EDGI$height_m_unc <- 
+  if_else(
+    condition = is.na(dat.ed.EDGI$height_m),
+    true = dat.ed.EDGI$height_cm_numeric/100,
+    false = dat.ed.EDGI$height_m)
+
+# Summary
+summary(dat.ed.EDGI$height_m_unc)
+```
+
+## Clean height in m (EDGI)
+```{r}
+#Height outlier
+  # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
+  height_lower_limit = 1
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.EDGI$height_m_unc > height_upper_limit |
+        dat.ed.EDGI$height_m_unc < height_lower_limit
+    )
+  )
+  
+  #Remove height outliers
+  dat.ed.EDGI <- dat.ed.EDGI %>%
+    mutate(
+     height_m_final =
+        if_else(
+          height_m_unc > height_upper_limit |
+            height_m_unc < height_lower_limit,
+          true = NA_real_,
+          false = height_m_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.EDGI %>%
+    freq(height_m_final)
+  
+  
+```
+
+## Work out BMI (EDGI)
+```{r}
+
+# Calculated from height and weight **This should be based on min weight and height - have quite low values <10 - need to check
+dat.ed.EDGI$bmi_unc <- NA
+
+dat.ed.EDGI$bmi_unc <- 
+  if_else(condition = is.na(dat.ed.EDGI$bmi_unc), 
+         true = dat.ed.EDGI$weight_kg_final/dat.ed.EDGI$height_m_final^2, 
+         false = NA_real_,
+         missing = NA_real_)
+
+# Summary
+summary(dat.ed.EDGI$bmi_unc)
 
 ```
 
+##Weight in kg (GLAD)
+```{r}
+
+##First need all numeric variables (all are currently factor variables...)
+dat.ed.GLAD$weight_stone <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed_numeric)
+
+dat.ed.GLAD$weight_lbs <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed.1_numeric)
+
+dat.ed.GLAD$weight_kg <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed.2_numeric)
+
+##To convert stone to kg, multiply by 6.35029
+dat.ed.GLAD$weight_kg_converted <- NA_real_
+
+dat.ed.GLAD$weight_kg_converted <-
+  if_else(condition = is.na(dat.ed.GLAD$weight_kg_converted), 
+         true = (
+           (dat.ed.GLAD$weight_stone*6.35029) + 
+             (dat.ed.GLAD$weight_lbs*0.453592)
+           ), #weight in st and lbs converted to kg
+         false = NA_real_,
+         missing = NA_real_)
+
+
+# Kilograms
+dat.ed.GLAD$weight_kg_unc <- 
+  if_else(condition = is.na(dat.ed.GLAD$weight_kg_converted), 
+         true = dat.ed.GLAD$weight_kg, #weight in kilos
+         false = dat.ed.GLAD$weight_kg_converted,
+         missing = NA_real_) 
+
+# Summary
+summary(dat.ed.GLAD$weight_kg_unc)
+
+```
+## Clean weight in kg (GLAD)
+```{r}
+#Weight outlier
+  # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  weight_upper_limit = 150 
+  weight_lower_limit = 25
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.GLAD$weight_kg_unc > weight_upper_limit |
+        dat.ed.GLAD$weight_kg_unc < weight_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  dat.ed.GLAD <- dat.ed.GLAD %>%
+    mutate(
+      weight_kg_final =
+        if_else(
+          weight_kg_unc > weight_upper_limit |
+            weight_kg_unc < weight_lower_limit,
+          true = NA_real_,
+          false = weight_kg_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.GLAD %>%
+    freq(weight_kg_final)
+  
+  
+```
+
+
+##Height in m (GLAD)
+```{r}
+
+##Change character variables to numeric 
+
+#NB*** This is CURRENT height, because the question about low weight is: 'What is the least you have ever weighed since reaching your adult height' rather than 'How much did you weigh at your lowest weight?' followed by 'how tall were you then?', so note that this would not capture low childhood BMI. GLAD is being updated to reflect EDGI so this will change.
+dat.ed.GLAD$height_ft_numeric <- as.numeric(dat.ed.GLAD$demographics.what_is_your_current_height_numeric) 
+
+dat.ed.GLAD$height_inches_numeric <- as.numeric(dat.ed.GLAD$demographics.what_is_your_current_height.1_numeric)
+
+dat.ed.GLAD$height_cm_numeric <- as.numeric(dat.ed.GLAD$demographics.what_is_your_current_height.2_numeric)
+
+
+# Feet and inches to metres
+dat.ed.GLAD$height_m <- NA
+
+
+dat.ed.GLAD$height_m <- 
+  if_else(
+    condition = is.na(dat.ed.GLAD$height_m),
+    true = (
+      (dat.ed.GLAD$height_ft_numeric*0.3048) +
+      (dat.ed.GLAD$height_inches_numeric*0.0254)
+       ),
+    false = NA_real_,
+    missing = NA_real_
+    )
+
+# Centimetres to metres
+dat.ed.GLAD$height_m_unc <- 
+  if_else(
+    condition = is.na(dat.ed.GLAD$height_m),
+    true = dat.ed.GLAD$height_cm_numeric/100,
+    false = dat.ed.GLAD$height_m)
+
+# Summary
+summary(dat.ed.GLAD$height_m_unc)
+```
+
+## Clean height in m (GLAD)
+```{r}
+#Height outlier
+  # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
+  height_lower_limit = 1
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.GLAD$height_m_unc > height_upper_limit |
+        dat.ed.GLAD$height_m_unc < height_lower_limit
+    )
+  )
+  
+  #Remove height outliers
+  dat.ed.GLAD <- dat.ed.GLAD %>%
+    mutate(
+     height_m_final =
+        if_else(
+          height_m_unc > height_upper_limit |
+            height_m_unc < height_lower_limit,
+          true = NA_real_,
+          false = height_m_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.GLAD %>%
+    freq(height_m_final)
+  
+  
+```
+
+## Work out BMI (GLAD)
+```{r}
+
+# Calculated from height and weight **This should be based on min weight and height - have quite low values <10 - need to check
+dat.ed.GLAD$bmi_unc <- NA
+
+dat.ed.GLAD$bmi_unc <- 
+  if_else(condition = is.na(dat.ed.GLAD$bmi_unc), 
+         true = dat.ed.GLAD$weight_kg_final/dat.ed.GLAD$height_m_final^2, 
+         false = NA_real_,
+         missing = NA_real_)
+
+# Summary
+summary(dat.ed.GLAD$bmi_unc)
+
+```
+
+
+#BE Behaviour score - Number of BE behaviours [EDGI & GLAD]
 
 ##NB: Naming in data dictionary is wrong - use the following:
 be.a_eat_much_more_rapidly_than_usual = a) Eat much more rapidly than usual?
@@ -767,7 +1104,6 @@ be.b_eat_until_you_felt_uncomfortably_full = d) Eat alone because you were embar
 be.b_eat_until_you_felt_uncomfortably_full.1 e) Feel ashamed/disgusted with yourself, depressed, or very guilty after overeating?
 
 
-#BE Behaviour score - Number of BE behaviours [EDGI & GLAD]
 ```{r ed.BE_behaviour_sum_numeric}
 
 #Sum of binge eating behaviours - GLAD
