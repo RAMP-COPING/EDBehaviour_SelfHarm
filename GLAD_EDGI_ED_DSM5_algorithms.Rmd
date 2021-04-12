@@ -34,7 +34,11 @@ source("./functions.R")
 
 AN_symptom_data_GLAD <- readRDS(file = "../data_raw/glad/aan_glad_ed_c2.rds") #Add your data file here
 
+#Check colnames
 colnames(AN_symptom_data_GLAD)
+
+#Check number of rows
+nrow(AN_symptom_data_GLAD)
 ```
 
 
@@ -86,7 +90,12 @@ dim(AN_symptom_data_GLAD)[1]-dim(AN_symptom_data_GLAD.id)[1]
 
 AN_symptom_data_EDGI <- readRDS(file = "../data_raw/edgi/aan_edgi_c2.rds") #Add your data file here
 
+#Check colnames
 colnames(AN_symptom_data_EDGI)
+
+#Check number of rows
+nrow(AN_symptom_data_EDGI)
+
 ```
 
 #Select columns
@@ -137,6 +146,11 @@ dim(AN_symptom_data_EDGI)[1]-dim(AN_symptom_data_EDGI.id)[1]
 
 BE_symptom_data_GLAD <- readRDS(file = "../data_raw/glad/be_glad_ed.rds") #Add your data file here
 
+#Check colnames
+colnames(BE_symptom_data_GLAD)
+
+#Check number of rows
+nrow(BE_symptom_data_GLAD)
 
 ```
 
@@ -205,7 +219,11 @@ dim(BE_symptom_data_GLAD.id)[1]-dim(BE_symptom_data_GLAD.id)[1]
 
 BE_symptom_data_EDGI <- readRDS(file = "../data_raw/edgi/be_edgi.rds") #Add your data file here
 
+#Check colnames
 colnames(BE_symptom_data_EDGI)
+
+#Check number of rows
+nrow(BE_symptom_data_EDGI)
 ```
 
 ## Select columns
@@ -267,24 +285,16 @@ colnames(BE_symptom_data_EDGI.id)
 dim(BE_symptom_data_EDGI.id)[1]-dim(BE_symptom_data_EDGI.id)[1]
 
 ```
-
-##Merge GLAD and EDGI BE data
-```{r eval=FALSE, include=FALSE}
-dat.be <- rbind(BE_symptom_data_EDGI.id,
-                   BE_symptom_data_GLAD.id
-                )
-
-##colnames 
-colnames(dat.be)
-
-##number of people
-nrow(dat.be)
-```
-
 ## Read in data - ICB ED100K GLAD
 ```{r Read in data}
 
 ICB_symptom_data_GLAD <- readRDS(file = "../data_raw/glad/icb_glad_ed.rds") #Add your data file here
+
+#Check colnames
+colnames(ICB_symptom_data_GLAD)
+
+#Check number of rows
+nrow(ICB_symptom_data_GLAD)
 ```
 
 ##Select columns
@@ -394,6 +404,13 @@ dim(ICB_symptom_data_GLAD)[1]-dim(ICB_symptom_data_GLAD.id)[1]
 ```{r Read in data}
 
 ICB_symptom_data_EDGI <- readRDS(file = "../data_raw/edgi/icb_edgi.rds") #Add your data file here
+
+#Check colnames
+colnames(ICB_symptom_data_EDGI)
+
+#Check number of rows
+nrow(ICB_symptom_data_EDGI)
+
 ```
 
 ##Select columns
@@ -500,6 +517,144 @@ colnames(ICB_symptom_data_EDGI.id)
 dim(ICB_symptom_data_EDGI)[1]-dim(ICB_symptom_data_EDGI.id)[1]
 
 ```
+## Read in data - demographics GLAD ED
+```{r Read in data}
+
+dem_GLAD_ED <- readRDS(file = "../data_raw/glad/demographics_glad_ed.rds") #Add your data file here
+
+#Check colnames
+colnames(dem_GLAD_ED)
+
+#Check number of rows
+nrow(dem_GLAD_ED)
+
+```
+
+##Select columns
+```{r Read in data}
+
+exclude_cols_dem <- c("externalDataReference")
+
+dem_GLAD_ED.id <- dem_GLAD_ED %>% 
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE)  %>%
+  add_column(cohort_name = "glad", .before = "demographics.what_was_your_biological_sex_at_birth") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         cohort_name, # Sample
+         demographics.what_was_your_biological_sex_at_birth,
+         demographics.what_is_your_current_height,
+         demographics.what_is_your_current_height.1,
+         demographics.what_is_your_current_height.2,
+         demographics.wearing_indoor_clothing_shoes,
+         demographics.wearing_indoor_clothing_shoes.1,
+         demographics.wearing_indoor_clothing_shoes.2,
+         demographics.weighed,
+         demographics.weighed.1,
+         demographics.weighed.2,
+         demographics.highest_weight_bmi,
+         demographics.period,
+         demographics.adult_height_reaching_weighed,
+         demographics.adult_height_reaching_weighed.1,
+         demographics.adult_height_reaching_weighed.2,
+         demographics.adult_height_lowest_weight,
+         demographics.please_select_your_preferred_units_of_measurement,
+         demographics.what_is_your_bmi,
+         demographics.what_is_your_highest_lifetime_bmi_,
+         demographics.adult_height_lowest_bmi,
+         demographics.have_you_had_your_first_period
+         ) %>%
+    add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(dem_GLAD_ED.id)
+# Inspect colnames
+colnames(dem_GLAD_ED.id)
+#Differences
+dim(dem_GLAD_ED)[1]-dim(dem_GLAD_ED.id)[1]
+
+```
+
+## Read in data - demographics EDGI 
+```{r Read in data}
+
+dem_EDGI_ED <- readRDS(file = "../data_raw/edgi/an_edgi.rds") #Add your data file here
+
+#Check colnames
+colnames(dem_EDGI_ED)
+
+#Check number of rows
+nrow(dem_EDGI_ED)
+
+```
+
+##Select columns
+```{r Read in data}
+
+exclude_cols_dem <- c("externalDataReference")
+
+dem_EDGI_ED.id <- dem_EDGI_ED %>% 
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE)  %>%
+  add_column(cohort_name = "glad", .before = "an.lowest_weight_people_thought") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         cohort_name, # Sample
+         an.lowest_weight_people_thought,
+         an.how_old_were_you_then.txt,
+         an.low_weight_time,
+         an.low_weight_time.1,
+         an.low_weight_time.2,
+         an.gain_weight_low_weight,
+         an.not_at_all_dependentcompletely_dependent,
+         an.health_low_weight_bmi,
+         an.feel_fat_low_weight,
+         an.started_time_periods,
+         an.periods_stop_low_weight,
+         an.for_how_long_did_your_periods_stop,
+         an.for_how_long_did_your_periods_stop.1,
+         an.roughly_periods_stopped.txt,
+         an.what_was_the_illness.txt,
+         an.how_tall_were_you_then,
+         an.how_tall_were_you_then.1,
+         an.how_tall_were_you_then.2,
+         an.people_thought_larger_low,
+         an.bmi_low_time,
+         an.anorexia_nervosa_low_weight,
+         an.anorexia_nervosa_low_weight.1
+         ) %>%
+    add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(dem_EDGI_ED.id)
+# Inspect colnames
+colnames(dem_EDGI_ED.id)
+#Differences
+dim(dem_EDGI_ED)[1]-dim(dem_EDGI_ED.id)[1]
+
+```
 
 ##Merge ICB and BED - GLAD
 ```{r}
@@ -508,12 +663,26 @@ dfs.list <- list(
   ICB_symptom_data_GLAD.id)
 
 #Merge
-GLAD_BE_ICB_symptom_data.id <- plyr::join_all(dfs.list,
+dat.ed.GLAD.isds <- plyr::join_all(dfs.list,
                                       by = c("ID"))
 
 
 #Check
-nrow(GLAD_BE_ICB_symptom_data.id)
+nrow(dat.ed.GLAD.isds)
+```
+##Merge ICB and BED with AN - GLAD
+```{r}
+dfs.list <- list(
+ dat.ed.GLAD.isds,
+  AN_symptom_data_GLAD.id)
+
+#Merge
+dat.ed.GLAD <- plyr::join_all(dfs.list,
+                                      by = c("ID"))
+
+
+#Check
+nrow(dat.ed.GLAD)
 ```
 
 ##Merge ICB and BED - EDGI
@@ -523,16 +692,68 @@ dfs.list <- list(
   ICB_symptom_data_EDGI.id)
 
 #Merge
-EDGI_BE_ICB_symptom_data.id <- plyr::join_all(dfs.list,
+ICB_BE_symptom_EDGI.id <- plyr::join_all(dfs.list,
                                       by = c("ID"))
 
 
 #Check
-nrow(EDGI_BE_ICB_symptom_data.id)
+nrow(ICB_BE_symptom_EDGI.id )
+```
+##Merge ICB and BED with AN - EDGI
+```{r}
+dfs.list <- list(
+ ICB_BE_symptom_EDGI.id ,
+  AN_symptom_data_EDGI.id)
+
+#Merge
+dat.ed.EDGI <- plyr::join_all(dfs.list,
+                                      by = c("ID"))
+
+
+#Check
+nrow(dat.ed.EDGI)
 ```
 
 ## Derived variables (GLAD + EDGI)
 NB: Have written the algorithms separately (despite trying to merge the data) because of the different way these variables - icb.lasted_binge_eating_episodes1, icb.lasted_binge_eating_episodes2, icb.lasted_binge_eating_episodes3 - have been stored
+
+#Work out BMI 
+BMI = kg/m2 
+
+##Weight in kg
+
+```{r}
+
+##First need all numeric variables (lbs and kg are character for some reason)
+dat.ed$weight_lbs_raw <- as.numeric(dat.ed$an.1.low_weight_time.1_numeric)
+
+dat.ed$weight_kg_raw <- as.numeric(dat.ed$an.1.low_weight_time.2_numeric)
+  
+##To convert stone to kg, multiply by 6.35029
+dat.ed$weight_kg <- NA_real_
+
+dat.ed$weight_kg <-
+  if_else(condition = is.na(dat.ed$weight_kg), 
+         true = (
+           (dat.ed$an.1.low_weight_time_numeric*6.35029) + 
+             (dat.ed$weight_lbs_raw*0.453592)
+           ), #weight in st and lbs converted to kg
+         false = NA_real_,
+         missing = NA_real_)
+
+
+# Kilograms
+dat.ed$weight_kg_unc <- 
+  if_else(condition = is.na(dat.ed$weight_kg), 
+         true = dat.ed$weight_kg_raw, #weight in kilos
+         false = dat.ed$weight_kg,
+         missing = NA_real_) 
+
+# Summary
+summary(dat.ed$weight_kg_unc)
+
+```
+
 
 ##NB: Naming in data dictionary is wrong - use the following:
 be.a_eat_much_more_rapidly_than_usual = a) Eat much more rapidly than usual?
@@ -550,7 +771,7 @@ be.b_eat_until_you_felt_uncomfortably_full.1 e) Feel ashamed/disgusted with your
 ```{r ed.BE_behaviour_sum_numeric}
 
 #Sum of binge eating behaviours - GLAD
-GLAD_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric <- rowSums(GLAD_BE_ICB_symptom_data.id[ ,
+dat.ed.GLAD.id$ed.BE_behaviour_sum_numeric <- rowSums(dat.ed.GLAD.id[ ,
                                  c("be.a_eat_much_more_rapidly_than_usual_numeric",
                                    "be.a_eat_much_more_rapidly_than_usual.1_numeric",
                                    "be.a_eat_much_more_rapidly_than_usual.2_numeric",
@@ -559,12 +780,12 @@ GLAD_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric <- rowSums(GLAD_BE_ICB_s
                                   na.rm = TRUE)
 
 #Summary
-freq(GLAD_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric)         
+freq(dat.ed.GLAD.id$ed.BE_behaviour_sum_numeric)         
 
-colnames(GLAD_BE_ICB_symptom_data.id)
+colnames(dat.ed.GLAD.id)
 
 #Sum of binge eating behaviours - EDGI
-EDGI_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric <- rowSums(EDGI_BE_ICB_symptom_data.id[ ,
+dat.ed.EDGI$ed.BE_behaviour_sum_numeric <- rowSums(dat.ed.EDGI[ ,
                                  c("be.a_eat_much_more_rapidly_than_usual_numeric",
                                    "be.a_eat_much_more_rapidly_than_usual.1_numeric",
                                    "be.a_eat_much_more_rapidly_than_usual.2_numeric",
@@ -573,9 +794,9 @@ EDGI_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric <- rowSums(EDGI_BE_ICB_s
                                   na.rm = TRUE)
 
 #Summary
-freq(EDGI_BE_ICB_symptom_data.id$ed.BE_behaviour_sum_numeric)         
+freq(dat.ed.EDGI$ed.BE_behaviour_sum_numeric)         
 
-colnames(EDGI_BE_ICB_symptom_data.id)
+colnames(dat.ed.EDGI)
 ```
 
 ##Binge eating FREQUENCY
@@ -583,11 +804,11 @@ One year = 52.1429 weeks
 One month = 4.34524 weeks 
 ```{r ed.BE_freq conversion}
 #GLAD
-GLAD_BE_ICB_symptom_data.id$ed.BE_freq_per_week <- NA
+dat.ed.GLAD.id$ed.BE_freq_per_week <- NA
 
 # Calculate frequency per week - GLAD
-GLAD_BE_ICB_symptom_data.id$ed.BE_freq_per_week <- 
-  with(GLAD_BE_ICB_symptom_data.id,
+dat.ed.GLAD.id$ed.BE_freq_per_week <- 
+  with(dat.ed.GLAD.id,
     case_when(
       be.binge_eating_experience_episodes.txt.1_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt.1_numeric/52.1429, digits = 2),
       be.binge_eating_experience_episodes.txt_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt_numeric/4.34524, digits = 2), 
@@ -596,14 +817,14 @@ GLAD_BE_ICB_symptom_data.id$ed.BE_freq_per_week <-
   )
   
 #Summary
-freq(GLAD_BE_ICB_symptom_data.id$ed.BE_freq_per_week) 
+freq(dat.ed.GLAD.id$ed.BE_freq_per_week) 
 
 #EDGI
-EDGI_BE_ICB_symptom_data.id$ed.BE_freq_per_week <- NA
+dat.ed.EDGI$ed.BE_freq_per_week <- NA
 
 # Calculate frequency per week - EDGI
-EDGI_BE_ICB_symptom_data.id$ed.BE_freq_per_week <- 
-  with(EDGI_BE_ICB_symptom_data.id,
+dat.ed.EDGI$ed.BE_freq_per_week <- 
+  with(dat.ed.EDGI,
     case_when(
       be.binge_eating_experience_episodes.txt.1_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt.1_numeric/52.1429, digits = 2),
       be.binge_eating_experience_episodes.txt_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt_numeric/4.34524, digits = 2), 
@@ -612,7 +833,7 @@ EDGI_BE_ICB_symptom_data.id$ed.BE_freq_per_week <-
   )
   
 #Summary
-freq(EDGI_BE_ICB_symptom_data.id$ed.BE_freq_per_week) 
+freq(dat.ed.EDGI$ed.BE_freq_per_week) 
 ```
 
 #Binge eating DURATION
@@ -621,51 +842,51 @@ One year = 365.25 days; One month = 30.4167 days
 ```{r ed.BE_duration conversion}
 
 ##GLAD
-GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months <- NA
+dat.ed.GLAD.id$ed.BE_duration_months <- NA
 
 # Sum years and months into months
-GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months <- 
-  if_else(condition = is.na(GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months),
-         true = ((GLAD_BE_ICB_symptom_data.id$be.long_experience_regularly_occurring_numeric*365.25) + (GLAD_BE_ICB_symptom_data.id$be.long_experience_regularly_occurring.1_numeric*30.4167)) / 30.4167, 
+dat.ed.GLAD.id$ed.BE_duration_months <- 
+  if_else(condition = is.na(dat.ed.GLAD.id$ed.BE_duration_months),
+         true = ((dat.ed.GLAD.id$be.long_experience_regularly_occurring_numeric*365.25) + (dat.ed.GLAD.id$be.long_experience_regularly_occurring.1_numeric*30.4167)) / 30.4167, 
         false = NA_real_,
         missing = NA_real_)
 
 # Summary
-#freq(GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months)
+#freq(dat.ed.GLAD.id$ed.BE_duration_months)
 
 ##Change below 0 to NA
 ##Just temporary - all negative values should be cleaned when you select columns...
-GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months[GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months < 0] <- NA_real_
+dat.ed.GLAD.id$ed.BE_duration_months[dat.ed.GLAD.id$ed.BE_duration_months < 0] <- NA_real_
 
 # Check
-#freq(GLAD_BE_ICB_symptom_data.id$ed.BE_duration_months)
+#freq(dat.ed.GLAD.id$ed.BE_duration_months)
 
 
 ##EDGI
-EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months <- NA
+dat.ed.EDGI$ed.BE_duration_months <- NA
 
 #Change to numeric
-EDGI_BE_ICB_symptom_data.id$be.duration_years_numeric <- as.numeric(EDGI_BE_ICB_symptom_data.id$be.long_experience_regularly_occurring_numeric)
+dat.ed.EDGI$be.duration_years_numeric <- as.numeric(dat.ed.EDGI$be.long_experience_regularly_occurring_numeric)
 
-EDGI_BE_ICB_symptom_data.id$be.duration_months_numeric <- as.numeric(EDGI_BE_ICB_symptom_data.id$be.long_experience_regularly_occurring.1_numeric)
+dat.ed.EDGI$be.duration_months_numeric <- as.numeric(dat.ed.EDGI$be.long_experience_regularly_occurring.1_numeric)
 
 # Sum years and months into months
-EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months <- 
-  if_else(condition = is.na(EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months),
-         true = ((EDGI_BE_ICB_symptom_data.id$be.duration_years_numeric*365.25) + (EDGI_BE_ICB_symptom_data.id$be.duration_months_numeric*30.4167)) / 30.4167, 
+dat.ed.EDGI$ed.BE_duration_months <- 
+  if_else(condition = is.na(dat.ed.EDGI$ed.BE_duration_months),
+         true = ((dat.ed.EDGI$be.duration_years_numeric*365.25) + (dat.ed.EDGI$be.duration_months_numeric*30.4167)) / 30.4167, 
         false = NA_real_,
         missing = NA_real_)
 
 # Summary
-#freq(EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months)
+#freq(dat.ed.EDGI$ed.BE_duration_months)
 
 
 ##Change below 0 to NA
 ##Just temporary - all negative values should be cleaned when you select columns...
-EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months[EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months < 0] <- NA_real_
+dat.ed.EDGI$ed.BE_duration_months[dat.ed.EDGI$ed.BE_duration_months < 0] <- NA_real_
 
 # Check
-#freq(EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months)
+#freq(dat.ed.EDGI$ed.BE_duration_months)
 ```
 
 
@@ -673,8 +894,8 @@ EDGI_BE_ICB_symptom_data.id$ed.BE_duration_months[EDGI_BE_ICB_symptom_data.id$ed
 ```{r}
 
 #BED numeric variable
-GLAD_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric <- 
-  with(GLAD_BE_ICB_symptom_data.id,
+dat.ed.GLAD.id$ed.DSM5_BED_binary_numeric <- 
+  with(dat.ed.GLAD.id,
   dplyr::if_else(
 
     #A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
@@ -720,21 +941,21 @@ GLAD_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric <-
     )
     
 #Recode numeric to factor
-GLAD_BE_ICB_symptom_data.id$ed.DSM5_BED_binary <-
-  recode_factor(GLAD_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric,
+dat.ed.GLAD.id$ed.DSM5_BED_binary <-
+  recode_factor(dat.ed.GLAD.id$ed.DSM5_BED_binary_numeric,
                 "0" = "No DSM-5 BED",
                 "1" = "DSM-5 BED")
 
 #Summary
-freq(GLAD_BE_ICB_symptom_data.id$ed.DSM5_BED_binary)
+freq(dat.ed.GLAD.id$ed.DSM5_BED_binary)
 
 ```
 #DSM5 BED ALGORITHM - EDGI
 ```{r}
 
 #BED numeric variable
-EDGI_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric <- 
-  with(EDGI_BE_ICB_symptom_data.id,
+dat.ed.EDGI$ed.DSM5_BED_binary_numeric <- 
+  with(dat.ed.EDGI,
   dplyr::if_else(
 
     #A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
@@ -789,13 +1010,13 @@ EDGI_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric <-
     )
     
 #Recode numeric to factor
-EDGI_BE_ICB_symptom_data.id$ed.DSM5_BED_binary <-
-  recode_factor(EDGI_BE_ICB_symptom_data.id$ed.DSM5_BED_binary_numeric,
+dat.ed.EDGI$ed.DSM5_BED_binary <-
+  recode_factor(dat.ed.EDGI$ed.DSM5_BED_binary_numeric,
                 "0" = "No DSM-5 BED",
                 "1" = "DSM-5 BED")
 
 #Summary
-freq(EDGI_BE_ICB_symptom_data.id$ed.DSM5_BED_binary)
+freq(dat.ed.EDGI$ed.DSM5_BED_binary)
 
 ```
 
@@ -811,8 +1032,8 @@ icb.a_made_yourself_vomit.2 =  Used diuretics
 ```{r ed.BN_DSM5_binary}
 
 #Bulimia nervosa numeric variable
-GLAD_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric <- 
-  with(GLAD_BE_ICB_symptom_data.id,
+dat.ed.GLAD.id$ed.DSM5_BN_binary_numeric <- 
+  with(dat.ed.GLAD.id,
   dplyr::if_else(
 
 #A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
@@ -903,13 +1124,13 @@ GLAD_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric <-
   )
   
 #Recode numeric variable to factor
-GLAD_BE_ICB_symptom_data.id$ed.DSM5_BN_binary <-
-  recode_factor(GLAD_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric,
+dat.ed.GLAD.id$ed.DSM5_BN_binary <-
+  recode_factor(dat.ed.GLAD.id$ed.DSM5_BN_binary_numeric,
                 "0" = "No DSM-5 BN",
                 "1" = "DSM-5 BN")
 
 #Summary
-freq(GLAD_BE_ICB_symptom_data.id$ed.DSM5_BN_binary)
+freq(dat.ed.GLAD.id$ed.DSM5_BN_binary)
 ```
 
 
@@ -927,8 +1148,8 @@ icb.any_other_methods_not_previously_listed.1 =  Used diuretics
 ```{r ed.BN_DSM5_binary}
 
 #Bulimia nervosa numeric variable
-EDGI_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric <- 
-  with(EDGI_BE_ICB_symptom_data.id,
+dat.ed.EDGI$ed.DSM5_BN_binary_numeric <- 
+  with(dat.ed.EDGI,
   dplyr::if_else(
 
 #A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
@@ -1019,13 +1240,13 @@ EDGI_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric <-
   )
   
 #Recode numeric variable to factor
-EDGI_BE_ICB_symptom_data.id$ed.DSM5_BN_binary <-
-  recode_factor(EDGI_BE_ICB_symptom_data.id$ed.DSM5_BN_binary_numeric,
+dat.ed.EDGI$ed.DSM5_BN_binary <-
+  recode_factor(dat.ed.EDGI$ed.DSM5_BN_binary_numeric,
                 "0" = "No DSM-5 BN",
                 "1" = "DSM-5 BN")
 
 #Summary
-freq(EDGI_BE_ICB_symptom_data.id$ed.DSM5_BN_binary)
+freq(dat.ed.EDGI$ed.DSM5_BN_binary)
 ```
 
 
