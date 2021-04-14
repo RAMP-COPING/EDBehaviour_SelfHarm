@@ -17,7 +17,7 @@ if(GLAD == TRUE) {
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
     # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "glad", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "coping_glad", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
       cohort_name, # Sample
@@ -253,32 +253,6 @@ if(GLAD == TRUE){
   
 }
 
-#BDD
-if(GLAD == TRUE){
-  
-  #Body dysmorphic disorder
-  mhd.raw.id <- mhd.raw.id %>%
-    mutate(
-      mhd.body_dysmorphic_disorder_bdd_numeric =
-        case_when(
-          (mhd.bdd_coping_numeric  == "1" & mhd.bdd_signup_numeric == "1" ~ 1),
-          (mhd.bdd_coping_numeric  == "1" | mhd.bdd_signup_numeric == "1" ~ 1),
-          (mhd.bdd_coping_numeric  == "0" & mhd.bdd_signup_numeric == "0" ~ 0)
-        ))
-  mhd.raw.id <- mhd.raw.id %>%
-    mutate(
-      mhd.body_dysmorphic_disorder_bdd =
-        recode_factor(mhd.body_dysmorphic_disorder_bdd_numeric,
-                      "0" = "Not BDD",
-                      "1" = "BDD",
-                      missing = NA_character_
-        )
-    )
-  mhd.raw.id %>%
-    freq(mhd.body_dysmorphic_disorder_bdd,
-         cumul = F)
-  
-}
 
 #PTSD
 if(GLAD == TRUE){
@@ -861,7 +835,7 @@ if(EDGI == TRUE) {
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
     # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "edgi", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
       cohort_name, # Sample
@@ -928,7 +902,7 @@ if(EDGI == TRUE){
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
     #mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "edgi", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
       cohort_name, # Sample
@@ -1005,7 +979,6 @@ if(NBR == TRUE) {
   colnames(nbr.mhd.raw)
 }
 
-
 if(NBR == TRUE) {
   exclude_cols <- c("cohort_name",
                     "ID")
@@ -1014,9 +987,9 @@ if(NBR == TRUE) {
     distinct(subjectid, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(subjectid, into = c("Sample", "ID.intm"), sep = 6) %>% # Split ID in Sample and Number
     #separate(ID.intm, into = "ID", sep = 7) %>%
-    add_column(cohort_name = "coping_nbr", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "nbr", .after = "subjectid") %>% #create new column 
     select(
-      ID = externalDataReference, # ID
+      ID = subjectid, # ID
       cohort_name, # Sample
       #startDate_baseline = startDate,
       starts_with("mhd."),
@@ -1086,7 +1059,6 @@ if(RAMP == TRUE) {
   colnames(ramp.mhd.raw)
 }
 
-
 if(RAMP == TRUE) {
   
   exclude_cols <- c("cohort_name",
@@ -1095,11 +1067,11 @@ if(RAMP == TRUE) {
   ramp.mhd.raw.id <- ramp.mhd.raw %>%
     drop_na(`Login ID`) %>% # Drop NAs
     distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    separate(`Login ID`, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    separate(ID, into = "ID", sep = 7) %>%
+    #separate(`Login ID`, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+    #separate(ID, into = "ID", sep = 7) %>%
     add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
     select(
-      ID = externalDataReference, # ID
+      ID = `Login ID`, # ID
       cohort_name, # Sample
       #startDate_baseline = startDate,
       mhd.depression = mhq.depression,
@@ -1345,7 +1317,7 @@ if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE | RAMP == TRUE) {
 
 
 ### Eating disorders
-#There is routing questionnaire if participants have been diagnosed with an eating disorder and afterwards they get asked the specific disorders. Therefore, mhd.suspected_eating_disorder_diagnosed_numeric needs to be recoded as 0 otherwise they would be NAs.
+#There is routing questionnaire if participants SUSPECT  an eating disorder and afterwards they get asked if they have been DIAGNOSED with the specific disorders. Therefore, mhd.suspected_eating_disorder_diagnosed_numeric needs to be recoded as 0 otherwise they would be NAs.
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE) { 
   #Recode as 0 if ppt responds no to screening question (mhd.suspected_eating_disorder_diagnosed_numeric)
   mhd.raw.id <- mhd.raw.id %>%

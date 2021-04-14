@@ -43,6 +43,8 @@ dim(nbr_baseline)
 
 ramp_baseline <- readRDS(file = "../data_cleaned/baseline_ramp.rds")
 dim(ramp_baseline)
+
+
 ```
 ##Make list of edeq baseline columns only in RAMP
 ```{r}
@@ -129,34 +131,27 @@ edgi_baseline[edeq_baseline_columnNames] <- NA
 [17] "employment_change_numeric" 
 
 ##Need same columns across all datasets in order to merge
-
-
-
 ```{r}
 #sex & age_category_numeric not in RAMP
 ramp_baseline$sex <- NA
 ramp_baseline$age_category_numeric <- NA
 
 #age called "age_unc" in RAMP
-  ramp_baseline %>% 
+  ramp_baseline <- ramp_baseline %>% 
   rename(
     age_category = age_unc,
     )
+  
   
 #highest_education_prepan/numeric not in ramp or nbr
 ramp_baseline$highest_education_prepan <- NA
 ramp_baseline$highest_education_prepan_numeric <- NA
 nbr_baseline$highest_education_prepan <- NA
 nbr_baseline$highest_education_prepan_numeric <- NA
-
-
 ```
 
 ##Merge all baseline data
 ```{r glad/edgi/nbr/ramp data frame list}
-
-#change ptsd variable to numeric [wrongly coded]
-nbr_baseline$mhd.posttraumatic_stress_disorder_ptsd_numeric <- as.numeric(nbr_baseline$mhd.posttraumatic_stress_disorder_ptsd_numeric)
 
 #bind all baseline data
 dat <- bind_rows(
@@ -184,16 +179,56 @@ dim(taf_ramp)
 
 taf_coping <- readRDS(file = "../data_cleaned/taf_coping.rds")
 dim(taf_coping)
+
+edeq_coping_screener <- readRDS(file = "../data_cleaned/edeq_screener_coping.rds")
+dim(edeq_coping_screener)
+
+
+edeq_ramp_screener <- readRDS(file = "../data_cleaned/edeq_screener_ramp.rds")
+dim(edeq_ramp_screener)
+
 ```
+##Create empty wave 1s in COPING to merge with RAMP 
+
+```{r}
+edeq_coping$`edeq.deliberately_limit_amount_influence_.Wave 1` <- NULL 
+edeq_coping$`edeq.calories_made_body_shape_.Wave 1` <- NULL 
+edeq_coping$`edeq.weight_influenced_person_.Wave 1` <- NULL 
+edeq_coping$`edeq.dissatisfied_shape_weight_.Wave 1` <- NULL 
+edeq_coping$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.regard_lost_control_eaten_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.eating_behaviours_distressed_concerns_.Wave 1` <- NULL 
+edeq_coping$`edeq.sick_means_made_shape_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.compulsive_driven_burn_calories_numeric_.Wave 1` <- NULL 
+edeq_coping$`edeq.nibbled_picked_snacks_grazed_.Wave 1` <- NULL 
+edeq_coping$`edeq.felt_anxious_blue_bored_.Wave 1` <- NULL 
+edeq_coping$`edeq.felt_anxious_blue_bored.1_.Wave 1` <- NULL 
+
+
+```
+
 #Bind coping and ramp's edeq and taf (separately)
 ```{r}
 
+##*****NEED TO CHANGE TO FACTOR 
+
 #bind all edeq data
-edeq <- bind_rows(
+edeq1 <- bind_rows(
   edeq_ramp,
   edeq_coping
   
 )
+
+edeq2 <- bind_rows(
+  edeq_ramp_screener,
+  edeq_coping_screener)
+
+
+edeq <- merge(edeq1,
+                  edeq2,
+                  by = "ID")
+
 
 #check col names edeq
 colnames(edeq)
@@ -210,13 +245,100 @@ colnames(taf)
 
 #check no of participants
 nrow(taf)
+
+
 ```
+
+
+
+
+```{r}
+#drop NA column names
+
+edeq$edeq.calories_made_body_shape_NA <-  NULL
+edeq$edeq.calories_made_body_shape_NA<-  NULL
+edeq$edeq.weight_influenced_person_NA<-  NULL
+edeq$edeq.dissatisfied_shape_weight_NA<-  NULL
+edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_NA <-  NULL
+edeq$edeq.regard_lost_control_eaten_numeric_NA <-  NULL
+edeq$edeq.sick_means_made_shape_numeric_NA <-  NULL
+edeq$edeq.compulsive_driven_burn_calories_numeric_NA <-  NULL
+edeq$edeq.diuretics_laxatives_means_shape_numeric_NA  <-  NULL
+edeq$edeq.nibbled_picked_snacks_grazed_NA <-  NULL
+edeq$edeq.felt_anxious_blue_bored_NA <-  NULL
+edeq$edeq.felt_anxious_blue_bored.1_NA <-  NULL
+
+
+#Check names
+colnames(edeq)
+
+```
+
 
 #Bind edeq with baseline
 ```{r}
+edeq$cohort_name <- NULL
+edeq$startDate_waves <- NULL
+
+nrow(edeq)
+
+
 dat.edeq <- merge(dat,
                   edeq,
                   by = "ID")
+
+```
+
+
+##Exclude participants who are missing for EVERY edeq screener variable at every wave
+```{r}
+
+test <- dat.edeq %>%
+  filter(
+    !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 2`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 3`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 4`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 5`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 6`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 7`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 8`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 2`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 3`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 4`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 5`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 6`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 7`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 8`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 5`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 7`) |
+      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 8`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 2`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 3`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 4`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 5`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 6`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 7`) |
+      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 8`) 
+  )
+
+nrow(test)   
+```
+
+#Remove duplicate IDs EDEQ COPING
+```{r}
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+dat.edeq  <- dat.edeq  %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(dat.edeq)
+
+
 
 ```
 
@@ -229,6 +351,7 @@ skimr::skim(dat.edeq)
 #Save taf+baseline
 ```{r Save edeq + baseline rds file}
 saveRDS(object = dat.edeq, file = "../data_cleaned/dat.edeq.rds")
+
 ```
 
 #Bind taf with baseline
@@ -243,10 +366,11 @@ dat.taf <- merge(dat,
 ```{r Skim taf + baseline data}
 #look at the data
 skimr::skim(dat.taf)
-
 ```
 
-#Save edeq+baseline
+#Save taf+baseline
 ```{r Save taf + baseline rds file}
 saveRDS(object = dat.taf, file = "../data_cleaned/dat.taf.rds")
+
 ```
+

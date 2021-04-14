@@ -144,15 +144,16 @@ if(RAMP == TRUE) {
     mutate(
       ethnicity =
         recode_factor(ethnicity_unc,
-                      "White" = "White",
-                      "Mixed" = "Mixed or multiple ethnic origins",
-                      "Asian or Asian British" = "Asian or Asian British",
+                      "White, white European or Caucasian" = "White",
+                      "Mixed or multiple ethnic origins" = "Mixed or multiple ethnic origins",
+                      "Asian or Asian British (including Chinese)" = "Asian or Asian British",
                       "Black or Black British" = "Black or Black British",
                       "Arab" = "Arab",
-                      "Other ethnic group:" = "Other ethnic group"
+                      "Other ethnic group (please specify)" = "Other ethnic group"
         )
     )
 }
+
 
 
 # Ethnicity recoding NBR
