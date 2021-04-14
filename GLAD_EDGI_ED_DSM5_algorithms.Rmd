@@ -32,13 +32,13 @@ source("./functions.R")
 ## Read in data - AN ED100K GLAD
 ```{r Read in data}
 
-AN_symptom_data_GLAD <- readRDS(file = "../data_raw/glad/aan_glad_ed_c2.rds") #Add your data file here
+AAN_symptom_data_GLAD <- readRDS(file = "../data_raw/glad/aan_glad_ed_c2.rds") #Add your data file here
 
 #Check colnames
-colnames(AN_symptom_data_GLAD)
+colnames(AAN_symptom_data_GLAD)
 
 #Check number of rows
-nrow(AN_symptom_data_GLAD)
+nrow(AAN_symptom_data_GLAD)
 ```
 
 
@@ -48,7 +48,7 @@ nrow(AN_symptom_data_GLAD)
 exclude_cols_dem <- c("ID",
                       "cohort_name")
 
-AN_symptom_data_GLAD.id <- AN_symptom_data_GLAD  %>% 
+AAN_symptom_data_GLAD.id <- AAN_symptom_data_GLAD  %>% 
   drop_na(externalDataReference) %>% # Drop NAs
   distinct(externalDataReference, .keep_all = TRUE)  %>%
   add_column(cohort_name = "glad", .before = "aan.1.eating_disorder_due_illness") %>% #create new column 
@@ -77,24 +77,24 @@ mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in nume
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
-dim(AN_symptom_data_GLAD.id)
+dim(AAN_symptom_data_GLAD.id)
 # Inspect colnames
-colnames(AN_symptom_data_GLAD.id)
+colnames(AAN_symptom_data_GLAD.id)
 #Differences
-dim(AN_symptom_data_GLAD)[1]-dim(AN_symptom_data_GLAD.id)[1]
+dim(AAN_symptom_data_GLAD)[1]-dim(AAN_symptom_data_GLAD.id)[1]
 
 ```
 
 ## Read in data - AN ED100K EDGI 
 ```{r Read in data}
 
-AN_symptom_data_EDGI <- readRDS(file = "../data_raw/edgi/aan_edgi_c2.rds") #Add your data file here
+AAN_symptom_data_EDGI <- readRDS(file = "../data_raw/edgi/aan_edgi_c2.rds") #Add your data file here
 
 #Check colnames
-colnames(AN_symptom_data_EDGI)
+colnames(AAN_symptom_data_EDGI)
 
 #Check number of rows
-nrow(AN_symptom_data_EDGI)
+nrow(AAN_symptom_data_EDGI)
 
 ```
 
@@ -104,7 +104,7 @@ nrow(AN_symptom_data_EDGI)
 exclude_cols_dem <- c("ID",
                       "cohort_name")
 
-AN_symptom_data_EDGI.id <- AN_symptom_data_EDGI %>% 
+AAN_symptom_data_EDGI.id <- AAN_symptom_data_EDGI %>% 
   drop_na(externalDataReference) %>% # Drop NAs
   distinct(externalDataReference, .keep_all = TRUE)  %>%
   add_column(cohort_name = "glad", .before = "aan.1.eating_disorder_due_illness") %>% #create new column 
@@ -133,11 +133,74 @@ mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in nume
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
-dim(AN_symptom_data_EDGI.id)
+dim(AAN_symptom_data_EDGI.id)
 # Inspect colnames
-colnames(AN_symptom_data_EDGI.id)
+colnames(AAN_symptom_data_EDGI.id)
 #Differences
-dim(AN_symptom_data_EDGI)[1]-dim(AN_symptom_data_EDGI.id)[1]
+dim(AAN_symptom_data_EDGI)[1]-dim(AAN_symptom_data_EDGI.id)[1]
+
+```
+## Read in data - EDGI DEMOGRAPHICS
+```{r Read in data}
+
+EDGI_dem <- readRDS(file = "../data_raw/edgi/demographics_edgi.rds") #Add your data file here
+
+#Check colnames
+colnames(EDGI_dem)
+
+#Check number of rows
+nrow(EDGI_dem)
+
+```
+
+#Select columns
+```{r Read in data}
+
+exclude_cols_dem <- c("ID")
+
+EDGI_dem.id <- EDGI_dem  %>% 
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE)  %>%
+  #add_column(cohort_name = "glad", .before = "be.short_period_ate_regard") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+       #  cohort_name, # Sample
+      demographics.what_is_your_current_height,
+      demographics.what_is_your_current_height.1,
+      demographics.what_is_your_current_height.2,
+      demographics.pregnant_current_weight_provide,
+      demographics.pregnant_current_weight_provide.1,
+      demographics.pregnant_current_weight_provide.2,
+      demographics.pregnant_provide_weighed_weight,
+      demographics.pregnant_provide_weighed_weight.1,
+      demographics.pregnant_provide_weighed_weight.2,
+      demographics.highest_weight_bmi.txt,
+      demographics.period.txt,
+      demographics.adult_height_reaching_weighed,
+      demographics.adult_height_reaching_weighed.1,
+      demographics.adult_height_reaching_weighed.2,
+      demographics.adult_height_lowest_weight.txt,
+      demographics.pregnant_provide_bmi_weight
+       ) %>%
+    add_numeric(., exclude = exclude_cols_dem) %>%
+mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(EDGI_dem.id)
+# Inspect colnames
+colnames(EDGI_dem.id)
+#Differences
+dim(EDGI_dem)[1]-dim(EDGI_dem.id)[1]
 
 ```
 
@@ -583,17 +646,86 @@ colnames(dem_GLAD_ED.id)
 dim(dem_GLAD_ED)[1]-dim(dem_GLAD_ED.id)[1]
 
 ```
-
-## Read in data - demographics EDGI 
+## Read in data - AN GLAD
 ```{r Read in data}
 
-dem_EDGI_ED <- readRDS(file = "../data_raw/edgi/an_edgi.rds") #Add your data file here
+AN_GLAD_ED <- readRDS(file = "../data_raw/glad/an_glad_ed.rds") #Add your data file here
 
 #Check colnames
-colnames(dem_EDGI_ED)
+colnames(AN_GLAD_ED)
 
 #Check number of rows
-nrow(dem_EDGI_ED)
+nrow(AN_GLAD_ED)
+
+```
+##Select columns
+```{r Read in data}
+
+exclude_cols_dem <- c("ID")
+
+AN_GLAD_ED.id <- AN_GLAD_ED %>% 
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE)  %>%
+#  add_column(cohort_name = "glad", .before = "an.lowest_weight_people_thought") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+      an.lowest_weight_people_thought,
+      an.how_old_were_you,
+      an.low_time_weight,
+      an.low_time_weight.1,
+      an.low_time_weight.2,
+      an.low_weight_long_bmi,
+      an.low_weight_long_bmi.1,
+      an.gain_weight_low_weight,
+      an.not_at_all_dependentcompletely_dependent,
+      an.health_low_weight_bmi,
+      an.feel_fat_low_weight,
+      an.started_time_periods,
+      an.periods_stop_low_weight,
+      an.for_how_long_did_your_periods_stop,
+      an.for_how_long_did_your_periods_stop.1,
+      an.roughly_periods_stopped.txt,
+      an.what_was_the_illness.txt,
+      an.how_tall_were_you_then,
+      an.how_tall_were_you_then.1,
+      an.how_tall_were_you_then.2,
+      an.people_thought_larger_parts,
+      an.bmi_low_time,
+      an.suffered_eating_disorder_long,
+      an.suffered_eating_disorder_long.1
+         ) %>%
+    add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(AN_GLAD_ED.id )
+# Inspect colnames
+colnames(AN_GLAD_ED.id )
+#Differences
+dim(AN_GLAD_ED)[1]-dim(AN_GLAD_ED.id )[1]
+
+```
+
+## Read in data - AN EDGI 
+```{r Read in data}
+
+AN_EDGI_ED <- readRDS(file = "../data_raw/edgi/an_edgi.rds") #Add your data file here
+
+#Check colnames
+colnames(AN_EDGI_ED)
+
+#Check number of rows
+nrow(AN_EDGI_ED)
 
 ```
 
@@ -602,7 +734,7 @@ nrow(dem_EDGI_ED)
 
 exclude_cols_dem <- c("ID")
 
-dem_EDGI_ED.id <- dem_EDGI_ED %>% 
+AN_EDGI_ED.id <- AN_EDGI_ED %>% 
   drop_na(externalDataReference) %>% # Drop NAs
   distinct(externalDataReference, .keep_all = TRUE)  %>%
   add_column(cohort_name = "glad", .before = "an.lowest_weight_people_thought") %>% #create new column 
@@ -646,54 +778,243 @@ dem_EDGI_ED.id <- dem_EDGI_ED %>%
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
-dim(dem_EDGI_ED.id)
+dim(AN_EDGI_ED.id)
 # Inspect colnames
-colnames(dem_EDGI_ED.id)
+colnames(AN_EDGI_ED.id)
 #Differences
-dim(dem_EDGI_ED)[1]-dim(dem_EDGI_ED.id)[1]
+dim(AN_EDGI_ED)[1]-dim(AN_EDGI_ED.id)[1]
 
 ```
 
-##Merge ICB and BED - GLAD
+## Read in data - AN EDGI 
+```{r Read in data}
+
+GLAD_signup_dem <- readRDS(file = "../data_raw/glad/dem_glad.rds") #Add your data file here
+
+#Check colnames
+colnames(GLAD_signup_dem )
+
+#Check number of rows
+nrow(GLAD_signup_dem )
+
+```
+
+##Select columns
+```{r Read in data}
+
+exclude_cols_dem <- c("ID")
+
+GLAD_signup_dem.id <- GLAD_signup_dem %>% 
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE)  %>%
+#  add_column(cohort_name = "glad", .before = "an.lowest_weight_people_thought") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         dem.current_weight_pregnant_weight,
+         dem.current_weight_pregnant_weight.1,
+         dem.current_weight_pregnant_weight.2,
+         dem.what_is_your_current_height,
+         dem.what_is_your_current_height.1,
+         dem.what_is_your_current_height.2
+         
+         ) %>%
+    add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(GLAD_signup_dem.id)
+# Inspect colnames
+colnames(GLAD_signup_dem.id)
+#Differences
+dim(GLAD_signup_dem)[1]-dim(GLAD_signup_dem.id)[1]
+
+```
+
+
+## SELF-REPORTED DIAGNOSES ##
+
+GLAD has self-reported ED diagnoses in the following:
+1) MHD questionnaire [glad.mhd.raw]
+2) ED100K screener (optional) [glad_ed100k_an]
+
+EDGI has self-reported ED diagnoses in the following:
+1) MHD questionnaire (used as ED100K screener) [edgi_mhd]
+
+
+##GLAD MHD
+```{r}
+ glad.mhd.raw <- readRDS(file = "../data_raw/glad/mhd_glad.rds")
+  dim(glad.mhd.raw)
+  colnames(glad.mhd.raw)
+```
+
+##Select columns
+```{r}
+exclude_cols <- c("ID",
+                  "cohort_name")
+
+glad.mhd.raw.id <- glad.mhd.raw %>%
+    drop_na(externalDataReference) %>% # Drop NAs
+    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+    # mutate(ID = as.numeric(ID)) %>%
+   # add_column(cohort_name = "glad", .before = "mhd.an") %>% #create new column 
+    select(
+      ID = externalDataReference, # ID
+    #  cohort_name, # Sample
+      mhd.anorexia_signup = mhd.an,
+      mhd.bulimia_signup = mhd.bn,
+      mhd.bed_signup = mhd.bed
+
+    ) %>%
+    add_numeric(., exclude = exclude_cols) %>%
+    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+    mutate_if(is.numeric, ~na_if(., -99)) %>%
+    mutate_if(is.numeric, ~na_if(., -77)) %>%
+    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+  # Inspect dimensions
+  dim(glad.mhd.raw.id)
+  # Inspect colnames
+  colnames(glad.mhd.raw.id)
+  #Differences
+  dim(glad.mhd.raw)[1]-dim(glad.mhd.raw.id)[1]
+```
+
+##GLAD ED100K screener
+```{r}
+ glad.ED100K.screener.raw <- readRDS(file = "../data_raw/glad/an_glad_ed100k.rds")
+  dim(glad.ED100K.screener.raw)
+  colnames(glad.ED100K.screener.raw)
+```
+
+##Select columns
+```{r}
+exclude_cols <- c("ID")
+
+glad.ED100K.screener.raw.id <- glad.ED100K.screener.raw %>%
+    drop_na(externalDataReference) %>% # Drop NAs
+    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+    # mutate(ID = as.numeric(ID)) %>%
+   # add_column(cohort_name = "g", .before = "mhd.an") %>% #create new column 
+    select(
+      ID = externalDataReference, # ID
+    #  cohort_name, # Sample
+    an.1.diagnosed_suspected_eating_disorder,
+    an.1.eating_disorder_received_treatment,
+    an.1.anorexia_nervosa,
+    an.1.atypical_anorexia_nervosa,
+    an.1.bulimia_nervosa,
+    an.1.bingeeating_disorder,
+    an.1.purging_disorder,
+    an.1.night_eating_syndrome,
+    an.1.pica,
+    an.1.avoidantrestrictive_food_intake_disorder,
+    an.1.rumination_disorder,
+    an.1.other_eating_disorder,
+    an.1.other_eating_disorder_text.txt,
+    an.1.dont_know,
+    an.1.prefer_not_to_answer,
+    an.1.people_thought_weigh_weighed
+    ) %>%
+    add_numeric(., exclude = exclude_cols) %>%
+    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+    mutate_if(is.numeric, ~na_if(., -99)) %>%
+    mutate_if(is.numeric, ~na_if(., -77)) %>%
+    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+  # Inspect dimensions
+  dim(glad.ED100K.screener.raw.id)
+  # Inspect colnames
+  colnames(glad.ED100K.screener.raw.id)
+  #Differences
+  dim(glad.ED100K.screener.raw)[1]-dim(glad.ED100K.screener.raw.id)[1]
+```
+
+##EDGI MHD
+```{r}
+edgi.mhd.raw <- readRDS(file = "../data_raw/edgi/mhd_edgi.rds")
+  dim(edgi.mhd.raw)
+  colnames(edgi.mhd.raw)
+```
+
+##Select columns
+```{r}
+exclude_cols <- c("ID")
+
+edgi.mhd.raw.id <- edgi.mhd.raw %>%
+    drop_na(externalDataReference) %>% # Drop NAs
+    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+    # mutate(ID = as.numeric(ID)) %>%
+    #add_column(cohort_name = "edgi", .before = "mhd.anorexia_nervosa") %>% #create new column 
+    select(
+      ID = externalDataReference, # ID
+     # cohort_name, # Sample
+      mhd.anorexia_signup = mhd.anorexia_nervosa,
+      mhd.bulimia_signup = mhd.bulimia_nervosa,
+      mhd.bed_signup = mhd.bingeeating_disorder
+
+    ) %>%
+    add_numeric(., exclude = exclude_cols) %>%
+    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+    mutate_if(is.numeric, ~na_if(., -99)) %>%
+    mutate_if(is.numeric, ~na_if(., -77)) %>%
+    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+  # Inspect dimensions
+  dim(glad.mhd.raw.id)
+  # Inspect colnames
+  colnames(glad.mhd.raw.id)
+  #Differences
+  dim(glad.mhd.raw)[1]-dim(glad.mhd.raw.id)[1]
+```
+
+
+
+
+##Merge data - GLAD
 ```{r}
 dfs.list <- list(
  BE_symptom_data_GLAD.id,
-  ICB_symptom_data_GLAD.id)
-
-#Merge
-dat.ed.GLAD.id <- plyr::join_all(dfs.list,
-                                      by = c("ID"))
-
-
-#Check rows
-nrow(dat.ed.GLAD.id)
-
-#Check columns
-colnames(dat.ed.GLAD.id)
-```
-
-##Merge ICB and BED with AN - GLAD
-```{r}
-dfs.list <- list(
- dat.ed.GLAD.id,
-  AN_symptom_data_GLAD.id)
-
-#Merge
-dat.ed.GLAD1 <- plyr::join_all(dfs.list,
-                                      by = c("ID"))
-
-
-#Check rows
-nrow(dat.ed.GLAD1)
-
-#Check columns
-colnames(dat.ed.GLAD1)
-```
-##final - Merge ICB and BED and AN with GLAD demographics - GLAD
-```{r}
-dfs.list <- list(
- dat.ed.GLAD1,
-  dem_GLAD_ED.id)
+  ICB_symptom_data_GLAD.id,
+ AAN_symptom_data_GLAD.id,
+ dem_GLAD_ED.id,
+ AN_GLAD_ED.id,
+ GLAD_signup_dem.id,
+ glad.ED100K.screener.raw.id,
+ glad.mhd.raw.id
+ 
+ )
 
 #Merge
 dat.ed.GLAD <- plyr::join_all(dfs.list,
@@ -707,49 +1028,18 @@ nrow(dat.ed.GLAD)
 colnames(dat.ed.GLAD)
 ```
 
-##Merge ICB and BED - EDGI
+
+##Merge data - EDGI
 ```{r}
 dfs.list <- list(
  BE_symptom_data_EDGI.id,
-  ICB_symptom_data_EDGI.id)
-
-#Merge
-ICB_BE_symptom_EDGI.id <- plyr::join_all(dfs.list,
-                                      by = c("ID"))
-
-
-#Check rows
-nrow(ICB_BE_symptom_EDGI.id)
-
-#Check columns
-colnames(ICB_BE_symptom_EDGI.id)
-```
-
-
-##Merge ICB and BED with AN - EDGI
-```{r}
-dfs.list <- list(
   ICB_symptom_data_EDGI.id,
-  AN_symptom_data_EDGI.id)
-
-#Merge
-dat.ed.EDGI1 <- plyr::join_all(dfs.list,
-                                      by = c("ID"))
-
-
-#Check rows
-nrow(dat.ed.EDGI1)
-
-#Check columns
-colnames(dat.ed.EDGI1)
-```
-
-
-##Final - Merge ICB and BED and AN with EDGI demographics 
-```{r}
-dfs.list <- list(
- dat.ed.EDGI1,
-  dem_EDGI_ED.id)
+ AAN_symptom_data_EDGI.id,
+ AN_EDGI_ED.id,
+ EDGI_dem.id,
+ edgi.mhd.raw.id
+ 
+ )
 
 #Merge
 dat.ed.EDGI <- plyr::join_all(dfs.list,
@@ -763,120 +1053,222 @@ nrow(dat.ed.EDGI)
 colnames(dat.ed.EDGI)
 ```
 
+############# Derived variables (GLAD + EDGI) #################
 
-## Derived variables (GLAD + EDGI)
+NB: Have written the algorithms separately (despite trying to merge the data) because of the many different names of the variables 
 
-NB: Have written the algorithms separately (despite trying to merge the data) because of the different way these variables - icb.lasted_binge_eating_episodes1, icb.lasted_binge_eating_episodes2, icb.lasted_binge_eating_episodes3 - have been stored
-
-#Work out BMI 
+#Work out lowest and current BMI 
 BMI = kg/m2 
 
-##Weight in kg (EDGI)
+
+#EDGI BMI
+EDGI has two reports of BMI that are relevant to this analysis.
+1) Lowest BMI (lowest_bmi)
+2) Current BMI (ed.bmi_current)
+
+
+#Lowest BMI (EDGI)
+##Lowest weight in kg (EDGI)
 ```{r}
 
 ##First need all numeric variables (all are currently factor variables...)
-dat.ed.EDGI$weight_stone <- as.numeric(dat.ed.EDGI$an.low_weight_time_numeric)
+dat.ed.EDGI$low_weight_stone <- as.numeric(dat.ed.EDGI$an.low_weight_time_numeric)
 
-dat.ed.EDGI$weight_lbs <- as.numeric(dat.ed.EDGI$an.low_weight_time.1_numeric)
+dat.ed.EDGI$low_weight_lbs <- as.numeric(dat.ed.EDGI$an.low_weight_time.1_numeric)
 
-dat.ed.EDGI$weight_kg <- as.numeric(dat.ed.EDGI$an.low_weight_time.2_numeric)
+dat.ed.EDGI$low_weight_kg <- as.numeric(dat.ed.EDGI$an.low_weight_time.2_numeric)
 
 ##To convert stone to kg, multiply by 6.35029
-dat.ed.EDGI$weight_kg_converted <- NA_real_
+dat.ed.EDGI$low_weight_kg_converted <- NA_real_
 
-dat.ed.EDGI$weight_kg_converted <-
-  if_else(condition = is.na(dat.ed.EDGI$weight_kg_converted), 
+dat.ed.EDGI$low_weight_kg_converted <-
+  if_else(condition = is.na(dat.ed.EDGI$low_weight_kg_converted), 
          true = (
-           (dat.ed.EDGI$weight_stone*6.35029) + 
-             (dat.ed.EDGI$weight_lbs*0.453592)
+           (dat.ed.EDGI$low_weight_stone*6.35029) + 
+             (dat.ed.EDGI$low_weight_lbs*0.453592)
            ), #weight in st and lbs converted to kg
          false = NA_real_,
          missing = NA_real_)
 
 
 # Kilograms
-dat.ed.EDGI$weight_kg_unc <- 
-  if_else(condition = is.na(dat.ed.EDGI$weight_kg_converted), 
-         true = dat.ed.EDGI$weight_kg, #weight in kilos
-         false = dat.ed.EDGI$weight_kg_converted,
+dat.ed.EDGI$low_weight_kg_unc <- 
+  if_else(condition = is.na(dat.ed.EDGI$low_weight_kg_converted), 
+         true = dat.ed.EDGI$low_weight_kg, #weight in kilos
+         false = dat.ed.EDGI$low_weight_kg_converted,
          missing = NA_real_) 
 
 # Summary
-summary(dat.ed.EDGI$weight_kg_unc)
+summary(dat.ed.EDGI$low_weight_kg_unc)
 
 ```
-## Clean weight in kg (EDGI)
+## Clean lowest weight in kg (EDGI)
 ```{r}
 #Weight outlier
   # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
-  weight_upper_limit = 150 
-  weight_lower_limit = 25
+  low_weight_upper_limit = 150 
+  low_weight_lower_limit = 25
   
   #Identify number of outliers
   length(
     which(
-      dat.ed.EDGI$weight_kg_unc > weight_upper_limit |
-        dat.ed.EDGI$weight_kg_unc < weight_lower_limit
+      dat.ed.EDGI$low_weight_kg_unc > low_weight_upper_limit |
+        dat.ed.EDGI$low_weight_kg_unc < low_weight_lower_limit
     )
   )
   
   #Remove weight outliers
   dat.ed.EDGI <- dat.ed.EDGI %>%
     mutate(
-      weight_kg_final =
+      low_weight_kg_final =
         if_else(
-          weight_kg_unc > weight_upper_limit |
-            weight_kg_unc < weight_lower_limit,
+          low_weight_kg_unc > low_weight_upper_limit |
+            low_weight_kg_unc < low_weight_lower_limit,
           true = NA_real_,
-          false = weight_kg_unc,
+          false = low_weight_kg_unc,
           missing = NA_real_
         )
     )
   
   ##Check
   dat.ed.EDGI %>%
-    freq(weight_kg_final)
+    freq(low_weight_kg_final)
 
   
 ```
 
-
-##Height in m (EDGI)
+##Height at lowest weight in m (EDGI)
 ```{r}
 
 ##Change character variables to numeric / rename
-dat.ed.EDGI$height_inches_numeric <- as.numeric(dat.ed.EDGI$an.how_tall_were_you_then.1_numeric)
+dat.ed.EDGI$low_height_inches_numeric <- as.numeric(dat.ed.EDGI$an.how_tall_were_you_then.1_numeric)
 
-dat.ed.EDGI$height_cm_numeric <- as.numeric(dat.ed.EDGI$an.how_tall_were_you_then.2_numeric)
+dat.ed.EDGI$low_height_cm_numeric <- as.numeric(dat.ed.EDGI$an.how_tall_were_you_then.2_numeric)
 
-dat.ed.EDGI$height_ft_numeric <- as.numeric(dat.ed.EDGI$an.how_tall_were_you_then)
+dat.ed.EDGI$low_height_ft_numeric <- as.numeric(dat.ed.EDGI$an.how_tall_were_you_then)
 
 # Feet and inches to metres
-dat.ed.EDGI$height_m <- NA
+dat.ed.EDGI$low_height_m <- NA
 
-dat.ed.EDGI$height_m <- 
+dat.ed.EDGI$low_height_m <- 
   if_else(
-    condition = is.na(dat.ed.EDGI$height_m),
+    condition = is.na(dat.ed.EDGI$low_height_m),
     true = (
-      (dat.ed.EDGI$height_ft_numeric*0.3048) +
-      (dat.ed.EDGI$height_inches_numeric*0.0254)
+      (dat.ed.EDGI$low_height_ft_numeric*0.3048) +
+      (dat.ed.EDGI$low_height_inches_numeric*0.0254)
        ),
     false = NA_real_,
     missing = NA_real_
     )
 
 # Centimetres to metres
-dat.ed.EDGI$height_m_unc <- 
+dat.ed.EDGI$low_height_m_unc <- 
   if_else(
-    condition = is.na(dat.ed.EDGI$height_m),
-    true = dat.ed.EDGI$height_cm_numeric/100,
-    false = dat.ed.EDGI$height_m)
+    condition = is.na(dat.ed.EDGI$low_height_m),
+    true = dat.ed.EDGI$low_height_cm_numeric/100,
+    false = dat.ed.EDGI$low_height_m)
 
 # Summary
-summary(dat.ed.EDGI$height_m_unc)
+summary(dat.ed.EDGI$low_height_m_unc)
 ```
 
-## Clean height in m (EDGI)
+## Clean height at lowest weight in m (EDGI)
+```{r}
+#Height outlier
+  # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  low_height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
+  low_height_lower_limit = 1
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.EDGI$low_height_m_unc > low_height_upper_limit |
+        dat.ed.EDGI$low_height_m_unc < low_height_lower_limit
+    )
+  )
+  
+  #Remove height outliers
+  dat.ed.EDGI <- dat.ed.EDGI %>%
+    mutate(
+     low_height_m_final =
+        if_else(
+          low_height_m_unc > low_height_upper_limit |
+            low_height_m_unc < low_height_lower_limit,
+          true = NA_real_,
+          false = low_height_m_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.EDGI %>%
+    freq(low_height_m_final)
+  
+  
+```
+
+## Work out lowest BMI (EDGI)
+```{r}
+
+# Calculated from height and weight **This should be based on min weight and height - have quite low values <10 - need to check
+dat.ed.EDGI$lowest_bmi <- NA
+
+#Self-reported BMI
+dat.ed.EDGI$lowest_bmi <- 
+  if_else(condition = is.na(dat.ed.EDGI$lowest_bmi), 
+         true = dat.ed.EDGI$an.bmi_low_time_numeric, # RAW BMI: How low did your BMI get during this time?
+         false = NA_real_, 
+         missing = NA_real_)
+
+#Derived BMI
+dat.ed.EDGI$lowest_bmi <- 
+  if_else(condition = is.na(dat.ed.EDGI$lowest_bmi), 
+         true = dat.ed.EDGI$low_weight_kg_final/dat.ed.EDGI$low_height_m_final^2, #From height and weight
+         false = as.numeric(dat.ed.EDGI$lowest_bmi), 
+         missing = NA_real_)
+
+# Summary
+summary(dat.ed.EDGI$lowest_bmi)
+
+```
+
+# Current BMI (EDGI)
+
+## Current height (EDGI)
+Conversion from feet to metres: 1 feet corresponds to 0.3048 metres
+Conversion from inches to metres: 1 inch corresponds to 0.0254 metres
+```{r ed.height_current conversion}
+dat.ed.EDGI$ed.height_current_metres <- NA
+
+#First, need numeric variables
+dat.ed.EDGI$current_height_ft <- as.numeric(dat.ed.EDGI$demographics.what_is_your_current_height_numeric)
+
+dat.ed.EDGI$current_height_inches <- as.numeric(dat.ed.EDGI$demographics.what_is_your_current_height.1_numeric)
+
+dat.ed.EDGI$current_height_cm <- as.numeric(dat.ed.EDGI$demographics.what_is_your_current_height.2_numeric)
+
+# Feet and inches to metres
+dat.ed.EDGI$ed.height_current_metres <- 
+  if_else(
+    condition = is.na(dat.ed.EDGI$ed.height_current_metres),
+    true = (dat.ed.EDGI$current_height_ft*0.3048) +
+      (dat.ed.EDGI$current_height_inches*0.0254),
+    false = NA_real_,
+    missing = NA_real_
+    )
+
+# Centimetres to metres
+dat.ed.EDGI$ed.height_current_m_unc <- 
+  if_else(
+    condition = is.na(dat.ed.EDGI$ed.height_current_metres),
+    true = dat.ed.EDGI$current_height_cm/100,
+    false = dat.ed.EDGI$ed.height_current_metres)
+
+# Summary
+summary(dat.ed.EDGI$ed.height_current_m_unc)
+```
+
+## Clean current height in m (EDGI)
 ```{r}
 #Height outlier
   # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
@@ -886,207 +1278,637 @@ summary(dat.ed.EDGI$height_m_unc)
   #Identify number of outliers
   length(
     which(
-      dat.ed.EDGI$height_m_unc > height_upper_limit |
-        dat.ed.EDGI$height_m_unc < height_lower_limit
+      dat.ed.EDGI$ed.height_current_m_unc > height_upper_limit |
+      dat.ed.EDGI$ed.height_current_m_unc < height_lower_limit
     )
   )
   
   #Remove height outliers
   dat.ed.EDGI <- dat.ed.EDGI %>%
     mutate(
-     height_m_final =
+     current_height_m_final =
         if_else(
-          height_m_unc > height_upper_limit |
-            height_m_unc < height_lower_limit,
+          ed.height_current_m_unc > height_upper_limit |
+            ed.height_current_m_unc < height_lower_limit,
           true = NA_real_,
-          false = height_m_unc,
+          false = ed.height_current_m_unc,
           missing = NA_real_
         )
     )
   
   ##Check
   dat.ed.EDGI %>%
-    freq(height_m_final)
+    freq(current_height_m_final)
   
   
 ```
 
-## Work out BMI (EDGI)
-```{r}
+#Current weight (EDGI)
+Conversion from stone and lbs to kg: 1 stone corresponds to 6.35029 kg, 1 lb corresponds to 0.453592 kg
+```{r ed.weight_current conversion}
+dat.ed.EDGI$ed.weight_current_kg <- NA
 
-# Calculated from height and weight **This should be based on min weight and height - have quite low values <10 - need to check
-dat.ed.EDGI$bmi_unc <- NA
+#First, need numeric variables
+dat.ed.EDGI$current_weight_st <- as.numeric(dat.ed.EDGI$demographics.pregnant_current_weight_provide_numeric)
 
-dat.ed.EDGI$bmi_unc <- 
-  if_else(condition = is.na(dat.ed.EDGI$bmi_unc), 
-         true = dat.ed.EDGI$weight_kg_final/dat.ed.EDGI$height_m_final^2, 
+dat.ed.EDGI$current_weight_lbs <- as.numeric(dat.ed.EDGI$demographics.pregnant_current_weight_provide.1_numeric)
+
+dat.ed.EDGI$current_weight_kg <- as.numeric(dat.ed.EDGI$demographics.pregnant_current_weight_provide.2_numeric)
+
+# Stones and pounds to kilogram
+dat.ed.EDGI$ed.weight_current_kg <-
+  if_else(condition = is.na(dat.ed.EDGI$ed.weight_current_kg), 
+         true = (dat.ed.EDGI$current_weight_st*6.35029) + (dat.ed.EDGI$current_weight_lbs*0.453592),
          false = NA_real_,
          missing = NA_real_)
 
-# Summary
-summary(dat.ed.EDGI$bmi_unc)
+# Kilograms
+dat.ed.EDGI$weight_current_kg_unc <- 
+  if_else(condition = is.na(dat.ed.EDGI$ed.weight_current_kg), 
+         true = dat.ed.EDGI$current_weight_kg,
+         false = dat.ed.EDGI$ed.weight_current_kg,
+         missing = NA_real_) 
 
+# Summary
+summary(dat.ed.EDGI$weight_current_kg_unc)
 ```
 
-##Weight in kg (GLAD)
+## Clean current weight in kg (EDGI)
+```{r}
+#Weight outlier
+  # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+ current_weight_upper_limit = 150 
+   current_weight_lower_limit = 25
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.EDGI$weight_current_kg_unc >  current_weight_upper_limit |
+        dat.ed.EDGI$weight_current_kg_unc <  current_weight_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  dat.ed.EDGI <- dat.ed.EDGI %>%
+    mutate(
+      current_weight_kg_final =
+        if_else(
+          weight_current_kg_unc > current_weight_upper_limit |
+            weight_current_kg_unc <  current_weight_lower_limit,
+          true = NA_real_,
+          false = weight_current_kg_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.EDGI %>%
+    freq(current_weight_kg_final)
+
+  
+```
+
+#Current BMI (EDGI)
+If participants have self-reported their BMI, we input these values into the new "ed.bmi_current" column.
+
+For participants who have not self-reported their BMI, we calculate it using their height and weight: The BMI is defined as the body mass divided by the square of the body height, and is universally expressed in units of kg/m², resulting from mass in kilograms and height in metres.
+```{r ed.bmi_current conversion}
+dat.ed.EDGI$ed.bmi_current <- NA
+
+# Self-reported
+dat.ed.EDGI$ed.bmi_current <- 
+  if_else(condition = is.na(dat.ed.EDGI$ed.bmi_current), 
+       true = dat.ed.EDGI$demographics.pregnant_provide_bmi_weight_numeric, #Raw BMI
+       false = NA_real_,
+       missing = NA_real_)
+
+# Calculated from height and weight
+dat.ed.EDGI$ed.bmi_current <- 
+  if_else(condition = is.na(dat.ed.EDGI$ed.bmi_current), 
+         true = dat.ed.EDGI$current_weight_kg_final/dat.ed.EDGI$current_height_m_final^2, #Derived BMI
+         false = dat.ed.EDGI$ed.bmi_current,
+         missing = NA_real_)
+
+# Summary
+summary(dat.ed.EDGI$ed.bmi_current)
+
+```
+#GLAD BMI
+
+In GLAD, there are three reports of BMI.
+1) Lowest BMI as reported in the signup (i.e., glad_ed_demographics) (low_dem_bmi)
+2) Current BMI as reported in the signup (current_bmi)
+3) Lowest BMI as reported in the optional ED100K (low_AN_bmi)
+
+
+##Lowest BMI reported in demographic sign-up (GLAD)
+
+1) Lowest BMI as reported in the signup (i.e., glad_ed_demographics) (low_dem_bmi)
+
+###Lowest weight in kg (GLAD) from DEMOGRAPHICS (i.e., sign up)
 ```{r}
 
 ##First need all numeric variables (all are currently factor variables...)
-dat.ed.GLAD$weight_stone <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed_numeric)
+dat.ed.GLAD$low_dem_weight_stone <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed_numeric)
 
-dat.ed.GLAD$weight_lbs <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed.1_numeric)
+dat.ed.GLAD$low_dem_weight_lbs <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed.1_numeric)
 
-dat.ed.GLAD$weight_kg <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed.2_numeric)
+dat.ed.GLAD$low_dem_weight_kg <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed.2_numeric)
 
 ##To convert stone to kg, multiply by 6.35029
-dat.ed.GLAD$weight_kg_converted <- NA_real_
+dat.ed.GLAD$low_dem_weight_kg_converted <- NA_real_
 
-dat.ed.GLAD$weight_kg_converted <-
-  if_else(condition = is.na(dat.ed.GLAD$weight_kg_converted), 
+dat.ed.GLAD$low_dem_weight_kg_converted <-
+  if_else(condition = is.na(dat.ed.GLAD$low_dem_weight_kg_converted), 
          true = (
-           (dat.ed.GLAD$weight_stone*6.35029) + 
-             (dat.ed.GLAD$weight_lbs*0.453592)
+           (dat.ed.GLAD$low_dem_weight_stone*6.35029) + 
+             (dat.ed.GLAD$low_dem_weight_lbs*0.453592)
            ), #weight in st and lbs converted to kg
          false = NA_real_,
          missing = NA_real_)
 
 
 # Kilograms
-dat.ed.GLAD$weight_kg_unc <- 
-  if_else(condition = is.na(dat.ed.GLAD$weight_kg_converted), 
-         true = dat.ed.GLAD$weight_kg, #weight in kilos
-         false = dat.ed.GLAD$weight_kg_converted,
+dat.ed.GLAD$low_dem_weight_kg_unc <- 
+  if_else(condition = is.na(dat.ed.GLAD$low_dem_weight_kg_converted), 
+         true = dat.ed.GLAD$low_dem_weight_kg, #weight in kilos
+         false = dat.ed.GLAD$low_weight_kg_converted,
          missing = NA_real_) 
 
 # Summary
-summary(dat.ed.GLAD$weight_kg_unc)
+summary(dat.ed.GLAD$low_dem_weight_kg_unc)
 
 ```
-## Clean weight in kg (GLAD)
-```{r}
+
+## Clean low dem weight in kg (GLAD) 
+```{r }
 #Weight outlier
   # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
-  weight_upper_limit = 150 
-  weight_lower_limit = 25
+  low_dem_weight_upper_limit = 150 
+  low_dem_weight_lower_limit = 25
   
   #Identify number of outliers
   length(
     which(
-      dat.ed.GLAD$weight_kg_unc > weight_upper_limit |
-        dat.ed.GLAD$weight_kg_unc < weight_lower_limit
+      dat.ed.GLAD$low_dem_weight_kg_unc > low_dem_weight_upper_limit |
+        dat.ed.GLAD$low_dem_weight_kg_unc < low_dem_weight_lower_limit
     )
   )
   
   #Remove weight outliers
   dat.ed.GLAD <- dat.ed.GLAD %>%
     mutate(
-      weight_kg_final =
+      low_dem_weight_kg_final =
         if_else(
-          weight_kg_unc > weight_upper_limit |
-            weight_kg_unc < weight_lower_limit,
+          low_dem_weight_kg_unc > low_dem_weight_upper_limit |
+            low_dem_weight_kg_unc < low_dem_weight_lower_limit,
           true = NA_real_,
-          false = weight_kg_unc,
+          false = low_dem_weight_kg_unc,
           missing = NA_real_
         )
     )
   
   ##Check
   dat.ed.GLAD %>%
-    freq(weight_kg_final)
+    freq(low_dem_weight_kg_final)
   
   
 ```
 
-
-##Height in m (GLAD)
+##Current ED_DEM height in m (GLAD)
+This is current height as captured in the glad_ed_demographics
 ```{r}
 
 ##Change character variables to numeric 
 
 #NB*** This is CURRENT height, because the question about low weight is: 'What is the least you have ever weighed since reaching your adult height' rather than 'How much did you weigh at your lowest weight?' followed by 'how tall were you then?', so note that this would not capture low childhood BMI. GLAD is being updated to reflect EDGI so this will change.
-dat.ed.GLAD$height_ft_numeric <- as.numeric(dat.ed.GLAD$demographics.what_is_your_current_height_numeric) 
+dat.ed.GLAD$current_ed_height_ft_numeric <- as.numeric(dat.ed.GLAD$demographics.what_is_your_current_height_numeric) 
 
-dat.ed.GLAD$height_inches_numeric <- as.numeric(dat.ed.GLAD$demographics.what_is_your_current_height.1_numeric)
+dat.ed.GLAD$current_ed_height_inches_numeric <- as.numeric(dat.ed.GLAD$demographics.what_is_your_current_height.1_numeric)
 
-dat.ed.GLAD$height_cm_numeric <- as.numeric(dat.ed.GLAD$demographics.what_is_your_current_height.2_numeric)
+dat.ed.GLAD$current_ed_height_cm_numeric <- as.numeric(dat.ed.GLAD$demographics.what_is_your_current_height.2_numeric)
 
 
 # Feet and inches to metres
-dat.ed.GLAD$height_m <- NA
+dat.ed.GLAD$current_ed_height_m <- NA
 
 
-dat.ed.GLAD$height_m <- 
+dat.ed.GLAD$current_ed_height_m <- 
   if_else(
-    condition = is.na(dat.ed.GLAD$height_m),
+    condition = is.na(dat.ed.GLAD$current_ed_height_m),
     true = (
-      (dat.ed.GLAD$height_ft_numeric*0.3048) +
-      (dat.ed.GLAD$height_inches_numeric*0.0254)
+      (dat.ed.GLAD$current_ed_height_ft_numeric*0.3048) +
+      (dat.ed.GLAD$current_ed_height_inches_numeric*0.0254)
        ),
     false = NA_real_,
     missing = NA_real_
     )
 
 # Centimetres to metres
-dat.ed.GLAD$height_m_unc <- 
+dat.ed.GLAD$current_ed_height_m_unc <- 
   if_else(
-    condition = is.na(dat.ed.GLAD$height_m),
-    true = dat.ed.GLAD$height_cm_numeric/100,
-    false = dat.ed.GLAD$height_m)
+    condition = is.na(dat.ed.GLAD$current_ed_height_m),
+    true = dat.ed.GLAD$current_ed_height_cm_numeric/100,
+    false = dat.ed.GLAD$current_ed_height_m)
 
 # Summary
-summary(dat.ed.GLAD$height_m_unc)
+summary(dat.ed.GLAD$current_ed_height_m_unc)
 ```
 
-## Clean height in m (GLAD)
+## Clean current height in m (GLAD) 
 ```{r}
 #Height outlier
   # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
-  height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
-  height_lower_limit = 1
+  current_ed_height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
+  current_ed_height_lower_limit = 1
   
   #Identify number of outliers
   length(
     which(
-      dat.ed.GLAD$height_m_unc > height_upper_limit |
-        dat.ed.GLAD$height_m_unc < height_lower_limit
+      dat.ed.GLAD$current_ed_height_m_unc > current_ed_height_upper_limit |
+        dat.ed.GLAD$current_ed_height_m_unc < current_ed_height_lower_limit
     )
   )
   
   #Remove height outliers
   dat.ed.GLAD <- dat.ed.GLAD %>%
     mutate(
-     height_m_final =
+     current_ed_height_m_final =
         if_else(
-          height_m_unc > height_upper_limit |
-            height_m_unc < height_lower_limit,
+          current_ed_height_m_unc > current_ed_height_upper_limit |
+            current_ed_height_m_unc < current_ed_height_lower_limit,
           true = NA_real_,
-          false = height_m_unc,
+          false = current_ed_height_m_unc,
           missing = NA_real_
         )
     )
   
   ##Check
   dat.ed.GLAD %>%
-    freq(height_m_final)
+    freq(current_ed_height_m_final)
   
   
 ```
 
-## Work out BMI (GLAD)
-```{r}
+## Work out lowest dem BMI (GLAD)
+```{r }
 
-# Calculated from height and weight **This should be based on min weight and height - have quite low values <10 - need to check
-dat.ed.GLAD$bmi_unc <- NA
+# Calculated from current height and lowest weight reported in the sign up **This should be based on min weight and height - have quite low values <10 - need to check
+dat.ed.GLAD$low_dem_bmi <- NA
 
-dat.ed.GLAD$bmi_unc <- 
-  if_else(condition = is.na(dat.ed.GLAD$bmi_unc), 
-         true = dat.ed.GLAD$weight_kg_final/dat.ed.GLAD$height_m_final^2, 
+# Self-reported
+dat.ed.GLAD$low_dem_bmi <- 
+  if_else(condition = is.na(dat.ed.GLAD$low_dem_bmi), 
+       true = as.numeric(dat.ed.GLAD$demographics.adult_height_lowest_bmi_numeric), #First fill with raw BMI responses
+       false = NA_real_,
+       missing = NA_real_)
+
+# Calculated from height and weight
+dat.ed.GLAD$low_dem_bmi <- 
+  if_else(condition = is.na(dat.ed.GLAD$low_dem_bmi), 
+         true = dat.ed.GLAD$low_dem_weight_kg_final/dat.ed.GLAD$current_ed_height_m_final^2, #Then fill with derived BMI from people's height and weight
          false = NA_real_,
          missing = NA_real_)
 
 # Summary
-summary(dat.ed.GLAD$bmi_unc)
+summary(dat.ed.GLAD$low_dem_bmi)
+```
 
+2) Current BMI as reported in the GLAD signup (current_bmi)
+
+##Current weight in kg (GLAD) from DEMOGRAPHICS (i.e., sign up)
+```{r}
+
+##First need all numeric variables (all are currently factor variables...)
+dat.ed.GLAD$current_weight_stone <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed_numeric)
+
+dat.ed.GLAD$current_weight_lbs <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed.1_numeric)
+
+dat.ed.GLAD$current_weight_kg <- as.numeric(dat.ed.GLAD$demographics.adult_height_reaching_weighed.2_numeric)
+
+##To convert stone to kg, multiply by 6.35029
+dat.ed.GLAD$current_weight_kg_converted <- NA_real_
+
+dat.ed.GLAD$current_weight_kg_converted <-
+  if_else(condition = is.na(dat.ed.GLAD$current_weight_kg_converted), 
+         true = (
+           (dat.ed.GLAD$current_weight_stone*6.35029) + 
+             (dat.ed.GLAD$current_weight_lbs*0.453592)
+           ), #weight in st and lbs converted to kg
+         false = NA_real_,
+         missing = NA_real_)
+
+
+# Kilograms
+dat.ed.GLAD$current_weight_kg_unc <- 
+  if_else(condition = is.na(dat.ed.GLAD$current_weight_kg_converted), 
+         true = dat.ed.GLAD$current_weight_kg, #weight in kilos
+         false = dat.ed.GLAD$current_weight_kg_converted,
+         missing = NA_real_) 
+
+# Summary
+summary(dat.ed.GLAD$current_weight_kg_unc)
+
+```
+
+## Clean current weight in kg (GLAD) 
+```{r }
+#Weight outlier
+  # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  current_dem_weight_upper_limit = 150 
+  current_dem_weight_lower_limit = 25
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.GLAD$current_weight_kg_unc > current_dem_weight_upper_limit |
+        dat.ed.GLAD$current_weight_kg_unc < current_dem_weight_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  dat.ed.GLAD <- dat.ed.GLAD %>%
+    mutate(
+      current_weight_kg =
+        if_else(
+          current_weight_kg_unc > current_dem_weight_upper_limit |
+            current_weight_kg_unc < current_dem_weight_lower_limit,
+          true = NA_real_,
+          false = current_weight_kg_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.GLAD %>%
+    freq(current_weight_kg)
+  
+  
+```
+
+
+##Current DEM height in m (GLAD)
+This is current height as captured in the GLAD demographics
+```{r}
+
+##Change character variables to numeric 
+
+#NB*** This is CURRENT height, because the question about low weight is: 'What is the least you have ever weighed since reaching your adult height' rather than 'How much did you weigh at your lowest weight?' followed by 'how tall were you then?', so note that this would not capture low childhood BMI. GLAD is being updated to reflect EDGI so this will change.
+dat.ed.GLAD$current_height_ft_numeric <- as.numeric(dat.ed.GLAD$dem.what_is_your_current_height.1_numeric) 
+
+dat.ed.GLAD$current_height_inches_numeric <- as.numeric(dat.ed.GLAD$dem.what_is_your_current_height.2_numeric)
+
+dat.ed.GLAD$current_height_cm_numeric <- as.numeric(dat.ed.GLAD$dem.what_is_your_current_height_numeric)
+
+
+# Feet and inches to metres
+dat.ed.GLAD$current_height_m <- NA
+
+
+dat.ed.GLAD$current_height_m <- 
+  if_else(
+    condition = is.na(dat.ed.GLAD$current_height_m),
+    true = (
+      (dat.ed.GLAD$current_height_ft_numeric*0.3048) +
+      (dat.ed.GLAD$current_height_inches_numeric*0.0254)
+       ),
+    false = NA_real_,
+    missing = NA_real_
+    )
+
+# Centimetres to metres
+dat.ed.GLAD$current_height_m_unc <- 
+  if_else(
+    condition = is.na(dat.ed.GLAD$current_height_m),
+    true = dat.ed.GLAD$current_height_cm_numeric/100,
+    false = dat.ed.GLAD$current_height_m)
+
+# Summary
+summary(dat.ed.GLAD$current_height_m_unc)
+```
+
+## Clean current height in m (GLAD) 
+```{r}
+#Height outlier
+  # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  current_height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
+  current_height_lower_limit = 1
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.GLAD$current_height_m_unc > current_height_upper_limit |
+        dat.ed.GLAD$current_height_m_unc < current_height_lower_limit
+    )
+  )
+  
+  #Remove height outliers
+  dat.ed.GLAD <- dat.ed.GLAD %>%
+    mutate(
+     current_height_m_final =
+        if_else(
+          current_height_m_unc > current_height_upper_limit |
+            current_height_m_unc < current_height_lower_limit,
+          true = NA_real_,
+          false = current_height_m_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.GLAD %>%
+    freq(current_height_m_final)
+  
+  
+```
+
+## Work out current BMI as reported in the signup (GLAD)
+
+The GLAD signup does not ask for current BMI
+```{r }
+
+# Calculated from current height and lowest weight reported in the sign up **This should be based on min weight and height - have quite low values <10 - need to check
+dat.ed.GLAD$current_bmi <- NA
+
+dat.ed.GLAD$current_bmi <- 
+  if_else(condition = is.na(dat.ed.GLAD$current_bmi), 
+         true = dat.ed.GLAD$current_weight_kg/dat.ed.GLAD$current_height_m_final^2, 
+         false = NA_real_, #No raw BMI in GLAD signup, use only derived from height and weight
+         missing = NA_real_)
+
+# Summary
+summary(dat.ed.GLAD$current_bmi)
+
+```
+
+
+3) Lowest BMI as reported in the optional ED100K (low_AN_bmi)
+
+##Lowest weight in kg as reported in the AN module of the ED100K
+```{r}
+
+##First need all numeric variables (all are currently factor variables...)
+dat.ed.GLAD$AN_low_weight_stone <- as.numeric(dat.ed.GLAD$an.low_time_weight_numeric)
+
+dat.ed.GLAD$AN_low_weight_lbs <- as.numeric(dat.ed.GLAD$an.low_time_weight.1_numeric)
+
+dat.ed.GLAD$AN_low_weight_kg <- as.numeric(dat.ed.GLAD$an.low_time_weight.2_numeric)
+
+##To convert stone to kg, multiply by 6.35029
+dat.ed.GLAD$AN_low_weight_kg_converted <- NA_real_
+
+dat.ed.GLAD$AN_low_weight_kg_converted <-
+  if_else(condition = is.na(dat.ed.GLAD$AN_low_weight_kg_converted), 
+         true = (
+           (dat.ed.GLAD$AN_low_weight_stone*6.35029) + 
+             (dat.ed.GLAD$AN_low_weight_lbs*0.453592)
+           ), #weight in st and lbs converted to kg
+         false = NA_real_,
+         missing = NA_real_)
+
+
+# Kilograms
+dat.ed.GLAD$AN_low_weight_kg_unc <- 
+  if_else(condition = is.na(dat.ed.GLAD$AN_low_weight_kg_converted), 
+         true = dat.ed.GLAD$AN_low_weight_kg, #weight in kilos
+         false = dat.ed.GLAD$AN_low_weight_kg_converted,
+         missing = NA_real_) 
+
+# Summary
+summary(dat.ed.GLAD$AN_low_weight_kg_unc)
+
+```
+
+## Clean lowest AN weight in kg (GLAD) 
+```{r }
+#Weight outlier
+  # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  AN_low_weight_upper_limit = 150 
+  AN_low_weight_lower_limit = 25
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.GLAD$current_weight_kg_unc > AN_low_weight_upper_limit |
+        dat.ed.GLAD$current_weight_kg_unc < AN_low_weight_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  dat.ed.GLAD <- dat.ed.GLAD %>%
+    mutate(
+      AN_low_weight_kg =
+        if_else(
+          AN_low_weight_kg_unc > AN_low_weight_upper_limit |
+            AN_low_weight_kg_unc < AN_low_weight_lower_limit,
+          true = NA_real_,
+          false = AN_low_weight_kg_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.GLAD %>%
+    freq(AN_low_weight_kg)
+  
+  
+```
+
+
+##Height at lowest weight GLAD ED100K
+```{r}
+
+##Change character variables to numeric 
+
+dat.ed.GLAD$AN_low_height_ft_numeric <- as.numeric(dat.ed.GLAD$an.how_tall_were_you_then_numeric) 
+
+dat.ed.GLAD$AN_low_height_inches_numeric <- as.numeric(dat.ed.GLAD$an.how_tall_were_you_then.1_numeric)
+
+dat.ed.GLAD$AN_low_height_cm_numeric <- as.numeric(dat.ed.GLAD$an.how_tall_were_you_then.2_numeric)
+
+
+# Feet and inches to metres
+dat.ed.GLAD$AN_low_height_m <- NA
+
+
+dat.ed.GLAD$AN_low_height_m <- 
+  if_else(
+    condition = is.na(dat.ed.GLAD$AN_low_height_m),
+    true = (
+      (dat.ed.GLAD$AN_low_height_ft_numeric*0.3048) +
+      (dat.ed.GLAD$AN_low_height_inches_numeric*0.0254)
+       ),
+    false = NA_real_,
+    missing = NA_real_
+    )
+
+# Centimetres to metres
+dat.ed.GLAD$AN_low_height_m_unc <- 
+  if_else(
+    condition = is.na(dat.ed.GLAD$AN_low_height_m),
+    true = dat.ed.GLAD$AN_low_height_cm_numeric/100,
+    false = dat.ed.GLAD$AN_low_height_m)
+
+# Summary
+summary(dat.ed.GLAD$AN_low_height_m_unc)
+```
+
+## Clean current height in m (GLAD) 
+```{r}
+#Height outlier
+  # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  AN_low_height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
+  AN_low_height_lower_limit = 1
+  
+  #Identify number of outliers
+  length(
+    which(
+      dat.ed.GLAD$AN_low_height_m_unc > AN_low_height_upper_limit |
+        dat.ed.GLAD$AN_low_height_m_unc < AN_low_height_lower_limit
+    )
+  )
+  
+  #Remove height outliers
+  dat.ed.GLAD <- dat.ed.GLAD %>%
+    mutate(
+     AN_low_height_m_final =
+        if_else(
+          AN_low_height_m_unc > AN_low_height_upper_limit |
+            AN_low_height_m_unc < AN_low_height_lower_limit,
+          true = NA_real_,
+          false = AN_low_height_m_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dat.ed.GLAD %>%
+    freq(AN_low_height_m_final)
+  
+  
+```
+
+## Work out lowest BMI as reported in the ED100K (GLAD)
+```{r }
+
+dat.ed.GLAD$AN_low_bmi <- NA
+
+# Self-reported
+dat.ed.GLAD$AN_low_bmi <- 
+  if_else(condition = is.na(dat.ed.GLAD$AN_low_bmi), 
+       true = as.numeric(dat.ed.GLAD$an.bmi_low_time_numeric), #First fill with raw BMI responses
+       false = NA_real_,
+       missing = NA_real_)
+
+#Derived
+dat.ed.GLAD$AN_low_bmi <- 
+  if_else(condition = is.na(dat.ed.GLAD$AN_low_bmi), 
+         true = dat.ed.GLAD$AN_low_weight_kg/dat.ed.GLAD$AN_low_height_m_final^2, #Then with derived
+         false = as.numeric(dat.ed.GLAD$AN_low_bmi),
+         missing = NA_real_)
+
+# Summary
+summary(dat.ed.GLAD$AN_low_bmi)
 ```
 
 
@@ -1107,7 +1929,7 @@ be.b_eat_until_you_felt_uncomfortably_full.1 e) Feel ashamed/disgusted with your
 ```{r ed.BE_behaviour_sum_numeric}
 
 #Sum of binge eating behaviours - GLAD
-dat.ed.GLAD.id$ed.BE_behaviour_sum_numeric <- rowSums(dat.ed.GLAD.id[ ,
+dat.ed.GLAD$ed.BE_behaviour_sum_numeric <- rowSums(dat.ed.GLAD[ ,
                                  c("be.a_eat_much_more_rapidly_than_usual_numeric",
                                    "be.a_eat_much_more_rapidly_than_usual.1_numeric",
                                    "be.a_eat_much_more_rapidly_than_usual.2_numeric",
@@ -1116,9 +1938,9 @@ dat.ed.GLAD.id$ed.BE_behaviour_sum_numeric <- rowSums(dat.ed.GLAD.id[ ,
                                   na.rm = TRUE)
 
 #Summary
-freq(dat.ed.GLAD.id$ed.BE_behaviour_sum_numeric)         
+freq(dat.ed.GLAD$ed.BE_behaviour_sum_numeric)         
 
-colnames(dat.ed.GLAD.id)
+colnames(dat.ed.GLAD)
 
 #Sum of binge eating behaviours - EDGI
 dat.ed.EDGI$ed.BE_behaviour_sum_numeric <- rowSums(dat.ed.EDGI[ ,
@@ -1140,11 +1962,11 @@ One year = 52.1429 weeks
 One month = 4.34524 weeks 
 ```{r ed.BE_freq conversion}
 #GLAD
-dat.ed.GLAD.id$ed.BE_freq_per_week <- NA
+dat.ed.GLAD$ed.BE_freq_per_week <- NA
 
 # Calculate frequency per week - GLAD
-dat.ed.GLAD.id$ed.BE_freq_per_week <- 
-  with(dat.ed.GLAD.id,
+dat.ed.GLAD$ed.BE_freq_per_week <- 
+  with(dat.ed.GLAD,
     case_when(
       be.binge_eating_experience_episodes.txt.1_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt.1_numeric/52.1429, digits = 2),
       be.binge_eating_experience_episodes.txt_numeric > 0 ~ round(be.binge_eating_experience_episodes.txt_numeric/4.34524, digits = 2), 
@@ -1153,7 +1975,7 @@ dat.ed.GLAD.id$ed.BE_freq_per_week <-
   )
   
 #Summary
-freq(dat.ed.GLAD.id$ed.BE_freq_per_week) 
+freq(dat.ed.GLAD$ed.BE_freq_per_week) 
 
 #EDGI
 dat.ed.EDGI$ed.BE_freq_per_week <- NA
@@ -1178,12 +2000,12 @@ One year = 365.25 days; One month = 30.4167 days
 ```{r ed.BE_duration conversion}
 
 ##GLAD
-dat.ed.GLAD.id$ed.BE_duration_months <- NA
+dat.ed.GLAD$ed.BE_duration_months <- NA
 
 # Sum years and months into months
-dat.ed.GLAD.id$ed.BE_duration_months <- 
-  if_else(condition = is.na(dat.ed.GLAD.id$ed.BE_duration_months),
-         true = ((dat.ed.GLAD.id$be.long_experience_regularly_occurring_numeric*365.25) + (dat.ed.GLAD.id$be.long_experience_regularly_occurring.1_numeric*30.4167)) / 30.4167, 
+dat.ed.GLAD$ed.BE_duration_months <- 
+  if_else(condition = is.na(dat.ed.GLAD$ed.BE_duration_months),
+         true = ((dat.ed.GLAD$be.long_experience_regularly_occurring_numeric*365.25) + (dat.ed.GLAD$be.long_experience_regularly_occurring.1_numeric*30.4167)) / 30.4167, 
         false = NA_real_,
         missing = NA_real_)
 
@@ -1192,7 +2014,7 @@ dat.ed.GLAD.id$ed.BE_duration_months <-
 
 ##Change below 0 to NA
 ##Just temporary - all negative values should be cleaned when you select columns...
-dat.ed.GLAD.id$ed.BE_duration_months[dat.ed.GLAD.id$ed.BE_duration_months < 0] <- NA_real_
+dat.ed.GLAD$ed.BE_duration_months[dat.ed.GLAD$ed.BE_duration_months < 0] <- NA_real_
 
 # Check
 #freq(dat.ed.GLAD.id$ed.BE_duration_months)
@@ -1226,12 +2048,677 @@ dat.ed.EDGI$ed.BE_duration_months[dat.ed.EDGI$ed.BE_duration_months < 0] <- NA_r
 ```
 
 
+
+########## DSM-5 ED ALGORITHMS ###################
+
+
+#### DSM 5 AN no subtype defined - GLAD 
+
+A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+
+B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+
+C. Disturbance in the way in which one’s body weight or shape is experienced, undueinfluence of body weight or shape on self-evaluation, or persistent lack of recognition of the seriousness of the current low body weight.
+
+```{r }
+dat.ed.GLAD$ed.DSM5_AN_binary_numeric <- 
+  with(dat.ed.GLAD,
+  dplyr::if_else(
+#A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+    (
+      AN_low_bmi <= 18.55 | #Lowest BMI as reported in ED100K optional questionnaire
+     current_bmi <= 18.55 | #Current BMI as reported in signup
+       low_dem_bmi <= 18.55 #Lowest BMI as reported in signup
+      ) &
+      
+      
+#When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
+ an.lowest_weight_people_thought == "No" &
+ 
+#B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+   
+  #During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?
+  (
+       an.gain_weight_low_weight == "Slightly afraid" | #***Check cut off!
+      an.gain_weight_low_weight == "Somewhat afraid" |
+      an.gain_weight_low_weight == "Very afraid" |
+      an.gain_weight_low_weight == "Extremely afraid"
+      ) &
+
+
+#C. Disturbance in the way in which one’s body weight or shape is experienced... 
+
+  #During the time when you were at this low weight, did you still feel fat? 
+  (
+  (
+     an.feel_fat_low_weight== "Slightly" | #***Check cut off!
+     an.feel_fat_low_weight == "Somewhat" | 
+     an.feel_fat_low_weight == "Very" |
+     an.feel_fat_low_weight == "Extremely"
+    ) |
+    
+  #During the time when you were at this low weight did you ever experience your body or parts of your body to be larger than they actually were or than other people thought they were?
+  (
+    an.people_thought_larger_parts == "Somewhat" | 
+     an.people_thought_larger_parts == "Very much"
+    ) |
+  
+#...undue influence of body weight or shape on self-evaluation
+ 
+   #During the time when you were at this low weight, how dependent was your self-worth on your body shape or weight?
+    (
+   an.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
+     an.not_at_all_dependentcompletely_dependent == "2" | 
+      an.not_at_all_dependentcompletely_dependent== "3" |
+      an.not_at_all_dependentcompletely_dependent == "4" |
+      an.not_at_all_dependentcompletely_dependent == "5" |
+      an.not_at_all_dependentcompletely_dependent == "Completely Dependent"
+  ) |
+
+#...or persistent lack of recognition of the seriousness of the current low body weight.
+  
+  #Did you ever think your low weight had negative consequences for your health?
+     an.health_low_weight_bmi == "Not at all"
+),
+
+    true = 1,
+    false = 0,
+    missing = NA_real_)
+  )
+  
+#Recode numeric to factor
+
+dat.ed.GLAD$ed.DSM5_AN_binary <-
+  recode_factor(dat.ed.GLAD$ed.DSM5_AN_binary_numeric,
+                "0" = "No DSM5 AN",
+                "1" = "DSM5 AN"
+                )
+
+#Summary
+freq(dat.ed.GLAD$ed.DSM5_AN_binary)
+
+```
+
+#### DSM 5 AN restricting - GLAD 
+
+A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+
+B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+
+C. Disturbance in the way in which one’s body weight or shape is experienced, undueinfluence of body weight or shape on self-evaluation, or persistent lack of recognition of the seriousness of the current low body weight.
+
+Subtype of DSM-5 AN; All DSM5 AN symptoms are met, but...
+
+Restricting type: During the last 3 months, the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas). This subtype describes presentations in which weight loss is accomplished primarily through dieting, fasting, and/or excessive exercise.
+```{r }
+dat.ed.GLAD$ed.DSM5_AN_restricting_binary_numeric <- 
+  with(dat.ed.GLAD,
+  dplyr::if_else(
+#A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+    (
+      AN_low_bmi <= 18.55 | #Lowest BMI as reported in ED100K optional questionnaire
+     current_bmi <= 18.55 | #Current BMI as reported in signup
+       low_dem_bmi <= 18.55 #Lowest BMI as reported in signup
+      ) &
+      
+      
+#When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
+ an.lowest_weight_people_thought == "No" &
+ 
+#B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+   
+  #During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?
+  (
+       an.gain_weight_low_weight == "Slightly afraid" | #***Check cut off!
+      an.gain_weight_low_weight == "Somewhat afraid" | 
+      an.gain_weight_low_weight == "Very afraid" |
+      an.gain_weight_low_weight == "Extremely afraid"
+      ) &
+
+
+#C. Disturbance in the way in which one’s body weight or shape is experienced... 
+
+  #During the time when you were at this low weight, did you still feel fat? 
+  (
+  (
+     an.feel_fat_low_weight== "Slightly" | #***Check cut off!
+     an.feel_fat_low_weight == "Somewhat" | 
+     an.feel_fat_low_weight == "Very" |
+     an.feel_fat_low_weight == "Extremely"
+    ) |
+    
+  #During the time when you were at this low weight did you ever experience your body or parts of your body to be larger than they actually were or than other people thought they were?
+  (
+    an.people_thought_larger_parts == "Somewhat" | 
+     an.people_thought_larger_parts == "Very much"
+    ) |
+  
+#...undue influence of body weight or shape on self-evaluation
+ 
+   #During the time when you were at this low weight, how dependent was your self-worth on your body shape or weight?
+    (
+   an.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
+     an.not_at_all_dependentcompletely_dependent == "2" | 
+      an.not_at_all_dependentcompletely_dependent== "3" |
+      an.not_at_all_dependentcompletely_dependent == "4" |
+      an.not_at_all_dependentcompletely_dependent == "5" |
+      an.not_at_all_dependentcompletely_dependent == "Completely Dependent"
+  ) |
+
+#...or persistent lack of recognition of the seriousness of the current low body weight.
+  
+  #Did you ever think your low weight had negative consequences for your health?
+     an.health_low_weight_bmi == "Not at all"
+) &
+
+  #Restricting type: During the last 3 months... 
+  
+  #...the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas)...
+
+  #Did you experience regular episodes of binge eating while at your lowest weight?
+  (
+  (
+     be.experience_regular_episodes_lowest == "No" |
+     is.na(be.experience_regular_episodes_lowest) #***Perhaps don't include NA??
+   ) & 
+
+  ##During the period of time when you were at your lowest weight, did you use any of the following as a way to control yourweight or shape? .
+  (
+    icb.making_yourself_vomit == "Not Making yourself vomit" |
+     is.na(icb.making_yourself_vomit)
+    ) & 
+
+  (
+    icb.laxatives == "Not Laxatives" |
+      is.na(icb.laxatives)
+   ) &
+  
+  (
+    icb.diuretics == "Not Diuretics" |
+     is.na(icb.diuretics)
+   ) &  
+
+  #...This subtype describes presentations in which weight loss is accomplished primarily through dieting, fasting, and/or excessive exercise.
+  
+    #During the period of time when you were at your lowest weight, did you use any of the following as a way to control yourweight or shape? .
+    (
+      icb.excessive_exercise == "Excessive exercise (e.g. feel compelled to exercise, feel uneasy or distressed if unable to exercise)" |
+     icb.fasting  == "Fasting (not eating for 8 waking hours or more)"
+     )
+  ),
+
+    true = 1,
+    false = 0,
+    missing = NA_real_)
+  )
+  
+#Recode numeric to factor
+
+dat.ed.GLAD$ed.DSM5_AN_restricting_binary <-
+  recode_factor(dat.ed.GLAD$ed.DSM5_AN_restricting_binary_numeric,
+                "0" = "No DSM5 AN restricting",
+                "1" = "DSM5 AN restricting"
+                )
+
+#Summary
+freq(dat.ed.GLAD$ed.DSM5_AN_restricting_binary)
+
+```
+#### DSM 5 AN binge-eating/purging - GLAD 
+
+A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+
+B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+
+C. Disturbance in the way in which one’s body weight or shape is experienced, undueinfluence of body weight or shape on self-evaluation, or persistent lack of recognition of the seriousness of the current low body weight.
+
+Subtype of DSM-5 AN; All DSM5 AN symptoms are met, but...
+
+Binge eating/purging subtype: During the last 3 months, the individual has engaged in recurrent episodes of binge-eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas).
+```{r }
+dat.ed.GLAD$ed.DSM5_AN_binge_purge_binary_numeric <- 
+  with(dat.ed.GLAD,
+  dplyr::if_else(
+#A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+     (
+       (
+      AN_low_bmi <= 18.55 | #Lowest BMI as reported in ED100K optional questionnaire
+     current_bmi <= 18.55 | #Current BMI as reported in signup
+      low_dem_bmi <= 18.55 #Lowest BMI as reported in signup
+      ) &
+      
+#When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
+  an.lowest_weight_people_thought == "No" &
+ 
+#B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+   
+  #During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?
+  (
+      an.gain_weight_low_weight == "Slightly afraid" | #***Check cut off!
+      an.gain_weight_low_weight == "Somewhat afraid" |
+      an.gain_weight_low_weight == "Very afraid" |
+      an.gain_weight_low_weight == "Extremely afraid"
+      ) &
+
+#C. Disturbance in the way in which one’s body weight or shape is experienced... 
+
+  #During the time when you were at this low weight, did you still feel fat? 
+(
+  (
+     an.feel_fat_low_weight== "Slightly" | #***Check cut off!
+     an.feel_fat_low_weight == "Somewhat" | 
+     an.feel_fat_low_weight == "Very" |
+     an.feel_fat_low_weight == "Extremely"
+    ) |
+    
+  #During the time when you were at this low weight did you ever experience your body or parts of your body to be larger than they actually were or than other people thought they were?
+  (
+     an.people_thought_larger_parts == "Somewhat" | 
+     an.people_thought_larger_parts == "Very much"
+    ) |
+  
+#...undue influence of body weight or shape on self-evaluation
+ 
+   #During the time when you were at this low weight, how dependent was your self-worth on your body shape or weight?
+    (
+   an.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
+     an.not_at_all_dependentcompletely_dependent == "2" | 
+      an.not_at_all_dependentcompletely_dependent== "3" |
+      an.not_at_all_dependentcompletely_dependent == "4" |
+      an.not_at_all_dependentcompletely_dependent == "5" |
+      an.not_at_all_dependentcompletely_dependent == "Completely Dependent"
+  ) |
+
+#...OR persistent lack of recognition of the seriousness of the current low body weight.
+  
+  #Did you ever think your low weight had negative consequences for your health?
+     an.health_low_weight_bmi == "Not at all"
+) &
+
+   ##Binge eating/purging subtype: During the last 3 months... 
+  
+ #...the individual has engaged in recurrent episodes of binge-eating... 
+  
+  #Did you experience regular episodes of binge eating while at your lowest weight?
+  (
+  (
+     be.experience_regular_episodes_lowest == "only during times of low weight" |
+     be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" |
+      is.na(be.experience_regular_episodes_lowest)
+     ) | 
+      
+      #...OR purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas).
+      
+      #During the period of time when you were at your lowest weight, did you use any of the following as a way to control your weight or shape?
+      
+  (
+    icb.making_yourself_vomit == "Making yourself vomit" |
+      icb.laxatives == "Laxatives" |
+     icb.diuretics == "Diuretics"
+    )
+  )
+),
+#Not included absence of fasting and/or exercise because ANBP captures people who are restricting but ALSO binge and/or purge (on top of restricting behaviour)
+    true = 1,
+    false = 0,
+    missing = NA_real_)
+)
+  
+#Recode numeric to factor
+dat.ed.GLAD$ed.DSM5_ANBP_binary <-
+  recode_factor(dat.ed.GLAD$ed.DSM5_AN_binge_purge_binary_numeric,
+                "0" = "No DSM5 AN binge eating/purging",
+                "1" = "DSM5 AN binge eating/purging")
+
+
+#Summary
+freq(dat.ed.GLAD$ed.DSM5_ANBP_binary)
+
+```
+
+#### DSM 5 AN (no subtype defined) - EDGI
+
+A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+
+B. Intense fear of gaining weight or of becoming fat,or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+
+C. Disturbance in the way in which one’s body weight or shape is experienced, undueinfluence of body weight or shape on self-evaluation, or persistent lack of recognition of the seriousness of the current low body weight.
+```{r ed.AN_DSM5_binary}
+#Anorexia nervosa numeric variable
+dat.ed.EDGI$ed.DSM5_AN_binary_numeric <- 
+  with(dat.ed.EDGI,
+       dplyr::if_else(
+#A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+    (
+      (
+        ed.bmi_current <= 18.55 | #Current BMI
+      lowest_bmi <= 18.55 #Lowest BMI
+      ) & 
+      
+      
+#When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
+  an.lowest_weight_people_thought == "No" & #***Do we need this?
+ 
+#B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+   
+  #During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?
+  (
+        an.gain_weight_low_weight == "Slightly afraid" | #***Check cut off!
+      an.gain_weight_low_weight == "Somewhat afraid" |
+      an.gain_weight_low_weight == "Very afraid" |
+      an.gain_weight_low_weight == "Extremely afraid"
+      ) &
+
+#C. Disturbance in the way in which one’s body weight or shape is experienced... 
+
+  #During the time when you were at this low weight, did you still feel fat? 
+  (
+  (
+    an.feel_fat_low_weight == "Slightly" | #***Check cut off!
+     an.feel_fat_low_weight == "Somewhat" | 
+     an.feel_fat_low_weight == "Very" |
+     an.feel_fat_low_weight == "Extremely"
+    ) |
+    
+  #During the time when you were at this low weight did you ever experience your body or parts of your body to be larger than they actually were or than other people thought they were?
+  (
+    an.people_thought_larger_low == "Somewhat" | 
+     an.people_thought_larger_low == "Very much"
+    ) |
+  
+#...undue influence of body weight or shape on self-evaluation
+ 
+   #During the time when you were at this low weight, how dependent was your self-worth on your body shape or weight?
+    (
+    an.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
+    an.not_at_all_dependentcompletely_dependent == "2" | 
+    an.not_at_all_dependentcompletely_dependent == "3" |
+      an.not_at_all_dependentcompletely_dependent == "4" |
+      an.not_at_all_dependentcompletely_dependent == "5" |
+      an.not_at_all_dependentcompletely_dependent == "Completely Dependent"
+  ) |
+
+#...or persistent lack of recognition of the seriousness of the current low body weight.
+  
+  #Did you ever think your low weight had negative consequences for your health?
+      an.health_low_weight_bmi == "Not at all"
+)
+),
+    true = 1,
+    false = 0,
+    missing = NA_real_)
+)
+  
+  
+#Recode numeric to factor
+dat.ed.EDGI$ed.DSM5_AN_binary <-
+  recode_factor(dat.ed.EDGI$ed.DSM5_AN_binary_numeric,
+                "0" = "No DSM5 AN",
+                "1" = "DSM5 AN"
+                )
+
+#Summary
+freq(dat.ed.EDGI$ed.DSM5_AN_binary)
+```
+
+#### DSM 5 AN restricting - EDGI
+
+A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+
+B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+
+C. Disturbance in the way in which one’s body weight or shape is experienced, undueinfluence of body weight or shape on self-evaluation, or persistent lack of recognition of the seriousness of the current low body weight.
+
+Subtype of DSM-5 AN; All DSM5 AN symptoms are met, but...
+
+Restricting type: During the last 3 months, the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas). This subtype describes presentations in which weight loss is accomplished primarily through dieting, fasting, and/or excessive exercise.
+```{r}
+dat.ed.EDGI$ed.DSM5_AN_restricting_binary_numeric <- 
+  with(dat.ed.EDGI,
+  dplyr::if_else(
+#A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+    (
+      (
+        ed.bmi_current <= 18.55 | #Current BMI
+      lowest_bmi <= 18.55  #Lowest BMI
+      ) &
+      
+#When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
+  an.lowest_weight_people_thought == "No" & #***Do we need this?
+ 
+#B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+   
+  #During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?
+  (
+        an.gain_weight_low_weight == "Slightly afraid" | #***Check cut off!
+      an.gain_weight_low_weight == "Somewhat afraid" |
+      an.gain_weight_low_weight == "Very afraid" |
+      an.gain_weight_low_weight == "Extremely afraid"
+      ) &
+
+
+#C. Disturbance in the way in which one’s body weight or shape is experienced... 
+
+  #During the time when you were at this low weight, did you still feel fat? 
+  (
+  (
+    an.feel_fat_low_weight == "Slightly" | #***Check cut off!
+     an.feel_fat_low_weight == "Somewhat" | 
+     an.feel_fat_low_weight == "Very" |
+     an.feel_fat_low_weight == "Extremely"
+    ) |
+    
+  #During the time when you were at this low weight did you ever experience your body or parts of your body to be larger than they actually were or than other people thought they were?
+  (
+    an.people_thought_larger_low == "Somewhat" | 
+     an.people_thought_larger_low == "Very much"
+    ) |
+  
+#...undue influence of body weight or shape on self-evaluation
+ 
+   #During the time when you were at this low weight, how dependent was your self-worth on your body shape or weight?
+    (
+    an.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
+    an.not_at_all_dependentcompletely_dependent == "2" | 
+    an.not_at_all_dependentcompletely_dependent == "3" |
+      an.not_at_all_dependentcompletely_dependent == "4" |
+      an.not_at_all_dependentcompletely_dependent == "5" |
+      an.not_at_all_dependentcompletely_dependent == "Completely Dependent"
+  ) |
+
+#...or persistent lack of recognition of the seriousness of the current low body weight.
+  
+  #Did you ever think your low weight had negative consequences for your health?
+      an.health_low_weight_bmi == "Not at all"
+) &
+
+  #Restricting type: During the last 3 months... 
+  
+  #...the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas)...
+
+  #Did you experience regular episodes of binge eating while at your lowest weight?
+  (
+  (
+  be.experience_regular_episodes_lowest == "No" |
+     is.na(be.experience_regular_episodes_lowest) #***Perhaps don't include NA??
+   ) & 
+
+  ##During the period of time when you were at your lowest weight, didyou use any of the following as a way to control your weight or shape? .
+  (
+    icb.making_yourself_vomit == "Not Making yourself vomit" |
+     is.na(icb.making_yourself_vomit)
+    ) & 
+
+      (
+    icb.laxatives == "Not Laxatives"
+   | is.na(icb.laxatives)
+   ) &
+  
+  (icb.diuretics == "Not Diuretics" |
+     is.na(icb.diuretics)
+   ) &  
+
+  #...This subtype describes presentations in which weight loss is accomplished primarily through dieting, fasting, and/or excessive exercise.
+  
+    #During the period of time when you were at your lowest weight, did you use any of the following as a way to control yourweight or shape? .
+    (
+      icb.excessive_exercise == "Excessive exercise" |
+     icb.fasting == "Fasting"
+     )
+  )
+),
+
+    true = 1,
+    false = 0,
+    missing = NA_real_)
+  )
+  
+#Recode numeric to factor
+dat.ed.EDGI$ed.DSM5_AN_restricting_binary <-
+  recode_factor(dat.ed.EDGI$ed.DSM5_AN_restricting_binary_numeric,
+                "0" = "No DSM5 AN restricting",
+                "1" = "DSM5 AN restricting"
+                )
+
+#Summary
+freq(dat.ed.EDGI$ed.DSM5_AN_restricting_binary)
+
+```
+
+#### DSM 5 AN binge eating/purging - EDGI
+
+A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+
+B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+
+C. Disturbance in the way in which one’s body weight or shape is experienced, undueinfluence of body weight or shape on self-evaluation, or persistent lack of recognition of the seriousness of the current low body weight.
+
+Subtype of DSM-5 AN; All DSM5 AN symptoms are met, but...
+
+Binge eating/purging subtype: During the last 3 months, the individual has engaged in recurrent episodes of binge-eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas).
+```{r}
+dat.ed.EDGI$ed.DSM5_AN_binge_purge_binary_numeric <- 
+  with(dat.ed.EDGI,
+  dplyr::if_else(
+#A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+    (
+      (ed.bmi_current <= 18.55 | #Current BMI
+      lowest_bmi <= 18.55  #Lowest BMI
+      ) &
+      
+#When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
+  an.lowest_weight_people_thought == "No" &
+ 
+#B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+   
+  #During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?
+  (
+        an.gain_weight_low_weight == "Slightly afraid" | #***Check cut off!
+      an.gain_weight_low_weight == "Somewhat afraid" |
+      an.gain_weight_low_weight == "Very afraid" |
+      an.gain_weight_low_weight == "Extremely afraid"
+      ) &
+
+
+#C. Disturbance in the way in which one’s body weight or shape is experienced... 
+
+  #During the time when you were at this low weight, did you still feel fat? 
+  (
+  (
+    an.feel_fat_low_weight == "Slightly" | #***Check cut off!
+     an.feel_fat_low_weight == "Somewhat" | 
+     an.feel_fat_low_weight == "Very" |
+     an.feel_fat_low_weight == "Extremely"
+    ) |
+    
+  #During the time when you were at this low weight did you ever experience your body or parts of your body to be larger than they actually were or than other people thought they were?
+  (
+    an.people_thought_larger_low == "Somewhat" | 
+     an.people_thought_larger_low == "Very much"
+    ) |
+  
+#...undue influence of body weight or shape on self-evaluation
+ 
+   #During the time when you were at this low weight, how dependent was your self-worth on your body shape or weight?
+    (
+    an.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
+    an.not_at_all_dependentcompletely_dependent == "2" | 
+    an.not_at_all_dependentcompletely_dependent == "3" |
+      an.not_at_all_dependentcompletely_dependent == "4" |
+      an.not_at_all_dependentcompletely_dependent == "5" |
+      an.not_at_all_dependentcompletely_dependent == "Completely Dependent"
+  ) |
+
+#...or persistent lack of recognition of the seriousness of the current low body weight.
+  
+  #Did you ever think your low weight had negative consequences for your health?
+      an.health_low_weight_bmi == "Not at all"
+) &
+  
+  ##Binge eating/purging subtype: During the last 3 months... 
+  
+  #...the individual has engaged in recurrent episodes of binge-eating... 
+  
+  #Did you experience regular episodes of binge eating while at your lowest weight?
+  (
+    (be.experience_regular_episodes_lowest == "only during times of low weight" |
+     be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" |
+      is.na(be.experience_regular_episodes_lowest)
+     ) | 
+      
+      #...or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas).
+      
+      #During the period of time when you were at your lowest weight, did you use any of the following as a way to control your weight or shape?
+      
+  (
+    icb.making_yourself_vomit == "Making yourself vomit" |
+      icb.laxatives == "Laxatives" |
+     icb.diuretics == "Diuretics"
+    )
+  )
+),
+
+#Not included absence of fasting and/or exercise because ANBP captures people who are restricting but ALSO binge and/or purge (on top of restricting behaviour)
+    true = 1,
+    false = 0,
+    missing = NA_real_)
+  )
+  
+#Recode numeric to factor
+dat.ed.EDGI$ed.DSM5_ANBP_binary <-
+  recode_factor(dat.ed.EDGI$ed.DSM5_AN_binge_purge_binary_numeric,
+                "0" = "No DSM5 AN binge eating/purging",
+                "1" = "DSM5 AN binge eating/purging")
+
+
+#Summary
+freq(dat.ed.EDGI$ed.DSM5_ANBP_binary)
+
+```
+
 #DSM5 BED ALGORITHM - GLAD
+A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
+  1. Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most people would eat in a similar period of time under similar circumstances.
+
+2. A sense of lack of control over eating during the episode (e.g., a feeling that one cannot stop eating or control what or how much one is eating).
+
+B. The binge-eating episodes are associated with three (or more) of the following:
+  1. Eating much more rapidly than normal.
+  2. Eating until feeling uncomfortably full.
+  3. Eating large amounts of food when not feeling physically hungry.
+  4. Eating alone because of feeling embarrassed by how much one is eating.
+  5. Feeling disgusted with oneself, depressed, or very guilty afterward.
+
+C. Marked distress regarding binge eating is present.
+
+D. The binge eating occurs, on average, at least once a week for 3 months.
+
+E. The binge eating is not associated with the recurrent use of inappropriate compensatory behavior as in bulimia nen/osa and does not occur exclusively during the course of bulimia nervosa or anorexia nervosa.
 ```{r}
 
 #BED numeric variable
-dat.ed.GLAD.id$ed.DSM5_BED_binary_numeric <- 
-  with(dat.ed.GLAD.id,
+dat.ed.GLAD$ed.DSM5_BED_binary_numeric <- 
+  with(dat.ed.GLAD,
   dplyr::if_else(
 
     #A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
@@ -1263,30 +2750,52 @@ dat.ed.GLAD.id$ed.DSM5_BED_binary_numeric <-
       ed.BE_duration_months >= 2.95) & # Binge eating total duration 
 
   #E. The binge eating is not associated with the recurrent use of inappropriate compensatory behavior as in bulimia nervosa... "Did you ever have periods of time that lasted three months or more when you had binge-eating episodes without regularly engaging in any of the following: making yourself vomit, laxative use, diuretic use, taking weight loss pills, excessively exercising ?"
-  (icb.lasted_binge_eating_episodes == "Yes" | 
+  (
+    icb.lasted_binge_eating_episodes == "Yes" | 
         icb.none_of_the_above.1 == "Yes"  |
-     is.na(icb.lasted_binge_eating_episodes)) &  #***ask Molly about the logic of this question - does everyone get asked this?
+     is.na(icb.lasted_binge_eating_episodes)
+   ) &  #***ask Molly about the logic of this question - does everyone get asked this?
 
   #...and does not occur exclusively during the course of bulimia nervosa or anorexia nervosa.  
-  (be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" |
+  (
+    be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" |
      be.experience_regular_episodes_lowest == "No" |
-     is.na(be.experience_regular_episodes_lowest)),
+     is.na(be.experience_regular_episodes_lowest) #***Do we want to include missing? Need to check logic of question
+    ),
     true = 1,
     false = 0,
     missing = NA_real_)
     )
     
 #Recode numeric to factor
-dat.ed.GLAD.id$ed.DSM5_BED_binary <-
-  recode_factor(dat.ed.GLAD.id$ed.DSM5_BED_binary_numeric,
+dat.ed.GLAD$ed.DSM5_BED_binary <-
+  recode_factor(dat.ed.GLAD$ed.DSM5_BED_binary_numeric,
                 "0" = "No DSM-5 BED",
                 "1" = "DSM-5 BED")
 
 #Summary
-freq(dat.ed.GLAD.id$ed.DSM5_BED_binary)
+freq(dat.ed.GLAD$ed.DSM5_BED_binary)
 
 ```
+
 #DSM5 BED ALGORITHM - EDGI
+A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
+  1. Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most people would eat in a similar period of time under similar circumstances.
+
+2. A sense of lack of control over eating during the episode (e.g., a feeling that one cannot stop eating or control what or how much one is eating).
+
+B. The binge-eating episodes are associated with three (or more) of the following:
+  1. Eating much more rapidly than normal.
+  2. Eating until feeling uncomfortably full.
+  3. Eating large amounts of food when not feeling physically hungry.
+  4. Eating alone because of feeling embarrassed by how much one is eating.
+  5. Feeling disgusted with oneself, depressed, or very guilty afterward.
+
+C. Marked distress regarding binge eating is present.
+
+D. The binge eating occurs, on average, at least once a week for 3 months.
+
+E. The binge eating is not associated with the recurrent use of inappropriate compensatory behavior as in bulimia nen/osa and does not occur exclusively during the course of bulimia nervosa or anorexia nervosa.
 ```{r}
 
 #BED numeric variable
@@ -1299,10 +2808,12 @@ dat.ed.EDGI$ed.DSM5_BED_binary_numeric <-
     be.short_period_ate_regard == "Yes" & 
 
       #2)A sense of lack of control over eating during the episode (e.g., a feeling that one cannot stop eating or control what or how much one is eating)
-      (be.binge_eating_stop_eating == "Slightly" | 
+      (
+        be.binge_eating_stop_eating == "Slightly" |  #***Check cut off!
        be.binge_eating_stop_eating == "Somewhat" |
        be.binge_eating_stop_eating == "Very" |
-       be.binge_eating_stop_eating == "Extremely") & 
+       be.binge_eating_stop_eating == "Extremely"
+       ) & 
 
   #B. The binge-eating episodes are associated with three (or more) of the following:
 #1. Eating much more rapidly than normal.
@@ -1313,10 +2824,12 @@ dat.ed.EDGI$ed.DSM5_BED_binary_numeric <-
   ed.BE_behaviour_sum_numeric >= 3 & 
 
   #C. Marked distress regarding binge eating is present.       
-  (be.binge_eating_distressed_make == "Slightly" |  #*** Should this be "slightly" for a more lenient algorithm? Difference between inclusion criteria and actual diagnositics?
+  (
+    be.binge_eating_distressed_make == "Slightly" |  #*** Should this be "slightly" for a more lenient algorithm? Difference between inclusion criteria and actual diagnositics?
          be.binge_eating_distressed_make == "Somewhat" |
          be.binge_eating_distressed_make == "Very" |
-         be.binge_eating_distressed_make == "Extremely") & 
+         be.binge_eating_distressed_make == "Extremely"
+    ) & 
 
   #D. The binge eating occurs, on average, at least once a week for 3 months.
   (ed.BE_freq_per_week >= 0.95 & # Binge eating per week 
@@ -1337,9 +2850,11 @@ dat.ed.EDGI$ed.DSM5_BED_binary_numeric <-
   ) & 
 
   #...and does not occur exclusively during the course of bulimia nervosa or anorexia nervosa.  
-  (be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" |
+  (
+    be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" |
      be.experience_regular_episodes_lowest == "No" |
-     is.na(be.experience_regular_episodes_lowest)),
+     is.na(be.experience_regular_episodes_lowest) #***Include missing?
+    ),
     true = 1,
     false = 0,
     missing = NA_real_)
@@ -1358,6 +2873,20 @@ freq(dat.ed.EDGI$ed.DSM5_BED_binary)
 
 ##DSM-5 BN ALGORITHM - GLAD
 
+A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
+
+  1. Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most individuals would eat in a similar period of time under similar circumstances.
+  2. A sense of lack of control over eating during the episode (e.g., a feeling that one cannot stop eating or control what or how much one is eating).
+
+B. Recurrent inappropriate compensatory behaviors in order to prevent weight gain,such as self-induced vomiting; misuse of laxatives, diuretics, or other medications; fasting; or excessive exercise.
+
+C. The binge eating and inappropriate compensatory behaviors both occur, on average, at least once a week for 3 months.
+
+D. Self-evaluation is unduly influenced by body shape and weight.
+
+E. The disturbance does not occur exclusively during episodes of anorexia nervosa.
+
+
 NB: ICBs mislabelled in data dictionary
 icb.b_used_laxatives = Fasted or did not eat
 icb.b_used_laxatives.1 = Used diet pills
@@ -1368,8 +2897,8 @@ icb.a_made_yourself_vomit.2 =  Used diuretics
 ```{r ed.BN_DSM5_binary}
 
 #Bulimia nervosa numeric variable
-dat.ed.GLAD.id$ed.DSM5_BN_binary_numeric <- 
-  with(dat.ed.GLAD.id,
+dat.ed.GLAD$ed.DSM5_BN_binary_numeric <- 
+  with(dat.ed.GLAD,
   dplyr::if_else(
 
 #A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
@@ -1452,7 +2981,7 @@ dat.ed.GLAD.id$ed.DSM5_BN_binary_numeric <-
         (
           be.experience_regular_episodes_lowest == "At times of low weight and at times outside of low weight" | 
          be.experience_regular_episodes_lowest == "No" |
-         is.na(be.experience_regular_episodes_lowest)
+         is.na(be.experience_regular_episodes_lowest) #***Including missing?
          ),
     true = 1,
     false = 0,
@@ -1460,17 +2989,30 @@ dat.ed.GLAD.id$ed.DSM5_BN_binary_numeric <-
   )
   
 #Recode numeric variable to factor
-dat.ed.GLAD.id$ed.DSM5_BN_binary <-
-  recode_factor(dat.ed.GLAD.id$ed.DSM5_BN_binary_numeric,
+dat.ed.GLAD$ed.DSM5_BN_binary <-
+  recode_factor(dat.ed.GLAD$ed.DSM5_BN_binary_numeric,
                 "0" = "No DSM-5 BN",
                 "1" = "DSM-5 BN")
 
 #Summary
-freq(dat.ed.GLAD.id$ed.DSM5_BN_binary)
+freq(dat.ed.GLAD$ed.DSM5_BN_binary)
 ```
 
 
 ##DSM-5 BN ALGORITHM - EDGI
+
+A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
+
+  1. Eating, in a discrete period of time (e.g., within any 2-hour period), an amount of food that is definitely larger than what most individuals would eat in a similar period of time under similar circumstances.
+  2. A sense of lack of control over eating during the episode (e.g., a feeling that one cannot stop eating or control what or how much one is eating).
+
+B. Recurrent inappropriate compensatory behaviors in order to prevent weight gain,such as self-induced vomiting; misuse of laxatives, diuretics, or other medications; fasting; or excessive exercise.
+
+C. The binge eating and inappropriate compensatory behaviors both occur, on average, at least once a week for 3 months.
+
+D. Self-evaluation is unduly influenced by body shape and weight.
+
+E. The disturbance does not occur exclusively during episodes of anorexia nervosa.
 
 NB: ICBs mislabelled in data dictionary
 
@@ -1584,241 +3126,363 @@ dat.ed.EDGI$ed.DSM5_BN_binary <-
 #Summary
 freq(dat.ed.EDGI$ed.DSM5_BN_binary)
 ```
+##Identifying groups: Self-report AND/OR algorithm-derived
 
-
-
-#### DSM 5 AN restricting - EDGI
-
-A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
-
-B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
-
-C. Disturbance in the way in which one’s body weight or shape is experienced, undueinfluence of body weight or shape on self-evaluation, or persistent lack of recognition of the seriousness of the current low body weight.
-
-Subtype of DSM-5 AN; All DSM5 AN symptoms are met, but...
-
-Restricting type: During the last 3 months, the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas). This subtype describes presentations in which weight loss is accomplished primarily through dieting, fasting, and/or excessive exercise.
-
+## GLAD ANOREXIA GROUP - self-reported AN AND/OR algorithm-derived AN/ANR/ANBP
 ```{r}
-dat.ed$ed.DSM5_AN_restricting_binary_numeric <- 
-  with(dat.ed,
-  dplyr::if_else(
-#A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
-    (
-      bmi_unc <= 18.55 |
-       bmi_unc <= 18.55 |
-       bmi_unc <= 18.55
-      ) &
-      
-      
-#When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
-  an.1.lowest_weight_weigh_weighed == "No" &
- 
-#B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
-   
-  #During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?
-  (
-        an.1.gain_weight_low_weight == "Slightly afraid" |
-      an.1.gain_weight_low_weight == "Somewhat afraid" |
-      an.1.gain_weight_low_weight == "Very afraid" |
-      an.1.gain_weight_low_weight == "Extremely afraid"
-      ) &
 
-
-#C. Disturbance in the way in which one’s body weight or shape is experienced... 
-
-  #During the time when you were at this low weight, did you still feel fat? 
-  (
-  (
-    an.1.feel_fat_low_weight == "Slightly" | #***Check cut off!
-     an.1.feel_fat_low_weight == "Somewhat" | 
-     an.1.feel_fat_low_weight == "Very" |
-     an.1.feel_fat_low_weight == "Extremely"
-    ) |
-    
-  #During the time when you were at this low weight did you ever experience your body or parts of your body to be larger than they actually were or than other people thought they were?
-  (
-    an.1.body_larger_low_weight == "Somewhat" | 
-     an.1.body_larger_low_weight == "Very much"
-    ) |
-  
-#...undue influence of body weight or shape on self-evaluation
- 
-   #During the time when you were at this low weight, how dependent was your self-worth on your body shape or weight?
-    (
-    an.1.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
-    an.1.not_at_all_dependentcompletely_dependent == "2" | 
-    an.1.not_at_all_dependentcompletely_dependent == "3" |
-      an.1.not_at_all_dependentcompletely_dependent == "4" |
-      an.1.not_at_all_dependentcompletely_dependent == "5" |
-      an.1.not_at_all_dependentcompletely_dependent == "Completely Dependent"
-  ) |
-
-#...or persistent lack of recognition of the seriousness of the current low body weight.
-  
-  #Did you ever think your low weight had negative consequences for your health?
-      an.1.low_weight_health_negative == "Not at all"
-) &
-
-  #Restricting type: During the last 3 months... 
-  
-  #...the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas)...
-
-  #Did you experience regular episodes of binge eating while at your lowest weight?
-  (
-  (
-    be.experience_regular_episodes_binge == "No" |
-     is.na(be.experience_regular_episodes_binge) #***Perhaps don't include NA??
-   ) & 
-
-  ##During the period of time when you were at your lowest weight, did you use any of the following as a way to control yourweight or shape? .
-  (
-    icb.making_yourself_vomit.1 == "Not Making yourself vomit" |
-     is.na(icb.making_yourself_vomit.1)
-    ) & 
-
-      (
-    icb.laxatives.1 == "Not Laxatives"
-   | is.na(icb.laxatives.1)
-   ) &
-  
-  (icb.diuretics.1 == "Not Diuretics" |
-     is.na(icb.diuretics.1)
-   ) &  
-
-  #...This subtype describes presentations in which weight loss is accomplished primarily through dieting, fasting, and/or excessive exercise.
-  
-    #During the period of time when you were at your lowest weight, did you use any of the following as a way to control yourweight or shape? .
-    (
-      icb.excessive_exercise.1 == "Excessive exercise" |
-     icb.fasting.1 == "Fasting"
-     )
-  ),
-
-    true = 1,
-    false = 0,
-    missing = NA_real_)
+dat.ed.GLAD <- dat.ed.GLAD %>%
+  mutate(
+    anorexia_group_numeric =
+           case_when(ed.DSM5_AN_restricting_binary_numeric == 1 |
+                       ed.DSM5_AN_binge_purge_binary_numeric == 1 |
+                       ed.DSM5_AN_binary_numeric == 1 |
+                       mhd.anorexia_signup_numeric == 1 |
+                       an.1.anorexia_nervosa_numeric == 1 ~ 1, #Self-reported or algorithm-derived AN
+                     
+                     ed.DSM5_AN_restricting_binary_numeric == 0 |
+                       ed.DSM5_AN_binge_purge_binary_numeric == 0 |
+                       ed.DSM5_AN_binary_numeric == 0 |
+                       mhd.anorexia_signup_numeric == 0 |
+                       an.1.anorexia_nervosa_numeric == 0 ~ 0, #This will capture people who have at least one 0 for self-report or algorithm-derived. The rest will be either 0 or missing (people with 1 at ANY of these are captured in the code above)
+                     
+                     is.na(ed.DSM5_AN_restricting_binary_numeric) &
+                       is.na(ed.DSM5_AN_binge_purge_binary_numeric) &
+                       is.na(ed.DSM5_AN_binary_numeric) &
+                       is.na(mhd.anorexia_signup_numeric) &
+                       is.na(an.1.anorexia_nervosa_numeric) ~ NA_real_, #All missing data
+           )
   )
+
+
+#Check freq                    
+dat.ed.GLAD %>%
+  freq(anorexia_group_numeric)
+           
+#Add factor variable 
+dat.ed.GLAD <- dat.ed.GLAD %>%
+    mutate(
+      anorexia_group =
+        recode_factor(anorexia_group_numeric,
+                      "0" = "No anorexia nervosa",
+                      "1" = "Self-reported and/or algorithm derived anorexia nervosa",
+                      missing = NA_character_
+        )
+    )
+
+#Check freq #1311 GLAD participants with AN
+  dat.ed.GLAD %>%
+    freq(anorexia_group,
+         cumul = F)
   
-#Recode numeric to factor
-dat.ed$ed.DSM5_AN_restricting_binary <-
-  recode_factor(dat.ed$ed.DSM5_AN_restricting_binary_numeric,
-                "0" = "No DSM5 AN restricting",
-                "1" = "DSM5 AN restricting"
-                )
-
-#Summary
-freq(dat.ed$ed.DSM5_AN_restricting_binary)
-
-
-#Check which cohort they are from
-ANR_cases <- dat.ed %>%
-  filter(ed.DSM5_AN_restricting_binary == "DSM5 AN restricting")
-
-freq(ANR_cases$cohort_name)
 ```
-
-
-
-
-## SELF-REPORTED DIAGNOSES ##
-
-
-##GLAD MHD
+## EDGI ANOREXIA GROUP - self-reported AN AND/OR algorithm-derived AN/ANR/ANBP
 ```{r}
- glad.mhd.raw <- readRDS(file = "../data_raw/glad/mhd_glad.rds")
-  dim(glad.mhd.raw)
-  colnames(glad.mhd.raw)
+
+dat.ed.EDGI <- dat.ed.EDGI %>%
+  mutate(
+    anorexia_group_numeric =
+           case_when(ed.DSM5_AN_restricting_binary_numeric == 1 |
+                       ed.DSM5_AN_binge_purge_binary_numeric == 1 |
+                       ed.DSM5_AN_binary_numeric == 1 |
+                       mhd.anorexia_signup_numeric == 1 ~ 1, #Self-reported or algorithm-derived AN
+                     
+                     ed.DSM5_AN_restricting_binary_numeric == 0 |
+                       ed.DSM5_AN_binge_purge_binary_numeric == 0 |
+                       ed.DSM5_AN_binary_numeric == 0 |
+                       mhd.anorexia_signup_numeric == 0  ~ 0, #This will capture people who have at least one 0 for self-report or algorithm-derived. The rest will be either 0 or missing (people with 1 at ANY of these are captured in the code above)
+                     
+                     is.na(ed.DSM5_AN_restricting_binary_numeric) &
+                       is.na(ed.DSM5_AN_binge_purge_binary_numeric) &
+                       is.na(ed.DSM5_AN_binary_numeric) &
+                       is.na(mhd.anorexia_signup_numeric) ~ NA_real_, #All missing data
+           )
+  )
+
+
+#Check freq                    
+dat.ed.EDGI %>%
+  freq(anorexia_group_numeric)
+           
+#Add factor variable 
+dat.ed.EDGI <- dat.ed.EDGI %>%
+    mutate(
+      anorexia_group =
+        recode_factor(anorexia_group_numeric,
+                      "0" = "No anorexia nervosa",
+                      "1" = "Self-reported and/or algorithm derived anorexia nervosa",
+                      missing = NA_character_
+        )
+    )
+
+#Check freq #2012 EDGI participants with AN
+  dat.ed.EDGI %>%
+    freq(anorexia_group,
+         cumul = F)
+  
 ```
 
-
-##Select columns
+## GLAD BULIMIA GROUP - self-reported BN AND/OR algorithm-derived BN
 ```{r}
-exclude_cols <- c("ID",
-                  "cohort_name")
 
-glad.mhd.raw.id <- glad.mhd.raw %>%
-    drop_na(externalDataReference) %>% # Drop NAs
-    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "glad", .before = "mhd.an") %>% #create new column 
-    select(
-      ID = externalDataReference, # ID
-      cohort_name, # Sample
-      mhd.anorexia_signup = mhd.an,
-      mhd.bulimia_signup = mhd.bn,
-      mhd.bed_signup = mhd.bed
+dat.ed.GLAD <- dat.ed.GLAD %>%
+  mutate(
+    bulimia_group_numeric =
+           case_when(ed.DSM5_BN_binary_numeric == 1 |
+                       mhd.bulimia_signup_numeric == 1 |
+                       an.1.bulimia_nervosa_numeric == 1 ~ 1, #Self-reported or algorithm-derived AN
+                     
+                     ed.DSM5_BN_binary_numeric == 0 |
+                       mhd.bulimia_signup_numeric == 0 |
+                       an.1.bulimia_nervosa_numeric == 0 ~ 0, #This will capture people who have at least one 0 for self-report or algorithm-derived. The rest will be either 0 or missing (people with 1 at ANY of these are captured in the code above)
+                     
+                     is.na(ed.DSM5_BN_binary_numeric) &
+                       is.na(mhd.bulimia_signup_numeric) &
+                       is.na(an.1.bulimia_nervosa_numeric)  ~ NA_real_, #All missing data
+           )
+  )
 
-    ) %>%
-    add_numeric(., exclude = exclude_cols) %>%
-    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-    mutate_if(is.numeric, ~na_if(., -99)) %>%
-    mutate_if(is.numeric, ~na_if(., -77)) %>%
-    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-  # Inspect dimensions
-  dim(glad.mhd.raw.id)
-  # Inspect colnames
-  colnames(glad.mhd.raw.id)
-  #Differences
-  dim(glad.mhd.raw)[1]-dim(glad.mhd.raw.id)[1]
+
+#Check freq                    
+dat.ed.GLAD %>%
+  freq(bulimia_group_numeric)
+           
+#Add factor variable 
+dat.ed.GLAD <- dat.ed.GLAD %>%
+    mutate(
+      bulimia_group =
+        recode_factor(bulimia_group_numeric,
+                      "0" = "No bulimia nervosa",
+                      "1" = "Self-reported and/or algorithm derived bulimia",
+                      missing = NA_character_
+        )
+    )
+
+#Check freq #1336 GLAD participants with BN
+  dat.ed.GLAD %>%
+    freq(bulimia_group,
+         cumul = F)
+  
 ```
-##GLAD MHD
+
+## EDGI BULIMIA GROUP - self-reported BN AND/OR algorithm-derived BN
 ```{r}
-edgi.mhd.raw <- readRDS(file = "../data_raw/edgi/mhd_edgi.rds")
-  dim(edgi.mhd.raw)
-  colnames(edgi.mhd.raw)
+
+dat.ed.EDGI <- dat.ed.EDGI %>%
+  mutate(
+    bulimia_group_numeric =
+           case_when(ed.DSM5_BN_binary_numeric == 1 |
+                       mhd.bulimia_signup_numeric == 1  ~ 1, #Self-reported or algorithm-derived AN
+                     
+                     ed.DSM5_BN_binary_numeric == 0 |
+                       mhd.bulimia_signup_numeric == 0  ~ 0, #This will capture people who have at least one 0 for self-report or algorithm-derived. The rest will be either 0 or missing (people with 1 at ANY of these are captured in the code above)
+                     
+                     is.na(ed.DSM5_BN_binary_numeric) &
+                       is.na(mhd.bulimia_signup_numeric)   ~ NA_real_, #All missing data
+           )
+  )
+
+
+#Check freq                    
+dat.ed.EDGI %>%
+  freq(bulimia_group_numeric)
+           
+#Add factor variable 
+dat.ed.EDGI <- dat.ed.EDGI %>%
+    mutate(
+      bulimia_group =
+        recode_factor(bulimia_group_numeric,
+                      "0" = "No bulimia nervosa",
+                      "1" = "Self-reported and/or algorithm derived bulimia",
+                      missing = NA_character_
+        )
+    )
+
+#Check freq #1105 EDGI participants with BN
+  dat.ed.EDGI %>%
+    freq(bulimia_group,
+         cumul = F)
+  
 ```
 
-##Select columns
+## GLAD BED GROUP - self-reported BED AND/OR algorithm-derived BED
 ```{r}
-exclude_cols <- c("ID",
-                  "cohort_name")
 
-edgi.mhd.raw.id <- edgi.mhd.raw %>%
-    drop_na(externalDataReference) %>% # Drop NAs
-    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "edgi", .before = "mhd.anorexia_nervosa") %>% #create new column 
-    select(
-      ID = externalDataReference, # ID
-      cohort_name, # Sample
-      mhd.anorexia_signup = mhd.anorexia_nervosa,
-      mhd.bulimia_signup = mhd.bulimia_nervosa,
-      mhd.bed_signup = mhd.bingeeating_disorder
+dat.ed.GLAD <- dat.ed.GLAD %>%
+  mutate(
+    BED_group_numeric =
+           case_when(ed.DSM5_BED_binary_numeric == 1 |
+                       mhd.bed_signup_numeric == 1 |
+                       an.1.bingeeating_disorder_numeric == 1 ~ 1, #Self-reported or algorithm-derived AN
+                     
+                     ed.DSM5_BED_binary_numeric == 0 |
+                       mhd.bed_signup_numeric == 0 |
+                       an.1.bingeeating_disorder_numeric == 0 ~ 0, #This will capture people who have at least one 0 for self-report or algorithm-derived. The rest will be either 0 or missing (people with 1 at ANY of these are captured in the code above)
+                     
+                     is.na(ed.DSM5_BED_binary_numeric) &
+                       is.na(mhd.bed_signup_numeric) &
+                       is.na(an.1.bingeeating_disorder_numeric)  ~ NA_real_, #All missing data
+           )
+  )
 
-    ) %>%
-    add_numeric(., exclude = exclude_cols) %>%
-    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-    mutate_if(is.numeric, ~na_if(., -99)) %>%
-    mutate_if(is.numeric, ~na_if(., -77)) %>%
-    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-  # Inspect dimensions
-  dim(glad.mhd.raw.id)
-  # Inspect colnames
-  colnames(glad.mhd.raw.id)
-  #Differences
-  dim(glad.mhd.raw)[1]-dim(glad.mhd.raw.id)[1]
+
+#Check freq                    
+dat.ed.GLAD %>%
+  freq(BED_group_numeric)
+           
+#Add factor variable 
+dat.ed.GLAD <- dat.ed.GLAD %>%
+    mutate(
+      BED_group =
+        recode_factor(BED_group_numeric,
+                      "0" = "No binge-eating disorder",
+                      "1" = "Self-reported and/or algorithm derived binge-eating disorder",
+                      missing = NA_character_
+        )
+    )
+
+#Check freq #2725 GLAD participants with BED
+  dat.ed.GLAD %>%
+    freq(BED_group,
+         cumul = F)
+
 ```
 
+## EDGI BED GROUP - self-reported BED AND/OR algorithm-derived BED
+```{r}
+
+dat.ed.EDGI <- dat.ed.EDGI %>%
+  mutate(
+    BED_group_numeric =
+           case_when(ed.DSM5_BED_binary_numeric == 1 |
+                       mhd.bed_signup_numeric == 1 ~ 1, #Self-reported or algorithm-derived AN
+                     
+                     ed.DSM5_BED_binary_numeric == 0 |
+                       mhd.bed_signup_numeric == 0  ~ 0, #This will capture people who have at least one 0 for self-report or algorithm-derived. The rest will be either 0 or missing (people with 1 at ANY of these are captured in the code above)
+                     
+                     is.na(ed.DSM5_BED_binary_numeric) &
+                       is.na(mhd.bed_signup_numeric)  ~ NA_real_, #All missing data
+           )
+  )
+
+
+#Check freq                    
+dat.ed.EDGI %>%
+  freq(BED_group_numeric)
+           
+#Add factor variable 
+dat.ed.EDGI <- dat.ed.EDGI %>%
+    mutate(
+      BED_group =
+        recode_factor(BED_group_numeric,
+                      "0" = "No binge-eating disorder",
+                      "1" = "Self-reported and/or algorithm derived binge-eating disorder",
+                      missing = NA_character_
+        )
+    )
+
+#Check freq #644 EDGI participants with BED
+  dat.ed.EDGI %>%
+    freq(BED_group,
+         cumul = F)
+
+```
+
+##PGC check - Lowest BMI in self-reported AN
+
+In GLAD, there are three reports of BMI.
+1) Lowest BMI as reported in the signup (i.e., glad_ed_demographics) (low_dem_bmi)
+2) Current BMI as reported in the signup (current_bmi)
+3) Lowest BMI as reported in the optional ED100K (AN_low_bmi)
+
+#1. mhd self report = Have you ever been diagnosed with one or more of the following mental health problems or neurodevelopmental disorders by a professional, even if you don't have it currently? By professional we mean: any doctor, nurse or person with specialist training . Please include disorders even if you did not need treatment for them or if you did not agree with the diagnosis. Select ALL that apply:
+
+```{r}
+
+##Identify group
+
+#Filter
+mhd.self.report.GLAD <- dat.ed.GLAD %>%
+  filter(mhd.anorexia_signup_numeric == 1)
+
+nrow(mhd.self.report.GLAD)
+
+#BMI variable - if not reported in signup, use value from ED100K (if available)
+
+mhd.self.report.GLAD$LOWEST_BMI <- 
+  if_else(
+    condition = is.na(mhd.self.report.GLAD$low_dem_bmi),
+    true = mhd.self.report.GLAD$AN_low_bmi,
+    false = mhd.self.report.GLAD$low_dem_bmi,
+    missing = NA_real_
+    )
+
+#Descriptives
+mhd.self.report.GLAD %>%
+  freq(LOWEST_BMI)
+
+mhd.self.report.GLAD %>%
+  descr(LOWEST_BMI)
+
+
+#Plot 
+qplot(mhd.self.report.GLAD$LOWEST_BMI)
+
+#Percentage with BMI over 18.5
+mhd.self.report.GLAD %>%
+  filter(LOWEST_BMI > 18.5) %>%
+  nrow()
+
+(36/381)*100
 
 
 
+#2. AN self report = Which of the following eating disorders did you/do you currently have? If you have not received a diagnosis and are not sure which of the following may apply to you please select Don't know: [this is asked to people who indicate "yes" to "Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?"]
+an.self.report.GLAD <- dat.ed.GLAD %>%
+  filter(an.1.anorexia_nervosa_numeric == 1)
+
+nrow(an.self.report.GLAD)
+
+```
+
+#2. AN self report = Which of the following eating disorders did you/do you currently have? If you have not received a diagnosis and are not sure which of the following may apply to you please select Don't know: [this is asked to people who indicate "yes" to "Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?"]
+
+```{r}
+
+##Identify group
+
+#Filter
+an.self.report.GLAD <- dat.ed.GLAD %>%
+  filter(an.1.anorexia_nervosa_numeric == 1)
+
+nrow(an.self.report.GLAD)
+
+#BMI variable - if not reported in signup, use value from ED100K (if available)
+
+an.self.report.GLAD$LOWEST_BMI <- 
+  if_else(
+    condition = is.na(an.self.report.GLAD$AN_low_bmi),
+    true = an.self.report.GLAD$low_dem_bmi,
+    false = an.self.report.GLAD$AN_low_bmi,
+    missing = NA_real_
+    )
+
+#Descriptives
+an.self.report.GLAD %>%
+  freq(LOWEST_BMI)
+
+an.self.report.GLAD %>%
+  descr(LOWEST_BMI)
 
 
+#Plot 
+qplot(an.self.report.GLAD$LOWEST_BMI)
 
+#Percentage with BMI over 18.5
+an.self.report.GLAD %>%
+  filter(LOWEST_BMI > 18.5) %>%
+  nrow()
+
+(128/599)*100
+
+```
