@@ -29,6 +29,11 @@ source("./libraries.R")
 source("./functions.R")
 ```
 
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
 
 ### Read in EDEQ data
 ```{r}
@@ -42,6 +47,11 @@ colnames(dat.edeq)
 nrow(dat.edeq)
 
 ```
+
+
+
+
+
 
 ##Exclude participants who are missing for EVERY edeq screener variable at every wave
 ```{r}

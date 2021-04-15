@@ -44,7 +44,6 @@ dim(nbr_baseline)
 ramp_baseline <- readRDS(file = "../data_cleaned/baseline_ramp.rds")
 dim(ramp_baseline)
 
-
 ```
 ##Make list of edeq baseline columns only in RAMP
 ```{r}
@@ -250,8 +249,6 @@ nrow(taf)
 ```
 
 
-
-
 ```{r}
 #drop NA column names
 
@@ -348,7 +345,7 @@ nrow(dat.edeq)
 skimr::skim(dat.edeq)
 ```
 
-#Save taf+baseline
+#Save edeq +baseline
 ```{r Save edeq + baseline rds file}
 saveRDS(object = dat.edeq, file = "../data_cleaned/dat.edeq.rds")
 

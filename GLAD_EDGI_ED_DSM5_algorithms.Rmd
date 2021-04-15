@@ -31,6 +31,12 @@ source("./libraries.R")
 source("./functions.R")
 ```
 
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
 ## Read in data - AN ED100K GLAD
 ```{r Read in data}
 
@@ -3138,7 +3144,7 @@ dat.ed.GLAD <- dat.ed.GLAD %>%
                        ed.DSM5_AN_binary_numeric == 1 |
                        mhd.anorexia_signup_numeric == 1 |
                        an.1.anorexia_nervosa_numeric == 1 ~ 1, #Self-reported or algorithm-derived AN
-                     
+             
                      ed.DSM5_AN_restricting_binary_numeric == 0 |
                        ed.DSM5_AN_binge_purge_binary_numeric == 0 |
                        ed.DSM5_AN_binary_numeric == 0 |
@@ -3185,7 +3191,7 @@ dat.ed.EDGI <- dat.ed.EDGI %>%
                        ed.DSM5_AN_binge_purge_binary_numeric == 1 |
                        ed.DSM5_AN_binary_numeric == 1 |
                        mhd.anorexia_signup_numeric == 1 ~ 1, #Self-reported or algorithm-derived AN
-                     
+                  
                      ed.DSM5_AN_restricting_binary_numeric == 0 |
                        ed.DSM5_AN_binge_purge_binary_numeric == 0 |
                        ed.DSM5_AN_binary_numeric == 0 |
@@ -3230,7 +3236,7 @@ dat.ed.GLAD <- dat.ed.GLAD %>%
            case_when(ed.DSM5_BN_binary_numeric == 1 |
                        mhd.bulimia_signup_numeric == 1 |
                        an.1.bulimia_nervosa_numeric == 1 ~ 1, #Self-reported or algorithm-derived AN
-                     
+                      
                      ed.DSM5_BN_binary_numeric == 0 |
                        mhd.bulimia_signup_numeric == 0 |
                        an.1.bulimia_nervosa_numeric == 0 ~ 0, #This will capture people who have at least one 0 for self-report or algorithm-derived. The rest will be either 0 or missing (people with 1 at ANY of these are captured in the code above)
@@ -3272,7 +3278,7 @@ dat.ed.EDGI <- dat.ed.EDGI %>%
     bulimia_group_numeric =
            case_when(ed.DSM5_BN_binary_numeric == 1 |
                        mhd.bulimia_signup_numeric == 1  ~ 1, #Self-reported or algorithm-derived AN
-                     
+                      
                      ed.DSM5_BN_binary_numeric == 0 |
                        mhd.bulimia_signup_numeric == 0  ~ 0, #This will capture people who have at least one 0 for self-report or algorithm-derived. The rest will be either 0 or missing (people with 1 at ANY of these are captured in the code above)
                      
@@ -3400,11 +3406,23 @@ In GLAD, there are three reports of BMI.
 
 ##Identify group
 
-#Filter
-mhd.self.report.GLAD <- dat.ed.GLAD %>%
+#Filter for those who self-report AN
+mhd.self.report.GLAD1 <- dat.ed.GLAD %>%
   filter(mhd.anorexia_signup_numeric == 1)
 
+nrow(mhd.self.report.GLAD1)
+
+#Filter again for those with age of onset above the age of 18
+
+freq(mhd.self.report.GLAD1$an.how_old_were_you)
+
+mhd.self.report.GLAD <- mhd.self.report.GLAD1 %>%
+  filter(an.how_old_were_you >= 18)
+
 nrow(mhd.self.report.GLAD)
+
+#Check
+freq(mhd.self.report.GLAD$an.how_old_were_you)
 
 #BMI variable - if not reported in signup, use value from ED100K (if available)
 
@@ -3432,15 +3450,8 @@ mhd.self.report.GLAD %>%
   filter(LOWEST_BMI > 18.5) %>%
   nrow()
 
-(36/381)*100
+(21/189)*100
 
-
-
-#2. AN self report = Which of the following eating disorders did you/do you currently have? If you have not received a diagnosis and are not sure which of the following may apply to you please select Don't know: [this is asked to people who indicate "yes" to "Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?"]
-an.self.report.GLAD <- dat.ed.GLAD %>%
-  filter(an.1.anorexia_nervosa_numeric == 1)
-
-nrow(an.self.report.GLAD)
 
 ```
 
@@ -3450,11 +3461,22 @@ nrow(an.self.report.GLAD)
 
 ##Identify group
 
-#Filter
-an.self.report.GLAD <- dat.ed.GLAD %>%
+#Filter for those who self-report AN diagnosis
+an.self.report.GLAD1 <- dat.ed.GLAD %>%
   filter(an.1.anorexia_nervosa_numeric == 1)
 
+nrow(an.self.report.GLAD1)
+
+#Filter again for those with age of onset above the age of 18
+
+freq(an.self.report.GLAD1$an.how_old_were_you)
+
+an.self.report.GLAD <- an.self.report.GLAD1 %>%
+  filter(an.how_old_were_you >= 18)
+
 nrow(an.self.report.GLAD)
+
+freq(an.self.report.GLAD$an.how_old_were_you)
 
 #BMI variable - if not reported in signup, use value from ED100K (if available)
 
@@ -3482,6 +3504,83 @@ an.self.report.GLAD %>%
   filter(LOWEST_BMI > 18.5) %>%
   nrow()
 
-(128/599)*100
+(71/310)*100
+
+```
+## Select variables to keep
+All self-report and algorithm-derived variables and final grouping variables (both numeric and factor). Plus ID and cohort name
+
+```{r}
+
+#EDGI final ED variables 
+final_edgi_data_ed <- dat.ed.EDGI  %>%
+  select(ID,
+         cohort_name,
+         ed.DSM5_AN_binary_numeric,                           
+         ed.DSM5_AN_binary,                                   
+         ed.DSM5_AN_restricting_binary_numeric,             
+         ed.DSM5_AN_restricting_binary,                       
+         ed.DSM5_AN_binge_purge_binary_numeric,               
+         ed.DSM5_ANBP_binary,                                  
+         ed.DSM5_BED_binary_numeric,                          
+         ed.DSM5_BED_binary,                                    
+         ed.DSM5_BN_binary_numeric,                            
+         ed.DSM5_BN_binary,                                     
+         anorexia_group_numeric,                                
+         anorexia_group,                                       
+         bulimia_group_numeric,                                
+         bulimia_group,                                        
+         BED_group_numeric,                                     
+         BED_group,
+         mhd.anorexia_signup_numeric,
+          mhd.anorexia_signup,
+         mhd.bulimia_signup,
+         mhd.bulimia_signup_numeric,
+          mhd.bed_signup,
+          mhd.bed_signup_numeric) 
+
+#GLAD final ED variables 
+final_glad_data_ed <- dat.ed.GLAD  %>%
+  select(ID,
+         cohort_name,
+         ed.DSM5_AN_binary_numeric,                           
+         ed.DSM5_AN_binary,                                   
+         ed.DSM5_AN_restricting_binary_numeric,             
+         ed.DSM5_AN_restricting_binary,                       
+         ed.DSM5_AN_binge_purge_binary_numeric,               
+         ed.DSM5_ANBP_binary,                                  
+         ed.DSM5_BED_binary_numeric,                          
+         ed.DSM5_BED_binary,                                    
+         ed.DSM5_BN_binary_numeric,                            
+         ed.DSM5_BN_binary,                                     
+         anorexia_group_numeric,                                
+         anorexia_group,                                       
+         bulimia_group_numeric,                                
+         bulimia_group,                                        
+         BED_group_numeric,                                     
+         BED_group,
+         mhd.anorexia_signup_numeric,
+          mhd.anorexia_signup,
+         mhd.bulimia_signup,
+         mhd.bulimia_signup_numeric,
+          mhd.bed_signup,
+          mhd.bed_signup_numeric,
+         an.1.anorexia_nervosa_numeric,
+         an.1.anorexia_nervosa,
+         an.1.bulimia_nervosa,
+         an.1.bulimia_nervosa_numeric,
+         an.1.bingeeating_disorder_numeric,
+         an.1.bingeeating_disorder) 
+  
+```
+
+##Save datasets
+```{r}
+#EDGI
+saveRDS(object = final_edgi_data_ed,
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/EDGI_ED_data_cleaned", date, ".rds"))
+#GLAD
+saveRDS(object = final_glad_data_ed,
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/GLAD_ED_data_cleaned", date, ".rds"))
 
 ```
