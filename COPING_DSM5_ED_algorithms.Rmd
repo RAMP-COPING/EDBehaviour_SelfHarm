@@ -41,6 +41,12 @@ source("./libraries.R")
 source("./functions.R")
 ```
 
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
 ### Read in ED data: AN GLAD COPING
 ```{r}
 dat.an.glad.coping <- readRDS(file = "../data_raw/diagnostics/an_coping_glad.rds")
@@ -1753,7 +1759,8 @@ final_coping_data_ed <- dat.ed.mhd %>%
 ##Save dataset
 ```{r}
 saveRDS(object = final_coping_data_ed,
-        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/COPING_ED_data_cleaned.", date, ".rds"))
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/COPING_RAMP_ED_data_cleaned", date, ".rds"))
+
 ```
 
 

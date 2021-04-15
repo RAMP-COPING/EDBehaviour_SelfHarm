@@ -1,0 +1,212 @@
+---
+title: "Merging_ED_data"
+author: "Helena Davies"
+date: "15/04/2021"
+output: html_document
+---
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Delete everything in your global environment
+```{r Delete everything in your global environment}
+remove(list = ls())
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+#### Call in functions script
+
+```{r source files}
+source("./functions.R")
+```
+
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
+### Read in ED group data
+```{r}
+
+##COPING (GLAD, EDGI, NBR) and RAMP
+COPING_RAMP_ED_data <- readRDS(file = "../data_cleaned/COPING_ED_data_cleaned.rds")
+
+# Inspect dimensions
+dim(COPING_RAMP_ED_data)
+# Inspect colnames
+colnames(COPING_RAMP_ED_data)
+
+nrow(COPING_RAMP_ED_data)
+
+##GLAD original
+GLAD_ED_data <- readRDS(file = "../data_cleaned/GLAD_ED_data_cleaned.rds")
+
+# Inspect dimensions
+dim(GLAD_ED_data)
+# Inspect colnames
+colnames(GLAD_ED_data)
+
+nrow(GLAD_ED_data)
+
+##EDGI original 
+EDGI_ED_data <- readRDS(file = "../data_cleaned/EDGI_ED_data_cleaned.rds")
+
+# Inspect dimensions
+dim(EDGI_ED_data)
+# Inspect colnames
+colnames(EDGI_ED_data)
+
+nrow(EDGI_ED_data)
+
+
+```
+
+##Create columns in EDGI that are in GLAD (ready to merge)
+```{r}
+EDGI_ED_data$an.1.anorexia_nervosa_numeric <- NA
+EDGI_ED_data$an.1.anorexia_nervosa <- NA
+EDGI_ED_data$an.1.bulimia_nervosa <- NA
+EDGI_ED_data$an.1.bulimia_nervosa_numeric <- NA
+EDGI_ED_data$an.1.bingeeating_disorder_numeric <- NA
+EDGI_ED_data$an.1.bingeeating_disorder <- NA
+
+
+```
+
+#Merge EDGI and GLAD
+We will know where participants are from by looking at cohort name. Participants who are in EDGI should not, in theory, also be in GLAD. Therefore, we can combine all variables, because someone will not have a value for a variable in GLAD and also have a value for that same variable in EDGI. COPING will have variables with different names (i.e., we will not collapse the ED variables in COPING with those from EDGI and GLAD) because some individuals will have a value in a variable within COPING (e.g., DSM5 AN algorithm-derived diagnoses) and another, possible different, value of the same variable in GLAD or EDGI. We want to know whether people reach diagnostic criteria in the original EDGI/GLAD datasets or at COPING baseline.
+```{r}
+
+EDGI.and.GLAD.ed.data <- rbind(GLAD_ED_data,
+                               EDGI_ED_data
+                               )
+
+#Check 
+nrow(EDGI.and.GLAD.ed.data)
+colnames(EDGI.and.GLAD.ed.data)
+
+```
+##Drop 'cohort_name' from the EDGI and GLAD merged data. We will be able to tell which one someone is from by looking at their cohort name in the COPING data, i.e. will be either coping_glad or coping_edgi
+```{r}
+EDGI.and.GLAD.ed.data$cohort_name <-NULL
+```
+
+
+#Merge the now combined data from EDGI and GLAD with the COPING data
+```{r}
+
+dfs.list <- list(COPING_RAMP_ED_data,
+                 EDGI.and.GLAD.ed.data
+                 
+
+ )
+
+#Merge
+dat.ed.all <- plyr::join_all(dfs.list,
+                                      by = c("ID"))
+
+
+#Check rows
+nrow(dat.ed.all)
+
+#Check columns
+colnames(dat.ed.all)
+```
+#Look at number of people who will make up final groups (i.e., have self-reported ED or reached ED diagnostic criteria in GLAD, EDGI, or COPING baseline)
+
+##Binge-eating disorder group
+NB: Only GLAD or EDGI will have positive values in the 'BED_group_numeric', as this means they were counted as a case in GLAD and EDGI original data
+```{r}
+
+#Binge-eating disorder; split by cohort
+dat.ed.all %>%
+  filter(COPING_bed_group_numeric == 1 |
+           BED_group_numeric ==1) %>%
+  group_by(cohort_name,
+           BED_group_numeric,
+           COPING_bed_group_numeric) %>%
+  count()
+
+#Final count #3183 cases
+dat.ed.all %>%
+  filter(COPING_bed_group_numeric == 1 |
+           BED_group_numeric ==1) %>%
+  count()
+
+
+```
+
+##Anorexia nervosa group
+NB: Only GLAD or EDGI will have positive values in the 'anorexia_group_numeric', as this means they were counted as a case in GLAD and EDGI original data
+
+```{r}
+
+#Anorexia; split by cohort
+dat.ed.all %>%
+  filter(COPING_anorexia_group_numeric == 1 |
+           anorexia_group_numeric ==1) %>%
+  group_by(cohort_name,
+           anorexia_group_numeric,
+           COPING_anorexia_group_numeric) %>%
+  count()
+
+#Final count #3999 cases
+dat.ed.all %>%
+  filter(COPING_anorexia_group_numeric == 1 |
+           anorexia_group_numeric ==1) %>%
+  count()
+
+
+```
+
+
+##Bulimia nervosa group
+NB: Only GLAD or EDGI will have positive values in the 'bulimia_group_numeric', as this means they were counted as a case in GLAD and EDGI original data
+
+```{r}
+
+#Anorexia; split by cohort
+dat.ed.all %>%
+  filter(COPING_bulimia_group_numeric == 1 |
+           bulimia_group_numeric ==1) %>%
+  group_by(cohort_name,
+           bulimia_group_numeric,
+           COPING_bulimia_group_numeric) %>%
+  count()
+
+#Final count #3235 cases
+dat.ed.all %>%
+  filter(COPING_bulimia_group_numeric == 1 |
+           bulimia_group_numeric ==1) %>%
+  count()
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
