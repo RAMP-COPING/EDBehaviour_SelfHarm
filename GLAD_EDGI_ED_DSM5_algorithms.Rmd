@@ -5,6 +5,8 @@ date: "09/04/2021"
 output: html_document
 ---
 
+This script identifies eating disorder cases within the EDGI and GLAD studies, both algorithm-derived or self-reported eating disorder diagnoses.
+
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       comment=NA,
@@ -786,7 +788,7 @@ dim(AN_EDGI_ED)[1]-dim(AN_EDGI_ED.id)[1]
 
 ```
 
-## Read in data - AN EDGI 
+## Read in data - AN GLAD
 ```{r Read in data}
 
 GLAD_signup_dem <- readRDS(file = "../data_raw/glad/dem_glad.rds") #Add your data file here
@@ -998,9 +1000,6 @@ edgi.mhd.raw.id <- edgi.mhd.raw %>%
   #Differences
   dim(glad.mhd.raw)[1]-dim(glad.mhd.raw.id)[1]
 ```
-
-
-
 
 ##Merge data - GLAD
 ```{r}
