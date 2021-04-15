@@ -5,6 +5,18 @@ date: "22/03/2021"
 output: html_document
 ---
 
+This script identifies eating disorder cases within the COPING study (EDGI, GLAD, NBR participants) and RAMP.
+
+To note: 
+1) GLAD COPING includes self-report and algorithm-derived diagnoses, as GLAD participants were given the ED100K questions within the COPING baseline, as it was only an optional questionnaire in GLAD.
+2) EDGI COPING includes only self-report diagnoses, as all participants will have already filled out the ED100K questions in EDGI as it was included in the signup, so therefore was not included in the EDGI COPING baseline
+3) NBR COPING includes self-report and algorithm-derived diagnoses, as NBR participants were given the ED100K questions within the COPING baseline, as it was only an optional questionnaire in GLAD
+4) RAMP includes only self-reported diagnoses, as RAMP participants were not given the ED100K questions at any point within RAMP, however were asked to self-report mental health diagnoses.
+
+Therefore, this script includes eating disorder algorithms only for 1) GLAD COPING, 2) NBR COPING, but self-reported diagnoses for ALL cohorts, i.e., 1) GLAD COPING, 2) NBR COPING, 3) EDGI COPING, and 4) RAMP.
+
+The first part of this script is the GLAD COPING and NBR COPING algorithms. 
+
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       comment=NA,
@@ -29,18 +41,16 @@ source("./libraries.R")
 source("./functions.R")
 ```
 
-############ COPING ALGORITHMS ################
-
 ### Read in ED data: AN GLAD COPING
 ```{r}
-dat.ed.glad.coping <- readRDS(file = "../data_raw/diagnostics/an_coping_glad.rds")
+dat.an.glad.coping <- readRDS(file = "../data_raw/diagnostics/an_coping_glad.rds")
 
 # Inspect dimensions
-dim(dat.ed.glad.coping)
+dim(dat.an.glad.coping)
 # Inspect colnames
-colnames(dat.ed.glad.coping)
+colnames(dat.an.glad.coping)
 
-nrow(dat.ed.glad.coping)
+nrow(dat.an.glad.coping)
 
 ```
 
@@ -50,7 +60,7 @@ nrow(dat.ed.glad.coping)
 exclude_cols_dem <- c("ID",
                   "cohort_name")
 
-dat.ed.glad.coping.id <- dat.ed.glad.coping %>% #new dataset with ID
+dat.an.glad.coping.id <- dat.an.glad.coping %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   distinct(externalDataReference, .keep_all = TRUE) %>% 
   add_column(cohort_name = "coping_glad", .before = "an.1.lowest_weight_weigh_weighed") %>% #create new column 
@@ -93,16 +103,18 @@ dat.ed.glad.coping.id <- dat.ed.glad.coping %>% #new dataset with ID
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
-dim(dat.ed.glad.coping.id)
+dim(dat.an.glad.coping.id)
 # Inspect colnames
-colnames(dat.ed.glad.coping.id)
+colnames(dat.an.glad.coping.id)
 #Differences
-dim(dat.ed.glad.coping)[1]-dim(dat.ed.glad.coping.id)[1]
+dim(dat.an.glad.coping)[1]-dim(dat.an.glad.coping.id)[1]
 
 
 ```
 
-### Read in ED data: GLAD COPING ICB 
+
+
+### Read in ICB data: GLAD COPING ICB 
 ```{r}
 dat.icb.glad <- readRDS(file = "../data_raw/diagnostics/icb_coping_glad.rds")
 
@@ -252,16 +264,16 @@ dim(dat.be.glad)[1]-dim(dat.be.glad.id )[1]
 ```
 
 
-### Read in ED data: AN NBR COPING
+### Read in AN data: AN NBR COPING
 ```{r}
-dat.ed.nbr.coping <- readRDS(file = "../data_raw/diagnostics/an_coping_nbr.rds")
+dat.an.nbr.coping <- readRDS(file = "../data_raw/diagnostics/an_coping_nbr.rds")
 
 # Inspect dimensions
-dim(dat.ed.nbr.coping)
+dim(dat.an.nbr.coping)
 # Inspect colnames
-colnames(dat.ed.nbr.coping)
+colnames(dat.an.nbr.coping)
 
-nrow(dat.ed.nbr.coping)
+nrow(dat.an.nbr.coping)
 
 ```
 
@@ -271,7 +283,7 @@ nrow(dat.ed.nbr.coping)
 exclude_cols_dem <- c("ID",
                   "cohort_name")
 
-dat.ed.nbr.coping.id <- dat.ed.nbr.coping %>% #new dataset with ID
+dat.an.nbr.coping.id <- dat.an.nbr.coping %>% #new dataset with ID
   drop_na(subjectid) %>% # Drop NAs
   distinct(subjectid, .keep_all = TRUE) %>% 
   add_column(cohort_name = "coping_nbr", .before = "an.1.lowest_weight_weigh_weighed") %>% #create new column 
@@ -314,16 +326,14 @@ dat.ed.nbr.coping.id <- dat.ed.nbr.coping %>% #new dataset with ID
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
-dim(dat.ed.nbr.coping.id)
+dim(dat.an.nbr.coping.id)
 # Inspect colnames
-colnames(dat.ed.nbr.coping.id)
+colnames(dat.an.nbr.coping.id)
 #Differences
-dim(dat.ed.nbr.coping)[1]-dim(dat.ed.nbr.coping.id)[1]
+dim(dat.an.nbr.coping)[1]-dim(dat.an.nbr.coping.id)[1]
 
 
 ```
-
-
 
 ### Read in ED data: NBR COPING ICB 
 ```{r}
@@ -403,7 +413,6 @@ dim(dat.icb.nbr)[1]-dim(dat.icb.nbr.id)[1]
 
 ```
 
-
 ### Read in ED data: GLAD COPING BE
 ```{r}
 dat.be.nbr <- readRDS(file = "../data_raw/diagnostics/be_coping_nbr.rds")
@@ -416,7 +425,6 @@ colnames(dat.be.nbr)
 nrow(dat.be.nbr)
 
 ```
-
 
 ### Select variables: NBR COPING BE
 ```{r glad select variables}
@@ -469,15 +477,16 @@ colnames(dat.be.nbr.id )
 dim(dat.be.nbr)[1]-dim(dat.be.nbr.id )[1]
 
 ```
-##Check IDs match
+
+##Check IDs match (these now match; previously the dat.icb.glad.ed IDs did NOT match with the other datasets. This questionnaire has now been re-exported and IDs now match)
 ```{r}
 #AN data and BE data
-matched_IDS_1 <- dat.ed.glad.coping.id[dat.ed.glad.coping.id$ID %in% dat.be.glad.id$ID,]
+matched_IDS_1 <- dat.an.glad.coping.id[dat.an.glad.coping.id$ID %in% dat.be.glad.id$ID,]
 
 length(unique(matched_IDS_1$ID))
 
 #AN data and ICB data
-matched_IDS_2 <- dat.ed.glad.coping.id[dat.ed.glad.coping.id$ID %in% dat.icb.glad.id$ID,]
+matched_IDS_2 <- dat.an.glad.coping.id[dat.an.glad.coping.id$ID %in% dat.icb.glad.id$ID,]
 
 length(unique(matched_IDS_2$ID))
 
@@ -491,63 +500,52 @@ length(unique(matched_IDS_3$ID))
 ##Merge data - GLAD
 ```{r}
 
-##GLAD data 1
-dat.glad.1 <- left_join(dat.ed.glad.coping.id,
-                  dat.be.glad.id,
-                  by = "ID"
-                )
+dfs.list <- list(
+ dat.an.glad.coping.id,
+  dat.be.glad.id,
+ dat.icb.glad.id
+ )
 
-##colnames 
-colnames(dat.glad.1)
+#Merge
+dat.ed.GLAD <- plyr::join_all(dfs.list,
+                                      by = c("ID"))
 
-##number of people
-nrow(dat.glad.1)
 
-##GLAD data 2
-dat.glad.2 <- left_join(dat.glad.1,
-                        dat.icb.glad.id,
-                        by = "ID"
-                )
+#Check rows
+nrow(dat.ed.GLAD)
 
-##colnames 
-colnames(dat.glad.2)
-
-##number of people
-nrow(dat.glad.2)
+#Check columns
+colnames(dat.ed.GLAD)
 
 ```
 
 ##Merge data - NBR
 ```{r}
-##NBR data 1
-dat.nbr.1 <- left_join(dat.ed.nbr.coping.id,
-                  dat.be.nbr.id,
-                  by = "ID"
-                )
 
-##colnames 
-colnames(dat.nbr.1)
+dfs.list <- list(
+ dat.an.nbr.coping.id,
+  dat.be.nbr.id,
+ dat.icb.nbr.id
+ 
+ )
 
-##number of people
-nrow(dat.nbr.1)
+#Merge
+dat.ed.NBR <- plyr::join_all(dfs.list,
+                                      by = c("ID"))
 
-##GLAD data 2
-dat.nbr.2 <- left_join(dat.nbr.1,
-                        dat.icb.nbr.id,
-                        by = "ID"
-                )
 
-##colnames 
-colnames(dat.nbr.2)
+#Check rows
+nrow(dat.ed.NBR)
 
-##number of people
-nrow(dat.nbr.2)
+#Check columns
+colnames(dat.ed.NBR)
 ```
+
 ##Merge data - GLAD + NBR
 ```{r}
-##NBR data 1
-dat.ed <- rbind(dat.nbr.2,
-                   dat.glad.2
+##Merge by rbind - both datasets have same columns
+dat.ed <- rbind(dat.ed.NBR,
+                   dat.ed.GLAD
                 )
 
 ##colnames 
@@ -560,10 +558,10 @@ nrow(dat.ed)
 
 ############# DERIVED VARIABLES - COPING #####################
 
-#Work out BMI 
+#Work out lowest BMI as reported in COPING (NBR + GLAD)
 BMI = kg/m2 
 
-##Weight in kg
+##Lowest weight in kg (GLAD COPING and NBR COPING)
 ```{r}
 
 ##First need all numeric variables (lbs and kg are character for some reason)
@@ -595,7 +593,7 @@ dat.ed$weight_kg_unc <-
 summary(dat.ed$weight_kg_unc)
 
 ```
-## Clean weight in kg
+## Clean lowest weight in kg (GLAD + NBR)
 ```{r}
 #Weight outlier
   # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
@@ -630,7 +628,7 @@ summary(dat.ed$weight_kg_unc)
   
 ```
 
-##Height in m
+##Height at lowest weight in m (GLAD + NBR)
 ```{r}
 
 ##Change character variables to numeric
@@ -664,7 +662,8 @@ dat.ed$height_m_unc <-
 # Summary
 summary(dat.ed$height_m_unc)
 ```
-## Clean height in m
+
+## Clean height in m (GLAD + NBR)
 ```{r}
 #Height outlier
   # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
@@ -699,22 +698,24 @@ summary(dat.ed$height_m_unc)
   
 ```
 
-## Work out BMI
+## Work out lowest BMI (GLAD + NBR)
 ```{r}
 
 # Calculated from height and weight **This should be based on min weight and height - have quite low values <10 - need to check
-dat.ed$bmi_unc <- NA
+dat.ed$lowest_BMI_COPING <- NA
 
-dat.ed$bmi_unc <- 
-  if_else(condition = is.na(dat.ed$bmi_unc), 
+#Derived from height and weight
+dat.ed$lowest_BMI_COPING <- 
+  if_else(condition = is.na(dat.ed$lowest_BMI_COPING), 
          true = dat.ed$weight_kg_final/dat.ed$height_m_final^2, 
-         false = NA_real_,
+         false = NA_real_, #no self-reported BMI in COPING
          missing = NA_real_)
 
 # Summary
-summary(dat.ed$bmi_unc)
+summary(dat.ed$lowest_BMI_COPING)
 
 ```
+
 #Frequency binge eating [GLAD+NBR]
 
 Question: "How many episodes of binge eating would you usually experience in one month/one year/one week?"
@@ -731,7 +732,6 @@ dat.ed$binge_freq_per_yr <- as.numeric(dat.ed$be.binge_eating_episodes_experienc
 dat.ed$binge_freq_per_month <- as.numeric(dat.ed$be.binge_eating_follow_enter.txt_numeric)
 
 dat.ed$binge_freq_per_wk <- as.numeric(dat.ed$be.regularly_occurring_episodes_binge.txt_numeric)
-
 
 # Calculate frequency per week
 dat.ed$ed.BE_freq_per_week <- 
@@ -777,6 +777,7 @@ dat.ed$ed.BE_duration_months <-
 # Summary
 freq(dat.ed$ed.BE_duration_months)
 ```
+
 #BE Behaviour score - Number of BE behaviours
 
 #Export error in naming
@@ -799,8 +800,96 @@ dat.ed$ed.BE_behaviour_sum_numeric <- rowSums(dat.ed[ ,
 #Summary
 freq(dat.ed$ed.BE_behaviour_sum_numeric)                                 
 ```
+#### DSM 5 AN (no subtype) - COPING GLAD and NBR
+A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
 
-#### DSM 5 AN restricting - COPING 
+B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+
+C. Disturbance in the way in which one’s body weight or shape is experienced, undueinfluence of body weight or shape on self-evaluation, or persistent lack of recognition of the seriousness of the current low body weight.
+```{r}
+dat.ed$ed.DSM5_COPING_AN_binary_numeric <- 
+  with(dat.ed,
+  dplyr::if_else(
+#A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
+    (
+    (
+      lowest_BMI_COPING <= 18.55 #Lowest BMI as reported in COPING ED baseline questionnaire
+      ) &
+      
+      
+#When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
+  an.1.lowest_weight_weigh_weighed == "No" &
+ 
+#B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
+   
+  #During the time when you were at this low weight, how afraid were you that you might gain weight or become fat?
+  (
+        an.1.gain_weight_low_weight == "Slightly afraid" |
+      an.1.gain_weight_low_weight == "Somewhat afraid" |
+      an.1.gain_weight_low_weight == "Very afraid" |
+      an.1.gain_weight_low_weight == "Extremely afraid"
+      ) &
+
+
+#C. Disturbance in the way in which one’s body weight or shape is experienced... 
+
+  #During the time when you were at this low weight, did you still feel fat? 
+  (
+  (
+    an.1.feel_fat_low_weight == "Slightly" | #***Check cut off!
+     an.1.feel_fat_low_weight == "Somewhat" | 
+     an.1.feel_fat_low_weight == "Very" |
+     an.1.feel_fat_low_weight == "Extremely"
+    ) |
+    
+  #During the time when you were at this low weight did you ever experience your body or parts of your body to be larger than they actually were or than other people thought they were?
+  (
+    an.1.body_larger_low_weight == "Somewhat" | 
+     an.1.body_larger_low_weight == "Very much"
+    ) |
+  
+#...undue influence of body weight or shape on self-evaluation
+ 
+   #During the time when you were at this low weight, how dependent was your self-worth on your body shape or weight?
+    (
+    an.1.not_at_all_dependentcompletely_dependent == "1" | #***Check cut off!
+    an.1.not_at_all_dependentcompletely_dependent == "2" | 
+    an.1.not_at_all_dependentcompletely_dependent == "3" |
+      an.1.not_at_all_dependentcompletely_dependent == "4" |
+      an.1.not_at_all_dependentcompletely_dependent == "5" |
+      an.1.not_at_all_dependentcompletely_dependent == "Completely Dependent"
+  ) |
+
+#...or persistent lack of recognition of the seriousness of the current low body weight.
+  
+  #Did you ever think your low weight had negative consequences for your health?
+      an.1.low_weight_health_negative == "Not at all") 
+),
+
+    true = 1,
+    false = 0,
+    missing = NA_real_)
+  )
+  
+#Recode numeric to factor
+dat.ed$ed.DSM5_COPING_AN_binary <-
+  recode_factor(dat.ed$ed.DSM5_COPING_AN_binary_numeric,
+                "0" = "No DSM5 AN",
+                "1" = "DSM5 AN"
+                )
+
+#Summary
+freq(dat.ed$ed.DSM5_COPING_AN_binary)
+
+
+#Check which cohort they are from
+AN_cases <- dat.ed %>%
+  filter(ed.DSM5_COPING_AN_binary == "DSM5 AN")
+
+freq(AN_cases$cohort_name)
+```
+
+#### DSM 5 AN restricting - COPING GLAD and NBR
 A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
 
 B. Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain, even though at a significantly low weight.
@@ -811,14 +900,13 @@ Subtype of DSM-5 AN; All DSM5 AN symptoms are met, but...
 
 Restricting type: During the last 3 months, the individual has not engaged in recurrent episodes of binge eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas). This subtype describes presentations in which weight loss is accomplished primarily through dieting, fasting, and/or excessive exercise.
 ```{r}
-dat.ed$ed.DSM5_AN_restricting_binary_numeric <- 
+dat.ed$ed.DSM5_COPING_AN_restricting_binary_numeric <- 
   with(dat.ed,
   dplyr::if_else(
 #A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
     (
-      bmi_unc <= 18.55 |
-       bmi_unc <= 18.55 |
-       bmi_unc <= 18.55
+    (
+      lowest_BMI_COPING <= 18.55 #Lowest BMI as reported in COPING ED baseline questionnaire
       ) &
       
       
@@ -904,7 +992,8 @@ dat.ed$ed.DSM5_AN_restricting_binary_numeric <-
       icb.excessive_exercise.1 == "Excessive exercise" |
      icb.fasting.1 == "Fasting"
      )
-  ),
+  )
+),
 
     true = 1,
     false = 0,
@@ -912,22 +1001,24 @@ dat.ed$ed.DSM5_AN_restricting_binary_numeric <-
   )
   
 #Recode numeric to factor
-dat.ed$ed.DSM5_AN_restricting_binary <-
-  recode_factor(dat.ed$ed.DSM5_AN_restricting_binary_numeric,
+dat.ed$ed.DSM5_COPING_AN_restricting_binary <-
+  recode_factor(dat.ed$ed.DSM5_COPING_AN_restricting_binary_numeric,
                 "0" = "No DSM5 AN restricting",
                 "1" = "DSM5 AN restricting"
                 )
 
 #Summary
-freq(dat.ed$ed.DSM5_AN_restricting_binary)
+freq(dat.ed$ed.DSM5_COPING_AN_restricting_binary)
 
 
 #Check which cohort they are from
 ANR_cases <- dat.ed %>%
-  filter(ed.DSM5_AN_restricting_binary == "DSM5 AN restricting")
+  filter(ed.DSM5_COPING_AN_restricting_binary == "DSM5 AN restricting")
 
 freq(ANR_cases$cohort_name)
 ```
+
+
 #### DSM 5 AN binge eating/purging - COPING 
 
 A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
@@ -940,16 +1031,14 @@ Subtype of DSM-5 AN; All DSM5 AN symptoms are met, but...
 
 Binge eating/purging subtype: During the last 3 months, the individual has engaged in recurrent episodes of binge-eating or purging behavior (i.e., self-induced vomiting or the misuse of laxatives, diuretics, or enemas).
 ```{r}
-dat.ed$ed.DSM5_AN_binge_purge_binary_numeric <- 
+dat.ed$ed.DSM5_COPING_AN_binge_purge_binary_numeric <- 
   with(dat.ed,
   dplyr::if_else(
 #A. Restriction of energy intake relative to requirements,leading to a significantly low body weight in the context of age, sex, developmental trajectory, and physical health. Significantly low weight is defined as a weight that is less than minimally normal or, for children and adolescents, less than that minimally expected.
     (
-      bmi_unc <= 18.55 |
-       bmi_unc <= 18.55 |
-       bmi_unc <= 18.55
+    (
+      lowest_BMI_COPING <= 18.55 #Lowest BMI as reported in COPING ED baseline questionnaire
       ) &
-      
       
 #When you weighed much less than other people thought you ought to weigh or were at your lowest weight, was this due to an illness other than an eating disorder?
   an.1.lowest_weight_weigh_weighed == "No" &
@@ -1020,7 +1109,8 @@ dat.ed$ed.DSM5_AN_binge_purge_binary_numeric <-
       icb.laxatives.1 == "Laxatives" |
      icb.diuretics.1 == "Diuretics"
     )
-  ),
+  )
+),
 
 #Not included absence of fasting and/or exercise because ANBP captures people who are restricting but ALSO binge and/or purge (on top of restricting behaviour)
     true = 1,
@@ -1030,7 +1120,7 @@ dat.ed$ed.DSM5_AN_binge_purge_binary_numeric <-
   
 #Recode numeric to factor
 dat.ed$ed.DSM5_ANBP_binary <-
-  recode_factor(dat.ed$ed.DSM5_AN_binge_purge_binary_numeric,
+  recode_factor(dat.ed$ed.DSM5_COPING_AN_binge_purge_binary_numeric,
                 "0" = "No DSM5 AN binge eating/purging",
                 "1" = "DSM5 AN binge eating/purging")
 
@@ -1074,7 +1164,7 @@ icb.any_other_methods_not_previously_listed.2 = Any other methods not previously
 ```{r ed.BN_DSM5_binary}
 
 #Bulimia nervosa numeric variable
-dat.ed$ed.DSM5_BN_binary_numeric <- 
+dat.ed$ed.DSM5_COPING_BN_binary_numeric <- 
   with(dat.ed,
   dplyr::if_else(
 
@@ -1166,17 +1256,17 @@ dat.ed$ed.DSM5_BN_binary_numeric <-
   )
   
 #Recode numeric variable to factor
-dat.ed$ed.DSM5_BN_binary <-
-  recode_factor(dat.ed$ed.DSM5_BN_binary_numeric,
+dat.ed$ed.DSM5_COPING_BN_binary <-
+  recode_factor(dat.ed$ed.DSM5_COPING_BN_binary_numeric,
                 "0" = "No DSM-5 BN",
                 "1" = "DSM-5 BN")
 
 #Summary
-freq(dat.ed$ed.DSM5_BN_binary)
+freq(dat.ed$ed.DSM5_COPING_BN_binary)
 
 #Check which cohort they are from
 BN_cases <- dat.ed %>%
-  filter(ed.DSM5_BN_binary == "DSM-5 BN")
+  filter(ed.DSM5_COPING_BN_binary == "DSM-5 BN")
 
 freq(BN_cases$cohort_name)
 ```
@@ -1202,7 +1292,7 @@ E. The binge eating is not associated with the recurrent use of inappropriate co
 ```{r ed.BED_DSM5_binary}
 
 #BED numeric variable
-dat.ed$ed.DSM5_BED_binary_numeric <- 
+dat.ed$ed.DSM5_COPING_BED_binary_numeric <- 
   with(dat.ed,
   dplyr::if_else(
 #A. Recurrent episodes of binge eating. An episode of binge eating is characterized by both of the following:
@@ -1248,25 +1338,26 @@ dat.ed$ed.DSM5_BED_binary_numeric <-
     )
     
 #Recode numeric to factor
-dat.ed$ed.DSM5_BED_binary <-
-  recode_factor(dat.ed$ed.DSM5_BED_binary_numeric,
+dat.ed$ed.DSM5_COPING_BED_binary <-
+  recode_factor(dat.ed$ed.DSM5_COPING_BED_binary_numeric,
                 "0" = "No DSM-5 BED",
                 "1" = "DSM-5 BED")
 
 #Summary
-freq(dat.ed$ed.DSM5_BED_binary)
+freq(dat.ed$ed.DSM5_COPING_BED_binary)
 
 ```
 
 ## SELF-REPORTED DIAGNOSES - COPING ##
 
-#Import GLAD COPING self-report data
+# Import GLAD COPING self-report data
 ```{r}
  glad.coping.mhd.raw <- readRDS(file = "../data_raw/glad/mhd_coping_glad.rds")
   dim(glad.coping.mhd.raw)
   colnames(glad.coping.mhd.raw)
 ```
-#Select columns from GLAD COPING self-report data
+
+# Select columns from GLAD COPING self-report data
 ```{r}
 
 exclude_cols <- c("cohort_name",
@@ -1281,10 +1372,10 @@ glad.coping.mhd.raw.id <- glad.coping.mhd.raw  %>%
     select(
       ID = externalDataReference, # ID
      cohort_name, # Sample
-       mhd.anorexia_nervosa,
-       mhd.atypical_anorexia_nervosa,
-       mhd.bulimia_nervosa,
-       mhd.bingeeating_disorder
+       mhd.COPING_anorexia_nervosa = mhd.anorexia_nervosa,
+       mhd.COPING_atypical_anorexia_nervosa = mhd.atypical_anorexia_nervosa,
+       mhd.COPING_bulimia_nervosa = mhd.bulimia_nervosa,
+       mhd.COPING_bingeeating_disorder = mhd.bingeeating_disorder
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1327,10 +1418,10 @@ exclude_cols <- c("cohort_name",
     select(
      ID = subjectid, # ID
      cohort_name, # Sample
-       mhd.anorexia_nervosa,
-       mhd.atypical_anorexia_nervosa,
-       mhd.bulimia_nervosa,
-       mhd.bingeeating_disorder
+      mhd.COPING_anorexia_nervosa = mhd.anorexia_nervosa,
+       mhd.COPING_atypical_anorexia_nervosa = mhd.atypical_anorexia_nervosa,
+       mhd.COPING_bulimia_nervosa = mhd.bulimia_nervosa,
+       mhd.COPING_bingeeating_disorder = mhd.bingeeating_disorder
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1375,10 +1466,10 @@ ramp.mhd.raw.id <- ramp.mhd.raw %>%
     select(
       ID = `Login ID`, # ID
       cohort_name, # Sample
-       mhd.anorexia_nervosa = mhq.anorexia_nervosa,
-      mhd.atypical_anorexia_nervosa = mhq.atypical_anorexia_nervosa,
-      mhd.bulimia_nervosa = mhq.bulimia_nervosa,
-      mhd.bingeeating_disorder= mhq.psychological_overeating_or_bingeeating_disorder
+      mhd.COPING_anorexia_nervosa = mhq.anorexia_nervosa,
+      mhd.COPING_atypical_anorexia_nervosa = mhq.atypical_anorexia_nervosa,
+      mhd.COPING_bulimia_nervosa = mhq.bulimia_nervosa,
+     mhd.COPING_bingeeating_disorder = mhq.psychological_overeating_or_bingeeating_disorder
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1399,6 +1490,7 @@ ramp.mhd.raw.id <- ramp.mhd.raw %>%
   #Differences
   dim(ramp.mhd.raw)[1]-dim(ramp.mhd.raw.id)[1]
 ```
+
 ##Import EDGI MHD self-report data
 ```{r}
  edgi.mhd.raw <- readRDS(file = "../data_raw/edgi/mhd_edgi.rds")
@@ -1417,10 +1509,10 @@ edgi.mhd.raw.id <- edgi.mhd.raw %>%
     select(
       ID = externalDataReference, # ID
       cohort_name, # Sample
-      mhd.anorexia_nervosa,
-      mhd.atypical_anorexia_nervosa,
-       mhd.bulimia_nervosa,
-       mhd.bingeeating_disorder
+      mhd.COPING_anorexia_nervosa = mhd.anorexia_nervosa,
+       mhd.COPING_atypical_anorexia_nervosa = mhd.atypical_anorexia_nervosa,
+       mhd.COPING_bulimia_nervosa = mhd.bulimia_nervosa,
+       mhd.COPING_bingeeating_disorder = mhd.bingeeating_disorder
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1442,113 +1534,89 @@ edgi.mhd.raw.id <- edgi.mhd.raw %>%
   dim(edgi.mhd.raw.id)[1]-dim(edgi.mhd.raw.id)[1]
 ```
 
-
-##Merge MHD data - GLAD + NBR
+##Merge all mhd data
 ```{r}
-##NMHD data
-dat.mhd <- rbind(nbr.mhd.raw.id,
-                   glad.coping.mhd.raw.id
-                )
+
+
+dat.mhd <- rbind(nbr.mhd.raw.id,  #17453 people
+                   glad.coping.mhd.raw.id, #12860 people
+                 edgi.mhd.raw.id, #3,251 people
+                 ramp.mhd.raw.id #10,900 people
+)
+
 
 ##colnames 
 colnames(dat.mhd)
 
-##number of people
+##number of people #Total =  44464
 nrow(dat.mhd)
-```
-##Merge MHD data - GLAD + NBR with EDGI
-```{r}
-##NMHD data
-dat.mhd <- rbind(dat.mhd,
-                   edgi.mhd.raw.id
-                )
 
-##colnames 
-colnames(dat.mhd)
-
-##number of people
-nrow(dat.mhd)
-```
-
-##Merge MHD data - GLAD + NBR + EDGI with RAMP
-```{r}
-##MHD data with RAMP
-all_mhd <- rbind(ramp.mhd.raw.id,
-               dat.mhd
-               )
-##colnames 
-colnames(all_mhd)
-
-##number of people
-nrow(all_mhd)
 ```
 
 ##Merge MHD data with ED data - ALL datasets
 ```{r}
-dat.ed <- left_join(all_mhd,
+dat.ed.mhd <- left_join(dat.mhd,
                     dat.ed,
                         by = c("ID",
                                "cohort_name")
                 )
 
 ##colnames 
-colnames(dat.ed)
+colnames(dat.ed.mhd)
 
-##number of people
-nrow(dat.ed)
-
-```
-
-##Self reported AN
-```{r}
-#Freq
-dat.ed %>%
-  freq(mhd.anorexia_nervosa) #2760
+##number of people 
+nrow(dat.ed.mhd)
 
 ```
-## New column: self-reported AND/OR algorithm-derived ANR/ANBP (COPING)
+
+## New column: self-reported AND/OR algorithm-derived ANR/ANBP (COPING) --> not working?
 ```{r}
 
-dat.ed <- dat.ed %>%
+
+dat.ed.mhd <- dat.ed.mhd %>%
   mutate(
-    anorexia_group_numeric =
-           case_when(mhd.anorexia_nervosa_numeric == 1 |
-                       ed.DSM5_AN_restricting_binary_numeric == 1 ~ 1,
-                     mhd.anorexia_nervosa_numeric == 0 &
-                       ed.DSM5_AN_restricting_binary_numeric == 0 ~ 0,
-                     mhd.anorexia_nervosa_numeric == 0 &
-                       is.na(ed.DSM5_AN_restricting_binary_numeric) ~ 0,
-                     is.na(mhd.anorexia_nervosa_numeric)  &
-                       ed.DSM5_AN_restricting_binary_numeric == 0 ~ 0,
-                     is.na(mhd.anorexia_nervosa_numeric) &
-                       is.na(ed.DSM5_AN_restricting_binary_numeric) ~ NA_real_
-           )
-  )
-
+    COPING_anorexia_group_numeric =
+           case_when(mhd.COPING_anorexia_nervosa_numeric == 1 |
+                        ed.DSM5_COPING_AN_restricting_binary_numeric == 1 |
+                       ed.DSM5_COPING_AN_binge_purge_binary_numeric == 1 |
+                       ed.DSM5_COPING_AN_binary_numeric == 1 ~ 1, #Self-reported or algorithm-derived 
+                     
+                     
+                     mhd.COPING_anorexia_nervosa_numeric == 0 |
+                       ed.DSM5_COPING_AN_restricting_binary_numeric == 0 |
+                       ed.DSM5_COPING_AN_binge_purge_binary_numeric == 0 |
+                       ed.DSM5_COPING_AN_binary_numeric == 0  ~ 0, #This will capture anyone with at least one 0 (rest will be NA)
+                     
+                     is.na(mhd.COPING_anorexia_nervosa_numeric) & 
+                     is.na(ed.DSM5_COPING_AN_restricting_binary_numeric) &
+                      is.na(ed.DSM5_COPING_AN_binge_purge_binary_numeric) &
+                       is.na(ed.DSM5_COPING_AN_binary_numeric) ~ NA_real_  )) #This will capture anyone with ALL missing data
+                   
+                    
 #Check freq                    
-dat.ed %>%
-  freq(anorexia_group_numeric)
+dat.ed.mhd %>%
+  freq(COPING_anorexia_group_numeric)
            
 #Add factor variable 
-dat.ed <- dat.ed %>%
+dat.ed.mhd <- dat.ed.mhd %>%
     mutate(
-      anorexia_group =
-        recode_factor(anorexia_group_numeric,
+      COPING_anorexia_group =
+        recode_factor(COPING_anorexia_group_numeric,
                       "0" = "No anorexia nervosa",
                       "1" = "Self-reported and/or algorithm derived anorexia nervosa",
                       missing = NA_character_
         )
     )
 
-#Check freq #2760 with AN
-  dat.ed %>%
-    freq(anorexia_group,
+#Check freq #3553 with AN
+  dat.ed.mhd %>%
+    freq(COPING_anorexia_group,
          cumul = F)
   
   
 #Check which cohort/s cases are from
-  dat.ed %>%
-    filter(anorexia_group_numeric == 1) %>%
+  dat.ed.mhd %>%
+    filter(COPING_anorexia_group_numeric == 1) %>%
     group_by(cohort_name) %>%
     count()
   
@@ -1556,46 +1624,49 @@ dat.ed <- dat.ed %>%
 ## New column: self-reported AND/OR algorithm-derived BN (COPING)
 ```{r}
 
-
-dat.ed <- dat.ed %>%
+dat.ed.mhd <- dat.ed.mhd %>%
   mutate(
-    bulimia_group_numeric =
-           case_when(mhd.bulimia_nervosa_numeric == 1 |
-                       ed.DSM5_BN_binary_numeric == 1 ~ 1,
-                     mhd.bulimia_nervosa_numeric == 0 &
-                       ed.DSM5_BN_binary_numeric == 0 ~ 0,
-                     mhd.bulimia_nervosa_numeric == 0 &
-                       is.na(ed.DSM5_BN_binary_numeric) ~ 0,
-                     is.na(mhd.bulimia_nervosa_numeric)  &
-                       ed.DSM5_BN_binary_numeric == 0 ~ 0,
-                     is.na(mhd.bulimia_nervosa_numeric) &
-                       is.na(ed.DSM5_BN_binary_numeric) ~ NA_real_
+    COPING_bulimia_group_numeric =
+           case_when(mhd.COPING_bulimia_nervosa_numeric == 1 |
+                       ed.DSM5_COPING_BN_binary_numeric == 1 ~ 1, #Self-reported or algorithm-derived 
+                     
+                     mhd.COPING_bulimia_nervosa_numeric == 0 &
+                       ed.DSM5_COPING_BN_binary_numeric == 0 ~ 0, #Not self-reported and not algorithm-derived
+                     
+                     mhd.COPING_bulimia_nervosa_numeric == 0 &
+                       is.na(ed.DSM5_COPING_BN_binary_numeric) ~ 0, #Not self-reported and missing for algorithm-derived 
+                     
+                     is.na(mhd.COPING_bulimia_nervosa_numeric) &
+                       ed.DSM5_COPING_BN_binary_numeric == 0 ~ 0, #Missing self-reported and not algorithm-derived 
+                     
+                     is.na(mhd.COPING_bulimia_nervosa_numeric) &
+                       is.na(ed.DSM5_COPING_BN_binary_numeric) ~ NA_real_ #Missing for both
            )
   )
 
 #Check freq                    
-dat.ed %>%
-  freq(bulimia_group_numeric)
+dat.ed.mhd %>%
+  freq( COPING_bulimia_group_numeric)
            
 #Add factor variable 
-dat.ed <- dat.ed %>%
+dat.ed.mhd <- dat.ed.mhd %>%
     mutate(
-      bulimia_group =
-        recode_factor(bulimia_group_numeric,
+       COPING_bulimia_group =
+        recode_factor( COPING_bulimia_group_numeric,
                       "0" = "No bulimia nervosa",
                       "1" = "Self-reported and/or algorithm derived bulimia",
                       missing = NA_character_
         )
     )
 
-#Check freq #1550 with BN
-  dat.ed %>%
-    freq(bulimia_group,
+#Check freq #2584 with BN
+  dat.ed.mhd %>%
+    freq(COPING_bulimia_group,
          cumul = F)
   
 #Check which cohort/s cases are from
-  dat.ed %>%
-    filter(bulimia_group_numeric == 1) %>%
+  dat.ed.mhd %>%
+    filter(COPING_bulimia_group_numeric == 1) %>%
     group_by(cohort_name) %>%
     count()
   
@@ -1603,46 +1674,98 @@ dat.ed <- dat.ed %>%
 
 ## New column: self-reported AND/OR algorithm-derived BED (COPING)
 ```{r}
-dat.ed <- dat.ed %>%
+dat.ed.mhd <- dat.ed.mhd %>%
   mutate(
-    bed_group_numeric =
-           case_when(mhd.bingeeating_disorder_numeric == 1 |
-                       ed.DSM5_BED_binary_numeric == 1 ~ 1,
-                     mhd.bingeeating_disorder_numeric == 0 &
-                       ed.DSM5_BED_binary_numeric == 0 ~ 0,
-                     mhd.bingeeating_disorder_numeric == 0 &
-                       is.na(ed.DSM5_BED_binary_numeric) ~ 0,
-                     is.na(mhd.bingeeating_disorder_numeric)  &
-                       ed.DSM5_BED_binary_numeric == 0 ~ 0,
-                     is.na(mhd.bingeeating_disorder_numeric) &
-                       is.na(ed.DSM5_BED_binary_numeric) ~ NA_real_
+     COPING_bed_group_numeric =
+           case_when(mhd.COPING_bingeeating_disorder_numeric == 1 |
+                       ed.DSM5_COPING_BED_binary_numeric == 1 ~ 1, #Self-reported or algorithm-derived 
+                     
+                     mhd.COPING_bingeeating_disorder_numeric == 0 & #Not self-reported and not algorithm-derived
+                       ed.DSM5_COPING_BED_binary_numeric == 0 ~ 0,
+                     
+                     mhd.COPING_bingeeating_disorder_numeric == 0 & #Not self-reported and missing for algorithm-derived 
+                       is.na(ed.DSM5_COPING_BED_binary_numeric) ~ 0,
+                     
+                     is.na(mhd.COPING_bingeeating_disorder_numeric) & #Missing self-reported and not algorithm-derived
+                       ed.DSM5_COPING_BED_binary_numeric == 0 ~ 0,
+                     
+                     is.na(mhd.COPING_bingeeating_disorder_numeric) & #Missing for both
+                       is.na(ed.DSM5_COPING_BED_binary_numeric) ~ NA_real_
            )
   )
 
 #Check freq                    
-dat.ed %>%
-  freq(bed_group_numeric)
+dat.ed.mhd %>%
+  freq(COPING_bed_group_numeric)
            
 #Add factor variable 
-dat.ed <- dat.ed %>%
+dat.ed.mhd <- dat.ed.mhd %>%
     mutate(
-      bed_group =
-        recode_factor(bed_group_numeric,
+       COPING_bed_group =
+        recode_factor(COPING_bed_group_numeric,
                       "0" = "No binge-eating disorder",
                       "1" = "Self-reported and/or algorithm derived BED",
                       missing = NA_character_
         )
     )
 
-#Check freq #1550 with BN
-  dat.ed %>%
-    freq(bed_group,
+#Check freq #1902 with BED
+  dat.ed.mhd %>%
+    freq(COPING_bed_group,
          cumul = F)
   
 #Check which cohort/s cases are from
-  dat.ed %>%
-    filter(bed_group_numeric == 1) %>%
+  dat.ed.mhd %>%
+    filter(COPING_bed_group_numeric == 1) %>%
     group_by(cohort_name) %>%
     count()
   
 ```
+
+## Select variables to keep
+All self-report and algorithm-derived variables and final grouping variables (both numeric and factor). Plus ID and cohort name
+```{r}
+final_coping_data_ed <- dat.ed.mhd %>%
+  select(ID,
+         cohort_name,
+         COPING_bed_group_numeric,
+         COPING_bed_group,
+         mhd.COPING_bingeeating_disorder,
+         mhd.COPING_bingeeating_disorder_numeric,
+         ed.DSM5_COPING_BED_binary,
+         ed.DSM5_COPING_BED_binary_numeric,
+         COPING_bulimia_group_numeric,
+         COPING_bulimia_group,
+         mhd.COPING_bulimia_nervosa_numeric,
+         ed.DSM5_COPING_BN_binary_numeric,
+         mhd.COPING_bulimia_nervosa,
+         ed.DSM5_COPING_BN_binary,
+         COPING_anorexia_group_numeric,
+         COPING_anorexia_group,
+         mhd.COPING_anorexia_nervosa_numeric,
+         mhd.COPING_anorexia_nervosa,
+         ed.DSM5_COPING_AN_restricting_binary_numeric,
+         ed.DSM5_COPING_AN_binge_purge_binary_numeric,
+         ed.DSM5_COPING_AN_binary_numeric) 
+    
+```
+
+##Save dataset
+```{r}
+saveRDS(object = final_coping_data_ed,
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/COPING_ED_data_cleaned.", date, ".rds"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
