@@ -50,9 +50,6 @@ nrow(dat.edeq)
 
 
 
-
-
-
 ##Exclude participants who are missing for EVERY edeq screener variable at every wave
 ```{r}
 dat.edeq.screener <- dat.edeq %>%
@@ -249,6 +246,12 @@ dat.edeq.screener <- dat.edeq.screener %>%
          highest_education_prepan_numeric,
          highest_education_numeric,
          employment_prior_covid,
+    anorexia_group_numeric, 
+    COPING_anorexia_group_numeric,
+    bulimia_group_numeric,
+    COPING_bulimia_group_numeric,
+  BED_group_numeric,
+  COPING_bed_group_numeric,
          ethnicity,  
          key_worker, 
          employment_change, 
@@ -4481,6 +4484,7 @@ scale_x_discrete(guide = guide_axis(n.dodge=3))
 
 ```
 
+
 ##Filter by cohort - COPING
 ```{r}
 
@@ -4592,6 +4596,700 @@ ggplot(dat_plot,
   scale_y_continuous(labels = scales::percent) +
   labs(title = str_wrap("COPING only: Over the past month, have you weighed much less than other people thought you ought to weigh?", 60),
        x = "Low weight",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by PREPANDEMIC AN GROUPING VARIABLE
+```{r}
+
+dat.edeq.AN <- dat.edeq.screener %>%
+  filter(anorexia_group_numeric == 1 | 
+           COPING_anorexia_group_numeric ==1)
+
+```
+
+##PLOTS - Over the past month, have you weighed much less than other people thought you ought to weigh ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.AN[!is.na(dat.edeq.AN$edeq.ed_scid5.weigh_weighed_past_month),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.no.nas <-  droplevels(dat.no.nas)
+
+```
+
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.weigh_weighed_past_month) / sum(table(edeq.ed_scid5.weigh_weighed_past_month))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.weigh_weighed_past_month = rep(levels(dat.no.nas[["edeq.ed_scid5.weigh_weighed_past_month"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.weigh_weighed_past_month = fct_relevel(edeq.ed_scid5.weigh_weighed_past_month,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you weighed much less than other people thought you ought to weigh
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.weigh_weighed_past_month,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("Pre-pandemic AN only: Over the past month, have you weighed much less than other people thought you ought to weigh?", 60),
+       x = "Low weight",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by PREPANDEMIC BN GROUPING VARIABLE
+
+```{r}
+
+dat.edeq.BN <- dat.edeq.screener %>%
+  filter(bulimia_group_numeric == 1 | 
+           COPING_bulimia_group_numeric ==1)
+
+```
+
+##PLOTS - Over the past month, have you weighed much less than other people thought you ought to weigh ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.BN[!is.na(dat.edeq.BN$edeq.ed_scid5.weigh_weighed_past_month),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.no.nas <-  droplevels(dat.no.nas)
+
+```
+
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.weigh_weighed_past_month) / sum(table(edeq.ed_scid5.weigh_weighed_past_month))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.weigh_weighed_past_month = rep(levels(dat.no.nas[["edeq.ed_scid5.weigh_weighed_past_month"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.weigh_weighed_past_month = fct_relevel(edeq.ed_scid5.weigh_weighed_past_month,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you weighed much less than other people thought you ought to weigh
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.weigh_weighed_past_month,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("Pre-pandemic BN only: Over the past month, have you weighed much less than other people thought you ought to weigh?", 60),
+       x = "Low weight",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+##Filter by PREPANDEMIC BED GROUPING VARIABLE
+
+```{r}
+
+dat.edeq.BED <- dat.edeq.screener %>%
+  filter(COPING_bed_group_numeric == 1 | 
+           BED_group_numeric ==1)
+
+```
+
+##PLOTS - Over the past month, have you weighed much less than other people thought you ought to weigh ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.BED[!is.na(dat.edeq.BED$edeq.ed_scid5.weigh_weighed_past_month),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.no.nas <-  droplevels(dat.no.nas)
+
+```
+
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.weigh_weighed_past_month) / sum(table(edeq.ed_scid5.weigh_weighed_past_month))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.weigh_weighed_past_month = rep(levels(dat.no.nas[["edeq.ed_scid5.weigh_weighed_past_month"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.weigh_weighed_past_month = fct_relevel(edeq.ed_scid5.weigh_weighed_past_month,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you weighed much less than other people thought you ought to weigh
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.weigh_weighed_past_month,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("Pre-pandemic BED only: Over the past month, have you weighed much less than other people thought you ought to weigh?", 60),
+       x = "Low weight",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by prepandemic AN 
+```{r}
+
+dat.edeq.AN <- dat.edeq.screener %>%
+  filter(anorexia_group_numeric == 1 |
+           COPING_anorexia_group_numeric == 1)
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.AN[!is.na(dat.edeq.AN$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.no.nas <-  droplevels(dat.no.nas)
+
+```
+
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("Pre-pandemic AN only: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by prepandemic BN 
+```{r}
+
+dat.edeq.BN <- dat.edeq.screener %>%
+  filter(bulimia_group_numeric == 1 |
+           COPING_bulimia_group_numeric == 1)
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.BN[!is.na(dat.edeq.BN$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.no.nas <-  droplevels(dat.no.nas)
+
+```
+
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("Pre-pandemic BN only: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
+       y = "Percentage of participants",
+       fill = "Time of survey") +
+scale_x_discrete(guide = guide_axis(n.dodge=3))
+
+```
+
+##Filter by prepandemic BED
+```{r}
+
+dat.edeq.BED <- dat.edeq.screener %>%
+  filter(BED_group_numeric == 1 |
+           COPING_bed_group_numeric == 1)
+
+```
+
+##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+
+#1. Get rid of NAs and change edeq to factor
+```{r}
+#get rid of nas
+dat.no.nas <- dat.edeq.BED[!is.na(dat.edeq.BED$edeq.ed_scid5.regular_episodes_eating_binges),]
+
+```
+
+#1. Change wave to factor and re-order
+```{r}
+
+# change order of wave factor 1
+dat.no.nas <- dat.no.nas %>%
+ mutate(wave_factor = fct_relevel(wave,
+                                  "1",
+                                  "2",
+                                  "3",
+                           "4",
+                           "5",
+                           "6",
+                           "7",
+                           "8"))
+
+
+#Check that this worked
+
+summary(dat.no.nas$wave_factor)
+```
+
+Drop empty factor levels across all columns 
+```{r}
+
+dat.no.nas <-  droplevels(dat.no.nas)
+
+```
+
+
+#4. Rename waves to dates
+```{r}
+
+##Rename waves
+
+levels(dat.no.nas$wave_factor)[1] <- "May"
+
+levels(dat.no.nas$wave_factor)[2] <- "June" 
+
+levels(dat.no.nas$wave_factor)[3] <- "July "
+
+levels(dat.no.nas$wave_factor)[4] <- "August"
+
+levels(dat.no.nas$wave_factor)[5] <- "September"
+
+levels(dat.no.nas$wave_factor)[6] <- "October"
+
+levels(dat.no.nas$wave_factor)[7] <- "November"
+
+levels(dat.no.nas$wave_factor)[8] <- "December"
+
+
+```
+
+
+#5. Format data to plot
+```{r}
+#get data in format to plot
+dat_plot <- dat.no.nas %>%
+  group_by(wave_factor) %>%
+  dplyr::summarise(wcount = table(edeq.ed_scid5.regular_episodes_eating_binges) / sum(table(edeq.ed_scid5.regular_episodes_eating_binges))) %>%
+  ungroup() %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["edeq.ed_scid5.regular_episodes_eating_binges"]]),
+                    length(levels(dat.no.nas[["wave_factor"]]))))
+
+
+```
+
+6. Change edeq variable to ordered factor
+```{r}
+dat_plot <- dat_plot %>%
+  mutate(edeq.ed_scid5.regular_episodes_eating_binges = fct_relevel(edeq.ed_scid5.regular_episodes_eating_binges,
+                           "No",
+                           "Yes"))
+
+
+```
+
+
+7. PLOT ! Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time
+```{r}
+
+ggplot(dat_plot,
+       aes(x = edeq.ed_scid5.regular_episodes_eating_binges,
+           y = wcount,
+           fill = wave_factor)) +
+  geom_bar(aes(group = wave_factor),
+           stat = "identity",
+           position = "dodge",
+           colour = "black") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = str_wrap("Pre-pandemic BED only: Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time?", 60),
+       x = "Binge eating",
        y = "Percentage of participants",
        fill = "Time of survey") +
 scale_x_discrete(guide = guide_axis(n.dodge=3))

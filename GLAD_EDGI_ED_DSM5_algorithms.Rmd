@@ -354,6 +354,7 @@ colnames(BE_symptom_data_EDGI.id)
 dim(BE_symptom_data_EDGI.id)[1]-dim(BE_symptom_data_EDGI.id)[1]
 
 ```
+
 ## Read in data - ICB ED100K GLAD
 ```{r Read in data}
 
@@ -794,7 +795,7 @@ dim(AN_EDGI_ED)[1]-dim(AN_EDGI_ED.id)[1]
 
 ```
 
-## Read in data - AN GLAD
+## Read in data - DEM GLAD
 ```{r Read in data}
 
 GLAD_signup_dem <- readRDS(file = "../data_raw/glad/dem_glad.rds") #Add your data file here
@@ -882,7 +883,8 @@ glad.mhd.raw.id <- glad.mhd.raw %>%
     #  cohort_name, # Sample
       mhd.anorexia_signup = mhd.an,
       mhd.bulimia_signup = mhd.bn,
-      mhd.bed_signup = mhd.bed
+      mhd.bed_signup = mhd.bed,
+    mhd.atypical_anorexia_signup = mhd.atypical_an
 
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
@@ -984,7 +986,8 @@ edgi.mhd.raw.id <- edgi.mhd.raw %>%
      # cohort_name, # Sample
       mhd.anorexia_signup = mhd.anorexia_nervosa,
       mhd.bulimia_signup = mhd.bulimia_nervosa,
-      mhd.bed_signup = mhd.bingeeating_disorder
+      mhd.bed_signup = mhd.bingeeating_disorder,
+     mhd.atypical_anoreixa_signup=mhd.atypical_anorexia_nervosa
 
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
@@ -1729,7 +1732,7 @@ summary(dat.ed.GLAD$current_height_m_unc)
 
 ## Work out current BMI as reported in the signup (GLAD)
 
-The GLAD signup does not ask for current BMI
+NB: The GLAD signup does not ask for current BMI (but does ask about height + weight - so need to derive it)
 ```{r }
 
 # Calculated from current height and lowest weight reported in the sign up **This should be based on min weight and height - have quite low values <10 - need to check
@@ -3393,14 +3396,87 @@ dat.ed.EDGI <- dat.ed.EDGI %>%
 
 ```
 
-##PGC check - Lowest BMI in self-reported AN
+##Gerome check - age of onset - eDGI
+```{r}
+#BED
+BED_EDGI <- dat.ed.EDGI %>%
+  filter(BED_group_numeric == 1) 
+
+nrow(BED_EDGI)
+  
+
+BED_EDGI %>%
+  filter(be.began_roughly_regular_episodes.txt_numeric < 16) %>%
+  count()
+
+#BN
+BN_EDGI <- dat.ed.EDGI %>%
+  filter(bulimia_group_numeric == 1) 
+
+nrow(BN_EDGI)
+  
+
+BN_EDGI %>%
+  filter(be.began_roughly_regular_episodes.txt_numeric < 16) %>%
+  count()
+
+#AN
+AN_EDGI <- dat.ed.EDGI %>%
+  filter(anorexia_group_numeric == 1) 
+
+nrow(AN_EDGI)
+  
+
+AN_EDGI %>%
+  filter(an.how_old_were_you_then.txt_numeric < 16) %>%
+  count()
+
+```
+##Gerome check - age of onset - GLAD
+```{r}
+#BED
+BED_GLAD <- dat.ed.GLAD %>%
+  filter(BED_group_numeric == 1) 
+
+nrow(BED_GLAD)
+  
+
+BED_GLAD %>%
+  filter(be.began_roughly_regular_episodes.txt_numeric < 16) %>%
+  count()
+
+#BN
+BN_GLAD <- dat.ed.GLAD %>%
+  filter(bulimia_group_numeric == 1) 
+
+nrow(BN_GLAD)
+  
+
+BN_GLAD %>%
+  filter(be.began_roughly_regular_episodes.txt_numeric < 16) %>%
+  count()
+
+#AN
+AN_GLAD<- dat.ed.GLAD %>%
+  filter(anorexia_group_numeric == 1) 
+
+nrow(AN_GLAD)
+  
+
+AN_GLAD %>%
+  filter(an.how_old_were_you_numeric < 16) %>%
+  count()
+
+```
+
+##PGC check - Lowest BMI in self-reported AN and AAN
 
 In GLAD, there are three reports of BMI.
 1) Lowest BMI as reported in the signup (i.e., glad_ed_demographics) (low_dem_bmi)
 2) Current BMI as reported in the signup (current_bmi)
 3) Lowest BMI as reported in the optional ED100K (AN_low_bmi)
 
-#1. mhd self report = Have you ever been diagnosed with one or more of the following mental health problems or neurodevelopmental disorders by a professional, even if you don't have it currently? By professional we mean: any doctor, nurse or person with specialist training . Please include disorders even if you did not need treatment for them or if you did not agree with the diagnosis. Select ALL that apply:
+#1. ANOREXIA mhd self report = Have you ever been diagnosed with one or more of the following mental health problems or neurodevelopmental disorders by a professional, even if you don't have it currently? By professional we mean: any doctor, nurse or person with specialist training . Please include disorders even if you did not need treatment for them or if you did not agree with the diagnosis. Select ALL that apply:
 
 ```{r}
 
@@ -3452,9 +3528,62 @@ mhd.self.report.GLAD %>%
 
 (21/189)*100
 
+#Percentage with BMI over 20
+mhd.self.report.GLAD %>%
+  filter(LOWEST_BMI > 20) %>%
+  nrow()
+
+(11/189)*100
 
 ```
+#2. ATYPICAL ANOREXIA mhd self report = Have you ever been diagnosed with one or more of the following mental health problems or neurodevelopmental disorders by a professional, even if you don't have it currently? By professional we mean: any doctor, nurse or person with specialist training . Please include disorders even if you did not need treatment for them or if you did not agree with the diagnosis. Select ALL that apply:
 
+```{r}
+
+##Identify group
+
+#Filter for those who self-report AAN
+mhd.self.report.AAN.GLAD <- dat.ed.GLAD %>%
+  filter(mhd.atypical_anorexia_signup_numeric == 1)
+
+nrow(mhd.self.report.AAN.GLAD)
+
+#BMI variable - only available in the signup (not asked in AAN module)
+mhd.self.report.AAN.GLAD$LOWEST_BMI <- NA_real_
+  
+mhd.self.report.AAN.GLAD$LOWEST_BMI <- 
+  if_else(
+    condition = is.na(mhd.self.report.AAN.GLAD$LOWEST_BMI),
+    true = mhd.self.report.AAN.GLAD$low_dem_bmi,
+    false = NA_real_,
+    missing = NA_real_
+    )
+
+#Descriptives
+mhd.self.report.AAN.GLAD %>%
+  freq(LOWEST_BMI)
+
+mhd.self.report.AAN.GLAD %>%
+  descr(LOWEST_BMI)
+
+#Plot 
+qplot(mhd.self.report.AAN.GLAD$LOWEST_BMI)
+
+#Percentage with BMI over 18.5
+mhd.self.report.AAN.GLAD %>%
+  filter(LOWEST_BMI > 18.5) %>%
+  nrow()
+
+(24/68)*100
+
+#Percentage with BMI over 20
+mhd.self.report.AAN.GLAD %>%
+  filter(LOWEST_BMI > 20) %>%
+  nrow()
+
+(10/68)*100
+
+```
 #2. AN self report = Which of the following eating disorders did you/do you currently have? If you have not received a diagnosis and are not sure which of the following may apply to you please select Don't know: [this is asked to people who indicate "yes" to "Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?"]
 
 ```{r}
@@ -3506,7 +3635,74 @@ an.self.report.GLAD %>%
 
 (71/310)*100
 
+#Percentage with BMI over 20
+an.self.report.GLAD %>%
+  filter(LOWEST_BMI > 20) %>%
+  nrow()
+
+(43/310)*100
 ```
+
+#2. Atypical AN self report = Which of the following eating disorders did you/do you currently have? If you have not received a diagnosis and are not sure which of the following may apply to you please select Don't know: [this is asked to people who indicate "yes" to "Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?"]
+
+```{r}
+
+##Identify group
+
+#Filter for those who self-report AN diagnosis
+aan.self.report.GLAD <- dat.ed.GLAD %>%
+  filter(an.1.atypical_anorexia_nervosa_numeric == 1)
+
+nrow(aan.self.report.GLAD)
+
+#BMI variable - if not reported in signup, use value from ED100K (if available)
+aan.self.report.GLAD$LOWEST_BMI  <- NA
+
+aan.self.report.GLAD$LOWEST_BMI <- 
+  if_else(
+    condition = is.na(aan.self.report.GLAD$LOWEST_BMI),
+    true = aan.self.report.GLAD$low_dem_bmi,
+    false = NA_real_,
+    missing = NA_real_
+    )
+
+#Descriptives
+aan.self.report.GLAD %>%
+  freq(LOWEST_BMI)
+
+aan.self.report.GLAD %>%
+  descr(LOWEST_BMI)
+
+
+#Plot 
+qplot(aan.self.report.GLAD$LOWEST_BMI)
+
+#Percentage with BMI over 18.5
+aan.self.report.GLAD %>%
+  filter(LOWEST_BMI > 18.5) %>%
+  nrow()
+
+(57/112)*100
+
+#Percentage with BMI over 20
+aan.self.report.GLAD %>%
+  filter(LOWEST_BMI > 20) %>%
+  nrow()
+
+(29/112)*100
+```
+
+
+
+
+
+
+
+
+
+
+
+
 ## Select variables to keep
 All self-report and algorithm-derived variables and final grouping variables (both numeric and factor). Plus ID and cohort name
 

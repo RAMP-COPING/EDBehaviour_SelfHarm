@@ -1,7 +1,7 @@
 ---
-title: "COPING_cleaning_dem"
-author: "Helena Davies (based on PANCHANGE script by KP, KT, KY, TH)"
-date: "15/12/2020"
+title: "2Preprocessing_EDBeh_SelfHarm"
+author: "Helena Davies"
+date: "21/04/2021"
 output: html_document
 ---
 
@@ -1423,74 +1423,8 @@ dim(ramp.dem.employ.raw)[1]-dim(ramp.dem.employ.raw.id)[1]
 }
 
 ```
-# EDEQ
-## COPING follow up b [nbr, glad + edgi]
-### Read in data
-```{r coping edeq follow up b cols}
-if(COPING == TRUE){
-edeq.coping.followupb.raw <- readRDS(file = "../data_raw/coping/edeq_coping_followupb.rds")
-dim(edeq.coping.followupb.raw)
-colnames(edeq.coping.followupb.raw)
-}
-```
 
-### Select variables
-```{r edeq coping select variables}
-if(COPING == TRUE){
-exclude_cols_dem <- c("ID",
-                  "cohort_name",
-                  "startDate_waves",
-                  "endDate")
-
-edeq.coping.followupb.raw.id <- edeq.coping.followupb.raw %>% #new dataset with ID
-  drop_na(externalDataReference) %>% # Drop NAs
-  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
-  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
-  select(
-         ID = externalDataReference, # ID
-         cohort_name, # Sample
-         startDate_waves = startDate,
-         #endDate,
-         edeq.deliberately_limit_amount_influence = edeq.deliberately_limit_amount_influence,
-         edeq.calories_made_body_shape = edeq.calories_made_body_shape,
-         edeq.weight_influenced_person = edeq.weight_influenced_person,
-         edeq.dissatisfied_shape_weight = edeq.dissatisfied_shape_weight,
-         edeq.actively_been_monitoring_your_shape_or_weight = edeq.actively_been_monitoring_your_shape_or_weight_,
-         edeq.regard_lost_control_eaten = edeq.regard_lost_control_eaten,
-         edeq.sick_means_made_shape = edeq.sick_means_made_shape,
-         edeq.diuretics_laxatives_means_shape = edeq.diuretics_laxatives_means_shape,
-         edeq.compulsive_driven_burn_calories = edeq.compulsive_driven_burn_calories,
-         edeq.eating_behaviours_distressed_concerns = edeq.eating_behaviours_distressed_concerns,
-         edeq.nibbled_picked_snacks_grazed  = edeq.nibbled_picked_snacks_grazed,
-         edeq.felt_anxious_blue_bored = edeq.felt_anxious_blue_bored,
-         edeq.felt_anxious_blue_bored.1 = edeq.felt_anxious_blue_bored.1,
-         edeq.experiences_pandemic = edeq.experiences_pandemic
-         ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
-  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  #mutate_if(is.numeric, ~na_if(., -99)) %>%
- # mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
- # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
-  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
-# Inspect dimensions
-dim(edeq.coping.followupb.raw.id)
-# Inspect colnames
-colnames(edeq.coping.followupb.raw.id)
-#Differences
-dim(edeq.coping.followupb.raw)[1]-dim(edeq.coping.followupb.raw.id)[1]
-}
-```
-
-### Read in screener data
+### Read in EDEQ screener data
 ```{r coping edeq follow up b cols}
 if(COPING == TRUE){
 edeq.coping.followupb.screener.raw <- readRDS(file = "../data_raw/coping/ed_scid5_coping_followupb.rds")
@@ -1498,6 +1432,7 @@ dim(edeq.coping.followupb.screener.raw)
 colnames(edeq.coping.followupb.screener.raw)
 }
 ```
+
 ### Select variables
 ```{r edeq coping select variables}
 if(COPING == TRUE){
@@ -1542,87 +1477,7 @@ dim(edeq.coping.followupb.screener.raw)[1]-dim(edeq.coping.followupb.screener.ra
 }
 ```
 
-# EDEQ
-## RAMP baseline
-### Read in data
-```{r RAMP edeq baseline cols}
-if(RAMP == TRUE){
-edeq.ramp.baseline.raw <- readRDS(file = "../data_raw/ramp/edeq_ramp.rds")
-dim(edeq.ramp.baseline.raw)
-colnames(edeq.ramp.baseline.raw)
-}
-```
-### Select variables
-```{r ramp edeq baseline select variables}
-if(RAMP == TRUE){
-exclude_cols_dem <- c("ID",
-                  "cohort_name",
-                  "startDate",
-                  "endDate")
-
-edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw %>% #new dataset with ID
-  drop_na(`Login ID`) %>% # Drop NAs
-  distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
-  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
-  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
-  select(
-         ID = `Login ID`, # ID
-         cohort_name, # Sample
-         startDate_baseline = startDate,
-         #endDate,
-         edeq.deliberately_limit_amount_influence_.Wavebaseline = edeq.deliberately_limit_amount_influence,
-         edeq.calories_made_body_shape_.Wavebaseline = edeq.calories_made_body_shape,
-         edeq.weight_influenced_person_.Wavebaseline = edeq.weight_influenced_person,
-         edeq.dissatisfied_shape_weight_.Wavebaseline = edeq.dissatisfied_shape_weight,
-         edeq.nibbled_picked_snacks_grazed_.Wavebaseline = edeq.nibbled_picked_snacks_grazed,
-         edeq.felt_anxious_blue_bored_.Wavebaseline = edeq.felt_anxious_blue_bored,
-         edeq.felt_anxious_blue_bored.1_.Wavebaseline = edeq.felt_anxious_blue_bored.1,
-         edeq.eating_behaviours_concerns_distressed_.Wavebaseline = edeq.eating_behaviours_concerns_distressed,
-         edeq.deliberately_limit_amount_influence.1_.Wavebaseline = edeq.deliberately_limit_amount_influence.1,
-         edeq.calories_made_body_shape.1_.Wavebaseline = edeq.calories_made_body_shape.1,
-         edeq.weight_influenced_person.1_.Wavebaseline = edeq.weight_influenced_person.1,
-         edeq.dissatisfied_shape_weight.1_.Wavebaseline = edeq.dissatisfied_shape_weight.1,
-         edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline = edeq.eating_behaviours_concerns_distressed.1,
-         edeq.feelings_pandemic_felt_.Wavebaseline = edeq.feelings_pandemic_felt,
-         edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline = edeq.actively_been_monitoring_your_shape_or_weight_,
-         edeq.regard_lost_control_eaten_.Wavebaseline = edeq.regard_lost_control_eaten,
-         edeq.sick_means_made_shape_.Wavebaseline = edeq.sick_means_made_shape,
-         edeq.diuretics_laxatives_means_shape_.Wavebaseline = edeq.diuretics_laxatives_means_shape,
-         edeq.compulsive_driven_burn_calories_.Wavebaseline = edeq.compulsive_driven_burn_calories,
-         edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline = edeq.nibbled_picked_snacks_grazed.1,
-         edeq.felt_anxious_blue_bored.2_.Wavebaseline = edeq.felt_anxious_blue_bored.2,
-         edeq.felt_anxious_blue_bored.3_.Wavebaseline = edeq.felt_anxious_blue_bored.3,
-         edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline = edeq.actively_been_monitoring_your_shape_or_weight_.1,
-         edeq.regard_lost_control_eaten.1_.Wavebaseline = edeq.regard_lost_control_eaten.1,
-         edeq.sick_means_made_shape.1_.Wavebaseline = edeq.sick_means_made_shape.1,
-         edeq.diuretics_laxatives_means_shape.1_.Wavebaseline = edeq.diuretics_laxatives_means_shape.1,
-         edeq.compulsive_driven_burn_calories.1_.Wavebaseline = edeq.compulsive_driven_burn_calories.1
-         ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
-  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  #mutate_if(is.numeric, ~na_if(., -99)) %>%
-  #mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
- # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
-  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
-# Inspect dimensions
-dim(edeq.ramp.baseline.raw.id)
-# Inspect colnames
-colnames(edeq.ramp.baseline.raw.id)
-#Differences
-dim(edeq.ramp.baseline.raw)[1]-dim(edeq.ramp.baseline.raw.id)[1]
-}
-
-```
-
-### Read in screener data
+### Read in EDEQ screener data
 ```{r RAMP edeq follow up b cols}
 if(RAMP == TRUE){
 edeq.ramp.followupb.screener.raw <- readRDS(file = "../data_raw/ramp/ed_scid5_ramp_followupb.rds")
@@ -1630,6 +1485,7 @@ dim(edeq.ramp.followupb.screener.raw)
 colnames(edeq.ramp.followupb.screener.raw)
 }
 ```
+
 ### Select variables
 ```{r RAMP coping select variables}
 if(RAMP == TRUE){
@@ -1674,123 +1530,6 @@ dim(edeq.ramp.followupb.screener.raw)[1]-dim(edeq.ramp.followupb.screener.raw.id
 }
 ```
 
-
-##Check earliest date of baseline being filled in by RAMP participants
-```{r}
-if(RAMP == TRUE){
-
-x <- as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
-
-min(x)
-}
-```
-
-##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
-1. Change date format
-```{r}
-if(RAMP == TRUE){
-
-as.Date(edeq.ramp.baseline.raw.id$startDate_baseline)
-
-edeq.ramp.baseline.CUTOFF.raw.id <- edeq.ramp.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-30"))
-
-#Drop start date baseline column in both 
-
-edeq.ramp.baseline.CUTOFF.raw.id <- edeq.ramp.baseline.CUTOFF.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-edeq.ramp.baseline.raw.id <- edeq.ramp.baseline.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-}
-```
-
-
-# EDEQ
-## RAMP follow up b
-### Read in data
-```{r RAMP edeq follow up b cols}
-if(RAMP == TRUE){
-edeq.ramp.followupb.raw <- readRDS(file = "../data_raw/ramp/edeq_ramp_followupb.rds")
-dim(edeq.ramp.followupb.raw)
-colnames(edeq.ramp.followupb.raw)
-
-}
-```
-### Select variables
-```{r ramp edeq follow up b select variables}
-if(RAMP == TRUE){
-exclude_cols_dem <- c("ID",
-                  "cohort_name",
-                  "startDate_waves",
-                  "endDate")
-
-edeq.ramp.followupb.raw.id <- edeq.ramp.followupb.raw %>% #new dataset with ID
-  drop_na(externalDataReference) %>% # Drop NAs
-  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
-  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
-  select(
-         ID = externalDataReference, # ID
-         cohort_name, # Sample
-         startDate_waves = startDate,
-         #endDate,
-         edeq.deliberately_limit_amount_influence = edeq.deliberately_limit_amount_influence,
-         edeq.calories_made_body_shape = edeq.calories_made_body_shape,
-         edeq.weight_influenced_person = edeq.weight_influenced_person,
-         edeq.dissatisfied_shape_weight = edeq.dissatisfied_shape_weight,
-         edeq.actively_been_monitoring_your_shape_or_weight = edeq.actively_been_monitoring_your_shape_or_weight_,
-         edeq.regard_lost_control_eaten = edeq.regard_lost_control_eaten,
-         edeq.sick_means_made_shape = edeq.sick_means_made_shape,
-         edeq.diuretics_laxatives_means_shape = edeq.diuretics_laxatives_means_shape,
-         edeq.compulsive_driven_burn_calories = edeq.compulsive_driven_burn_calories,
-         edeq.eating_behaviours_distressed_concerns = edeq.eating_behaviours_distressed_concerns,
-         edeq.nibbled_picked_snacks_grazed = edeq.nibbled_picked_snacks_grazed,
-         edeq.felt_anxious_blue_bored = edeq.felt_anxious_blue_bored,
-         edeq.felt_anxious_blue_bored.1 = edeq.felt_anxious_blue_bored.1,
-         #edeq.experiences_pandemic #not in ramp but in coping
-         ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
-  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
- # mutate_if(is.numeric, ~na_if(., -99)) %>%
- # mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
- # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
-# Inspect dimensions
-dim(edeq.ramp.followupb.raw.id)
-# Inspect colnames
-colnames(edeq.ramp.followupb.raw.id)
-#Differences
-dim(edeq.ramp.followupb.raw)[1]-dim(edeq.ramp.followupb.raw.id)[1]
-}
-
-
-```
-
-###EDEQ scoring
-
-The EDE, and its self-report version, the EDE-Q, generate two types of data. First, they provide
-frequency data on key behavioural features of eating disorders in terms of number of episodes of the
-behaviour and in some instances number of days on which the behaviour has occurred. Second, they
-provide subscale scores reflecting the severity of aspects of the psychopathology of eating disorders.
-The subscales are Restraint, Eating Concern, Shape Concern and Weight Concern. To obtain a
-particular subscale score, the ratings for the relevant items (listed below) are added together and the sum
-divided by the total number of items forming the subscale. If ratings are only available on some items, a
-score may nevertheless be obtained by dividing the resulting total by the number of rated items so long
-as more than half the items have been rated. To obtain an overall or ‘global’ score, the four subscales
-scores are summed and the resulting total divided by the number of subscales (i.e. four). Subscale
-scores are reported as means and standard deviations.
 
 # TAF - baseline 
 ## GLAD 
@@ -1856,33 +1595,6 @@ dim(taf.glad.coping.baseline.raw)[1]-dim(taf.glad.coping.baseline.raw.id)[1]
 
 ```
 
-##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
-1. Change date format
-```{r}
-if(GLAD == TRUE){
-
-as.Date(taf.glad.coping.baseline.raw.id$startDate_baseline)
-
-
-#Filter by people who completed baseline survey before 30th april
-taf.glad.coping.baseline.CUTOFF.raw.id <- taf.glad.coping.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-30"))
-
-
-#Drop start date baseline column
-
-taf.glad.coping.baseline.CUTOFF.raw.id <- taf.glad.coping.baseline.CUTOFF.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-}
-```
-
-
-
 # TAF - baseline
 ## EDGI  
 ### Read in data
@@ -1945,36 +1657,6 @@ dim(taf.edgi.coping.baseline.raw)[1]-dim(taf.edgi.coping.baseline.raw.id)[1]
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
-1. Change date format
-```{r}
-if(EDGI == TRUE){
-
-as.Date(taf.edgi.coping.baseline.raw.id$startDate_baseline)
-
-
-#Filter by people who completed baseline survey before 30th april
-
-taf.edgi.coping.baseline.CUTOFF.raw.id <- taf.edgi.coping.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-30"))
-
-
-#Drop start date baseline column
-
-
-taf.edgi.coping.baseline.CUTOFF.raw.id <- taf.edgi.coping.baseline.CUTOFF.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-}
-
-```
-
-
 # TAF - baseline 
 ## NBR 
 ### Read in data
@@ -2036,31 +1718,6 @@ dim(taf.nbr.baseline.raw)[1]-dim(taf.nbr.baseline.raw.id)[1]
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
-1. Change date format
-```{r}
-if(NBR == TRUE){
-
-as.Date(taf.nbr.baseline.raw.id$startDate_baseline)
-
-
-#Filter by people who completed baseline survey before 30th april
-
-taf.nbr.baseline.CUTOFF.raw.id <- taf.nbr.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-30"))
-
-
-#Drop start date baseline column
-taf.nbr.baseline.CUTOFF.raw.id <- taf.nbr.baseline.CUTOFF.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-}
-```
-
 # TAF - baseline 
 ## RAMP
 ### Read in data
@@ -2119,40 +1776,6 @@ dim(taf.ramp.baseline.raw.id)
 colnames(taf.ramp.baseline.raw.id)
 #Differences
 dim(taf.ramp.baseline.raw)[1]-dim(taf.ramp.baseline.raw.id)[1]
-}
-```
-
-##Check earliest date of baseline being filled in by RAMP participants
-```{r}
-if(RAMP == TRUE){
-
-x <- as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
-
-min(x)
-}
-```
-
-##Exclude people who answered baseline questionnaire after 30th April (earliest follow up questionnaire filled out 30th April, however need April)
-1. Change date format
-```{r}
-if(RAMP == TRUE){
-
-as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
-
-
-#Filter by people who completed baseline survey before 30th april
-taf.ramp.baseline.CUTOFF.raw.id <- taf.ramp.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-30"))
-
-
-#Drop start date baseline column
-taf.ramp.baseline.CUTOFF.raw.id <- taf.ramp.baseline.CUTOFF.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
 }
 ```
 
@@ -2399,22 +2022,6 @@ colnames(taf.ramp.followupa.raw.id)
 dim(taf.ramp.followupa.raw)[1]-dim(taf.ramp.followupa.raw.id)[1]
 }
 ```
-##Check earliest date of follow up A TAF (this will be used as cutoff for 'baseline', i.e., baseline entries only count BEFORE this date)
-```{r}
-if(RAMP == TRUE){
-
-x <- as.Date(taf.ramp.followupa.raw.id$startDate_waves)
-
-min(x) #2020-04-21
-
-}
-```
-
-
-
-
-
-
 
 # TAF - follow up B
 ## RAMP
@@ -2528,299 +2135,22 @@ source("./mental_health_diagnosis_ALLdatasets.R")
 
 ```
 
-
-### Controls
-##EDGI 
-These individuals have no self report diagnosis of any kind that we measure.
-```{r mhd control EDGI}
-if(EDGI == TRUE) {
-mhd.raw.id <- mhd.raw.id %>%
-  mutate(
-    control_numeric =
-      if_else(
-    depressive_disorders_numeric == "0" &
-    anxiety_disorders_numeric == "0" &
-    eating_disorders_numeric == "0" &
-    obsessive_compulsive_disorders_numeric == "0" &
-    psychotic_disorders_numeric == "0" &
-    mhd.mania_hypomania_bipolar_or_manicdepression_numeric == "0" &
-    mhd.posttraumatic_stress_disorder_ptsd_numeric == "0" &
-    autism_spectrum_disorder_numeric == "0" &
-    mhd.attention_deficit_hyperactivity_disorder_numeric == "0" &
-    mhd.personality_disorder_numeric == "0" &
-    mhd.dont_know_eating_disorder_numeric  == "0" & #**Need to ask why these are here??
-    mhd.prefer_not_to_answer_eating_disorder_numeric  == "0" &
-    mhd.dont_know_numeric  == "0" &
-    mhd.prefer_not_to_answer_numeric  == "0" &
-    mhd.dont_know.1_numeric == "0" &
-    mhd.prefer_not_to_answer.1_numeric  == "0" &
-    (mhd.none_of_the_above.1_numeric == "1" | is.na(mhd.none_of_the_above.1_numeric)) &
-    (mhd.none_of_the_above.2_numeric == "1" | is.na(mhd.none_of_the_above.2_numeric)) &
-    (mhd.none_of_the_above_eating_disorder_numeric == "1" | is.na(mhd.none_of_the_above_eating_disorder_numeric)), #Check this - this would mean 'controls' may have answered 'None of the above' to all but one, in which the remaining one is NA. Does this really make them a control?
-    true = 1,
-    false = 0,
-    NA_real_)
-  )
-
-mhd.raw.id <- mhd.raw.id %>%
-  mutate(
-    control =
-      recode_factor(control_numeric,
-                    "0" = "No control",
-                    "1" = "Control",
-                    missing = NA_character_
-                    )
-  )
-mhd.raw.id %>%
-  freq(control,
-       cumul = F)
-}
-
-
-```
-
-### Controls
-## NBR controls **NEED to check this for NBR - getting no controls?
-#first need to recode PTSD variable
-```{r}
-if(NBR == TRUE) {
-
-#change ptsd variable to numeric [wrongly coded] 2 == DIAGNOSIS OF PTSD, 1 == NO DIAGNOSIS OF PTSD
-mhd.raw.id <- mhd.raw.id %>%
-    mutate(
-      mhd.posttraumatic_stress_disorder_ptsd_numeric =
-        case_when(
-          mhd.posttraumatic_stress_disorder_ptsd_numeric == "Not PTSD" ~ 0,
-          mhd.posttraumatic_stress_disorder_ptsd_numeric == "PTSD" ~ 1,
-          is.na(mhd.posttraumatic_stress_disorder_ptsd_numeric) ~ NA_real_))
-}
-```
-
-These individuals have no self report diagnosis of any kind that we measure.
-```{r mhd control NBR}
-if(NBR == TRUE) {
-mhd.raw.id <- mhd.raw.id %>%
-  mutate(
-    control_numeric =
-      if_else(
-    depressive_disorders_numeric == "0" &
-    anxiety_disorders_numeric == "0" &
-    eating_disorders_numeric == "0" &
-    obsessive_compulsive_disorders_numeric == "0" &
-    psychotic_disorders_numeric == "0" &
-    mhd.mania_hypomania_bipolar_or_manicdepression_numeric == "0" &
-    mhd.posttraumatic_stress_disorder_ptsd_numeric == "0" &
-    autism_spectrum_disorder_numeric == "0" &
-    mhd.attention_deficit_hyperactivity_disorder_numeric == "0" &
-    mhd.personality_disorder_numeric == "0" &
-    mhd.dont_know_eating_disorder_numeric  == "0" & #**Need to ask why these are here??
-    mhd.prefer_not_to_answer_eating_disorder_numeric  == "0" &
-    mhd.dont_know_numeric  == "0" &
-    mhd.prefer_not_to_answer_numeric  == "0" &
-    mhd.dont_know.1_numeric == "0" &
-    mhd.prefer_not_to_answer.1_numeric  == "0" &
-    (mhd.none_of_the_above.1_numeric == "1" | is.na(mhd.none_of_the_above.1_numeric)) &
-    (mhd.none_of_the_above.2_numeric == "1" | is.na(mhd.none_of_the_above.2_numeric)) &
-    (mhd.none_of_the_above_eating_disorder_numeric == "1" | is.na(mhd.none_of_the_above_eating_disorder_numeric)), #Check this - this would mean 'controls' may have answered 'None of the above' to all but one, in which the remaining one is NA. Does this really make them a control?
-    true = 1,
-    false = 0,
-    NA_real_)
-  )
-
-mhd.raw.id <- mhd.raw.id %>%
-  mutate(
-    control =
-      recode_factor(control_numeric,
-                    "0" = "No control",
-                    "1" = "Control",
-                    missing = NA_character_
-                    )
-  )
-mhd.raw.id %>%
-  freq(control,
-       cumul = F)
-}
-
-
-```
-
-```{r EDGI NBR mhd check none of the above}
-if(EDGI == TRUE | NBR == TRUE) {
-mhd.raw.id %>%
-  group_by(control) %>%
-  count(
-    mhd.none_of_the_above.1,
-    mhd.none_of_the_above.2,
-    mhd.none_of_the_above_eating_disorder
-  )
+##CONTROLS
+###Call script for recoding/grouping controls
+```{r mental health diagnoses all cohorts}
+if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
+source("./Controls.R")
 }
 
 ```
-##GLAD controls
-```{r mhd control GLAD }
-if(GLAD == TRUE) {
-mhd.raw.id <- mhd.raw.id %>%
-  mutate(
-    control_numeric =
-      if_else(
-    depressive_disorders_numeric == "0" &
-    anxiety_disorders_numeric == "0" &
-    eating_disorders_numeric == "0" &
-    obsessive_compulsive_disorders_numeric == "0" &
-    psychotic_disorders_numeric == "0" &
-    mhd.mania_hypomania_bipolar_or_manicdepression_numeric == "0" &
-    mhd.posttraumatic_stress_disorder_ptsd_numeric == "0" &
-    autism_spectrum_disorder_numeric == "0" &
-    mhd.attention_deficit_hyperactivity_disorder_numeric == "0" &
-    mhd.personality_disorder_numeric == "0" &
-    mhd.dont_know_numeric == "0" &
-    mhd.prefer_not_to_answer_numeric == "0" &
-    mhd.dont_know.1_numeric == "0" &
-    mhd.prefer_not_to_answer.1_numeric == "0" &
-    mhd.dont_know_eating_disorder_numeric == "0" &
-    mhd.prefer_not_to_answer_eating_disorder_numeric == "0" &
-    mhd.none_of_the_above.1_numeric != "0" &
-    mhd.none_of_the_above.2_numeric != "0" &
-    mhd.none_of_the_above.3_numeric != "0" &
-    mhd.none_of_the_above.4_numeric != "0" &
-    mhd.none_of_the_above_eating_disorder_numeric != "0", #Check this - this would mean 'controls' may have answered 'None of the above' to all but one, in which the remaining one is NA. Does this really make them a control?
-    true = 1,
-    false = 0,
-    NA_real_)
-  )
-
-mhd.raw.id <- mhd.raw.id %>%
-  mutate(
-    control =
-      recode_factor(control_numeric,
-                    "0" = "No control",
-                    "1" = "Control",
-                    missing = NA_character_
-                    )
-  )
-mhd.raw.id %>%
-  freq(control,
-       cumul = F)
-}
 
 
-```
-
-```{r GLAD mhd check none of the above}
-if(GLAD == TRUE) {
-mhd.raw.id %>%
-  select(
-    control,
-    mhd.none_of_the_above.1,
-    mhd.none_of_the_above.2,
-    mhd.none_of_the_above.3,
-    mhd.none_of_the_above.4,
-    mhd.none_of_the_above_eating_disorder
-  )
-mhd.raw.id %>%
-  group_by(control) %>%
-  count(
-     mhd.none_of_the_above.1,
-    mhd.none_of_the_above.2,
-    mhd.none_of_the_above.3,
-    mhd.none_of_the_above.4,
-    mhd.none_of_the_above_eating_disorder 
-  )
-}
-```
-
-##RAMP controls
-```{r mhd control GLAD RAMP}
-if(RAMP == TRUE) {
-mhd.raw.id <- mhd.raw.id %>%
-  mutate(
-    control_numeric =
-      if_else(
-    depressive_disorders_numeric == "0" &
-    anxiety_disorders_numeric == "0" &
-    eating_disorders_numeric == "0" &
-    obsessive_compulsive_disorders_numeric == "0" &
-    psychotic_disorders_numeric == "0" &
-    mhd.mania_hypomania_bipolar_or_manicdepression_numeric == "0" &
-    mhd.posttraumatic_stress_disorder_ptsd_numeric == "0" &
-    autism_spectrum_disorder_numeric == "0" &
-    mhd.attention_deficit_hyperactivity_disorder_numeric == "0" &
-    mhd.personality_disorder_numeric == "0" &
-    mhd.dont_know_numeric == "0" &
-    mhd.prefer_not_to_answer_numeric == "0" &
-    mhd.dont_know.1_numeric == "0" &
-    mhd.prefer_not_to_answer.1_numeric == "0" &
-    mhd.dont_know_numeric == "0" &
-    mhd.prefer_not_to_answer_numeric == "0" &
-    mhd.dont_know.1_numeric == "0" &
-    mhd.prefer_not_to_answer.1_numeric == "0" &
-    mhd.none_of_the_above_numeric  != "0" &
-    mhd.none_of_the_above.1_numeric != "0",
-    true = 1,
-    false = 0,
-    NA_real_)
-  )
-
-mhd.raw.id <- mhd.raw.id %>%
-  mutate(
-    control =
-      recode_factor(control_numeric,
-                    "0" = "No control",
-                    "1" = "Control",
-                    missing = NA_character_
-                    )
-  )
-mhd.raw.id %>%
-  freq(control,
-       cumul = F)
-}
-```
-
-```{r RAMP mhd check none of the above}
-if(RAMP == TRUE) {
-mhd.raw.id %>%
-  select(
-    control,
-    mhd.none_of_the_above,
-    mhd.none_of_the_above.1
-  )
-mhd.raw.id %>%
-  group_by(control) %>%
-  count(
-    mhd.none_of_the_above,
-     mhd.none_of_the_above.1
-  )
-}
-```
-
-**Check - does this work with EDGI? NBR?
-```{r Check control columns}
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
-mhd.raw.id %>%
-  select(
-    control,
-    depressive_disorders_numeric,
-    anxiety_disorders_numeric,
-    eating_disorders_numeric,
-    obsessive_compulsive_disorders_numeric,
-    psychotic_disorders_numeric,
-    mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
-    mhd.posttraumatic_stress_disorder_ptsd_numeric,
-    autism_spectrum_disorder_numeric,
-    mhd.attention_deficit_hyperactivity_disorder_numeric,
-    mhd.personality_disorder_numeric
-  )
-}
-```
-
-
-
-#WAVES - TAF
+#TIMEPOINTS - TAF
 
 ## 1. Create a wave columns in follow up data - RAMP
 ```{r identify wave dates ramp}
 if (RAMP ==TRUE) {
-source("./wavesRAMP.R")
+source("./timepoints_RAMP.R")
 
 }
 ```
@@ -2835,6 +2165,7 @@ dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
 colnames(dat.raw.taf.ramp)
 }
 ```
+
 ##checking for number of entries per wave!
 
 ```{r}
@@ -2849,7 +2180,7 @@ dat.raw.taf.ramp %>%
 ```
 
 
-##Idenfitying duplicate IDs in a single wave
+##Idenfitying duplicate IDs in a single timepoint
 ```{r}
 if(RAMP == TRUE) {
 
@@ -2860,6 +2191,9 @@ dat.raw.taf.ramp %>%
    filter(N > 1)
 }
 ```
+
+
+
 
 ##Want the LATER data entry from people who answered twice within a single wave 
 

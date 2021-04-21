@@ -1,0 +1,415 @@
+---
+title: "Self-harm grouping"
+author: "Helena Davies"
+date: "19/04/2021"
+output: html_document
+---
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Delete everything in your global environment
+```{r Delete everything in your global environment}
+remove(list = ls())
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+#### Call in functions script
+
+```{r source files}
+source("./functions.R")
+```
+
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
+# TAF - baseline 
+## GLAD 
+### Read in data
+```{r GLAD taf sign up cols}
+
+taf.glad.coping.baseline.raw <- readRDS(file = "../data_raw/glad/taf_coping_glad.rds")
+dim(taf.glad.coping.baseline.raw)
+colnames(taf.glad.coping.baseline.raw)
+
+
+```
+
+### Select variables
+```{r GLAD sign up taf select variables}
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate",
+                  "endDate")
+
+taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_glad", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         #endDate,
+         taf.worth_living_life_people_.Wavebaseline = taf.worth_living_life_thoughts, #renamed to same as follow up
+         taf.felt_weeks_past_.Wavebaseline = taf.past_felt_weeks,#renamed to same as follow up
+         taf.pandemic_felt_.Wavebaseline = taf.pandemic_felt,
+         taf.have_you_contemplated_harming_yourself_.Wavebaseline = taf.have_you_contemplated_harming_yourself_,
+         taf.felt_weeks_past.1_.Wavebaseline = taf.past_felt_weeks.1, #renamed to same as follow up
+         taf.pandemic_felt.1_.Wavebaseline = taf.pandemic_felt.1,
+         taf.meant_life_end_weeks_.Wavebaseline = taf.meant_end_life_weeks, #renamed to same as follow up
+         taf.meant_end_life_pandemic_.Wavebaseline = taf.meant_end_life_pandemic
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(taf.glad.coping.baseline.raw.id)
+# Inspect colnames
+colnames(taf.glad.coping.baseline.raw.id)
+#Differences
+dim(taf.glad.coping.baseline.raw)[1]-dim(taf.glad.coping.baseline.raw.id)[1]
+
+
+
+```
+
+
+# TAF - baseline
+## EDGI  
+### Read in data
+```{r EDGI taf sign up cols}
+taf.edgi.coping.baseline.raw <- readRDS(file = "../data_raw/edgi/taf_coping_edgi.rds")
+dim(taf.edgi.coping.baseline.raw)
+colnames(taf.edgi.coping.baseline.raw)
+
+```
+
+### Select variables
+```{r EDGI sign up taf select variables}
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate",
+                  "endDate")
+
+
+taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         #endDate,
+         taf.worth_living_life_people_.Wavebaseline = taf.worth_living_thoughts_life, #renamed to same as follow up
+         taf.felt_weeks_past_.Wavebaseline = taf.weeks_past_felt,#renamed to same as follow up
+         taf.pandemic_felt_.Wavebaseline = taf.pandemic_felt,
+         taf.have_you_contemplated_harming_yourself_.Wavebaseline = taf.have_you_contemplated_harming_yourself_,
+         taf.felt_weeks_past.1_.Wavebaseline = taf.weeks_past_felt.1, #renamed to same as follow up
+         taf.pandemic_felt.1_.Wavebaseline = taf.pandemic_felt.1,
+         taf.meant_life_end_weeks_.Wavebaseline = taf.meant_end_weeks_life, #renamed to same as follow up
+         taf.meant_end_life_pandemic_.Wavebaseline = taf.meant_end_life_pandemic
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered"))  # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(taf.edgi.coping.baseline.raw.id)
+# Inspect colnames
+colnames(taf.edgi.coping.baseline.raw.id)
+#Differences
+dim(taf.edgi.coping.baseline.raw)[1]-dim(taf.edgi.coping.baseline.raw.id)[1]
+
+```
+
+
+# TAF - baseline 
+## NBR 
+### Read in data
+```{r NBR taf sign up cols}
+taf.nbr.baseline.raw <- readRDS(file = "../data_raw/nbr/taf_coping_nbr.rds")
+dim(taf.nbr.baseline.raw)
+colnames(taf.nbr.baseline.raw)
+
+```
+### Select variables
+```{r NBR sign up taf select variables}
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate",
+                  "endDate")
+
+taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw %>% #new dataset with ID
+  drop_na(subjectid) %>% # Drop NAs
+  distinct(subjectid, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "nbr", .before = "startDate") %>% #create new column 
+  select(
+         ID = subjectid, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         #endDate,
+         taf.worth_living_life_people_.Wavebaseline = taf.worth_living_thoughts_life, #renamed to same as follow up
+         taf.felt_weeks_past_.Wavebaseline = taf.past_felt_weeks,#renamed to same as follow up
+         taf.pandemic_felt_.Wavebaseline = taf.pandemic_felt,
+         taf.have_you_contemplated_harming_yourself_.Wavebaseline = taf.have_you_contemplated_harming_yourself_,
+         taf.felt_weeks_past.1_.Wavebaseline = taf.past_felt_weeks.1, #renamed to same as follow up
+         taf.pandemic_felt.1_.Wavebaseline = taf.pandemic_felt.1,
+         taf.meant_life_end_weeks_.Wavebaseline = taf.meant_end_life_weeks, #renamed to same as follow up
+         taf.meant_end_life_pandemic_.Wavebaseline = taf.meant_end_pandemic_life #renamed to same as follow up
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) 
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(taf.nbr.baseline.raw.id)
+# Inspect colnames
+colnames(taf.nbr.baseline.raw.id)
+#Differences
+dim(taf.nbr.baseline.raw)[1]-dim(taf.nbr.baseline.raw.id)[1]
+
+```
+
+# TAF - baseline 
+## RAMP
+### Read in data
+```{r RAMP taf sign up cols}
+taf.ramp.baseline.raw <- readRDS(file = "../data_raw/ramp/taf_ramp.rds")
+dim(taf.ramp.baseline.raw)
+colnames(taf.ramp.baseline.raw)
+
+```
+
+### Select variables
+```{r RAMP sign up taf select variables}
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate",
+                  "endDate")
+
+taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw %>% #new dataset with ID
+  drop_na(`Login ID`) %>% # Drop NAs
+  distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = `Login ID`, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         #endDate,
+         taf.worth_living_life_people_.Wavebaseline = taf.worth_living_thoughts_life, #renamed to same as follow up
+         taf.felt_weeks_past_.Wavebaseline = taf.past_felt_weeks,#renamed to same as follow up
+         taf.pandemic_felt_.Wavebaseline = taf.pandemic_felt,
+         taf.have_you_contemplated_harming_yourself_.Wavebaseline = taf.have_you_contemplated_harming_yourself_,
+         taf.felt_weeks_past.1_.Wavebaseline = taf.weeks_past_felt.1, #renamed to same as follow up
+         taf.pandemic_felt.1_.Wavebaseline = taf.pandemic_felt.1,
+         taf.meant_life_end_weeks_.Wavebaseline = taf.meant_end_life_weeks, #renamed to same as follow up
+         taf.meant_end_life_pandemic_.Wavebaseline = taf.meant_end_pandemic_life #renamed to same as follow up
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ # mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+#  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(taf.ramp.baseline.raw.id)
+# Inspect colnames
+colnames(taf.ramp.baseline.raw.id)
+#Differences
+dim(taf.ramp.baseline.raw)[1]-dim(taf.ramp.baseline.raw.id)[1]
+
+```
+
+##Merge data
+```{r}
+
+dat.taf.all <- rbind(taf.ramp.baseline.raw.id,
+                     taf.nbr.baseline.raw.id,
+                     taf.edgi.coping.baseline.raw.id,
+                     taf.glad.coping.baseline.raw.id
+)
+
+
+colnames(dat.taf.all)
+```
+
+
+##Identify prepandemic self-harm cases
+
+1. Passive suicidal ideation: Many people have thoughts that life is not worth living. Have you felt that way? 
+**Do we also want to count those who answered "Yes" to in the last two weeks, at  baseline? Is this technically prepan?
+**How to handle PNTA?
+```{r}
+dat.taf.all <- dat.taf.all %>% 
+  mutate(prepan_passive_suicideal_ideation_numeric =
+           case_when(
+            
+              #Many people have thoughts that life is not worth living. Have you felt that way?
+             (taf.worth_living_life_people_.Wavebaseline == "Yes" |
+              taf.worth_living_life_people_.Wavebaseline == "Yes, more than once") & 
+               
+              taf.pandemic_felt_.Wavebaseline == "Yes" ~ 1, #Had you felt that way before the pandemic?
+              
+             taf.worth_living_life_people_.Wavebaseline == "No" ~ 0
+             
+             
+           )
+    
+    
+  )
+
+#Check freq
+dat.taf.all %>%
+  freq(prepan_passive_suicideal_ideation_numeric)
+
+```
+
+
+2. Self-harm ideation: Have you contemplated harming yourself ?  
+**How to handle PNTA?
+**Do we also want to count those who answered "Yes" to in the last two weeks, at  baseline? Is this technically prepan?
+
+```{r}
+dat.taf.all <- dat.taf.all %>% 
+  mutate(prepan_selfharm_ideation_numeric =
+           case_when(
+            
+              #Have you contemplated harming yourself ?
+             (taf.have_you_contemplated_harming_yourself_.Wavebaseline == "Yes" |
+              taf.have_you_contemplated_harming_yourself_.Wavebaseline == "Yes, more than once") & 
+               
+              taf.pandemic_felt.1_.Wavebaseline == "Yes" ~ 1, #Had you felt that way before the pandemic?
+              
+             
+             taf.have_you_contemplated_harming_yourself_.Wavebaseline == "No" ~ 0
+             
+             
+           )
+    
+    
+  )
+
+#Check freq
+dat.taf.all %>%
+  freq(prepan_selfharm_ideation_numeric)
+
+```
+
+
+3. Self-harm: Have you deliberately harmed yourself, whether or not you meant to end your life? 
+
+**Do we also want to count those who answered "Yes" to in the last two weeks, at  baseline? Is this technically prepan?
+```{r}
+dat.taf.all <- dat.taf.all %>% 
+  mutate(prepan_selfharm_numeric =
+           case_when(
+            
+              #Before the pandemic, had you deliberately harmed yourself, whether or not you meant to end your life?
+             taf.meant_end_life_pandemic_.Wavebaseline == "Yes" ~ 1, 
+              
+             taf.meant_end_life_pandemic_.Wavebaseline == "No" ~ 0
+             
+           )
+  )
+
+#Check freq
+dat.taf.all %>%
+  freq(prepan_selfharm_numeric)
+
+```
+
+##Choose variables to keep from saved merged dataset
+```{r}
+dat.taf.all.final <- dat.taf.all %>%
+  select(ID,
+         prepan_selfharm_numeric,
+         prepan_selfharm_ideation_numeric,
+         prepan_passive_suicideal_ideation_numeric
+        ) 
+
+#Check
+nrow(dat.taf.all.final)
+
+colnames(dat.taf.all.final)
+    
+```
+
+
+##Save dataset
+```{r}
+saveRDS(object = dat.taf.all.final,
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/SelfHarm_groups", date, ".rds"))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
