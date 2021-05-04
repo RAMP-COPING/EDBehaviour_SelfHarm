@@ -1,0 +1,445 @@
+---
+title: "Current symptoms at baseline"
+author: "Helena Davies"
+date: "04/05/2021"
+output: html_document
+---
+
+NB: ‘Current baseline symptoms’ are symptoms at the start of the pandemic, before 15th May. Those with ‘current baseline symptoms’ are people who were ill at the start of the pandemic.
+
+o	Current baseline eating disorder symptoms in RAMP will be assessed using the retrospective reports in the baseline EDE-Q 
+  	Example: Over the 28 days BEFORE THE PANDEMIC: Has your weight influenced how you think about yourself as a person?
+      •	Will need to establish cutoffs for what we consider ‘currently ill at baseline’
+
+o	Current baseline symptoms in GLAD/NBR will be assessed using: (NB: questionnaires included in GLAD/NBR baseline do not include the EDE-Q  BUT these cohorts had the ED100K at baseline)
+
+  	For bulimia and BED  = “Do you still currently have regularly occurring overeating episodes?” in the baseline “coping_glad_be” and “coping_nbr_be”
+  	Also for bulimia, all ICB are assessed in ‘coping_glad_icb’ and _coping_nbr_icb’, e.g. “Do you currently self-induce vomiting?”
+  	For anorexia = current BMI (from demographics) OR work it out from IF (‘age at low weight’ + ‘duration at low weight/of anorexia’ = younger than current age), can assume they are no longer at low weight/have anorexia (might want to do this because their current BMI may be low for reasons other than AN)
+
+o	Current baseline symptoms in EDGI will be assessed as above however will need to establish cutoff for what we consider ‘current’, e.g., using entries from Jan-April 2020 only (NB: questionnaires included in the EDGI baseline does not include the EDE-Q or the ED100K)
+
+#Set up
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+options(bitmapType = 'quartz') # to render fonts better
+```
+
+Clear global environment
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Retrieve the current date to use it for file endings to not overwrite files when one exports files
+```{r Recent date}
+date = Sys.Date()
+```
+
+Load packages
+```{r}
+library(tidyverse)
+library(skimr)
+```
+
+#GLAD & NBR: BN and BED symptoms
+
+# Import baseline data: Binge eating & ICB
+```{r export data}
+glad_BE_baseline <- readRDS(file = "../data_raw/diagnostics/be_coping_glad.rds")
+dim(glad_BE_baseline)
+
+nbr_BE_baseline <- readRDS(file = "../data_raw/diagnostics/be_coping_nbr.rds")
+dim(nbr_BE_baseline)
+
+glad_ICB_baseline <- readRDS(file = "../data_raw/diagnostics/icb_coping_glad.rds")
+dim(glad_BE_baseline)
+
+nbr_ICB_baseline <- readRDS(file = "../data_raw/diagnostics/icb_coping_nbr.rds")
+dim(nbr_BE_baseline)
+
+
+```
+
+##Exclude people who answered baseline questionnaire after 15th May
+```{r}
+#GLAD BE - Filter by people who completed baseline survey before 15th May
+as.Date(glad_BE_baseline$startDate)
+
+glad_BE_baseline.filtered <- glad_BE_baseline %>%
+  filter(startDate < as.Date("2020-05-15"))
+
+nrow(glad_BE_baseline.filtered)
+
+#GLAD ICB  - Filter by people who completed baseline survey before 15th May
+as.Date(glad_ICB_baseline$startDate)
+
+glad_ICB_baseline.filtered <- glad_ICB_baseline %>%
+  filter(startDate < as.Date("2020-05-15"))
+
+nrow(glad_ICB_baseline.filtered)
+
+#NBR BE  - Filter by people who completed baseline survey before 15th May
+as.Date(nbr_BE_baseline$startDate)
+
+nbr_BE_baseline.filtered <- nbr_BE_baseline %>%
+  filter(startDate < as.Date("2020-05-15"))
+
+nrow(nbr_BE_baseline.filtered)
+
+#NBR ICB  - Filter by people who completed baseline survey before 15th May
+as.Date(nbr_ICB_baseline$startDate)
+
+nbr_ICB_baseline.filtered <- nbr_ICB_baseline %>%
+  filter(startDate < as.Date("2020-05-15"))
+
+nrow(nbr_ICB_baseline.filtered)
+
+```
+
+##GLAD Current binge eating symptoms at baseline (before 15th May)
+```{r}
+
+ glad_BE_baseline.filtered <- glad_BE_baseline.filtered %>%
+   mutate(current_BE_symptoms =
+            case_when( 
+              be.regularly_occurring_overeating_episodes == 1 ~ 1,
+              be.regularly_occurring_overeating_episodes == 0 ~ 0,
+              be.regularly_occurring_overeating_episodes == -77 ~ NA_real_,
+              is.na(be.regularly_occurring_overeating_episodes) ~ NA_real_
+            
+            )
+   )
+
+glad_BE_baseline.filtered %>%
+  freq(current_BE_symptoms)
+
+```
+## NBR Current binge eating symptoms at baseline (before 15th May)
+```{r}
+
+ nbr_BE_baseline.filtered <- nbr_BE_baseline.filtered %>%
+   mutate(current_BE_symptoms =
+            case_when( 
+              be.regularly_occurring_overeating_episodes == 1 ~ 1,
+              be.regularly_occurring_overeating_episodes == 0 ~ 0,
+              be.regularly_occurring_overeating_episodes == -77 ~ NA_real_,
+              is.na(be.regularly_occurring_overeating_episodes) ~ NA_real_
+            
+            )
+   )
+
+nbr_BE_baseline.filtered %>%
+  freq(current_BE_symptoms)
+
+```
+## GLAD Current ICB symptoms at baseline (before 15th May)
+```{r}
+
+glad_ICB_baseline.filtered <- glad_ICB_baseline.filtered %>%
+   mutate(current_ICB_symptoms =
+            case_when( 
+              icb.do_you_currently_selfinduce_vomiting == 1 |
+              icb.do_you_currently_use_laxatives == 1 |
+                icb.do_you_currently_use_diuretics == 1 |
+                icb.do_you_currently_use_diet_pills == 1 |
+                icb.compelled_shape_unable_exercise == 1 |
+                icb.engage_fasting_period  == 1 ~ 1,
+              
+              (is.na(icb.do_you_currently_selfinduce_vomiting) | 
+                icb.do_you_currently_selfinduce_vomiting == -77) & 
+                
+                (is.na(icb.do_you_currently_use_laxatives) | 
+                icb.do_you_currently_use_laxatives == -77) & 
+                
+                (is.na(icb.do_you_currently_use_diuretics) | 
+                icb.do_you_currently_use_diuretics == -77) & 
+                
+                (is.na(icb.do_you_currently_use_diet_pills) | 
+                icb.do_you_currently_use_diet_pills == -77) & 
+                
+                (is.na(icb.compelled_shape_unable_exercise) | 
+                icb.compelled_shape_unable_exercise == -77) & 
+                
+                 (is.na(icb.engage_fasting_period) | 
+                icb.engage_fasting_period == -77) ~ NA_real_,
+              
+               icb.do_you_currently_selfinduce_vomiting == 0 |
+               icb.do_you_currently_use_laxatives == 0 |
+                icb.do_you_currently_use_diuretics == 0 |
+                icb.do_you_currently_use_diet_pills == 0 |
+                icb.compelled_shape_unable_exercise == 0 |
+                icb.engage_fasting_period  == 0 ~ 0,
+           
+            )
+   )
+
+glad_ICB_baseline.filtered %>%
+  freq(current_ICB_symptoms)
+
+```
+```{r}
+
+nbr_ICB_baseline.filtered <- nbr_ICB_baseline.filtered %>%
+   mutate(current_ICB_symptoms =
+            case_when( 
+              icb.do_you_currently_selfinduce_vomiting == 1 |
+              icb.do_you_currently_use_laxatives == 1 |
+                icb.do_you_currently_use_diuretics == 1 |
+                icb.do_you_currently_use_diet_pills == 1 |
+                icb.compelled_shape_unable_exercise == 1 |
+                icb.engage_fasting_period  == 1 ~ 1,
+              
+              (is.na(icb.do_you_currently_selfinduce_vomiting) | 
+                icb.do_you_currently_selfinduce_vomiting == -77) & 
+                
+                (is.na(icb.do_you_currently_use_laxatives) | 
+                icb.do_you_currently_use_laxatives == -77) & 
+                
+                (is.na(icb.do_you_currently_use_diuretics) | 
+                icb.do_you_currently_use_diuretics == -77) & 
+                
+                (is.na(icb.do_you_currently_use_diet_pills) | 
+                icb.do_you_currently_use_diet_pills == -77) & 
+                
+                (is.na(icb.compelled_shape_unable_exercise) | 
+                icb.compelled_shape_unable_exercise == -77) & 
+                
+                 (is.na(icb.engage_fasting_period) | 
+                icb.engage_fasting_period == -77) ~ NA_real_,
+              
+               icb.do_you_currently_selfinduce_vomiting == 0 |
+               icb.do_you_currently_use_laxatives == 0 |
+                icb.do_you_currently_use_diuretics == 0 |
+                icb.do_you_currently_use_diet_pills == 0 |
+                icb.compelled_shape_unable_exercise == 0 |
+                icb.engage_fasting_period  == 0 ~ 0,
+           
+            )
+   )
+
+nbr_ICB_baseline.filtered %>%
+  freq(current_ICB_symptoms)
+
+```
+#GLAD  & NBR: For anorexia = current BMI (from demographics) OR work it out from IF (‘age at low weight’ + ‘duration at low weight/of anorexia’ = younger than current age), can assume they are no longer at low weight/have anorexia (might want to do this because their current BMI may be low for reasons other than AN)
+
+an.1.how_old_were_you_then.txt = AGE AT LOW WEIGHT
+
+an.1.anorexia_nervosa_low_weight = DURATION AT LOW WEIGHT
+
+# Import baseline data: AN symptoms & dem
+```{r export data}
+nbr_AN_baseline <- readRDS(file = "../data_raw/diagnostics/an_coping_nbr.rds")
+dim(nbr_AN_baseline)
+
+nbr_dem_baseline <- readRDS(file = "../data_raw/nbr/demographics_coping_nbr.rds")
+dim(nbr_dem_baseline)
+colnames(nbr_dem_baseline)
+
+glad_AN_baseline <- readRDS(file = "../data_raw/diagnostics/an_coping_glad.rds")
+dim(glad_AN_baseline)
+
+glad_dem <- readRDS(file = "../data_raw/glad/dem_glad.rds")
+dim(glad_dem)
+colnames(glad_dem)
+```
+##Exclude people who answered baseline questionnaire after 15th May
+```{r}
+#NBR AN - Filter by people who completed baseline survey before 15th May
+as.Date(nbr_AN_baseline$startDate)
+
+nbr_AN_baseline.filtered <- nbr_AN_baseline %>%
+  filter(startDate < as.Date("2020-05-15"))
+
+nrow(nbr_AN_baseline.filtered)
+
+#NBR DEM - Filter by people who completed baseline survey before 15th May
+as.Date(nbr_dem_baseline$startDate)
+
+nbr_dem_baseline.filtered <- nbr_dem_baseline %>%
+  filter(startDate < as.Date("2020-05-15"))
+
+nrow(nbr_dem_baseline.filtered)
+
+#GLAD AN - Filter by people who completed baseline survey before 15th May
+as.Date(glad_AN_baseline$startDate)
+
+glad_AN_baseline.filtered <- glad_AN_baseline %>%
+  filter(startDate < as.Date("2020-05-15"))
+
+nrow(glad_AN_baseline.filtered)
+
+```
+
+##NBR - Age at low weight 
+```{r}
+
+#Define age limits
+  age_upper_limit = 117
+  age_lower_limit = 5
+  
+  #Identify number of outliers
+  length(
+    which(
+      nbr_AN_baseline.filtered$an.1.how_old_were_you_then.txt > age_upper_limit |
+        nbr_AN_baseline.filtered$an.1.how_old_were_you_then.txt < age_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  nbr_AN_baseline.filtered <- nbr_AN_baseline.filtered %>%
+    mutate(
+      age_at_low_weight =
+        if_else(
+          an.1.how_old_were_you_then.txt > age_upper_limit |
+            an.1.how_old_were_you_then.txt < age_lower_limit,
+          true = NA_real_,
+          false = an.1.how_old_were_you_then.txt,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  nbr_AN_baseline.filtered %>%
+    freq(age_at_low_weight)
+  
+```
+
+#NBR - Age when answered questionnaire
+```{r}
+
+nbr_dem_baseline.filtered$birthday_year_numeric <- nbr_dem_baseline.filtered$demographics.year + 1900
+  
+#create dob as date format
+nbr_dem_baseline.filtered$Birthdate <- as.Date(paste(nbr_dem_baseline.filtered$birthday_year_numeric,
+                                            nbr_dem_baseline.filtered$demographics.month,
+                                            nbr_dem_baseline.filtered$demographics.day,
+                                            sep = "-"))
+  
+head(nbr_dem_baseline.filtered$Birthdate)
+
+
+#Calculate dem.age (remove NAs as it throws an error)
+ages <- eeptools::age_calc(na.omit(nbr_dem_baseline.filtered$Birthdate),
+                           enddate = as.Date(nbr_dem_baseline.filtered$endDate),
+                           units = "years")
+
+#Create dem.agecolumn
+nbr_dem_baseline.filtered$age_unc <- NA
+
+#Populate with values (excluding NAs)
+nbr_dem_baseline.filtered$age_unc[!is.na(nbr_dem_baseline.filtered$Birthdate)] <- ages
+
+#Round age down
+nbr_dem_baseline.filtered$age_unc <- floor(nbr_dem_baseline.filtered$age_unc)
+
+#Visualise
+head(nbr_dem_baseline.filtered$age_unc)
+head(nbr_dem_baseline.filtered$Birthdate)
+```
+##NBR - Clean current age
+```{r}
+#Define age limits
+  age_upper_limit = 117
+  age_lower_limit = 16 #you have to be 16 to take part
+  
+  #Identify number of outliers
+  length(
+    which(
+      nbr_dem_baseline.filtered$age_unc > age_upper_limit |
+        nbr_dem_baseline.filtered$age_unc < age_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  nbr_dem_baseline.filtered <- nbr_dem_baseline.filtered %>%
+    mutate(
+      age_at_baseline =
+        if_else(
+          age_unc > age_upper_limit |
+            age_unc < age_lower_limit,
+          true = NA_real_,
+          false = age_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  nbr_dem_baseline.filtered %>%
+    freq(age_at_baseline)
+  
+```
+
+##NBR - Duration at low weight
+```{r}
+# Empty column
+nbr_AN_baseline.filtered$low_weight_duration <- NA
+
+# Change character to numeric
+nbr_AN_baseline.filtered$low_weight_duration_years <- as.numeric(nbr_AN_baseline.filtered$an.1.anorexia_nervosa_low_weight.1)
+nbr_AN_baseline.filtered$low_weight_duration_months <- as.numeric(nbr_AN_baseline.filtered$an.1.anorexia_nervosa_low_weight)
+
+##Contains -77, need to change to NA
+nbr_AN_baseline.filtered$low_weight_duration_years[nbr_AN_baseline.filtered$low_weight_duration_years == -77] <- NA_real_
+nbr_AN_baseline.filtered$low_weight_duration_months[nbr_AN_baseline.filtered$low_weight_duration_months == -77] <- NA_real_
+
+# Sum years and months into years (first covert to days [i.e., smallest unit], then convert to years)
+nbr_AN_baseline.filtered$low_weight_duration_YEARS <- 
+  if_else(condition = is.na(nbr_AN_baseline.filtered$low_weight_duration),
+         true = (
+           (nbr_AN_baseline.filtered$low_weight_duration_years*365.25) + #Duration in years (in days)
+             (nbr_AN_baseline.filtered$low_weight_duration_months*30.4167)  #Duration in months (in days)
+           ) / 365.25, 
+        false = NA_real_,
+        missing = NA_real_)
+
+# Summary
+freq(nbr_AN_baseline.filtered$low_weight_duration_YEARS)
+```
+
+#Merge dem and AN data
+```{r}
+dem_to_merge <- nbr_dem_baseline.filtered %>%
+  select(subjectid,
+         age_at_baseline)
+
+
+nbr_AN_baseline.filtered.merged <- merge(nbr_AN_baseline.filtered,
+                                         dem_to_merge,
+                                         by = "subjectid")
+
+#Check
+nrow(nbr_AN_baseline.filtered.merged)
+colnames(nbr_AN_baseline.filtered.merged)
+```
+
+##NBR - Age when low weight stopped
+‘age at low weight’ + ‘duration at low weight/of anorexia’ = younger than current age)
+```{r}
+
+#Age when no longer at low weight
+nbr_AN_baseline.filtered.merged$low_weight_stop <- nbr_AN_baseline.filtered.merged$age_at_low_weight + nbr_AN_baseline.filtered.merged$low_weight_duration_YEARS
+
+#Round down
+nbr_AN_baseline.filtered.merged$low_weight_stop <- floor(nbr_AN_baseline.filtered.merged$low_weight_stop)
+
+nbr_AN_baseline.filtered.merged <- nbr_AN_baseline.filtered.merged %>%
+   mutate(current_AN_symptoms =
+            case_when(
+                    low_weight_stop < age_at_baseline ~ 0,
+                    low_weight_stop < 16 ~ 0, #If people have not entered their current age, we can assume they are at least over 16 (criteria to take part in NBR***)
+                     age_at_baseline == age_at_low_weight ~ 1,
+                    age_at_baseline == low_weight_stop ~ 1
+           
+            )
+   )
+
+nbr_AN_baseline.filtered.merged %>%
+  freq(current_AN_symptoms)
+
+```
+
+

@@ -5,10 +5,6 @@ date: "04/05/2021"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -41,3 +37,445 @@ date
 # source all functions in the function folder
 source("./functions.R")
 ```
+
+# Read in data
+```{r}
+dat <- readRDS(file = "../data_cleaned/data.final2021-05-04.rds")
+dim(dat)
+colnames(dat)
+```
+EXPOSURE: 
+
+•	Eating disorder behaviour: Pre-pandemic eating disorder diagnostic status (self-reported diagnosis and/or algorithm-derived)
+    o	Lifetime anorexia nervosa: 1, 0
+    o	Lifetime bulimia nervosa:  1, 0
+    o	Lifetime binge-eating disorder: 1, 0
+
+#Prepandemic binge-eating disorder
+```{r}
+
+  dat <- dat %>%
+    mutate(
+      BED_prepandemic =
+        case_when(COPING_bed_group_numeric == 1 |
+                  BED_group_numeric == 1 ~ 1,
+                  
+                  COPING_bed_group_numeric == 0 |
+                    BED_group_numeric == 0 ~ 0,
+                  
+                  is.na(COPING_bed_group_numeric) &
+                    is.na(BED_group_numeric) ~ NA_real_
+                
+        )
+        )
+    
+
+#Check
+ dat %>%
+   freq(BED_prepandemic)
+
+```
+#Prepandemic bulimia nervosa
+```{r}
+
+  dat <- dat %>%
+    mutate(
+      BN_prepandemic =
+        case_when(COPING_bulimia_group_numeric == 1 |
+                  bulimia_group_numeric== 1 ~ 1,
+                  
+                  COPING_bulimia_group_numeric == 0 |
+                    bulimia_group_numeric == 0 ~ 0,
+                  
+                  is.na(COPING_bulimia_group_numeric) &
+                    is.na(bulimia_group_numeric) ~ NA_real_
+                
+        )
+        )
+    
+
+#Check
+ dat %>%
+   freq(BN_prepandemic)
+
+```
+#Prepandemic anorexia nervosa
+```{r}
+
+  dat <- dat %>%
+    mutate(
+      AN_prepandemic =
+        case_when(COPING_anorexia_group_numeric== 1 |
+                  anorexia_group_numeric == 1 ~ 1,
+                  
+                  COPING_anorexia_group_numeric == 0 |
+                    anorexia_group_numeric == 0 ~ 0,
+                  
+                  is.na(COPING_anorexia_group_numeric) &
+                    is.na(anorexia_group_numeric) ~ NA_real_
+                
+        )
+        )
+    
+
+#Check
+ dat %>%
+   freq(AN_prepandemic)
+
+```
+OUTCOMES
+
+•	Eating disorder behaviour:
+  o	binge eating during the COVID-19 pandemic: binary (1,0)
+  o	low weight during the COVID-19 pandemic: binary (1,0)
+
+•	Self-harm thoughts/behaviour:
+  o	passive suicidal ideation during COVID-19 pandemic: binary (1,0)
+  o	self-harm ideation during the COVID-19 pandemic: binary (1,0)
+  o	self-harm during the COVID-19 pandemic: binary (1,0)
+
+o	Cumulative score; 
+	scores of 3 indicate someone has experienced all of the above during the pandemic
+	scores of 2 indicate someone has experienced two of the above during the pandemic
+	scores of 1 indicate someone has experienced one of the above during the pandemic
+	scores of 0 indicate someone has experienced none of the above during the pandemic
+
+
+##ANY Binge eating during the COVID-19 pandemic
+```{r}
+
+dat <- dat %>%
+  mutate(pandemic_binge_eating =
+           case_when(ed_scid5.regular_episodes_eating_binges_.Wave_1b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_2b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_3b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_4b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_6b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_8b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_10b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_12b == "Yes" ~ 1,
+                     
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_1b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_2b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_3b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_4b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_6b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_8b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_10b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b) ~ NA_real_,
+                     
+                      (ed_scid5.regular_episodes_eating_binges_.Wave_1b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_1b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_2b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_2b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_3b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_3b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_4b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_4b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_6b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_6b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_8b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_8b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_10b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_10b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_12b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b)) ~ 0
+                    
+           ))
+
+#Check
+dat %>%
+  freq(pandemic_binge_eating)
+
+```
+##ANY Low weight during the COVID-19 pandemic
+```{r}
+
+dat <- dat %>%
+  mutate(pandemic_low_weight =
+           case_when(ed_scid5.weigh_weighed_past_month_.Wave_1b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_2b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_3b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_4b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_6b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_8b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_10b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_12b == "Yes" ~ 1,
+                     
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_1b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_2b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_3b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_4b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_6b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_8b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_10b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b) ~ NA_real_,
+                     
+                       (ed_scid5.weigh_weighed_past_month_.Wave_1b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_1b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_2b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_2b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_3b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_3b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_4b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_4b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_6b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_6b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_8b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_8b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_10b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_10b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_12b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b)) ~ 0
+                    
+           ))
+
+#Check
+dat %>%
+  freq(pandemic_low_weight)
+
+```
+
+
+  
+#ANY passive suicidal ideation during COVID-19 pandemic
+```{r}
+
+dat <- dat %>%
+  mutate(pandemic_passive_suicidal_ideation =
+           case_when(
+                     taf.felt_weeks_past_.Wave_1a == "Yes" |
+                       taf.felt_weeks_past_.Wave_1b == "Yes" |
+                       taf.felt_weeks_past_.Wave_2a == "Yes" |
+                       taf.felt_weeks_past_.Wave_2b == "Yes" |
+                       taf.felt_weeks_past_.Wave_3a == "Yes" |
+                       taf.felt_weeks_past_.Wave_3b == "Yes" |
+                       taf.felt_weeks_past_.Wave_4a == "Yes" |
+                       taf.felt_weeks_past_.Wave_4b == "Yes" |
+                       taf.felt_weeks_past_.Wave_5a == "Yes" |
+                       taf.felt_weeks_past_.Wave_6b == "Yes" |
+                       taf.felt_weeks_past_.Wave_7a == "Yes" |
+                       taf.felt_weeks_past_.Wave_8b == "Yes" |
+                       taf.felt_weeks_past_.Wave_9a == "Yes" |
+                       taf.felt_weeks_past_.Wave_10b == "Yes" |
+                       taf.felt_weeks_past_.Wave_11a == "Yes" |
+                       taf.felt_weeks_past_.Wave_12b == "Yes" ~ 1,
+                        
+              
+                       is.na(taf.felt_weeks_past_.Wave_1a) &
+                       is.na(taf.felt_weeks_past_.Wave_1b) &
+                       is.na(taf.felt_weeks_past_.Wave_2a) &
+                       is.na(taf.felt_weeks_past_.Wave_2b) &
+                       is.na(taf.felt_weeks_past_.Wave_3a) &
+                       is.na(taf.felt_weeks_past_.Wave_3b) &
+                       is.na(taf.felt_weeks_past_.Wave_4a) &
+                       is.na(taf.felt_weeks_past_.Wave_4b) &
+                       is.na(taf.felt_weeks_past_.Wave_5a) &
+                       is.na(taf.felt_weeks_past_.Wave_6b) &
+                       is.na(taf.felt_weeks_past_.Wave_7a) &
+                       is.na(taf.felt_weeks_past_.Wave_8b) &
+                       is.na(taf.felt_weeks_past_.Wave_9a) &
+                       is.na(taf.felt_weeks_past_.Wave_10b) &
+                       is.na(taf.felt_weeks_past_.Wave_11a) &
+                       is.na(taf.felt_weeks_past_.Wave_12b) ~ NA_real_,
+                     
+                      
+                       (taf.felt_weeks_past_.Wave_1a == "No" | is.na(taf.felt_weeks_past_.Wave_1a)) &
+                       (taf.felt_weeks_past_.Wave_1b == "No" | is.na(taf.felt_weeks_past_.Wave_1b)) &
+                       (taf.felt_weeks_past_.Wave_2a == "No" | is.na(taf.felt_weeks_past_.Wave_2a)) &
+                       (taf.felt_weeks_past_.Wave_2b == "No" | is.na(taf.felt_weeks_past_.Wave_2b)) &
+                       (taf.felt_weeks_past_.Wave_3a == "No" | is.na(taf.felt_weeks_past_.Wave_3a)) &
+                       (taf.felt_weeks_past_.Wave_3b == "No" | is.na(taf.felt_weeks_past_.Wave_3b)) &
+                       (taf.felt_weeks_past_.Wave_4a == "No" | is.na(taf.felt_weeks_past_.Wave_4a)) &
+                       (taf.felt_weeks_past_.Wave_4b == "No" | is.na(taf.felt_weeks_past_.Wave_4b)) &
+                       (taf.felt_weeks_past_.Wave_5a == "No" | is.na(taf.felt_weeks_past_.Wave_5a)) &
+                       (taf.felt_weeks_past_.Wave_6b == "No" | is.na(taf.felt_weeks_past_.Wave_6b)) &
+                       (taf.felt_weeks_past_.Wave_7a == "No" | is.na(taf.felt_weeks_past_.Wave_7a)) &
+                       (taf.felt_weeks_past_.Wave_8b == "No" | is.na(taf.felt_weeks_past_.Wave_8b)) &
+                       (taf.felt_weeks_past_.Wave_9a == "No" | is.na(taf.felt_weeks_past_.Wave_9a)) &
+                       (taf.felt_weeks_past_.Wave_10b == "No" | is.na(taf.felt_weeks_past_.Wave_10b)) &
+                       (taf.felt_weeks_past_.Wave_11a == "No" | is.na(taf.felt_weeks_past_.Wave_11a)) &
+                       (taf.felt_weeks_past_.Wave_12b == "No" | is.na(taf.felt_weeks_past_.Wave_12b)) ~ 0
+                    
+           ))
+
+#Check
+dat %>%
+  freq(pandemic_passive_suicidal_ideation)
+
+```
+#ANY self-harm ideation during the COVID-19 pandemic
+```{r}
+dat <- dat %>%
+  mutate(pandemic_selfharm_ideation =
+           case_when(
+             taf.felt_weeks_past.1_.Wave_1a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_1b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_2a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_2b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_3a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_3b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_4a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_4b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_5a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_6b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_7a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_8b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_9a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_10b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_11a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_12b == "Yes" ~ 1,
+                        
+              
+                       is.na(taf.felt_weeks_past.1_.Wave_1a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_1b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_2a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_2b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_3a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_3b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_4a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_4b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_5a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_6b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_7a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_8b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_9a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_10b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_11a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_12b) ~ NA_real_,
+                     
+                      
+                       (taf.felt_weeks_past.1_.Wave_1a == "No" | is.na(taf.felt_weeks_past.1_.Wave_1a)) &
+                       (taf.felt_weeks_past.1_.Wave_1b == "No" | is.na(taf.felt_weeks_past.1_.Wave_1b)) &
+                       (taf.felt_weeks_past.1_.Wave_2a == "No" | is.na(taf.felt_weeks_past.1_.Wave_2a)) &
+                       (taf.felt_weeks_past.1_.Wave_2b == "No" | is.na(taf.felt_weeks_past.1_.Wave_2b)) &
+                       (taf.felt_weeks_past.1_.Wave_3a == "No" | is.na(taf.felt_weeks_past.1_.Wave_3a)) &
+                       (taf.felt_weeks_past.1_.Wave_3b == "No" | is.na(taf.felt_weeks_past.1_.Wave_3b)) &
+                       (taf.felt_weeks_past.1_.Wave_4a == "No" | is.na(taf.felt_weeks_past.1_.Wave_4a)) &
+                       (taf.felt_weeks_past.1_.Wave_4b == "No" | is.na(taf.felt_weeks_past.1_.Wave_4b)) &
+                       (taf.felt_weeks_past.1_.Wave_5a == "No" | is.na(taf.felt_weeks_past.1_.Wave_5a)) &
+                       (taf.felt_weeks_past.1_.Wave_6b == "No" | is.na(taf.felt_weeks_past.1_.Wave_6b)) &
+                       (taf.felt_weeks_past.1_.Wave_7a == "No" | is.na(taf.felt_weeks_past.1_.Wave_7a)) &
+                       (taf.felt_weeks_past.1_.Wave_8b == "No" | is.na(taf.felt_weeks_past.1_.Wave_8b)) &
+                       (taf.felt_weeks_past.1_.Wave_9a == "No" | is.na(taf.felt_weeks_past.1_.Wave_9a)) &
+                       (taf.felt_weeks_past.1_.Wave_10b == "No" | is.na(taf.felt_weeks_past.1_.Wave_10b)) &
+                       (taf.felt_weeks_past.1_.Wave_11a == "No" | is.na(taf.felt_weeks_past.1_.Wave_11a)) &
+                       (taf.felt_weeks_past.1_.Wave_12b == "No" | is.na(taf.felt_weeks_past.1_.Wave_12b)) ~ 0
+                    
+           ))
+```
+
+
+#ANY self-harm during the COVID-19 pandemic
+```{r}
+
+dat <- dat %>%
+mutate(pandemic_selfharm =
+           case_when(
+                     taf.meant_life_end_weeks_.Wave_1a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_1b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_2a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_2b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_3a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_3b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_4a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_4b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_5a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_6b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_7a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_8b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_9a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_10b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_11a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_12b == "Yes" ~ 1,
+                        
+              
+                       is.na(taf.meant_life_end_weeks_.Wave_1a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_1b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_2a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_2b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_3a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_3b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_4a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_4b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_5a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_6b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_7a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_8b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_9a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_10b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_11a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_12b) ~ NA_real_,
+                     
+                      
+                       (taf.meant_life_end_weeks_.Wave_1a == "No" | is.na(taf.meant_life_end_weeks_.Wave_1a)) &
+                       (taf.meant_life_end_weeks_.Wave_1b == "No" | is.na(taf.meant_life_end_weeks_.Wave_1b)) &
+                       (taf.meant_life_end_weeks_.Wave_2a == "No" | is.na(taf.meant_life_end_weeks_.Wave_2a)) &
+                       (taf.meant_life_end_weeks_.Wave_2b == "No" | is.na(taf.meant_life_end_weeks_.Wave_2b)) &
+                       (taf.meant_life_end_weeks_.Wave_3a == "No" | is.na(taf.meant_life_end_weeks_.Wave_3a)) &
+                       (taf.meant_life_end_weeks_.Wave_3b == "No" | is.na(taf.meant_life_end_weeks_.Wave_3b)) &
+                       (taf.meant_life_end_weeks_.Wave_4a == "No" | is.na(taf.meant_life_end_weeks_.Wave_4a)) &
+                       (taf.meant_life_end_weeks_.Wave_4b == "No" | is.na(taf.meant_life_end_weeks_.Wave_4b)) &
+                       (taf.meant_life_end_weeks_.Wave_5a == "No" | is.na(taf.meant_life_end_weeks_.Wave_5a)) &
+                       (taf.meant_life_end_weeks_.Wave_6b == "No" | is.na(taf.meant_life_end_weeks_.Wave_6b)) &
+                       (taf.meant_life_end_weeks_.Wave_7a == "No" | is.na(taf.meant_life_end_weeks_.Wave_7a)) &
+                       (taf.meant_life_end_weeks_.Wave_8b == "No" | is.na(taf.meant_life_end_weeks_.Wave_8b)) &
+                       (taf.meant_life_end_weeks_.Wave_9a == "No" | is.na(taf.meant_life_end_weeks_.Wave_9a)) &
+                       (taf.meant_life_end_weeks_.Wave_10b == "No" | is.na(taf.meant_life_end_weeks_.Wave_10b)) &
+                       (taf.meant_life_end_weeks_.Wave_11a == "No" | is.na(taf.meant_life_end_weeks_.Wave_11a)) &
+                       (taf.meant_life_end_weeks_.Wave_12b == "No" | is.na(taf.meant_life_end_weeks_.Wave_12b)) ~ 0
+                    
+           ))
+                    
+   
+#Check
+dat %>%
+  freq(pandemic_selfharm)
+```
+
+
+#Covariates
+  •	age
+  •	sex
+  • Current symptoms
+  •	Ethnicity
+  •	Education (proxying SES)
+  o	Sensitivity analysis; Other mental health diagnosis pre-pandemic, i.e., not ED
+    	Count
+    	Group (Dep, Anx, Dep+Anx, Psychotic, ADHD, ASD, PTSD)
+
+#Age
+```{r}
+
+dat %>%
+  freq(age_category)
+
+```
+
+#Sex
+```{r}
+
+dat %>%
+  freq(gender_unc) #***does RAMP have sex?
+```
+
+#Ethnicity
+```{r}
+
+dat %>%
+  freq(ethnicity)
+
+```
+
+#Education
+```{r}
+
+dat %>%
+  freq(highest_education) #Is this definitely prepandemic?
+
+```
+
+# Current baseline symptoms
+
+```{r}
+
+
+
+```
+
+#Sensitivity analysis; Other mental health diagnosis pre-pandemic, i.e., not ED
+    1. Count
+    2. Group (Dep, Anx, Dep+Anx, Psychotic, ADHD, ASD, PTSD)
+```{r}
+
+
+
+
+```
+
+
+

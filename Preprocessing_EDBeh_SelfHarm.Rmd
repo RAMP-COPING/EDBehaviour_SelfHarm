@@ -1,5 +1,5 @@
 ---
-title: "2Preprocessing_EDBeh_SelfHarm"
+title: "Preprocessing_EDBeh_SelfHarm"
 author: "Helena Davies"
 date: "21/04/2021"
 output: html_document
@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -2428,6 +2428,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.worth_living_life_people_.Wave_3a`,
          `taf.worth_living_life_people_.Wave_3b`,
          `taf.worth_living_life_people_.Wave_4a`,
+         `taf.worth_living_life_people_.Wave_4b`,
          `taf.worth_living_life_people_.Wave_5a`,
          `taf.worth_living_life_people_.Wave_6b`,
          `taf.worth_living_life_people_.Wave_7a`,
@@ -2445,6 +2446,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.felt_weeks_past_.Wave_3a`,
          `taf.felt_weeks_past_.Wave_3b`,
          `taf.felt_weeks_past_.Wave_4a`,
+         `taf.felt_weeks_past_.Wave_4b`,
          `taf.felt_weeks_past_.Wave_5a`,
          `taf.felt_weeks_past_.Wave_6b`,
          `taf.felt_weeks_past_.Wave_7a`,
@@ -2461,6 +2463,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.have_you_contemplated_harming_yourself_.Wave_3a`,
          `taf.have_you_contemplated_harming_yourself_.Wave_3b`,
          `taf.have_you_contemplated_harming_yourself_.Wave_4a`,
+         `taf.have_you_contemplated_harming_yourself_.Wave_4b`,
          `taf.have_you_contemplated_harming_yourself_.Wave_5a`,
          `taf.have_you_contemplated_harming_yourself_.Wave_6b`,
          `taf.have_you_contemplated_harming_yourself_.Wave_7a`,
@@ -2477,6 +2480,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.felt_weeks_past.1_.Wave_3a`,
          `taf.felt_weeks_past.1_.Wave_3b`,
          `taf.felt_weeks_past.1_.Wave_4a`,
+         `taf.felt_weeks_past.1_.Wave_4b`,
          `taf.felt_weeks_past.1_.Wave_5a`,
          `taf.felt_weeks_past.1_.Wave_6b`,
          `taf.felt_weeks_past.1_.Wave_7a`,
@@ -2493,6 +2497,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.meant_life_end_weeks_.Wave_3a`,
          `taf.meant_life_end_weeks_.Wave_3b`,
          `taf.meant_life_end_weeks_.Wave_4a`,
+         `taf.meant_life_end_weeks_.Wave_4b`,
          `taf.meant_life_end_weeks_.Wave_5a`,
          `taf.meant_life_end_weeks_.Wave_6b`,
          `taf.meant_life_end_weeks_.Wave_7a`,
@@ -2754,6 +2759,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.worth_living_life_people_.Wave_3a`,
          `taf.worth_living_life_people_.Wave_3b`,
          `taf.worth_living_life_people_.Wave_4a`,
+        `taf.worth_living_life_people_.Wave_4b`,
          `taf.worth_living_life_people_.Wave_5a`,
          `taf.worth_living_life_people_.Wave_6b`,
          `taf.worth_living_life_people_.Wave_7a`,
@@ -2771,6 +2777,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.felt_weeks_past_.Wave_3a`,
          `taf.felt_weeks_past_.Wave_3b`,
          `taf.felt_weeks_past_.Wave_4a`,
+       `taf.felt_weeks_past_.Wave_4b`,
          `taf.felt_weeks_past_.Wave_5a`,
          `taf.felt_weeks_past_.Wave_6b`,
          `taf.felt_weeks_past_.Wave_7a`,
@@ -2787,6 +2794,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.have_you_contemplated_harming_yourself_.Wave_3a`,
          `taf.have_you_contemplated_harming_yourself_.Wave_3b`,
          `taf.have_you_contemplated_harming_yourself_.Wave_4a`,
+       `taf.have_you_contemplated_harming_yourself_.Wave_4b`,
          `taf.have_you_contemplated_harming_yourself_.Wave_5a`,
          `taf.have_you_contemplated_harming_yourself_.Wave_6b`,
          `taf.have_you_contemplated_harming_yourself_.Wave_7a`,
@@ -2803,6 +2811,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.felt_weeks_past.1_.Wave_3a`,
          `taf.felt_weeks_past.1_.Wave_3b`,
          `taf.felt_weeks_past.1_.Wave_4a`,
+        `taf.felt_weeks_past.1_.Wave_4b`,
          `taf.felt_weeks_past.1_.Wave_5a`,
          `taf.felt_weeks_past.1_.Wave_6b`,
          `taf.felt_weeks_past.1_.Wave_7a`,
@@ -2819,6 +2828,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.meant_life_end_weeks_.Wave_3a`,
          `taf.meant_life_end_weeks_.Wave_3b`,
          `taf.meant_life_end_weeks_.Wave_4a`,
+       `taf.meant_life_end_weeks_.Wave_4b`,
          `taf.meant_life_end_weeks_.Wave_5a`,
          `taf.meant_life_end_weeks_.Wave_6b`,
          `taf.meant_life_end_weeks_.Wave_7a`,
