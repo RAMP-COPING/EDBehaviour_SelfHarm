@@ -3396,7 +3396,7 @@ dat.ed.EDGI <- dat.ed.EDGI %>%
 
 ```
 
-##Gerome check - age of onset - eDGI
+##Gerome check - age of onset - EDGI
 ```{r}
 #BED
 BED_EDGI <- dat.ed.EDGI %>%
@@ -3432,6 +3432,185 @@ AN_EDGI %>%
   count()
 
 ```
+
+##Gerome check 2 - age of onset under 26 and trumping of diagnosis by age of onset - EDGI
+
+```{r}
+
+dat.ed.EDGI$AN_trumped <-
+  with(dat.ed.EDGI,
+  if_else(
+    (
+      (
+      (anorexia_group_numeric == 1 &
+      bulimia_group_numeric == 1 &
+      BED_group_numeric == 1) &
+        
+      an.how_old_were_you_then.txt_numeric < be.began_roughly_regular_episodes.txt_numeric
+    ) |
+    
+    (
+      (
+      anorexia_group_numeric == 1 &
+      (bulimia_group_numeric == 1 |
+      BED_group_numeric == 1)
+    ) &
+      
+      an.how_old_were_you_then.txt_numeric < be.began_roughly_regular_episodes.txt_numeric
+    ) |
+    (
+       anorexia_group_numeric == 1 &
+        (
+          (BED_group_numeric == 0 |
+           is.na(BED_group_numeric)) &
+            (bulimia_group_numeric == 0 |
+           is.na(bulimia_group_numeric))
+           )
+            )
+    ),
+      true = 1,
+         false = 0,
+         missing = NA_real_)
+  )
+      
+
+#Check
+dat.ed.EDGI$AN_trumped %>%
+  freq()
+```
+         
+```{r}
+dat.ed.EDGI$BN_trumped <-
+  with(dat.ed.EDGI,
+  if_else(
+    (
+      (
+      (bulimia_group_numeric == 1 &
+      anorexia_group_numeric == 1 &
+      BED_group_numeric == 1) &
+        
+      an.how_old_were_you_then.txt_numeric > be.began_roughly_regular_episodes.txt_numeric
+    ) |
+    
+    (
+      (
+      bulimia_group_numeric == 1 &
+      (anorexia_group_numeric == 1 |
+      BED_group_numeric == 1)
+    ) &
+      
+      an.how_old_were_you_then.txt_numeric > be.began_roughly_regular_episodes.txt_numeric
+    ) |
+      (
+        bulimia_group_numeric == 1 &
+        (
+          (anorexia_group_numeric == 0 |
+           is.na(anorexia_group_numeric)) &
+            (bulimia_group_numeric == 0 |
+           is.na(bulimia_group_numeric))
+           )
+            )
+      
+    ),
+      true = 1,
+         false = 0,
+         missing = NA_real_)
+  )
+      
+
+#Check
+dat.ed.EDGI$BN_trumped %>%
+  freq()
+```
+         
+```{r}
+dat.ed.EDGI$BED_trumped <-
+  with(dat.ed.EDGI,
+  if_else(
+   (
+     (
+      
+      (
+      BED_group_numeric == 1 &
+      (anorexia_group_numeric == 1 |
+      bulimia_group_numeric == 1)
+    ) &
+      
+      an.how_old_were_you_then.txt_numeric > be.began_roughly_regular_episodes.txt_numeric
+    ) |
+    (
+       BED_group_numeric == 1 &
+        (
+          (anorexia_group_numeric == 0 |
+           is.na(anorexia_group_numeric)) &
+            (bulimia_group_numeric == 0 |
+           is.na(bulimia_group_numeric))
+           )
+            )
+    )
+   ,
+      true = 1,
+         false = 0,
+         missing = NA_real_)
+  )
+      
+
+#Check
+dat.ed.EDGI$BED_trumped %>%
+  freq()
+
+```    
+#Table of trumped diagnoses
+```{r}
+
+table(dat.ed.EDGI$BED_trumped,
+      dat.ed.EDGI$BN_trumped)
+
+table(dat.ed.EDGI$AN_trumped,
+      dat.ed.EDGI$BED_trumped)
+
+table(dat.ed.EDGI$AN_trumped,
+      dat.ed.EDGI$BN_trumped)
+```
+```{r}
+#BED
+BED_EDGI <- dat.ed.EDGI %>%
+  filter(BED_trumped == 1) 
+
+nrow(BED_EDGI)
+  
+
+BED_EDGI %>%
+  filter(be.began_roughly_regular_episodes.txt_numeric < 26) %>%
+  count()
+
+#BN
+BN_EDGI <- dat.ed.EDGI %>%
+  filter(BN_trumped == 1) 
+
+nrow(BN_EDGI)
+  
+
+BN_EDGI %>%
+  filter(be.began_roughly_regular_episodes.txt_numeric < 26) %>%
+  count()
+
+#AN
+AN_EDGI <- dat.ed.EDGI %>%
+  filter(AN_trumped == 1) 
+
+nrow(AN_EDGI)
+  
+
+AN_EDGI %>%
+  filter(an.how_old_were_you_then.txt_numeric < 26) %>%
+  count()
+
+```
+
+
+
+
 ##Gerome check - age of onset - GLAD
 ```{r}
 #BED
@@ -3691,16 +3870,6 @@ aan.self.report.GLAD %>%
 
 (29/112)*100
 ```
-
-
-
-
-
-
-
-
-
-
 
 
 ## Select variables to keep
