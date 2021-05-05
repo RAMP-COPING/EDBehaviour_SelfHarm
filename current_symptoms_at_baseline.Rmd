@@ -272,6 +272,14 @@ glad_AN_baseline.filtered <- glad_AN_baseline %>%
 
 nrow(glad_AN_baseline.filtered)
 
+#GLAD DEM - Filter by people who completed baseline survey before 15th May
+as.Date(glad_dem$startDate)
+
+glad_dem.filtered <- glad_dem %>%
+  filter(startDate < as.Date("2020-05-15"))
+
+nrow(glad_dem.filtered)
+
 ```
 
 ##NBR - Age at low weight 
@@ -379,8 +387,8 @@ head(nbr_dem_baseline.filtered$Birthdate)
 nbr_AN_baseline.filtered$low_weight_duration <- NA
 
 # Change character to numeric
-nbr_AN_baseline.filtered$low_weight_duration_years <- as.numeric(nbr_AN_baseline.filtered$an.1.anorexia_nervosa_low_weight.1)
-nbr_AN_baseline.filtered$low_weight_duration_months <- as.numeric(nbr_AN_baseline.filtered$an.1.anorexia_nervosa_low_weight)
+nbr_AN_baseline.filtered$low_weight_duration_years <- as.numeric(nbr_AN_baseline.filtered$an.1.anorexia_nervosa_low_weight)
+nbr_AN_baseline.filtered$low_weight_duration_months <- as.numeric(nbr_AN_baseline.filtered$an.1.anorexia_nervosa_low_weight.1)
 
 ##Contains -77, need to change to NA
 nbr_AN_baseline.filtered$low_weight_duration_years[nbr_AN_baseline.filtered$low_weight_duration_years == -77] <- NA_real_
@@ -399,7 +407,6 @@ nbr_AN_baseline.filtered$low_weight_duration_YEARS <-
 # Summary
 freq(nbr_AN_baseline.filtered$low_weight_duration_YEARS)
 ```
-
 #Merge dem and AN data
 ```{r}
 dem_to_merge <- nbr_dem_baseline.filtered %>%
@@ -416,18 +423,37 @@ nrow(nbr_AN_baseline.filtered.merged)
 colnames(nbr_AN_baseline.filtered.merged)
 ```
 
+##NBR - CLEANING Duration at low weight
+Someone can not have been at low weight for a period longer than they have been alive (i.e., their age at baseline). Also, they can not have been at a low weight for their entire life (i.e., age at baseline == duration at low weight). Minimum age for AN is ~4 (***for now, can change this). SO I have added 4 to their duration at low weight. If this is greater than their current age, then it is an implausible value.
+```{r}
+
+# Sum years and months into years (first covert to days [i.e., smallest unit], then convert to years)
+nbr_AN_baseline.filtered.merged$low_weight_duration_YEARS_cleaned <- 
+  if_else(condition = 
+           (nbr_AN_baseline.filtered.merged$low_weight_duration_YEARS + 4) >
+             (nbr_AN_baseline.filtered.merged$age_at_baseline),
+           true = NA_real_,
+           false = nbr_AN_baseline.filtered.merged$low_weight_duration_YEARS,
+        missing = NA_real_)
+
+# Summary
+freq(nbr_AN_baseline.filtered.merged$low_weight_duration_YEARS_cleaned)
+
+```
+
+
 ##NBR - Age when low weight stopped
 ‘age at low weight’ + ‘duration at low weight/of anorexia’ = younger than current age)
 ```{r}
 
 #Age when no longer at low weight
-nbr_AN_baseline.filtered.merged$low_weight_stop <- nbr_AN_baseline.filtered.merged$age_at_low_weight + nbr_AN_baseline.filtered.merged$low_weight_duration_YEARS
+nbr_AN_baseline.filtered.merged$low_weight_stop <- nbr_AN_baseline.filtered.merged$age_at_low_weight + nbr_AN_baseline.filtered.merged$low_weight_duration_YEARS_cleaned
 
 #Round down
 nbr_AN_baseline.filtered.merged$low_weight_stop <- floor(nbr_AN_baseline.filtered.merged$low_weight_stop)
 
 nbr_AN_baseline.filtered.merged <- nbr_AN_baseline.filtered.merged %>%
-   mutate(current_AN_symptoms =
+   mutate(current_AN_symptoms_duration =
             case_when(
                     low_weight_stop < age_at_baseline ~ 0,
                     low_weight_stop < 16 ~ 0, #If people have not entered their current age, we can assume they are at least over 16 (criteria to take part in NBR***)
@@ -438,8 +464,750 @@ nbr_AN_baseline.filtered.merged <- nbr_AN_baseline.filtered.merged %>%
    )
 
 nbr_AN_baseline.filtered.merged %>%
+  freq(current_AN_symptoms_duration)
+
+```
+
+
+2) Current BMI as reported in the NBR COPING dem questionnaire (current_bmi)
+
+## NBR - Current weight in kg from DEMOGRAPHICS (i.e., sign up)
+```{r}
+
+##First need all numeric variables (all are currently character variables...)
+nbr_dem_baseline.filtered$current_weight_stone <- as.numeric(nbr_dem_baseline.filtered$demographics.provide_current_weight_pregnant)
+
+nbr_dem_baseline.filtered$current_weight_lbs <- as.numeric(nbr_dem_baseline.filtered$demographics.provide_current_weight_pregnant.1)
+
+nbr_dem_baseline.filtered$current_weight_kg <- as.numeric(nbr_dem_baseline.filtered$demographics.provide_current_weight_pregnant.2)
+
+##To convert stone to kg, multiply by 6.35029
+nbr_dem_baseline.filtered$current_weight_kg_converted <- NA_real_
+
+nbr_dem_baseline.filtered$current_weight_kg_converted <-
+  if_else(condition = is.na(nbr_dem_baseline.filtered$current_weight_kg_converted), 
+         true = (
+           (nbr_dem_baseline.filtered$current_weight_stone*6.35029) + 
+             (nbr_dem_baseline.filtered$current_weight_lbs*0.453592)
+           ), #weight in st and lbs converted to kg
+         false = NA_real_,
+         missing = NA_real_)
+
+
+# Kilograms
+nbr_dem_baseline.filtered$current_weight_kg_unc <- 
+  if_else(condition = is.na(nbr_dem_baseline.filtered$current_weight_kg_converted), 
+         true = nbr_dem_baseline.filtered$current_weight_kg, #weight in kilos
+         false = nbr_dem_baseline.filtered$current_weight_kg_converted,
+         missing = NA_real_) 
+
+# Summary
+summary(nbr_dem_baseline.filtered$current_weight_kg_unc)
+
+```
+
+## NBR - Clean current weight in kg 
+```{r }
+#Weight outlier
+  # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  current_dem_weight_upper_limit = 150 
+  current_dem_weight_lower_limit = 25
+  
+  #Identify number of outliers
+  length(
+    which(
+      nbr_dem_baseline.filtered$current_weight_kg_unc > current_dem_weight_upper_limit |
+        nbr_dem_baseline.filtered$current_weight_kg_unc < current_dem_weight_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  nbr_dem_baseline.filtered <- nbr_dem_baseline.filtered %>%
+    mutate(
+      current_weight_kg =
+        if_else(
+          current_weight_kg_unc > current_dem_weight_upper_limit |
+            current_weight_kg_unc < current_dem_weight_lower_limit,
+          true = NA_real_,
+          false = current_weight_kg_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  nbr_dem_baseline.filtered %>%
+    freq(current_weight_kg)
+  
+  
+```
+
+
+##NBR - Current DEM height in m
+
+```{r}
+
+##Change character variables to numeric 
+nbr_dem_baseline.filtered$current_height_ft_numeric <- as.numeric(nbr_dem_baseline.filtered$demographics.what_is_your_current_height) 
+
+nbr_dem_baseline.filtered$current_height_inches_numeric <- as.numeric(nbr_dem_baseline.filtered$demographics.what_is_your_current_height.1)
+
+nbr_dem_baseline.filtered$current_height_cm_numeric <- as.numeric(nbr_dem_baseline.filtered$demographics.what_is_your_current_height.2)
+
+
+# Feet and inches to metres
+nbr_dem_baseline.filtered$current_height_m <- NA
+
+
+nbr_dem_baseline.filtered$current_height_m <- 
+  if_else(
+    condition = is.na(nbr_dem_baseline.filtered$current_height_m),
+    true = (
+      (nbr_dem_baseline.filtered$current_height_ft_numeric*0.3048) +
+      (nbr_dem_baseline.filtered$current_height_inches_numeric*0.0254)
+       ),
+    false = NA_real_,
+    missing = NA_real_
+    )
+
+# Centimetres to metres
+nbr_dem_baseline.filtered$current_height_m_unc <- 
+  if_else(
+    condition = is.na(nbr_dem_baseline.filtered$current_height_m),
+    true = nbr_dem_baseline.filtered$current_height_cm_numeric/100,
+    false = nbr_dem_baseline.filtered$current_height_m)
+
+# Summary
+summary(nbr_dem_baseline.filtered$current_height_m_unc)
+```
+
+## NBR - Clean current height in m
+```{r}
+#Height outlier
+  # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  current_height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
+  current_height_lower_limit = 1
+  
+  #Identify number of outliers
+  length(
+    which(
+      nbr_dem_baseline.filtered$current_height_m_unc > current_height_upper_limit |
+        nbr_dem_baseline.filtered$current_height_m_unc < current_height_lower_limit
+    )
+  )
+  
+  #Remove height outliers
+  nbr_dem_baseline.filtered <- nbr_dem_baseline.filtered %>%
+    mutate(
+     current_height_m_final =
+        if_else(
+          current_height_m_unc > current_height_upper_limit |
+            current_height_m_unc < current_height_lower_limit,
+          true = NA_real_,
+          false = current_height_m_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  nbr_dem_baseline.filtered %>%
+    freq(current_height_m_final)
+  
+  
+```
+
+## GLAD - Work out current BMI as reported in COPING (GLAD)
+
+NB: The NBR OPING dem questionnaire does not ask for current BMI (but does ask about height + weight - so need to derive it)
+```{r }
+
+# Calculated from current height and lowest weight reported in the sign up **This should be based on min weight and height - have quite low values <10 - need to check
+nbr_dem_baseline.filtered$current_bmi <- NA
+
+nbr_dem_baseline.filtered$current_bmi <- 
+  if_else(condition = is.na(nbr_dem_baseline.filtered$current_bmi), 
+         true = nbr_dem_baseline.filtered$current_weight_kg/nbr_dem_baseline.filtered$current_height_m_final^2, 
+         false = NA_real_, 
+         missing = NA_real_)
+
+# Summary
+summary(nbr_dem_baseline.filtered$current_bmi)
+
+```
+
+#Current AN symptoms for NBR participants 
+```{r}
+
+  nbr_dem_baseline.filtered <- nbr_dem_baseline.filtered %>%
+    mutate(current_AN_symptoms_BMI =
+        case_when(
+          current_bmi > 18.5 ~ 0,
+            current_bmi <= 18.5 ~ 1
+        )
+    )
+
+nbr_dem_baseline.filtered %>%
+  freq(current_AN_symptoms_BMI)
+  
+```
+#If someone is missing their current BMI data, we can use the other method to work out if they are currently ill
+
+##Need to merge the two datasets with the currently ill variables
+```{r}
+nbr_duration_current_ill <- nbr_AN_baseline.filtered.merged %>%
+  select(subjectid,
+    current_AN_symptoms_duration)
+
+
+nbr_dem_baseline_filtered_merged <- merge(nbr_dem_baseline.filtered,
+                                 nbr_duration_current_ill,
+                                 by ="subjectid")
+
+
+```
+
+# We will only use the other method (the 'duration' method) if they are missing data for the other method (the 'BMI' method), otherwise use the BMI method
+```{r}
+
+nbr_dem_baseline_filtered_merged <- nbr_dem_baseline_filtered_merged %>%
+  mutate(current_AN_symptoms =
+           case_when(current_AN_symptoms_BMI == 1 ~ 1,
+                     current_AN_symptoms_BMI == 0 ~ 0,
+                    
+                      is.na(current_AN_symptoms_BMI) &
+                       current_AN_symptoms_duration == 1 ~ 1,
+                     
+                    is.na(current_AN_symptoms_BMI) &
+                       current_AN_symptoms_duration == 0 ~ 0
+                     
+                   )
+    
+  )
+
+nbr_dem_baseline_filtered_merged %>%
   freq(current_AN_symptoms)
 
 ```
+
+
+#GLAD - CURRENT AN SYMPTOMS
+
+#GLAD - Age at low weight 
+```{r}
+
+#Define age limits
+  age_upper_limit = 117
+  age_lower_limit = 5
+  
+  #Identify number of outliers
+  length(
+    which(
+      glad_AN_baseline.filtered$an.1.how_old_were_you_then.txt > age_upper_limit |
+        glad_AN_baseline.filtered$an.1.how_old_were_you_then.txt < age_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+   glad_AN_baseline.filtered <-  glad_AN_baseline.filtered %>%
+    mutate(
+      age_at_low_weight =
+        if_else(
+          an.1.how_old_were_you_then.txt > age_upper_limit |
+            an.1.how_old_were_you_then.txt < age_lower_limit,
+          true = NA_real_,
+          false = an.1.how_old_were_you_then.txt,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+   glad_AN_baseline.filtered %>%
+    freq(age_at_low_weight)
+  
+```
+
+#GLAD- Age when answered questionnaire
+```{r}
+
+glad_dem.filtered$birthday_year_numeric <- glad_dem.filtered$dem.year + 1900
+  
+#create dob as date format
+glad_dem.filtered$Birthdate <- as.Date(paste(glad_dem.filtered$birthday_year_numeric,
+                                            glad_dem.filtered$dem.month,
+                                            glad_dem.filtered$dem.day,
+                                            sep = "-"))
+  
+head(glad_dem.filtered$Birthdate)
+
+##Merge so that Birthdate is in same dataset as endDate of COPING questionnaire (i.e., to get age at COPING survey completion)
+glad_dem_to_merge <- glad_dem.filtered %>%
+  select(externalDataReference,
+         Birthdate
+   )
+
+glad_AN_baseline.filtered.merged <- merge(glad_dem_to_merge,
+                                          glad_AN_baseline.filtered,
+                                          by ="externalDataReference"
+  
+)
+
+colnames(glad_AN_baseline.filtered.merged)
+nrow(glad_AN_baseline.filtered.merged)
+
+#Calculate dem.age (remove NAs as it throws an error)
+ages <- eeptools::age_calc(na.omit(glad_AN_baseline.filtered.merged$Birthdate),
+                           enddate = as.Date(glad_AN_baseline.filtered.merged$endDate),
+                           units = "years")
+
+#Create dem.agecolumn
+glad_AN_baseline.filtered.merged$age_unc <- NA
+
+#Populate with values (excluding NAs)
+glad_AN_baseline.filtered.merged$age_unc[!is.na(glad_AN_baseline.filtered.merged$Birthdate)] <- ages
+
+#Round age down
+glad_AN_baseline.filtered.merged$age_unc <- floor(glad_AN_baseline.filtered.merged$age_unc)
+
+#Visualise
+head(glad_AN_baseline.filtered.merged$age_unc)
+head(glad_AN_baseline.filtered.merged$Birthdate)
+```
+##GLAD - Clean current age
+```{r}
+#Define age limits
+  age_upper_limit = 117
+  age_lower_limit = 16 #you have to be 16 to take part
+  
+  #Identify number of outliers
+  length(
+    which(
+      glad_AN_baseline.filtered.merged$age_unc > age_upper_limit |
+        glad_AN_baseline.filtered.merged$age_unc < age_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  glad_AN_baseline.filtered.merged <- glad_AN_baseline.filtered.merged %>%
+    mutate(
+      age_at_baseline =
+        if_else(
+          age_unc > age_upper_limit |
+            age_unc < age_lower_limit,
+          true = NA_real_,
+          false = age_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  glad_AN_baseline.filtered.merged %>%
+    freq(age_at_baseline)
+  
+```
+
+##GLAD - Duration at low weight
+```{r}
+# Empty column
+glad_AN_baseline.filtered.merged$low_weight_duration <- NA
+
+# Change character to numeric
+glad_AN_baseline.filtered.merged$low_weight_duration_years <- as.numeric(glad_AN_baseline.filtered.merged$an.1.anorexia_nervosa_low_weight)
+glad_AN_baseline.filtered.merged$low_weight_duration_months <- as.numeric(glad_AN_baseline.filtered.merged$an.1.anorexia_nervosa_low_weight.1)
+
+##Contains -77, need to change to NA
+glad_AN_baseline.filtered.merged$low_weight_duration_years[glad_AN_baseline.filtered.merged$low_weight_duration_years == -77] <- NA_real_
+glad_AN_baseline.filtered.merged$low_weight_duration_months[glad_AN_baseline.filtered.merged$low_weight_duration_months == -77] <- NA_real_
+
+# Sum years and months into years (first covert to days [i.e., smallest unit], then convert to years)
+glad_AN_baseline.filtered.merged$low_weight_duration_YEARS <- 
+  if_else(condition = is.na(glad_AN_baseline.filtered.merged$low_weight_duration),
+         true = (
+           (glad_AN_baseline.filtered.merged$low_weight_duration_years*365.25) + #Duration in years (in days)
+             (glad_AN_baseline.filtered.merged$low_weight_duration_months*30.4167)  #Duration in months (in days)
+           ) / 365.25, 
+        false = NA_real_,
+        missing = NA_real_)
+
+# Summary
+freq(glad_AN_baseline.filtered.merged$low_weight_duration_YEARS)
+```
+
+##GLAD - CLEANING Duration at low weight
+Someone can not have been at low weight for a period longer than they have been alive (i.e., their age at baseline). Also, they can not have been at a low weight for their entire life (i.e., age at baseline == duration at low weight). Minimum age for AN is ~4 (***for now, can change this). SO I have added 4 to their duration at low weight. If this is greater than their current age, then it is an implausible value.
+```{r}
+
+# Sum years and months into years (first covert to days [i.e., smallest unit], then convert to years)
+glad_AN_baseline.filtered.merged$low_weight_duration_YEARS_cleaned <- 
+  if_else(condition = 
+           (glad_AN_baseline.filtered.merged$low_weight_duration_YEARS + 4) >
+             (glad_AN_baseline.filtered.merged$age_at_baseline),
+           true = NA_real_,
+           false = glad_AN_baseline.filtered.merged$low_weight_duration_YEARS,
+        missing = NA_real_)
+
+# Summary
+freq(glad_AN_baseline.filtered.merged$low_weight_duration_YEARS_cleaned)
+
+##Check participant with extreme values
+extreme_value <- glad_AN_baseline.filtered.merged %>%
+  filter(low_weight_duration_YEARS_cleaned == 70
+  )
+
+
+extreme_value$age_at_baseline #This checks out, as their age at baseline was 85. THerefore, it is plausible that they have been at low weight for 70 years.
+
+```
+
+##NBR - Age when low weight stopped
+‘age at low weight’ + ‘duration at low weight/of anorexia’ = younger than current age)
+```{r}
+
+#Age when no longer at low weight
+glad_AN_baseline.filtered.merged$low_weight_stop <- glad_AN_baseline.filtered.merged$age_at_low_weight + glad_AN_baseline.filtered.merged$low_weight_duration_YEARS_cleaned
+
+#Round down
+glad_AN_baseline.filtered.merged$low_weight_stop <- floor(glad_AN_baseline.filtered.merged$low_weight_stop)
+
+glad_AN_baseline.filtered.merged <- glad_AN_baseline.filtered.merged %>%
+   mutate(current_AN_symptoms_duration =
+            case_when(
+                    low_weight_stop < age_at_baseline ~ 0,
+                    low_weight_stop < 16 ~ 0, #If people have not entered their current age, we can assume they are at least over 16 (criteria to take part in NBR***)
+                     age_at_baseline == age_at_low_weight ~ 1,
+                    age_at_baseline == low_weight_stop ~ 1
+           
+            )
+   )
+
+glad_AN_baseline.filtered.merged %>%
+  freq(current_AN_symptoms_duration)
+
+```
+
+
+## GLAD - Not many participants have entered data for the above variables (age at low weight, duration at low weight, and current age) SO will also use current BMI as indicator of illness
+
+CURRENT BMI > 18.5 = not currently ill
+
+Read in baseline COPING GLAD dem data
+```{r}
+
+dem_coping_glad <- readRDS(file = "../data_raw/glad/dem_coping_glad.rds")
+dim(dem_coping_glad)
+colnames(dem_coping_glad)
+```
+
+#GLAD DEM COPING - Filter by people who completed baseline survey before 15th May
+```{r}
+as.Date(dem_coping_glad$startDate)
+
+dem_coping_glad.filtered <- dem_coping_glad %>%
+  filter(startDate < as.Date("2020-05-15"))
+
+nrow(dem_coping_glad.filtered)
+```
+
+2) Current BMI as reported in the GLAD COPING dem questionnaire (current_bmi)
+
+## GLAD - Current weight in kg from DEMOGRAPHICS (i.e., sign up)
+```{r}
+
+##First need all numeric variables (all are currently character variables...)
+dem_coping_glad.filtered$current_weight_stone <- as.numeric(dem_coping_glad.filtered$dem.current_weight_provide_pregnant)
+
+dem_coping_glad.filtered$current_weight_lbs <- as.numeric(dem_coping_glad.filtered$dem.current_weight_provide_pregnant.1)
+
+dem_coping_glad.filtered$current_weight_kg <- as.numeric(dem_coping_glad.filtered$dem.current_weight_provide_pregnant.2)
+
+##To convert stone to kg, multiply by 6.35029
+dem_coping_glad.filtered$current_weight_kg_converted <- NA_real_
+
+dem_coping_glad.filtered$current_weight_kg_converted <-
+  if_else(condition = is.na(dem_coping_glad.filtered$current_weight_kg_converted), 
+         true = (
+           (dem_coping_glad.filtered$current_weight_stone*6.35029) + 
+             (dem_coping_glad.filtered$current_weight_lbs*0.453592)
+           ), #weight in st and lbs converted to kg
+         false = NA_real_,
+         missing = NA_real_)
+
+
+# Kilograms
+dem_coping_glad.filtered$current_weight_kg_unc <- 
+  if_else(condition = is.na(dem_coping_glad.filtered$current_weight_kg_converted), 
+         true = dem_coping_glad.filtered$current_weight_kg, #weight in kilos
+         false = dem_coping_glad.filtered$current_weight_kg_converted,
+         missing = NA_real_) 
+
+# Summary
+summary(dem_coping_glad.filtered$current_weight_kg_unc)
+
+```
+
+## GLAD - Clean current weight in kg 
+```{r }
+#Weight outlier
+  # Define weight limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  current_dem_weight_upper_limit = 150 
+  current_dem_weight_lower_limit = 25
+  
+  #Identify number of outliers
+  length(
+    which(
+      dem_coping_glad.filtered$current_weight_kg_unc > current_dem_weight_upper_limit |
+        dem_coping_glad.filtered$current_weight_kg_unc < current_dem_weight_lower_limit
+    )
+  )
+  
+  #Remove weight outliers
+  dem_coping_glad.filtered <- dem_coping_glad.filtered %>%
+    mutate(
+      current_weight_kg =
+        if_else(
+          current_weight_kg_unc > current_dem_weight_upper_limit |
+            current_weight_kg_unc < current_dem_weight_lower_limit,
+          true = NA_real_,
+          false = current_weight_kg_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dem_coping_glad.filtered %>%
+    freq(current_weight_kg)
+  
+  
+```
+
+
+##GLAD- Current DEM height in m 
+
+```{r}
+
+##Change character variables to numeric 
+dem_coping_glad.filtered$current_height_ft_numeric <- as.numeric(dem_coping_glad.filtered$dem.what_is_your_current_height) 
+
+dem_coping_glad.filtered$current_height_inches_numeric <- as.numeric(dem_coping_glad.filtered$dem.what_is_your_current_height.1)
+
+dem_coping_glad.filtered$current_height_cm_numeric <- as.numeric(dem_coping_glad.filtered$dem.what_is_your_current_height.2)
+
+
+# Feet and inches to metres
+dem_coping_glad.filtered$current_height_m <- NA
+
+
+dem_coping_glad.filtered$current_height_m <- 
+  if_else(
+    condition = is.na(dem_coping_glad.filtered$current_height_m),
+    true = (
+      (dem_coping_glad.filtered$current_height_ft_numeric*0.3048) +
+      (dem_coping_glad.filtered$current_height_inches_numeric*0.0254)
+       ),
+    false = NA_real_,
+    missing = NA_real_
+    )
+
+# Centimetres to metres
+dem_coping_glad.filtered$current_height_m_unc <- 
+  if_else(
+    condition = is.na(dem_coping_glad.filtered$current_height_m),
+    true = dem_coping_glad.filtered$current_height_cm_numeric/100,
+    false = dem_coping_glad.filtered$current_height_m)
+
+# Summary
+summary(dem_coping_glad.filtered$current_height_m_unc)
+```
+
+## GLAD -Clean current height in m
+```{r}
+#Height outlier
+  # Define height limits ***These are fairly arbitary and taken from the ED100K issue log. Will need to make final decisions soon.
+  current_height_upper_limit = 2.31 ##tallest person in the world is 2.31 metres
+  current_height_lower_limit = 1
+  
+  #Identify number of outliers
+  length(
+    which(
+      dem_coping_glad.filtered$current_height_m_unc > current_height_upper_limit |
+        dem_coping_glad.filtered$current_height_m_unc < current_height_lower_limit
+    )
+  )
+  
+  #Remove height outliers
+  dem_coping_glad.filtered <- dem_coping_glad.filtered %>%
+    mutate(
+     current_height_m_final =
+        if_else(
+          current_height_m_unc > current_height_upper_limit |
+            current_height_m_unc < current_height_lower_limit,
+          true = NA_real_,
+          false = current_height_m_unc,
+          missing = NA_real_
+        )
+    )
+  
+  ##Check
+  dem_coping_glad.filtered %>%
+    freq(current_height_m_final)
+  
+  
+```
+
+## GLAD-  Work out current BMI as reported in COPING (GLAD)
+
+NB: The GLAD COPING dem questionnaire does not ask for current BMI (but does ask about height + weight - so need to derive it)
+```{r }
+
+# Calculated from current height and lowest weight reported in the sign up **This should be based on min weight and height - have quite low values <10 - need to check
+dem_coping_glad.filtered$current_bmi <- NA
+
+dem_coping_glad.filtered$current_bmi <- 
+  if_else(condition = is.na(dem_coping_glad.filtered$current_bmi), 
+         true = dem_coping_glad.filtered$current_weight_kg/dem_coping_glad.filtered$current_height_m_final^2, 
+         false = NA_real_, 
+         missing = NA_real_)
+
+# Summary
+summary(dem_coping_glad.filtered$current_bmi)
+
+```
+
+#GLAD -Current AN symptoms for GLAD participants (using BMI method)
+```{r}
+
+  dem_coping_glad.filtered <- dem_coping_glad.filtered %>%
+    mutate(current_AN_symptoms_BMI =
+        case_when(
+          current_bmi > 18.5 ~ 0,
+            current_bmi <= 18.5 ~ 1
+        )
+    )
+
+dem_coping_glad.filtered %>%
+  freq(current_AN_symptoms_BMI)
+  
+```
+
+#If someone is missing their current BMI data, we can use the other method to work out if they are currently ill
+
+##Need to merge the two datasets with the currently ill variables
+```{r}
+glad_duration_current_ill <- glad_AN_baseline.filtered.merged %>%
+  select(externalDataReference,
+    current_AN_symptoms_duration)
+
+
+dem_coping_glad.filtered.merged <- merge(dem_coping_glad.filtered,
+                                 glad_duration_current_ill,
+                                 by ="externalDataReference")
+
+
+```
+
+# We will only use the other method (the 'duration' method) if they are missing data for the other method (the 'BMI' method), otherwise use the BMI method
+```{r}
+
+dem_coping_glad.filtered.merged <- dem_coping_glad.filtered.merged %>%
+  mutate(current_AN_symptoms =
+           case_when(current_AN_symptoms_BMI == 1 ~ 1,
+                     current_AN_symptoms_BMI == 0 ~ 0,
+                    
+                      is.na(current_AN_symptoms_BMI) &
+                       current_AN_symptoms_duration == 1 ~ 1,
+                     
+                    is.na(current_AN_symptoms_BMI) &
+                       current_AN_symptoms_duration == 0 ~ 0
+                     
+                   )
+    
+  )
+
+dem_coping_glad.filtered.merged %>%
+  freq(current_AN_symptoms)
+
+```
+## Select variables to keep and merge into one dataset
+
+GLAD SELECTING + MERGING
+```{r}
+
+#Current AN symptoms - GLAD
+glad.AN <- dem_coping_glad.filtered.merged %>%
+  select(externalDataReference,
+         current_AN_symptoms)
+
+#Current BE symptoms - GLAD
+glad.BE <- glad_BE_baseline.filtered %>%
+  select(externalDataReference,
+         current_BE_symptoms)
+
+#Current ICB symptoms - GLAD
+glad.ICB <- glad_ICB_baseline.filtered %>%
+  select(externalDataReference,
+         current_ICB_symptoms)
+
+
+#Merge GLAD datasets
+dfs.list <- list(glad.AN,
+                 glad.BE,
+                 glad.ICB
+  
+)
+
+glad.current.symptoms <- plyr::join_all(dfs.list,
+                                      by = c("externalDataReference"))
+
+#CHECK
+colnames(glad.current.symptoms)
+nrow(glad.current.symptoms)
+
+```
+
+NBR SELECTING + MERGING
+
+```{r}
+#Current AN symptoms - NBR
+nbr.AN <- nbr_dem_baseline_filtered_merged %>%
+  select(subjectid,
+         current_AN_symptoms)
+
+#Current BE symptoms - NBR
+nbr.BE <- nbr_BE_baseline.filtered %>%
+  select(subjectid,
+         current_BE_symptoms)
+
+#Current ICB symptoms - NBR
+nbr.ICB <- nbr_ICB_baseline.filtered %>%
+  select(subjectid,
+         current_ICB_symptoms)
+
+#Merge NBR datasets
+dfs.list <- list(nbr.AN,
+                 nbr.BE,
+                 nbr.ICB
+  
+)
+
+nbr.current.symptoms <- plyr::join_all(dfs.list,
+                                      by = c("subjectid"))
+
+#CHECK
+colnames(nbr.current.symptoms)
+nrow(nbr.current.symptoms)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -196,8 +196,6 @@ edeq_coping_screener$ed_scid5.weigh_weighed_past_month_.Wave_1b <- NULL
 #Bind coping and ramp's edeq and taf TOGETHER
 ```{r}
 
-##*****NEED TO CHANGE TO FACTOR 
-
 #bind all edeq data
 
 EDEQ <- bind_rows(edeq_ramp_screener,

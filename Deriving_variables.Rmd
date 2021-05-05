@@ -44,6 +44,10 @@ dat <- readRDS(file = "../data_cleaned/data.final2021-05-04.rds")
 dim(dat)
 colnames(dat)
 ```
+
+
+
+
 EXPOSURE: 
 
 •	Eating disorder behaviour: Pre-pandemic eating disorder diagnostic status (self-reported diagnosis and/or algorithm-derived)
@@ -422,8 +426,9 @@ dat %>%
   •	age
   •	sex
   • Current symptoms
-  •	Ethnicity
+  •	Ethnicity 
   •	Education (proxying SES)
+  
   o	Sensitivity analysis; Other mental health diagnosis pre-pandemic, i.e., not ED
     	Count
     	Group (Dep, Anx, Dep+Anx, Psychotic, ADHD, ASD, PTSD)
