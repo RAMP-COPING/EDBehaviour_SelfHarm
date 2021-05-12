@@ -1,7 +1,7 @@
 ---
-title: "MERGING"
+title: "Merging data"
 author: "Helena Davies"
-date: "04/05/2021"
+date: "06/05/2021"
 output: html_document
 ---
 
@@ -113,22 +113,6 @@ glad_baseline[edeq_baseline_columnNames] <- NA
 edgi_baseline[edeq_baseline_columnNames] <- NA
 ```
                                                           
- [3] "sex"       - not in ramp                                                            
- [4] "gender_unc"                                                            
- [5] "uk_location"                                                           
- [6] "current_country"                                                       
- [7] "age_category_numeric"    - called "age_unc" in ramp                                              
- [8] "age_category"                                                          
- [9] "ethnicity"                                                             
-[10] "highest_education_prepan_numeric"    - not in ramp, nbr                                   
-[11] "highest_education_prepan"           - not in ramp, nbr                                     
-[12] "highest_education_numeric"                                             
-[13] "highest_education"                                                     
-[14] "employment_prior_covid"                                                
-[15] "employment_prior_covid_numeric"                                        
-[16] "employment_change"                                                     
-[17] "employment_change_numeric" 
-
 ##Need same columns across all datasets in order to merge
 ```{r}
 #sex & age_category_numeric not in RAMP
@@ -163,6 +147,15 @@ dat <- bind_rows(
 ##check col names
 colnames(dat)
 nrow(dat)
+```
+##For now, set: age_category, age_category_numeric and sex to NA as these are in the ED grouping dataset
+```{r}
+
+dat$age_category <-NULL
+
+dat$age_category_numeric <- NULL
+
+dat$sex <- NULL
 ```
 
 
@@ -255,157 +248,14 @@ nrow(data.merged)
 ```{r}
 
 ##COPING (GLAD, EDGI, NBR) and RAMP
-COPING_RAMP_ED_data <- readRDS(file = "../data_cleaned/COPING_ED_data_cleaned.rds")
+baseline_ED_groups_data <- readRDS(file = "../data_cleaned/baseline_groups2021-05-06.rds")
 
 # Inspect dimensions
-dim(COPING_RAMP_ED_data)
+dim(baseline_ED_groups_data)
 # Inspect colnames
-colnames(COPING_RAMP_ED_data)
+colnames(baseline_ED_groups_data)
 
-nrow(COPING_RAMP_ED_data)
-
-##GLAD original
-GLAD_ED_data <- readRDS(file = "../data_cleaned/GLAD_ED_data_cleaned.rds")
-
-# Inspect dimensions
-dim(GLAD_ED_data)
-# Inspect colnames
-colnames(GLAD_ED_data)
-
-nrow(GLAD_ED_data)
-
-##EDGI original 
-EDGI_ED_data <- readRDS(file = "../data_cleaned/EDGI_ED_data_cleaned.rds")
-
-# Inspect dimensions
-dim(EDGI_ED_data)
-# Inspect colnames
-colnames(EDGI_ED_data)
-
-nrow(EDGI_ED_data)
-
-
-```
-
-##Create columns in EDGI that are only in GLAD (ready to merge)
-```{r}
-EDGI_ED_data$an.1.anorexia_nervosa_numeric <- NA
-EDGI_ED_data$an.1.anorexia_nervosa <- NA
-EDGI_ED_data$an.1.bulimia_nervosa <- NA
-EDGI_ED_data$an.1.bulimia_nervosa_numeric <- NA
-EDGI_ED_data$an.1.bingeeating_disorder_numeric <- NA
-EDGI_ED_data$an.1.bingeeating_disorder <- NA
-
-
-```
-
-#Merge EDGI and GLAD
-We will know where participants are from by looking at cohort name. Participants who are in EDGI should not, in theory, also be in GLAD. Therefore, we can combine all variables, because someone will not have a value for a variable in GLAD and also have a value for that same variable in EDGI. COPING will have variables with different names (i.e., we will not collapse the ED variables in COPING with those from EDGI and GLAD) because some individuals will have a value in a variable within COPING (e.g., DSM5 AN algorithm-derived diagnoses) and another, possible different, value of the same variable in GLAD or EDGI. We want to know whether people reach diagnostic criteria in the original EDGI/GLAD datasets or at COPING baseline.
-```{r}
-
-EDGI.and.GLAD.ed.data <- rbind(GLAD_ED_data,
-                               EDGI_ED_data
-                               )
-
-#Check 
-nrow(EDGI.and.GLAD.ed.data)
-colnames(EDGI.and.GLAD.ed.data)
-
-```
-
-##Drop 'cohort_name' from the EDGI and GLAD merged data. We will be able to tell which one someone is from by looking at their cohort name in the COPING data, i.e. will be either coping_glad or coping_edgi
-```{r}
-EDGI.and.GLAD.ed.data$cohort_name <-NULL
-```
-
-
-#Merge the now combined data from EDGI and GLAD with the COPING data
-```{r}
-
-dfs.list <- list(COPING_RAMP_ED_data,
-                 EDGI.and.GLAD.ed.data
-                 
-
- )
-
-#Merge
-dat.ed.all <- plyr::join_all(dfs.list,
-                                      by = c("ID"))
-
-
-#Check rows
-nrow(dat.ed.all)
-
-#Check columns
-colnames(dat.ed.all)
-```
-#Look at number of people who will make up final groups (i.e., have self-reported ED or reached ED diagnostic criteria in GLAD, EDGI, or COPING baseline)
-
-##Binge-eating disorder group
-NB: Only GLAD or EDGI will have positive values in the 'BED_group_numeric', as this means they were counted as a case in GLAD and EDGI original data
-```{r}
-
-#Binge-eating disorder; split by cohort
-dat.ed.all %>%
-  filter(COPING_bed_group_numeric == 1 |
-           BED_group_numeric ==1) %>%
-  group_by(cohort_name,
-           BED_group_numeric,
-           COPING_bed_group_numeric) %>%
-  count()
-
-#Final count #3183 cases
-dat.ed.all %>%
-  filter(COPING_bed_group_numeric == 1 |
-           BED_group_numeric ==1) %>%
-  count()
-
-
-```
-
-##Anorexia nervosa group
-NB: Only GLAD or EDGI will have positive values in the 'anorexia_group_numeric', as this means they were counted as a case in GLAD and EDGI original data
-
-```{r}
-
-#Anorexia; split by cohort
-dat.ed.all %>%
-  filter(COPING_anorexia_group_numeric == 1 |
-           anorexia_group_numeric ==1) %>%
-  group_by(cohort_name,
-           anorexia_group_numeric,
-           COPING_anorexia_group_numeric) %>%
-  count()
-
-#Final count #3999 cases
-dat.ed.all %>%
-  filter(COPING_anorexia_group_numeric == 1 |
-           anorexia_group_numeric ==1) %>%
-  count()
-
-
-```
-
-
-##Bulimia nervosa group
-NB: Only GLAD or EDGI will have positive values in the 'bulimia_group_numeric', as this means they were counted as a case in GLAD and EDGI original data
-
-```{r}
-
-#Anorexia; split by cohort
-dat.ed.all %>%
-  filter(COPING_bulimia_group_numeric == 1 |
-           bulimia_group_numeric ==1) %>%
-  group_by(cohort_name,
-           bulimia_group_numeric,
-           COPING_bulimia_group_numeric) %>%
-  count()
-
-#Final count #3235 cases
-dat.ed.all %>%
-  filter(COPING_bulimia_group_numeric == 1 |
-           bulimia_group_numeric ==1) %>%
-  count()
+nrow(baseline_ED_groups_data)
 
 
 ```
@@ -413,34 +263,19 @@ dat.ed.all %>%
 #Merge merged data with grouping ED data
 ```{r}
 
-data.merged.grouped1 <- merge(dat.ed.all,
+data.merged.with.ED.groups <- merge(baseline_ED_groups_data,
                   data.merged,
                   by = "ID")
 
-dim(data.merged.grouped1)
+dim(data.merged.with.ED.groups)
 
 ```
 
-##Import self-harm grouping data
-```{r}
-taf_grouping_data <- readRDS(file = "../data_cleaned/SelfHarm_groups2021-05-04.rds")
-dim(taf_grouping_data)
-```
-#Bind edeq/baseline with grouping ED data
-```{r}
-
-data.merged.grouped2 <- merge(taf_grouping_data,
-                  data.merged.grouped1,
-                  by = "ID")
-
-dim(data.merged.grouped2)
-
-```
 #Remove duplicate IDs 
 ```{r}
 
 ##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
-data.final  <- data.merged.grouped2  %>%
+data.final  <- data.merged.with.ED.groups  %>%
   filter(., !duplicated(ID)) 
 
 ##Check number of rows
@@ -458,7 +293,7 @@ skimr::skim(data.final)
 ##Save dataset
 ```{r}
 saveRDS(object = data.final,
-        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/data.final", date, ".rds"))
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/data.final.with.ED.groups", date, ".rds"))
 
 ```
 

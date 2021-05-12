@@ -1,0 +1,455 @@
+---
+title: "Gerome_age_of_onset_data"
+author: "Helena Davies"
+date: "11/05/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+#### Call in functions script
+
+```{r source files}
+source("./functions.R")
+```
+
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
+## Read in data - GLAD data
+```{r Read in data}
+
+ED_data_GLAD <- readRDS(file = "../data_cleaned/GLAD_ed_data_cleaned2021-04-15.rds") #Add your data file here
+
+#Check colnames
+colnames(ED_data_GLAD)
+
+#Check number of rows
+nrow(ED_data_GLAD)
+```
+## Select columns ED group data - GLAD
+```{r Read in data}
+
+exclude_cols_dem <- c("ID",
+                      "cohort_name")
+
+ED_data_GLAD.id <- ED_data_GLAD %>% 
+  drop_na(ID) %>% # Drop NAs
+  distinct(ID, .keep_all = TRUE)  %>%
+  add_column(cohort_name = "glad", .before = "anorexia_group_numeric") %>% #create new column 
+  select(
+         ID,# ID
+         cohort_name, # Sample
+          anorexia_group_numeric,
+         bulimia_group_numeric,
+         BED_group_numeric
+         ) %>%
+   # add_numeric(., exclude = exclude_cols_dem) %>%
+mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(ED_data_GLAD.id)
+# Inspect colnames
+colnames(ED_data_GLAD.id)
+#Differences
+dim(ED_data_GLAD)[1]-dim(ED_data_GLAD.id)[1]
+
+```
+## Read in data - GLAD data
+```{r Read in data}
+
+ED_data_EDGI <- readRDS(file = "../data_cleaned/EDGI_ed_data_cleaned2021-04-15.rds") #Add your data file here
+
+#Check colnames
+colnames(ED_data_EDGI)
+
+#Check number of rows
+nrow(ED_data_EDGI)
+```
+## Select columns ED group data - GLAD
+```{r Read in data}
+
+exclude_cols_dem <- c("ID",
+                      "cohort_name")
+
+ED_data_EDGI.id <- ED_data_EDGI %>% 
+  drop_na(ID) %>% # Drop NAs
+  distinct(ID, .keep_all = TRUE)  %>%
+  add_column(cohort_name = "edgi", .before = "anorexia_group_numeric") %>% #create new column 
+  select(
+         ID,# ID
+         cohort_name, # Sample
+          anorexia_group_numeric,
+         bulimia_group_numeric,
+         BED_group_numeric
+         ) %>%
+  #  add_numeric(., exclude = exclude_cols_dem) %>%
+mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(ED_data_EDGI.id)
+# Inspect colnames
+colnames(ED_data_EDGI.id)
+#Differences
+dim(ED_data_EDGI)[1]-dim(ED_data_EDGI.id)[1]
+
+```
+
+#Merge EDGI and GLAD data
+```{r}
+
+dat.ed <- rbind(ED_data_GLAD.id,
+                ED_data_EDGI.id
+                
+  
+)
+
+#Colnames
+colnames(dat.ed)
+nrow(dat.ed)
+```
+
+## Read in age of onset AN data - GLAD
+```{r Read in data}
+
+AN_age_data_GLAD <- readRDS(file = "../data_raw/glad/an_glad_ed.rds") #Add your data file here
+
+#Check colnames
+colnames(AN_age_data_GLAD)
+
+#Check number of rows
+nrow(AN_age_data_GLAD)
+```
+
+## Select columns age of onset AN data - GLAD
+```{r Read in data}
+
+exclude_cols_dem <- c("ID")
+
+AN_age_data_GLAD.id <- AN_age_data_GLAD %>% 
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE)  %>%
+  add_column(cohort_name = "glad", .before = "an.how_old_were_you_then") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         an.how_old_were_you_then
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(AN_age_data_GLAD.id)
+# Inspect colnames
+colnames(AN_age_data_GLAD.id)
+#Differences
+dim(AN_age_data_GLAD)[1]-dim(AN_age_data_GLAD.id)[1]
+
+```
+
+## Read in age of onset BE data - GLAD
+```{r Read in data}
+
+BE_age_data_GLAD <- readRDS(file = "../data_raw/glad/be_glad_ed.rds") #Add your data file here
+
+#Check colnames
+colnames(BE_age_data_GLAD)
+
+#Check number of rows
+nrow(BE_age_data_GLAD)
+```
+
+## Select columns age of onset AN data - GLAD
+```{r Read in data}
+
+exclude_cols_dem <- c("ID")
+
+BE_age_data_GLAD.id <- BE_age_data_GLAD %>% 
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE)  %>%
+  add_column(cohort_name = "glad", .before = "be.began_roughly_regular_episodes.txt") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         be.began_roughly_regular_episodes.txt
+         ) %>%
+   add_numeric(., exclude = exclude_cols_dem) %>%
+mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(BE_age_data_GLAD.id)
+# Inspect colnames
+colnames(BE_age_data_GLAD.id)
+#Differences
+dim(BE_age_data_GLAD)[1]-dim(BE_age_data_GLAD.id)[1]
+
+```
+
+#Merge age GLAD data
+```{r}
+
+age_GLAD <- merge(BE_age_data_GLAD.id,
+                  AN_age_data_GLAD.id,
+                  by = "ID"
+  
+)
+
+nrow(age_GLAD)
+colnames(age_GLAD)
+```
+
+
+## Read in age of onset AN data - EDGI
+```{r Read in data}
+
+AN_age_data_EDGI <- readRDS(file = "../data_raw/edgi/an_edgi.rds") #Add your data file here
+
+#Check colnames
+colnames(AN_age_data_EDGI)
+
+#Check number of rows
+nrow(AN_age_data_EDGI)
+```
+
+## Select columns age of onset AN data - EDGI
+```{r Read in data}
+
+exclude_cols_dem <- c("ID")
+
+AN_age_data_EDGI.id <- AN_age_data_EDGI %>% 
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE)  %>%
+  add_column(cohort_name = "edgi", .before = "an.how_old_were_you_then.txt") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         an.how_old_were_you_then = an.how_old_were_you_then.txt
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(AN_age_data_EDGI.id)
+# Inspect colnames
+colnames(AN_age_data_EDGI.id)
+#Differences
+dim(AN_age_data_EDGI)[1]-dim(AN_age_data_EDGI.id)[1]
+
+```
+
+## Read in age of onset BE data - GLAD
+```{r Read in data}
+
+BE_age_data_EDGI <- readRDS(file = "../data_raw/edgi/be_edgi.rds") #Add your data file here
+
+#Check colnames
+colnames(BE_age_data_EDGI)
+
+#Check number of rows
+nrow(BE_age_data_EDGI)
+```
+
+## Select columns age of onset AN data - GLAD
+```{r Read in data}
+
+exclude_cols_dem <- c("ID")
+
+BE_age_data_EDGI.id <- BE_age_data_EDGI %>% 
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE)  %>%
+  add_column(cohort_name = "edgi", .before = "be.began_roughly_regular_episodes.txt") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         be.began_roughly_regular_episodes.txt
+         ) %>%
+   add_numeric(., exclude = exclude_cols_dem) %>%
+mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(BE_age_data_EDGI.id)
+# Inspect colnames
+colnames(BE_age_data_EDGI.id)
+#Differences
+dim(BE_age_data_EDGI)[1]-dim(BE_age_data_EDGI.id)[1]
+
+```
+
+#Merge age EDGI data
+```{r}
+
+age_EDGI <- merge(BE_age_data_EDGI.id,
+                  AN_age_data_EDGI.id,
+                  by = "ID"
+  
+)
+
+nrow(age_EDGI)
+colnames(age_EDGI)
+```
+
+
+##Combine GLAD and EDGI age data
+```{r}
+dat.age <- rbind(age_EDGI,
+                 age_GLAD)
+
+
+colnames(dat.age)
+nrow(dat.age)
+```
+
+##Merge age and ED group data
+```{r}
+
+dat.final <- merge(dat.ed,
+                  dat.age,
+                  by = "ID"
+  
+)
+
+colnames(dat.final)
+```
+##Clean age - AN
+```{r}
+ # Define age limits
+  age_upper_limit = 117 # The oldest person in the world is 117 years
+  age_lower_limit = 3
+  
+
+  #Remove age outliers
+  dat.final <- dat.final %>%
+    mutate(
+      age_onset_AN_cleaned =
+        if_else(
+          an.how_old_were_you_then_numeric > age_upper_limit |
+            an.how_old_were_you_then_numeric < age_lower_limit,
+          true = NA_real_,
+          false = an.how_old_were_you_then_numeric,
+          missing = NA_real_
+        )
+    )
+  
+  # Inspect variable
+  dat.final %>%
+    descr(
+      age_onset_AN_cleaned,
+      #stats = "common"
+    )
+```
+
+##Clean age -BE 
+```{r}
+ # Define age limits
+  age_upper_limit = 117 # The oldest person in the world is 117 years
+  age_lower_limit = 3
+  
+
+  #Remove age outliers
+  dat.final <- dat.final %>%
+    mutate(
+      age_onset_BE_cleaned =
+        if_else(
+          be.began_roughly_regular_episodes.txt_numeric > age_upper_limit |
+            be.began_roughly_regular_episodes.txt_numeric < age_lower_limit,
+          true = NA_real_,
+          false = be.began_roughly_regular_episodes.txt_numeric,
+          missing = NA_real_
+        )
+    )
+  
+  # Inspect variable
+  dat.final %>%
+    descr(
+      age_onset_BE_cleaned,
+      #stats = "common"
+    )
+```
+
+##Select variables for GB
+```{r}
+dat.ED.age.of.onset.GB <- dat.final %>%
+  select(ID,
+         cohort_name,
+         anorexia_group_numeric,
+         bulimia_group_numeric,
+         BED_group_numeric,
+         age_onset_AN_cleaned,
+         age_onset_BE_cleaned)
+
+version
+```
+
+##Save rds file
+```{r}
+saveRDS(object = dat.ED.age.of.onset.GB,
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/dat.ED.age.of.onset.GB", date, ".rds"))
+
+```

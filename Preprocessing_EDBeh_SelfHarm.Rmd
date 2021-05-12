@@ -42,9 +42,9 @@ source("./functions.R")
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 
@@ -195,7 +195,7 @@ glad.coping.dem2.raw.id <- glad.coping.dem2.raw %>% #new dataset with ID
          dem2.prefer_not_to_say.1,
          dem2.household_living_place_answer,
          dem2.include_living_areas_count,
-         dem2.relationships_describe_question_place,
+        # dem2.relationships_describe_question_place,
          dem2.cats,
          dem2.dogs,
          dem2.fish,
@@ -481,7 +481,7 @@ edgi.coping.dem2.raw.id <- edgi.coping.dem2.raw %>% #new dataset with ID
          dem2.prefer_not_to_say.1,
          dem2.household_living_place_answer,
          dem2.include_living_areas_count,
-         dem2.relationships_describe_question_place,
+         #dem2.relationships_describe_question_place,
          dem2.cats,
          dem2.dogs,
          dem2.fish,
@@ -1261,7 +1261,7 @@ ramp.dem.raw.id <- ramp.dem.raw %>% #new dataset with ID
          dem2.unsure,
          transgender = dem2.do_you_identify_as_transgender,
          dem2.adult_children_pandemic_returned,
-         dem2.adult_children_pandemic_returned.txt,
+        # dem2.adult_children_pandemic_returned.txt,
          dem.live = dem2.where_in_the_uk_do_you_live.txt, #changed wording to match glad edgi dem
          ethnicity_unc_text = dem2.what_is_your_ethnic_origin.txt,
          ethnicity_unc = dem2.what_is_your_ethnic_origin,
@@ -1391,15 +1391,15 @@ ramp.dem.employ.raw.id <- ramp.dem.employ.raw %>% #new dataset with ID
          employ.complete_home_work,
          employ.are_you_currently_working_from_home,
          employ.attend_work_encouraged_work = employ.work_attend_work_encouraged, #renamed to same as edgi and glsd
-         employ.government_work_key_workers.txt,
+        # employ.government_work_key_workers.txt,
          employ.government_work_key_workers,
          employ.type_role,
-         employ.type_role.txt = employ.role_type.txt,
-         employ.type_role.1 = employ.role_type.1,
-         employ.does_your_job_include_caring_for_others,
-         employ.is_your_job_public_facing_,
-         employ.losing_job_due_risk = employ.scale_line_losing_click,
-         employ.increased_due_job_pandemic
+         #employ.type_role.txt = employ.role_type.txt,
+        # employ.type_role.1 = employ.role_type.1,
+        # employ.does_your_job_include_caring_for_others,
+        # employ.is_your_job_public_facing_,
+        # employ.losing_job_due_risk = employ.scale_line_losing_click,
+        # employ.increased_due_job_pandemic
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1674,33 +1674,6 @@ dim(taf.glad.coping.baseline.raw)[1]-dim(taf.glad.coping.baseline.raw.id)[1]
 
 ```
 
-##Exclude people who answered baseline questionnaire after 30th April 
-1. Change date format
-```{r}
-if(GLAD == TRUE){
-
-as.Date(taf.glad.coping.baseline.raw.id$startDate_baseline)
-
-
-#Filter by people who completed baseline survey before 30th april
-taf.glad.coping.baseline.CUTOFF.raw.id <- taf.glad.coping.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-30"))
-
-
-#Drop start date baseline column
-
-taf.glad.coping.baseline.CUTOFF.raw.id <- taf.glad.coping.baseline.CUTOFF.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-taf.glad.coping.baseline.raw.id <- taf.glad.coping.baseline.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-}
-```
-
-
-
 # TAF - baseline
 ## EDGI  
 ### Read in data
@@ -1763,34 +1736,6 @@ dim(taf.edgi.coping.baseline.raw)[1]-dim(taf.edgi.coping.baseline.raw.id)[1]
 }
 ```
 
-##Exclude people who answered baseline questionnaire after 30th April
-1. Change date format
-```{r}
-if(EDGI == TRUE){
-
-as.Date(taf.edgi.coping.baseline.raw.id$startDate_baseline)
-
-
-#Filter by people who completed baseline survey before 30th april
-
-taf.edgi.coping.baseline.CUTOFF.raw.id <- taf.edgi.coping.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-30"))
-
-
-#Drop start date baseline column
-
-
-taf.edgi.coping.baseline.CUTOFF.raw.id <- taf.edgi.coping.baseline.CUTOFF.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-taf.edgi.coping.baseline.raw.id <- taf.edgi.coping.baseline.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-}
-
-```
 # TAF - baseline 
 ## NBR 
 ### Read in data
@@ -1851,30 +1796,6 @@ colnames(taf.nbr.baseline.raw.id)
 dim(taf.nbr.baseline.raw)[1]-dim(taf.nbr.baseline.raw.id)[1]
 }
 ```
-##Exclude people who answered baseline questionnaire after 30th April 
-1. Change date format
-```{r}
-if(NBR == TRUE){
-
-as.Date(taf.nbr.baseline.raw.id$startDate_baseline)
-
-
-#Filter by people who completed baseline survey before 30th april
-
-taf.nbr.baseline.CUTOFF.raw.id <- taf.nbr.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-30"))
-
-
-#Drop start date baseline column
-taf.nbr.baseline.CUTOFF.raw.id <- taf.nbr.baseline.CUTOFF.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-taf.nbr.baseline.raw.id <- taf.nbr.baseline.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-}
-```
 
 # TAF - baseline 
 ## RAMP
@@ -1910,7 +1831,7 @@ taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw %>% #new dataset with ID
          taf.felt_weeks_past_.Wavebaseline = taf.past_felt_weeks,#renamed to same as follow up
          taf.pandemic_felt_.Wavebaseline = taf.pandemic_felt,
          taf.have_you_contemplated_harming_yourself_.Wavebaseline = taf.have_you_contemplated_harming_yourself_,
-         taf.felt_weeks_past.1_.Wavebaseline = taf.weeks_past_felt.1, #renamed to same as follow up
+         taf.felt_weeks_past.1_.Wavebaseline = taf.past_felt_weeks.1, #renamed to same as follow up
          taf.pandemic_felt.1_.Wavebaseline = taf.pandemic_felt.1,
          taf.meant_life_end_weeks_.Wavebaseline = taf.meant_end_life_weeks, #renamed to same as follow up
          taf.meant_end_life_pandemic_.Wavebaseline = taf.meant_end_pandemic_life #renamed to same as follow up
@@ -1934,30 +1855,6 @@ dim(taf.ramp.baseline.raw.id)
 colnames(taf.ramp.baseline.raw.id)
 #Differences
 dim(taf.ramp.baseline.raw)[1]-dim(taf.ramp.baseline.raw.id)[1]
-}
-```
-
-##Exclude people who answered baseline questionnaire after 30th April (want their current symptoms at baseline)
-1. Change date format
-```{r}
-if(RAMP == TRUE){
-
-as.Date(taf.ramp.baseline.raw.id$startDate_baseline)
-
-
-#Filter by people who completed baseline survey before 30th april
-taf.ramp.baseline.CUTOFF.raw.id <- taf.ramp.baseline.raw.id %>%
-  filter(startDate_baseline < as.Date("2020-04-30"))
-
-
-#Drop start date baseline column
-taf.ramp.baseline.CUTOFF.raw.id <- taf.ramp.baseline.CUTOFF.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
-
-taf.ramp.baseline.raw.id <- taf.ramp.baseline.raw.id %>%
-  select(-c(startDate_baseline,
-            startDate_baseline_numeric))
 }
 ```
 
@@ -2089,7 +1986,6 @@ if(COPING == TRUE){
 }
 ```
 
-
 # TAF - follow up b
 ## COPING
 ### Read in data
@@ -2147,6 +2043,7 @@ colnames(taf.coping.followupb.raw.id)
 dim(taf.coping.followupb.raw)[1]-dim(taf.coping.followupb.raw.id)[1]
 }
 ```
+
 # TAF - follow up A
 ## RAMP
 ### Read in data
@@ -3039,7 +2936,7 @@ edgi.3 <- edgi.coping.dem4.employ.raw.id %>% #590
   key_worker,
   key_worker_numeric)
   
-edgi.4 <- taf.edgi.coping.baseline.CUTOFF.raw.id %>% #590
+edgi.4 <- taf.edgi.coping.baseline.raw.id %>% 
   select(ID,
   cohort_name,
   taf.worth_living_life_people_.Wavebaseline,
@@ -3084,7 +2981,7 @@ edgi.5 <- mhd.raw.id %>% #3251
           mhd.other_eating_disorder_numeric)
 
 
-edgi.6 <- taf.edgi.coping.baseline.raw.id %>% #590
+edgi.6 <- taf.edgi.coping.baseline.raw.id %>% 
   select(ID,
   cohort_name,
   taf.pandemic_felt_.Wavebaseline,
@@ -3199,7 +3096,7 @@ glad.3 <- glad.coping.dem4.employ.raw.id %>%
          key_worker,
          key_worker_numeric)
 
-glad.4 <- taf.glad.coping.baseline.CUTOFF.raw.id%>%
+glad.4 <- taf.glad.coping.baseline.raw.id%>%
   select(ID,
   cohort_name,
   taf.worth_living_life_people_.Wavebaseline,
@@ -3349,7 +3246,7 @@ nbr.2 <- nbr.dem.raw.id.complete %>%
            age_category,
            age_category_numeric)
 
-nbr.4 <- taf.nbr.baseline.CUTOFF.raw.id %>%
+nbr.4 <- taf.nbr.baseline.raw.id %>%
   select(ID,
   cohort_name,
   taf.worth_living_life_people_.Wavebaseline,
@@ -3580,7 +3477,7 @@ edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric,
          mhd.bingeeating_disorder_numeric)
 
 
-ramp.5 <- taf.ramp.baseline.CUTOFF.raw.id  %>% #for baseline cut off at 30th April
+ramp.5 <- taf.ramp.baseline.raw.id  %>% 
   select(ID,
          cohort_name,
          taf.worth_living_life_people_.Wavebaseline,
@@ -3598,7 +3495,7 @@ ramp.6 <- taf.ramp.baseline.raw.id %>% #for retro prepan
   taf.meant_end_life_pandemic_.Wavebaseline)
 
 
-ramp.7 <- edeq.ramp.baseline.raw.id %>% #Baseline BEFORE 30th April
+ramp.7 <- edeq.ramp.baseline.raw.id %>% 
   select(ID,
   cohort_name,
  

@@ -3572,6 +3572,7 @@ table(dat.ed.EDGI$AN_trumped,
 table(dat.ed.EDGI$AN_trumped,
       dat.ed.EDGI$BN_trumped)
 ```
+
 ```{r}
 #BED
 BED_EDGI <- dat.ed.EDGI %>%

@@ -1,0 +1,171 @@
+---
+title: "Regression_analyses"
+author: "Helena Davies"
+date: "06/05/2021"
+output: html_document
+---
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Delete everything in your global environment
+```{r Delete everything in your global environment}
+remove(list = ls())
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
+#### R functions
+
+```{r call in function library functions}
+# source all functions in the function folder
+source("./functions.R")
+```
+
+# Read in data
+```{r}
+WCPG_dat <- readRDS(file = "../data_cleaned/WCPG_abstract_data2021-05-06.rds")
+dim(WCPG_dat)
+colnames(WCPG_dat)
+```
+# Recode gender
+```{r}
+WCPG_dat <- WCPG_dat %>%
+  mutate(gender = 
+           case_when(gender_unc == "Male" ~ "Male",
+                     gender_unc == "Female" ~ "Female",
+                     gender_unc == "Non-binary" ~ "Non-binary"
+                     
+           )
+         )
+
+
+WCPG_dat %>%
+  freq(gender)
+```
+#Collapse age category to 16-25
+```{r}
+WCPG_dat <- WCPG_dat %>%
+  mutate(age_category_new = 
+           case_when(age_category == "16-18" ~ "16-25",
+                     age_category == "19-25" ~ "16-25",
+                      age_category == "26-35" ~ "26-35",
+                      age_category == "36-45" ~ "36-45",
+                      age_category == "46-55" ~ "46-55",
+                     age_category == "56-65" ~ "56-65",
+                     age_category == "66-70" ~ "66-70",
+                      age_category == "71-75" ~ "71-75",
+                      age_category == "76-80" ~ "76-80",
+                     age_category == "81-85" ~ "81-85",
+                     age_category == "86-90" ~ "86-90",
+                     age_category == "91-100" ~ "91-100"
+                     
+                     
+                     
+           )
+         )
+
+
+WCPG_dat %>%
+  freq(age_category_new)
+
+```
+
+# Age and gender - Binge eating
+```{r}
+# Age and gender
+age_gender_BE <- glm(NEW_binge_eating_pandemic ~ age_category_new + gender,
+               data = WCPG_dat,
+               family = "binomial")
+
+tidy(age_gender_BE,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(age_gender_BE) %>% 
+  length()
+
+```
+
+
+# Age and gender - Low weight
+```{r}
+# Age and gender
+age_gender_low_weight <- glm(NEW_low_weight_pandemic ~ age_category_new + gender,
+               data = WCPG_dat,
+               family = "binomial")
+
+tidy(age_gender_low_weight,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(age_gender_low_weight) %>% 
+  length()
+
+```
+
+# Age and gender - Passive suicial ideation
+```{r}
+
+# Age and gender
+age_gender_passive_suicidal_ideation <- glm(NEW_passive_suicidal_ideation_pandemic ~ age_category_new + gender,
+               data = WCPG_dat,
+               family = "binomial")
+
+tidy(age_gender_passive_suicidal_ideation,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(age_gender_passive_suicidal_ideation) %>% 
+  length()
+
+```
+
+# Age and gender - Self harm ideation
+```{r}
+
+# Age and gender
+age_gender_self_harm_ideation <- glm(NEW_selfharm_ideation_pandemic ~ age_category_new + gender,
+               data = WCPG_dat,
+               family = "binomial")
+
+tidy(age_gender_self_harm_ideation,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(age_gender_self_harm_ideation) %>% 
+  length()
+
+```
+
+# Age and gender - Self harm 
+```{r}
+
+# Age and gender
+age_gender_self_harm <- glm(NEW_selfharm_pandemic ~ age_category_new + gender,
+               data = WCPG_dat,
+               family = "binomial")
+
+tidy(age_gender_self_harm,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(age_gender_self_harm) %>% 
+  length()
+
+```
