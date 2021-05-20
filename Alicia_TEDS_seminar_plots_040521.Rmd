@@ -1,0 +1,1982 @@
+---
+title: "TEDS Analysis"
+author: "Alicia Peel"
+date: "10/09/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Delete everything in your global environment
+```{r Clear global environment}
+remove(list = ls())
+```
+
+```{r Load packages, include=FALSE}
+### install.packages("foreign")
+
+library(foreign)
+library(tidyverse)
+library(summarytools)
+library(mice)
+library(VIM)
+library(lsr)
+library(polycor)
+library(corrplot)
+library(arm)
+library(dplyr)
+library(car)
+library(moments)
+```
+
+```{r Palette}
+
+teds_palette = c("#4AADC5", "#C0DDE9", "#FFCC31")
+palette=teds_palette
+```
+
+# Data set-up
+```{r Read in data}
+
+data_ct <- read.csv("../TEDS_clean_complete_trauma_may21.csv", header=TRUE)
+```
+
+```{r Hex codes}
+library(scales) 
+hex_codes7 <- hue_pal()(7)
+hex_codes7
+
+hex_codes5 <- hue_pal()(5)
+hex_codes5
+
+hex_codes2 <- hue_pal()(2)
+hex_codes2
+
+hex_codes3 <- hue_pal()(3)
+hex_codes3
+
+hex_codes8 <- hue_pal()(8)
+hex_codes8
+```
+
+# Descriptives
+## Covariates
+```{r Twin}
+summary(as.factor(data_ct$twin))
+2006/3963 #first born
+```
+
+```{r Sex}
+summary(as.factor(data_ct$sex1))
+2452/3963 #female
+```
+
+```{r zygosity}
+summary(as.factor(data_ct$zygos))
+1500/3963 #MZ
+```
+
+```{r Ethnicity}
+
+summary(as.factor(data_ct$aethnic))
+3960/3963 #white
+```
+
+```{r Mothers a levels}
+
+summary(as.factor(data_ct$amohqual))
+
+data_ct$amoqualahigh <- case_when(data_ct$amohqual == "A-level or S-level" ~ 1,
+                                  data_ct$amohqual == "undergraduate degree" ~ 1,
+                                  data_ct$amohqual == "postgraduate qualification" ~ 1,
+                                  data_ct$amohqual == "HNC" ~ 1,
+                                  data_ct$amohqual == "HND" ~ 1,
+                                  data_ct$amohqual == "CSE grade 1 or O-level/GCSE grade A-C" ~ 0,
+                                  data_ct$amohqual == "CSE grade 2-5 or O-level/GCSE grade D-G" ~ 0,
+                                  data_ct$amohqual == "no qualifications" ~ 0)
+
+summary(as.factor(data_ct$amoqualahigh))
+1759/3963 #a level or higher
+```
+
+```{r Mother employed}
+
+summary(as.factor(data_ct$amojob))
+
+1896/3963 #employed
+```
+
+```{r Father employed}
+
+summary(as.factor(data_ct$afajob))
+
+3515/3963 #employed
+```
+
+## Outcomes
+```{r reported childhood trauma}
+hist(data_ct$chi_total)
+summary(data_ct$chi_total)
+mean(data_ct$chi_total, na.rm = T)
+sd(data_ct$chi_total, na.rm = T)
+```
+
+```{r reported partner abuse}
+hist(data_ct$dom_total)
+summary(data_ct$dom_total)
+mean(data_ct$dom_total, na.rm = T)
+sd(data_ct$dom_total, na.rm = T)
+```
+
+```{r reported childhood trauma}
+hist(data_ct$lif_total)
+summary(data_ct$lif_total)
+mean(data_ct$lif_total, na.rm = T)
+sd(data_ct$lif_total, na.rm = T)
+```
+## Correlations
+```{r outcome variables}
+outcomes <- c("chi_total", "dom_total", "lif_total")
+```
+
+```{r Correlation matrix}
+data_mat <- data_ct %>% dplyr::select(outcomes)
+cor_mat <- hetcor(as.data.frame(data_mat), use = "complete.obs")
+cor_mat
+
+# Save the correlations from the correlation matrix in an object
+all.corr.matrix <- as.matrix(cor_mat)
+
+# Save the p values from the correlation matrix in an object
+all.p.matrix <- as.matrix(cor_mat$tests)
+```
+```{r heatmap labels}
+colnames(all.corr.matrix) <- c("Childhood trauma", "Partner abuse", "Life events")
+rownames(all.corr.matrix) <- c("Childhood trauma", "Partner abuse", "Life events")
+```
+
+
+```{r heatmap}
+
+png("Outcomesheatmap.png")
+
+corrplot::corrplot(all.corr.matrix, 
+         method = "color", # objects to represent the correlations on plot
+         type = "lower", # only use the lower triangle of the matrix
+         addgrid.col = NA,
+         addCoef.col = "black", # colour for the correlation coefficients in the plot
+         tl.cex = 1,
+         tl.col = "black",
+         # Combine with significance
+         p.mat = all.p.matrix, # Matrix with p values
+         sig.level = 0.01, # Choose significant level
+         #insig = "blank", # Nonsignificant correlations have no colour
+         )
+
+dev.off()
+```
+
+#Rescale everything
+```{r Covariates}
+summary(data_ct$PC1)
+summary(data_ct$PC2)
+summary(data_ct$PC3)
+summary(data_ct$PC4)
+summary(data_ct$PC5)
+summary(data_ct$PC6)
+summary(data_ct$PC7)
+summary(data_ct$PC8)
+summary(data_ct$PC9)
+summary(data_ct$PC10)
+
+summary(data_ct$Chip)
+summary(data_ct$Batch)
+summary(as.factor(data_ct$DZtwinpair))
+
+summary(data_ct$twin)
+summary(data_ct$cohort)
+summary(data_ct$sex1)
+summary(data_ct$zygos)
+summary(data_ct$aethnic)
+summary(data_ct$ases)
+```
+
+##Rescale PRS
+```{r Rescale prs}
+
+data_ct$ADHD_st <- arm::rescale(data_ct$ADHD_PGC2019_FRCT1)
+data_ct$anorexia_st <- arm::rescale(data_ct$Anorexia_PGC2019_FRCT1)
+data_ct$anxiety_st <- arm::rescale(data_ct$Anxiety_Purves2019_FRCT1)
+data_ct$ASD_st <- arm::rescale(data_ct$ASD_iPsychPGC2018_FRCT1)
+data_ct$BIP_st <- arm::rescale(data_ct$BIP_PGC2018_FRCT1)
+data_ct$BMI_st <- arm::rescale(data_ct$BMI_GIANT2018_FRCT1)
+data_ct$depression_st <- arm::rescale(data_ct$DepressiveSympt_Okbay2016_FRCT1)
+data_ct$EA3_st <- arm::rescale(data_ct$EA3_Lee2018_no23andme_FRCT1)
+data_ct$height_st <- arm::rescale(data_ct$Height_GIANT2018_FRCT1)
+data_ct$income_st <- arm::rescale(data_ct$Income_Hill2016_FRCT1)
+data_ct$insomnia_st <- arm::rescale(data_ct$Insomnia_Jansen2018_FRCT1)
+data_ct$IQ_st <- arm::rescale(data_ct$IQ_Savage2018_FRCT1)
+data_ct$irritability_st <- arm::rescale(data_ct$irritability_1940_UKB2017_FRCT1)
+data_ct$MDD_st <- arm::rescale(data_ct$MDD_excl23andme_PGC2018_FRCT1)
+data_ct$mood_st <- arm::rescale(data_ct$mood_swings_1920_UKB2017_FRCT1)
+data_ct$neuroticism_st <- arm::rescale(data_ct$Neuroticism_Luciano2017_FRCT1)
+data_ct$OCD_st <- arm::rescale(data_ct$OCD_PGC2017_FRCT1)
+data_ct$PTSD_st <- arm::rescale(data_ct$PTSD_PGC2019_FRCT1)
+data_ct$SCZ_st <- arm::rescale(data_ct$SCZ_Pardinas2018_FRCT1)
+data_ct$SWB_st <- arm::rescale(data_ct$SWB_Okbay2016_FRCT1)
+data_ct$risk_st <- arm::rescale(data_ct$Risk_PC1_Linner2019_FRCT1)
+
+#full PRS list
+#ADHD_st, anorexia_st, anxiety_st, ASD_st, BIP_st, BMI_st, depression_st, EA3_st, height_st, income_st, insomnia_st, IQ_st, irritability_st, MDD_st, mood_st, neuroticism_st, OCD_st, PTSD_st, SCZ_st, SWB_st, risk_st
+```
+
+```{r Rescale env}
+
+data_ct$pre_parent_50 <- arm::rescale(data_ct$pre_parent_50)
+data_ct$mid_parent_50 <- arm::rescale(data_ct$mid_parent_50)
+data_ct$adl_parent_50 <- arm::rescale(data_ct$adl_parent_50)
+data_ct$mid_twin <- arm::rescale(data_ct$mid_twin)
+data_ct$adl_twin_66 <- arm::rescale(data_ct$adl_twin_66)
+```
+
+```{r Rescale covariates}
+
+data_ct$PC1 <- arm::rescale(data_ct$PC1)
+data_ct$PC2 <- arm::rescale(data_ct$PC2)
+data_ct$PC3 <- arm::rescale(data_ct$PC3)
+data_ct$PC4 <- arm::rescale(data_ct$PC4)
+data_ct$PC5 <- arm::rescale(data_ct$PC5)
+data_ct$PC6 <- arm::rescale(data_ct$PC6)
+data_ct$PC7 <- arm::rescale(data_ct$PC7)
+data_ct$PC8 <- arm::rescale(data_ct$PC8)
+data_ct$PC9 <- arm::rescale(data_ct$PC9)
+data_ct$PC10 <- arm::rescale(data_ct$PC10)
+
+data_ct$batch <- arm::rescale(data_ct$Batch, binary.inputs = "full")
+data_ct$twin <- arm::rescale(data_ct$twin, binary.inputs = "full")
+data_ct$cohort <- arm::rescale(data_ct$cohort, binary.inputs = "full")
+data_ct$sex1 <- arm::rescale(data_ct$sex1, binary.inputs = "full")
+data_ct$zygos <- arm::rescale(data_ct$zygos, binary.inputs = "full")
+data_ct$aethnic <- arm::rescale(data_ct$aethnic)
+data_ct$ases <- arm::rescale(data_ct$ases)
+```
+
+
+# Imputation
+### Create data frame
+```{r Create data frame of composites}
+
+data_miss <- data_ct %>% dplyr::select(pre_parent_50, mid_parent_50, adl_parent_50, mid_twin, adl_twin_66, ADHD_st, anorexia_st, anxiety_st, ASD_st, BIP_st, BMI_st, depression_st, EA3_st, height_st, income_st, insomnia_st, IQ_st, irritability_st, MDD_st, mood_st, neuroticism_st, OCD_st, PTSD_st, SCZ_st, SWB_st, risk_st, chi_total, dom_total, lif_total, batch, zygos, cohort, sex1, twin, aethnic, PC1, PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC10)
+
+```
+
+### Visualising incomplete data
+```{r Visualising incomplete data}
+
+data_miss %>%
+ aggr(combined = TRUE, numbers = TRUE)
+```
+
+### Impute data
+```{r complete cases}
+mean(complete.cases(data_miss)) #75% missing data
+```
+
+```{r missingness pattern}
+md.pattern(data_miss)
+```
+
+```{r Impute data}
+#with min correlation
+#pred_mat_age <- quickpred(data_age, mincor = 0.25)
+
+set.seed(123)
+data_imp_miss <- mice(data_miss, m = 26, maxit = 20)
+data_imp_miss$predictorMatrix
+
+#defaultMethod = c("pmm"))
+
+data_imp_miss$method
+```
+
+```{r Inspect trace plot}
+plot(data_imp_miss)
+```
+
+# Distributions
+## Environmental
+```{r pre-school}
+
+# Stack imputed datasets in long format, exclude the original data
+impdat <- complete(data_imp_miss,action="long",include = FALSE)
+
+# compute mean and standard deviation in each imputed dataset
+pool_pre <- with(impdat, by(impdat, .imp, function(x) c(mean(x$pre_parent_50),sd(x$pre_parent_50),min(x$pre_parent_50),max(x$pre_parent_50),skewness(x$pre_parent_50),kurtosis(x$pre_parent_50))))
+
+Reduce("+",pool_pre)/length(pool_pre)
+```
+
+```{r middle childhood parent report}
+
+# compute mean and standard deviation in each imputed dataset
+pool_midpar <- with(impdat, by(impdat, .imp, function(x) c(mean(x$mid_parent_50),sd(x$mid_parent_50),min(x$mid_parent_50),max(x$mid_parent_50),skewness(x$mid_parent_50),kurtosis(x$mid_parent_50))))
+
+Reduce("+",pool_midpar)/length(pool_midpar)
+```
+
+```{r middle childhood twin report}
+
+# compute mean and standard deviation in each imputed dataset
+pool_midtwin <- with(impdat, by(impdat, .imp, function(x) c(mean(x$mid_twin),sd(x$mid_twin),min(x$mid_twin),max(x$mid_twin),skewness(x$mid_twin),kurtosis(x$mid_twin))))
+
+Reduce("+",pool_midtwin)/length(pool_midtwin)
+```
+
+```{r adolescence parent report}
+
+# compute mean and standard deviation in each imputed dataset
+pool_adlpar <- with(impdat, by(impdat, .imp, function(x) c(mean(x$adl_parent_50),sd(x$adl_parent_50),min(x$adl_parent_50),max(x$adl_parent_50),skewness(x$adl_parent_50),kurtosis(x$adl_parent_50))))
+
+Reduce("+",pool_adlpar)/length(pool_adlpar)
+```
+
+```{r adolescence twin report}
+
+# compute mean and standard deviation in each imputed dataset
+pool_adltwin <- with(impdat, by(impdat, .imp, function(x) c(mean(x$adl_twin_66),sd(x$adl_twin_66),min(x$adl_twin_66),max(x$adl_twin_66),skewness(x$adl_twin_66),kurtosis(x$adl_twin_66))))
+
+Reduce("+",pool_adltwin)/length(pool_adltwin)
+```
+
+```{r pre_parent_50}
+
+summary(data_ct$pre_parent_50)
+hist(data_ct$pre_parent_50)
+sd(data_ct$pre_parent_50, na.rm = T)
+skewness(data_ct$pre_parent_50, na.rm = T)
+kurtosis(data_ct$pre_parent_50, na.rm = T)
+```
+
+```{r mid_parent_50}
+
+summary(data_ct$mid_parent_50)
+hist(data_ct$mid_parent_50)
+sd(data_ct$mid_parent_50, na.rm = T)
+skewness(data_ct$mid_parent_50, na.rm = T)
+kurtosis(data_ct$mid_parent_50, na.rm = T)
+```
+
+```{r mid_twin}
+
+summary(data_ct$mid_twin)
+hist(data_ct$mid_twin)
+sd(data_ct$mid_twin, na.rm = T)
+skewness(data_ct$mid_twin, na.rm = T)
+kurtosis(data_ct$mid_twin, na.rm = T)
+```
+
+```{r adl_parent_50}
+
+summary(data_ct$adl_parent_50)
+hist(data_ct$adl_parent_50)
+sd(data_ct$adl_parent_50, na.rm = T)
+skewness(data_ct$adl_parent_50, na.rm = T)
+kurtosis(data_ct$adl_parent_50, na.rm = T)
+```
+
+```{r adl_twin_66}
+
+summary(data_ct$adl_twin_66)
+hist(data_ct$adl_twin_66)
+sd(data_ct$adl_twin_66, na.rm = T)
+skewness(data_ct$adl_twin_66, na.rm = T)
+kurtosis(data_ct$adl_twin_66, na.rm = T)
+```
+##PRS
+```{r ADHD}
+
+summary(data_ct$ADHD_st)
+hist(data_ct$ADHD_st)
+sd(data_ct$ADHD_st)
+skewness(data_ct$ADHD_st)
+kurtosis(data_ct$ADHD_st)
+```
+
+```{r anxiety}
+
+summary(data_ct$anxiety_st)
+hist(data_ct$anxiety_st)
+sd(data_ct$anxiety_st)
+skewness(data_ct$anxiety_st)
+kurtosis(data_ct$anxiety_st)
+```
+
+```{r anorexia}
+
+summary(data_ct$anorexia_st)
+hist(data_ct$anorexia_st)
+sd(data_ct$anorexia_st)
+skewness(data_ct$anorexia_st)
+kurtosis(data_ct$anorexia_st)
+```
+
+```{r ASD}
+
+summary(data_ct$ASD_st)
+hist(data_ct$ASD_st)
+sd(data_ct$ASD_st)
+skewness(data_ct$ASD_st)
+kurtosis(data_ct$ASD_st)
+```
+
+```{r BIP}
+
+summary(data_ct$BIP_st)
+hist(data_ct$BIP_st)
+sd(data_ct$BIP_st)
+skewness(data_ct$BIP_st)
+kurtosis(data_ct$BIP_st)
+```
+
+```{r BMI}
+
+summary(data_ct$BMI_st)
+hist(data_ct$BMI_st)
+sd(data_ct$BMI_st)
+skewness(data_ct$BMI_st)
+kurtosis(data_ct$BMI_st)
+```
+
+```{r depression}
+
+summary(data_ct$depression_st)
+hist(data_ct$depression_st)
+sd(data_ct$depression_st)
+skewness(data_ct$depression_st)
+kurtosis(data_ct$depression_st)
+```
+
+```{r EA3}
+
+summary(data_ct$EA3_st)
+hist(data_ct$EA3_st)
+sd(data_ct$EA3_st)
+skewness(data_ct$EA3_st)
+kurtosis(data_ct$EA3_st)
+```
+
+```{r height}
+
+summary(data_ct$height_st)
+hist(data_ct$height_st)
+sd(data_ct$height_st)
+skewness(data_ct$height_st)
+kurtosis(data_ct$height_st)
+```
+
+```{r income}
+
+summary(data_ct$income_st)
+hist(data_ct$income_st)
+sd(data_ct$income_st)
+skewness(data_ct$income_st)
+kurtosis(data_ct$income_st)
+```
+
+```{r insomnia}
+
+summary(data_ct$insomnia_st)
+hist(data_ct$insomnia_st)
+sd(data_ct$insomnia_st)
+skewness(data_ct$insomnia_st)
+kurtosis(data_ct$insomnia_st)
+```
+
+```{r IQ}
+
+summary(data_ct$IQ_st)
+hist(data_ct$IQ_st)
+sd(data_ct$IQ_st)
+skewness(data_ct$IQ_st)
+kurtosis(data_ct$IQ_st)
+```
+
+```{r irritability}
+
+summary(data_ct$irritability_st)
+hist(data_ct$irritability_st)
+sd(data_ct$irritability_st)
+skewness(data_ct$irritability_st)
+kurtosis(data_ct$irritability_st)
+```
+
+```{r MDD}
+
+summary(data_ct$MDD_st)
+hist(data_ct$MDD_st)
+sd(data_ct$MDD_st)
+skewness(data_ct$MDD_st)
+kurtosis(data_ct$MDD_st)
+```
+
+```{r mood}
+
+summary(data_ct$mood_st)
+hist(data_ct$mood_st)
+sd(data_ct$mood_st)
+skewness(data_ct$mood_st)
+kurtosis(data_ct$mood_st)
+```
+
+```{r neuroticism}
+
+summary(data_ct$neuroticism_st)
+hist(data_ct$neuroticism_st)
+sd(data_ct$neuroticism_st)
+skewness(data_ct$neuroticism_st)
+kurtosis(data_ct$neuroticism_st)
+```
+
+```{r OCD}
+
+summary(data_ct$OCD_st)
+hist(data_ct$OCD_st)
+sd(data_ct$OCD_st)
+skewness(data_ct$OCD_st)
+kurtosis(data_ct$OCD_st)
+```
+
+```{r PTSD}
+
+summary(data_ct$PTSD_st)
+hist(data_ct$PTSD_st)
+sd(data_ct$PTSD_st)
+skewness(data_ct$PTSD_st)
+kurtosis(data_ct$PTSD_st)
+```
+
+```{r SCZ}
+
+summary(data_ct$SCZ_st)
+hist(data_ct$SCZ_st)
+sd(data_ct$SCZ_st)
+skewness(data_ct$SCZ_st)
+kurtosis(data_ct$SCZ_st)
+```
+
+```{r SWB}
+
+summary(data_ct$SWB_st)
+hist(data_ct$SWB_st)
+sd(data_ct$SWB_st)
+skewness(data_ct$SWB_st)
+kurtosis(data_ct$SWB_st)
+```
+
+```{r risk}
+
+summary(data_ct$risk_st)
+hist(data_ct$risk_st)
+sd(data_ct$risk_st)
+skewness(data_ct$risk_st)
+kurtosis(data_ct$risk_st)
+```
+
+# Regressions
+
+```{r Remove scientific notation}
+options(scipen = 999)
+```
+
+## Environmental ind
+```{r Childhood trauma parent}
+
+# Fit linear regression to each imputed data set 
+chi_model_pre_par <- with(data_imp_miss, lm(chi_total ~ pre_parent_50 + cohort + sex1 + batch))
+# Pool and summarize regression results
+chi_model_pre_par_pool <- pool(chi_model_pre_par)
+summary(chi_model_pre_par_pool, conf.int = TRUE, conf.level = 0.95)
+
+# Fit linear regression to each imputed data set 
+chi_model_mid_par <- with(data_imp_miss, lm(chi_total ~ mid_parent_50 + cohort + sex1 + batch))
+# Pool and summarize regression results
+chi_model_mid_par_pool <- pool(chi_model_mid_par)
+summary(chi_model_mid_par_pool, conf.int = TRUE, conf.level = 0.95)
+
+# Fit linear regression to each imputed data set 
+chi_model_adl_par <- with(data_imp_miss, lm(chi_total ~ adl_parent_50 + cohort + sex1 + batch))
+# Pool and summarize regression results
+chi_model_adl_par_pool <- pool(chi_model_adl_par)
+summary(chi_model_adl_par_pool, conf.int = TRUE, conf.level = 0.95)
+```
+
+```{r Childhood trauma twin}
+
+chi_model_mid_twin <- with(data_imp_miss, lm(chi_total ~ mid_twin + cohort + sex1 + batch))
+# Pool and summarize regression results
+chi_model_mid_twin_pool <- pool(chi_model_mid_twin)
+summary(chi_model_mid_twin_pool , conf.int = TRUE, conf.level = 0.95)
+
+chi_model_adl_twin <- with(data_imp_miss, lm(chi_total ~ adl_twin_66 + cohort + sex1 + batch))
+# Pool and summarize regression results
+chi_model_adl_twin_pool <- pool(chi_model_adl_twin)
+summary(chi_model_adl_twin_pool , conf.int = TRUE, conf.level = 0.95)
+```
+
+## Environmental all
+```{r Childhood trauma both reporters}
+
+chi_model_all <- with(data_imp_miss, lm(chi_total ~ pre_parent_50 + mid_parent_50 + mid_twin + adl_parent_50 + adl_twin_66 + cohort + sex1 + batch))
+# Pool and summarize regression results
+chi_model_all_pool <- pool(chi_model_all)
+summary(chi_model_all_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(chi_model_all_pool)
+pool.r.squared(chi_model_all_pool, adjusted = TRUE)
+```
+
+## PRS ind
+ADHD
+```{r ADHD childhood trauma}
+
+ADHD_model_chi <- with(data_imp_miss, lm(chi_total ~ ADHD_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+ADHD_model_chi_pool <- pool(ADHD_model_chi)
+summary(ADHD_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(ADHD_model_chi_pool)
+pool.r.squared(ADHD_model_chi_pool, adjusted = TRUE)
+```
+
+anorexia
+```{r anorexia childhood trauma}
+
+anorexia_model_chi <- with(data_imp_miss, lm(chi_total ~ anorexia_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+anorexia_model_chi_pool <- pool(anorexia_model_chi)
+summary(anorexia_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(anorexia_model_chi_pool)
+pool.r.squared(anorexia_model_chi_pool, adjusted = TRUE)
+```
+
+anxiety
+```{r anxiety childhood trauma}
+
+anxiety_model_chi <- with(data_imp_miss, lm(chi_total ~ anxiety_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+anxiety_model_chi_pool <- pool(anxiety_model_chi)
+summary(anxiety_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(anxiety_model_chi_pool)
+pool.r.squared(anxiety_model_chi_pool, adjusted = TRUE)
+
+```
+
+ASD
+```{r ASD childhood trauma}
+
+ASD_model_chi <- with(data_imp_miss, lm(chi_total ~ ASD_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+ASD_model_chi_pool <- pool(ASD_model_chi)
+summary(ASD_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(ASD_model_chi_pool)
+pool.r.squared(ASD_model_chi_pool, adjusted = TRUE)
+```
+
+BIP
+```{r BIP childhood trauma}
+
+BIP_model_chi <- with(data_imp_miss, lm(chi_total ~ BIP_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+BIP_model_chi_pool <- pool(BIP_model_chi)
+summary(BIP_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(BIP_model_chi_pool)
+pool.r.squared(BIP_model_chi_pool, adjusted = TRUE)
+```
+
+BMI
+```{r BMI childhood trauma}
+
+BMI_model_chi <- with(data_imp_miss, lm(chi_total ~ BMI_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+BMI_model_chi_pool <- pool(BMI_model_chi)
+summary(BMI_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(BMI_model_chi_pool)
+pool.r.squared(BMI_model_chi_pool, adjusted = TRUE)
+```
+
+depression
+```{r depression childhood trauma}
+
+depression_model_chi <- with(data_imp_miss, lm(chi_total ~ depression_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+depression_model_chi_pool <- pool(depression_model_chi)
+summary(depression_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(depression_model_chi_pool)
+pool.r.squared(depression_model_chi_pool, adjusted = TRUE)
+```
+
+EA3
+```{r EA3 childhood trauma}
+
+EA3_model_chi <- with(data_imp_miss, lm(chi_total ~ EA3_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+EA3_model_chi_pool <- pool(EA3_model_chi)
+summary(EA3_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(EA3_model_chi_pool)
+pool.r.squared(EA3_model_chi_pool, adjusted = TRUE)
+```
+
+height
+```{r height childhood trauma}
+
+height_model_chi <- with(data_imp_miss, lm(chi_total ~ height_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+height_model_chi_pool <- pool(height_model_chi)
+summary(height_model_chi_pool, conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(height_model_chi_pool)
+pool.r.squared(height_model_chi_pool, adjusted = TRUE)
+```
+
+income
+```{r income childhood trauma}
+
+income_model_chi <- with(data_imp_miss, lm(chi_total ~ income_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+income_model_chi_pool <- pool(income_model_chi)
+summary(income_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(income_model_chi_pool)
+pool.r.squared(income_model_chi_pool, adjusted = TRUE)
+```
+
+insomnia
+```{r insomnia childhood trauma}
+
+insomnia_model_chi <- with(data_imp_miss, lm(chi_total ~ insomnia_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+insomnia_model_chi_pool <- pool(insomnia_model_chi)
+summary(insomnia_model_chi_pool, conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(insomnia_model_chi_pool)
+pool.r.squared(insomnia_model_chi_pool, adjusted = TRUE)
+```
+
+IQ
+```{r IQ childhood trauma}
+
+IQ_model_chi <- with(data_imp_miss, lm(chi_total ~ IQ_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+IQ_model_chi_pool <- pool(IQ_model_chi)
+summary(IQ_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(IQ_model_chi_pool)
+pool.r.squared(IQ_model_chi_pool, adjusted = TRUE)
+```
+
+irritability
+```{r irritability childhood trauma}
+
+irritability_model_chi <- with(data_imp_miss, lm(chi_total ~ irritability_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+irritability_model_chi_pool <- pool(irritability_model_chi)
+summary(irritability_model_chi_pool, conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(irritability_model_chi_pool)
+pool.r.squared(irritability_model_chi_pool, adjusted = TRUE)
+```
+
+MDD
+```{r MDD childhood trauma}
+
+MDD_model_chi <- with(data_imp_miss, lm(chi_total ~ MDD_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+MDD_model_chi_pool <- pool(MDD_model_chi)
+summary(MDD_model_chi_pool, conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(MDD_model_chi_pool)
+pool.r.squared(MDD_model_chi_pool, adjusted = TRUE)
+```
+
+mood
+```{r mood childhood trauma}
+
+mood_model_chi <- with(data_imp_miss, lm(chi_total ~ mood_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+mood_model_chi_pool <- pool(mood_model_chi)
+summary(mood_model_chi_pool, conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(mood_model_chi_pool)
+pool.r.squared(mood_model_chi_pool, adjusted = TRUE)
+```
+
+neuroticism
+```{r neuroticism childhood trauma}
+
+neuroticism_model_chi <- with(data_imp_miss, lm(chi_total ~ neuroticism_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+neuroticism_model_chi_pool <- pool(neuroticism_model_chi)
+summary(neuroticism_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(neuroticism_model_chi_pool)
+pool.r.squared(neuroticism_model_chi_pool, adjusted = TRUE)
+```
+
+OCD
+```{r OCD childhood trauma}
+
+OCD_model_chi <- with(data_imp_miss, lm(chi_total ~ OCD_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+OCD_model_chi_pool <- pool(OCD_model_chi)
+summary(OCD_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(OCD_model_chi_pool)
+pool.r.squared(OCD_model_chi_pool, adjusted = TRUE)
+```
+
+PTSD
+```{r PTSD childhood trauma}
+
+PTSD_model_chi <- with(data_imp_miss, lm(chi_total ~ PTSD_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+PTSD_model_chi_pool <- pool(PTSD_model_chi)
+summary(PTSD_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(PTSD_model_chi_pool)
+pool.r.squared(PTSD_model_chi_pool, adjusted = TRUE)
+```
+
+SCZ
+```{r SCZ childhood trauma}
+
+SCZ_model_chi <- with(data_imp_miss, lm(chi_total ~ SCZ_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+SCZ_model_chi_pool <- pool(SCZ_model_chi)
+summary(SCZ_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(SCZ_model_chi_pool)
+pool.r.squared(SCZ_model_chi_pool, adjusted = TRUE)
+```
+
+SWB
+```{r SWB childhood trauma}
+
+SWB_model_chi <- with(data_imp_miss, lm(chi_total ~ SWB_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+SWB_model_chi_pool <- pool(SWB_model_chi)
+summary(SWB_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(SWB_model_chi_pool)
+pool.r.squared(SWB_model_chi_pool, adjusted = TRUE)
+```
+
+risk
+```{r risk childhood trauma}
+
+risk_model_chi <- with(data_imp_miss, lm(chi_total ~ risk_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+risk_model_chi_pool <- pool(risk_model_chi)
+summary(risk_model_chi_pool , conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(risk_model_chi_pool)
+pool.r.squared(risk_model_chi_pool, adjusted = TRUE)
+
+```
+
+## PRS all
+```{r Childhood trauma prs imputed}
+
+chi_model_prs <- with(data_imp_miss, lm(chi_total ~ ADHD_st + anorexia_st + anxiety_st + ASD_st + BIP_st + BMI_st + depression_st + EA3_st + height_st + income_st + insomnia_st + IQ_st + irritability_st + MDD_st + mood_st + neuroticism_st + OCD_st + PTSD_st + SCZ_st + SWB_st + risk_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+chi_model_prs_pool <- pool(chi_model_prs)
+summary(chi_model_prs_pool, conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(chi_model_prs_pool)
+pool.r.squared(chi_model_prs_pool, adjusted = TRUE)
+```
+
+## Combined
+### Childhood trauma
+```{r Childhood trauma comb}
+
+chi_model_comb <- with(data_imp_miss, lm(chi_total ~ pre_parent_50 + mid_parent_50 + mid_twin + adl_parent_50 + adl_twin_66 + ADHD_st + anorexia_st + anxiety_st + ASD_st + BIP_st + BMI_st + depression_st + EA3_st + height_st + income_st + insomnia_st + IQ_st + irritability_st + MDD_st + mood_st + neuroticism_st + OCD_st + PTSD_st + SCZ_st + SWB_st + risk_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+chi_model_comb_pool <- pool(chi_model_comb)
+summary(chi_model_comb_pool, conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(chi_model_comb_pool)
+pool.r.squared(chi_model_comb_pool, adjusted = TRUE)
+```
+
+### Partner abuse
+```{r Partner abuse comb}
+
+dom_model_comb <- with(data_imp_miss, lm(dom_total ~ pre_parent_50 + mid_parent_50 + mid_twin + adl_parent_50 + adl_twin_66 + ADHD_st + anorexia_st + anxiety_st + ASD_st + BIP_st + BMI_st + depression_st + EA3_st + height_st + income_st + insomnia_st + IQ_st + irritability_st + MDD_st + mood_st + neuroticism_st + OCD_st + PTSD_st + SCZ_st + SWB_st + risk_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+dom_model_comb_pool <- pool(dom_model_comb)
+summary(dom_model_comb_pool, conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(dom_model_comb_pool)
+pool.r.squared(dom_model_comb_pool, adjusted = TRUE)
+```
+
+### Life events
+```{r Life events comb}
+
+lif_model_comb <- with(data_imp_miss, lm(lif_total ~ pre_parent_50 + mid_parent_50 + mid_twin + adl_parent_50 + adl_twin_66 + ADHD_st + anorexia_st + anxiety_st + ASD_st + BIP_st + BMI_st + depression_st + EA3_st + height_st + income_st + insomnia_st + IQ_st + irritability_st + MDD_st + mood_st + neuroticism_st + OCD_st + PTSD_st + SCZ_st + SWB_st + risk_st + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10 + cohort + sex1 + batch))
+# Pool and summarize regression results
+lif_model_comb_pool <- pool(lif_model_comb)
+summary(lif_model_comb_pool, conf.int = TRUE, conf.level = 0.95)
+pool.r.squared(lif_model_comb_pool)
+pool.r.squared(lif_model_comb_pool, adjusted = TRUE)
+```
+
+# FDR Correction
+## Confidence intervals
+### Env ind
+```{r Confidence intervals env ind}
+
+#Pre parent
+CI.pre_par.chi <- tidy(chi_model_pre_par_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.pre_par.chi <- add_column(CI.pre_par.chi, Composite = "Pre-school (parent report)")
+CI.pre_par.chi <- add_column(CI.pre_par.chi, Model = "Environmental")
+CI.pre_par.chi <- add_column(CI.pre_par.chi, Type = "Univariable")
+CI.pre_par.chi <- CI.pre_par.chi[2,]
+CI.pre_par.chi 
+
+#Mid parent
+CI.mid_par.chi <- tidy(chi_model_mid_par_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.mid_par.chi <- add_column(CI.mid_par.chi, Composite = "Middle childhood (parent report)")
+CI.mid_par.chi <- add_column(CI.mid_par.chi, Model = "Environmental")
+CI.mid_par.chi <- add_column(CI.mid_par.chi, Type = "Univariable")
+CI.mid_par.chi <- CI.mid_par.chi[2,]
+CI.mid_par.chi 
+
+#Mid twin
+CI.mid_twin.chi <- tidy(chi_model_mid_twin_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.mid_twin.chi <- add_column(CI.mid_twin.chi, Composite = "Middle childhood (self report)")
+CI.mid_twin.chi <- add_column(CI.mid_twin.chi, Model = "Environmental")
+CI.mid_twin.chi <- add_column(CI.mid_twin.chi, Type = "Univariable")
+CI.mid_twin.chi <- CI.mid_twin.chi[2,]
+CI.mid_twin.chi 
+
+#Adl parent
+CI.adl_par.chi <- tidy(chi_model_adl_par_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.adl_par.chi <- add_column(CI.adl_par.chi, Composite = "Early adolescence (parent report)")
+CI.adl_par.chi <- add_column(CI.adl_par.chi, Model = "Environmental")
+CI.adl_par.chi <- add_column(CI.adl_par.chi, Type = "Univariable")
+CI.adl_par.chi <- CI.adl_par.chi[2,]
+CI.adl_par.chi 
+
+#Adl twin
+CI.adl_twin.chi <- tidy(chi_model_adl_twin_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.adl_twin.chi <- add_column(CI.adl_twin.chi, Composite = "Early adolescence (self report)")
+CI.adl_twin.chi <- add_column(CI.adl_twin.chi, Model = "Environmental")
+CI.adl_twin.chi <- add_column(CI.adl_twin.chi, Type = "Univariable")
+CI.adl_twin.chi <- CI.adl_twin.chi[2,]
+CI.adl_twin.chi 
+```
+
+### Env all
+```{r Confidence intervals env multiple}
+#Childhood trauma
+CI.all.env.chi <- tidy(chi_model_all_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.all.env.chi <- add_column(CI.all.env.chi, Model = "Environmental")
+CI.all.env.chi <- add_column(CI.all.env.chi, Type = "Multivariable")
+CI.all.env.chi 
+CI.all.env.chi.pre_par <- CI.all.env.chi[2,]
+CI.all.env.chi.pre_par <- add_column(CI.all.env.chi.pre_par, Composite = "Pre-school (parent report)")
+CI.all.env.chi.mid_par <- CI.all.env.chi[3,]
+CI.all.env.chi.mid_par <- add_column(CI.all.env.chi.mid_par, Composite = "Middle childhood (parent report)")
+CI.all.env.chi.mid_twin <- CI.all.env.chi[4,]
+CI.all.env.chi.mid_twin <- add_column(CI.all.env.chi.mid_twin, Composite = "Middle childhood (self report)")
+CI.all.env.chi.adl_par <- CI.all.env.chi[5,]
+CI.all.env.chi.adl_par <- add_column(CI.all.env.chi.adl_par, Composite = "Early adolescence (parent report)")
+CI.all.env.chi.adl_twin <- CI.all.env.chi[6,]
+CI.all.env.chi.adl_twin <- add_column(CI.all.env.chi.adl_twin, Composite = "Early adolescence (self report)")
+```
+
+### PRS ind
+```{r Confidence intervals prs ind}
+#ADHD
+CI.ADHD.chi <- tidy(ADHD_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.ADHD.chi <- add_column(CI.ADHD.chi, prs = "ADHD")
+CI.ADHD.chi <- add_column(CI.ADHD.chi, Trait = "Neurodevelopmental")
+CI.ADHD.chi <- add_column(CI.ADHD.chi, Type = "Univariable")
+CI.ADHD.chi <- add_column(CI.ADHD.chi, Model = "Genetic")
+CI.ADHD.chi <- CI.ADHD.chi[2,]
+CI.ADHD.chi 
+#anorexia
+CI.anorexia.chi <- tidy(anorexia_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.anorexia.chi <- add_column(CI.anorexia.chi, prs = "Anorexia")
+CI.anorexia.chi <- add_column(CI.anorexia.chi, Trait = "Psychiatric")
+CI.anorexia.chi <- add_column(CI.anorexia.chi, Type = "Univariable")
+CI.anorexia.chi <- add_column(CI.anorexia.chi, Model = "Genetic")
+CI.anorexia.chi <- CI.anorexia.chi[2,]
+CI.anorexia.chi
+#anxiety
+CI.anxiety.chi <- tidy(anxiety_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.anxiety.chi <- add_column(CI.anxiety.chi, prs = "Anxiety")
+CI.anxiety.chi <- add_column(CI.anxiety.chi, Trait = "Psychiatric")
+CI.anxiety.chi <- add_column(CI.anxiety.chi, Type = "Univariable")
+CI.anxiety.chi <- add_column(CI.anxiety.chi, Model = "Genetic")
+CI.anxiety.chi <- CI.anxiety.chi[2,]
+CI.anxiety.chi
+#ASD
+CI.ASD.chi <- tidy(ASD_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.ASD.chi <- add_column(CI.ASD.chi, prs = "Autism")
+CI.ASD.chi <- add_column(CI.ASD.chi, Trait = "Neurodevelopmental")
+CI.ASD.chi <- add_column(CI.ASD.chi, Type = "Univariable")
+CI.ASD.chi <- add_column(CI.ASD.chi, Model = "Genetic")
+CI.ASD.chi <- CI.ASD.chi[2,]
+CI.ASD.chi 
+#BIP
+CI.BIP.chi <- tidy(BIP_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.BIP.chi <- add_column(CI.BIP.chi, prs = "Bipolar disorder")
+CI.BIP.chi <- add_column(CI.BIP.chi, Trait = "Psychiatric")
+CI.BIP.chi <- add_column(CI.BIP.chi, Type = "Univariable")
+CI.BIP.chi <- add_column(CI.BIP.chi, Model = "Genetic")
+CI.BIP.chi <- CI.BIP.chi[2,]
+CI.BIP.chi 
+#BMI
+CI.BMI.chi <- tidy(BMI_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.BMI.chi <- add_column(CI.BMI.chi, prs = "Body mass index")
+CI.BMI.chi <- add_column(CI.BMI.chi, Trait = "Anthropometric")
+CI.BMI.chi <- add_column(CI.BMI.chi, Type = "Univariable")
+CI.BMI.chi <- add_column(CI.BMI.chi, Model = "Genetic")
+CI.BMI.chi <- CI.BMI.chi[2,]
+CI.BMI.chi 
+#depression
+CI.depression.chi <- tidy(depression_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.depression.chi <- add_column(CI.depression.chi, prs = "Depressive symptoms")
+CI.depression.chi <- add_column(CI.depression.chi, Trait = "Psychiatric")
+CI.depression.chi <- add_column(CI.depression.chi, Type = "Univariable")
+CI.depression.chi <- add_column(CI.depression.chi, Model = "Genetic")
+CI.depression.chi <- CI.depression.chi[2,]
+CI.depression.chi 
+#EA3
+CI.EA3.chi <- tidy(EA3_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.EA3.chi <- add_column(CI.EA3.chi, prs = "Educational attainment")
+CI.EA3.chi <- add_column(CI.EA3.chi, Trait = "Cognitive")
+CI.EA3.chi <- add_column(CI.EA3.chi, Type = "Univariable")
+CI.EA3.chi <- add_column(CI.EA3.chi, Model = "Genetic")
+CI.EA3.chi <- CI.EA3.chi[2,]
+CI.EA3.chi 
+#height
+CI.height.chi <- tidy(height_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.height.chi <- add_column(CI.height.chi, prs = "Height")
+CI.height.chi <- add_column(CI.height.chi, Trait = "Antropometric")
+CI.height.chi <- add_column(CI.height.chi, Type = "Univariable")
+CI.height.chi <- add_column(CI.height.chi, Model = "Genetic")
+CI.height.chi <- CI.height.chi[2,]
+CI.height.chi 
+#income
+CI.income.chi <- tidy(income_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.income.chi <- add_column(CI.income.chi, prs = "Household income")
+CI.income.chi <- add_column(CI.income.chi, Trait = "Demographic")
+CI.income.chi <- add_column(CI.income.chi, Type = "Univariable")
+CI.income.chi <- add_column(CI.income.chi, Model = "Genetic")
+CI.income.chi <- CI.income.chi[2,]
+CI.income.chi 
+#insomnia
+CI.insomnia.chi <- tidy(insomnia_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.insomnia.chi <- add_column(CI.insomnia.chi, prs = "Insomnia")
+CI.insomnia.chi <- add_column(CI.insomnia.chi, Trait = "Psychiatric")
+CI.insomnia.chi <- add_column(CI.insomnia.chi, Type = "Univariable")
+CI.insomnia.chi <- add_column(CI.insomnia.chi, Model = "Genetic")
+CI.insomnia.chi <- CI.insomnia.chi[2,]
+CI.insomnia.chi 
+#IQ
+CI.IQ.chi <- tidy(IQ_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.IQ.chi <- add_column(CI.IQ.chi, prs = "IQ")
+CI.IQ.chi <- add_column(CI.IQ.chi, Trait = "Cognitive")
+CI.IQ.chi <- add_column(CI.IQ.chi, Type = "Univariable")
+CI.IQ.chi <- add_column(CI.IQ.chi, Model = "Genetic")
+CI.IQ.chi <- CI.IQ.chi[2,]
+CI.IQ.chi 
+#irritability
+CI.irritability.chi <- tidy(irritability_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.irritability.chi <- add_column(CI.irritability.chi, prs = "Irritability")
+CI.irritability.chi <- add_column(CI.irritability.chi, Trait = "Psychiatric")
+CI.irritability.chi <- add_column(CI.irritability.chi, Type = "Univariable")
+CI.irritability.chi <- add_column(CI.irritability.chi, Model = "Genetic")
+CI.irritability.chi <- CI.irritability.chi[2,]
+CI.irritability.chi 
+#MDD
+CI.MDD.chi <- tidy(MDD_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.MDD.chi <- add_column(CI.MDD.chi, prs = "Major depressive disorder")
+CI.MDD.chi <- add_column(CI.MDD.chi, Trait = "Psychiatric")
+CI.MDD.chi <- add_column(CI.MDD.chi, Type = "Univariable")
+CI.MDD.chi <- add_column(CI.MDD.chi, Model = "Genetic")
+CI.MDD.chi <- CI.MDD.chi[2,]
+CI.MDD.chi 
+#mood
+CI.mood.chi <- tidy(mood_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.mood.chi <- add_column(CI.mood.chi, prs = "Mood swings")
+CI.mood.chi <- add_column(CI.mood.chi, Trait = "Personality")
+CI.mood.chi <- add_column(CI.mood.chi, Type = "Univariable")
+CI.mood.chi <- add_column(CI.mood.chi, Model = "Genetic")
+CI.mood.chi <- CI.mood.chi[2,]
+CI.mood.chi
+#neuroticism
+CI.neuroticism.chi <- tidy(neuroticism_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.neuroticism.chi <- add_column(CI.neuroticism.chi, prs = "Neuroticism")
+CI.neuroticism.chi <- add_column(CI.neuroticism.chi, Trait = "Personality")
+CI.neuroticism.chi <- add_column(CI.neuroticism.chi, Type = "Univariable")
+CI.neuroticism.chi <- add_column(CI.neuroticism.chi, Model = "Genetic")
+CI.neuroticism.chi <- CI.neuroticism.chi[2,]
+CI.neuroticism.chi
+#OCD
+CI.OCD.chi <- tidy(OCD_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.OCD.chi <- add_column(CI.OCD.chi, prs = "OCD")
+CI.OCD.chi <- add_column(CI.OCD.chi, Trait = "Psychiatric")
+CI.OCD.chi <- add_column(CI.OCD.chi, Type = "Univariable")
+CI.OCD.chi <- add_column(CI.OCD.chi, Model = "Genetic")
+CI.OCD.chi <- CI.OCD.chi[2,]
+CI.OCD.chi 
+#PTSD
+CI.PTSD.chi <- tidy(PTSD_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.PTSD.chi <- add_column(CI.PTSD.chi, prs = "PTSD")
+CI.PTSD.chi <- add_column(CI.PTSD.chi, Trait = "Psychaitric")
+CI.PTSD.chi <- add_column(CI.PTSD.chi, Type = "Univariable")
+CI.PTSD.chi <- add_column(CI.PTSD.chi, Model = "Genetic")
+CI.PTSD.chi <- CI.PTSD.chi[2,]
+CI.PTSD.chi 
+#SCZ
+CI.SCZ.chi <- tidy(SCZ_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.SCZ.chi <- add_column(CI.SCZ.chi, prs = "Schizophrenia")
+CI.SCZ.chi <- add_column(CI.SCZ.chi, Trait = "Psychiatric")
+CI.SCZ.chi <- add_column(CI.SCZ.chi, Type = "Univariable")
+CI.SCZ.chi <- add_column(CI.SCZ.chi, Model = "Genetic")
+CI.SCZ.chi <- CI.SCZ.chi[2,]
+CI.SCZ.chi 
+#SWB
+CI.SWB.chi <- tidy(SWB_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.SWB.chi <- add_column(CI.SWB.chi, prs = "Subjective wellbeing")
+CI.SWB.chi <- add_column(CI.SWB.chi, Trait = "Personality")
+CI.SWB.chi <- add_column(CI.SWB.chi, Type = "Univariable")
+CI.SWB.chi <- add_column(CI.SWB.chi, Model = "Genetic")
+CI.SWB.chi <- CI.SWB.chi[2,]
+CI.SWB.chi
+#risk
+CI.risk.chi <- tidy(risk_model_chi_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.risk.chi <- add_column(CI.risk.chi, prs = "Risky behaviours")
+CI.risk.chi <- add_column(CI.risk.chi, Trait = "Psychiatric")
+CI.risk.chi <- add_column(CI.risk.chi, Type = "Univariable")
+CI.risk.chi <- add_column(CI.risk.chi, Model = "Genetic")
+CI.risk.chi <- CI.risk.chi[2,]
+CI.risk.chi 
+```
+
+### PRS all
+```{r Confidence intervals prs all}
+
+#Childhood trauma
+CI.all.chi <- tidy(chi_model_prs_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.all.chi <- add_column(CI.all.chi, Type = "Multivariable")
+CI.all.chi <- add_column(CI.all.chi, Model = "Genetic")
+CI.all.chi 
+CI.all.chi.ADHD <- CI.all.chi[2,]
+CI.all.chi.ADHD <- add_column(CI.all.chi.ADHD, prs = "ADHD")
+CI.all.chi.ADHD <- add_column(CI.all.chi.ADHD, Trait = "Neurodevelopmental")
+CI.all.chi.anorexia <- CI.all.chi[3,]
+CI.all.chi.anorexia <- add_column(CI.all.chi.anorexia, prs = "Anorexia")
+CI.all.chi.anorexia <- add_column(CI.all.chi.anorexia, Trait = "Psychiatric")
+CI.all.chi.anxiety <- CI.all.chi[4,]
+CI.all.chi.anxiety <- add_column(CI.all.chi.anxiety, prs = "Anxiety")
+CI.all.chi.anxiety <- add_column(CI.all.chi.anxiety, Trait = "Psychiatric")
+CI.all.chi.ASD <- CI.all.chi[5,]
+CI.all.chi.ASD <- add_column(CI.all.chi.ASD, prs = "Autism")
+CI.all.chi.ASD <- add_column(CI.all.chi.ASD, Trait = "Neurodevelopmental")
+CI.all.chi.BIP <- CI.all.chi[6,]
+CI.all.chi.BIP <- add_column(CI.all.chi.BIP, prs = "Bipolar disorder")
+CI.all.chi.BIP <- add_column(CI.all.chi.BIP, Trait = "Psychiatric")
+CI.all.chi.BMI <- CI.all.chi[7,]
+CI.all.chi.BMI <- add_column(CI.all.chi.BMI, prs = "Body mass index")
+CI.all.chi.BMI <- add_column(CI.all.chi.BMI, Trait = "Anthropometric")
+CI.all.chi.depression <- CI.all.chi[8,]
+CI.all.chi.depression <- add_column(CI.all.chi.depression, prs = "Depressive symptoms")
+CI.all.chi.depression <- add_column(CI.all.chi.depression, Trait = "Psychiatric")
+CI.all.chi.EA3 <- CI.all.chi[9,]
+CI.all.chi.EA3 <- add_column(CI.all.chi.EA3, prs = "Educational attainment")
+CI.all.chi.EA3 <- add_column(CI.all.chi.EA3, Trait = "Cognitive")
+CI.all.chi.height <- CI.all.chi[10,]
+CI.all.chi.height <- add_column(CI.all.chi.height, prs = "Height")
+CI.all.chi.height <- add_column(CI.all.chi.height, Trait = "Antropometric")
+CI.all.chi.income <- CI.all.chi[11,]
+CI.all.chi.income <- add_column(CI.all.chi.income, prs = "Household income")
+CI.all.chi.income <- add_column(CI.all.chi.income, Trait = "Demographic")
+CI.all.chi.insomnia <- CI.all.chi[12,]
+CI.all.chi.insomnia <- add_column(CI.all.chi.insomnia, prs = "Insomnia")
+CI.all.chi.insomnia <- add_column(CI.all.chi.insomnia, Trait = "Psychiatric")
+CI.all.chi.IQ <- CI.all.chi[13,]
+CI.all.chi.IQ <- add_column(CI.all.chi.IQ, prs = "IQ")
+CI.all.chi.IQ <- add_column(CI.all.chi.IQ, Trait = "Cognitive")
+CI.all.chi.irritability <- CI.all.chi[14,]
+CI.all.chi.irritability <- add_column(CI.all.chi.irritability, prs = "Irritability")
+CI.all.chi.irritability <- add_column(CI.all.chi.irritability, Trait = "Psychiatric")
+CI.all.chi.MDD <- CI.all.chi[15,]
+CI.all.chi.MDD <- add_column(CI.all.chi.MDD, prs = "Major depressive disorder")
+CI.all.chi.MDD <- add_column(CI.all.chi.MDD, Trait = "Psychiatric")
+CI.all.chi.mood <- CI.all.chi[16,]
+CI.all.chi.mood <- add_column(CI.all.chi.mood, prs = "Mood swings")
+CI.all.chi.mood <- add_column(CI.all.chi.mood, Trait = "Personality")
+CI.all.chi.neuroticism <- CI.all.chi[17,]
+CI.all.chi.neuroticism <- add_column(CI.all.chi.neuroticism, prs = "Neuroticism")
+CI.all.chi.neuroticism <- add_column(CI.all.chi.neuroticism, Trait = "Personality")
+CI.all.chi.OCD <- CI.all.chi[18,]
+CI.all.chi.OCD <- add_column(CI.all.chi.OCD, prs = "OCD")
+CI.all.chi.OCD <- add_column(CI.all.chi.OCD, Trait = "Psychiatric")
+CI.all.chi.PTSD <- CI.all.chi[19,]
+CI.all.chi.PTSD <- add_column(CI.all.chi.PTSD, prs = "PTSD")
+CI.all.chi.PTSD <- add_column(CI.all.chi.PTSD, Trait = "Psychiatric")
+CI.all.chi.SCZ <- CI.all.chi[20,]
+CI.all.chi.SCZ <- add_column(CI.all.chi.SCZ, prs = "Schizophrenia")
+CI.all.chi.SCZ <- add_column(CI.all.chi.SCZ, Trait = "Psychiatric")
+CI.all.chi.SWB <- CI.all.chi[21,]
+CI.all.chi.SWB <- add_column(CI.all.chi.SWB, prs = "Subjective wellbeing")
+CI.all.chi.SWB <- add_column(CI.all.chi.SWB, Trait = "Personality")
+CI.all.chi.risk <- CI.all.chi[22,]
+CI.all.chi.risk <- add_column(CI.all.chi.risk, prs = "Risky behaviours")
+CI.all.chi.risk <- add_column(CI.all.chi.risk, Trait = "Behavioural")
+```
+
+### Combined
+```{r Confidence intervals comb chi}
+
+#Environmental
+CI.comb.chi <- tidy(chi_model_comb_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.comb.chi <- add_column(CI.comb.chi, Model = "Childhood trauma")
+CI.comb.chi <- add_column(CI.comb.chi, Type = "Multivariable")
+CI.comb.chi 
+CI.comb.chi.pre_par <- CI.comb.chi[2,]
+CI.comb.chi.pre_par <- add_column(CI.comb.chi.pre_par, prs = "Pre-school (parent report)")
+CI.comb.chi.pre_par <- add_column(CI.comb.chi.pre_par, Predictor = "Environmental")
+CI.comb.chi.mid_par <- CI.comb.chi[3,]
+CI.comb.chi.mid_par <- add_column(CI.comb.chi.mid_par, prs = "Middle childhood (parent report)")
+CI.comb.chi.mid_par <- add_column(CI.comb.chi.mid_par, Predictor = "Environmental")
+CI.comb.chi.mid_twin <- CI.comb.chi[4,]
+CI.comb.chi.mid_twin <- add_column(CI.comb.chi.mid_twin, prs = "Middle childhood (self report)")
+CI.comb.chi.mid_twin <- add_column(CI.comb.chi.mid_twin, Predictor = "Environmental")
+CI.comb.chi.adl_par <- CI.comb.chi[5,]
+CI.comb.chi.adl_par <- add_column(CI.comb.chi.adl_par, prs = "Early adolescence (parent report)")
+CI.comb.chi.adl_par <- add_column(CI.comb.chi.adl_par, Predictor = "Environmental")
+CI.comb.chi.adl_twin <- CI.comb.chi[6,]
+CI.comb.chi.adl_twin <- add_column(CI.comb.chi.adl_twin, prs = "Early adolescence (self report)")
+CI.comb.chi.adl_twin <- add_column(CI.comb.chi.adl_twin, Predictor = "Environmental")
+
+#PRS
+CI.comb.chi.ADHD <- CI.comb.chi[7,]
+CI.comb.chi.ADHD <- add_column(CI.comb.chi.ADHD, prs = "ADHD")
+CI.comb.chi.ADHD <- add_column(CI.comb.chi.ADHD, Predictor = "Genetic")
+CI.comb.chi.anorexia <- CI.comb.chi[8,]
+CI.comb.chi.anorexia <- add_column(CI.comb.chi.anorexia, prs = "Anorexia")
+CI.comb.chi.anorexia <- add_column(CI.comb.chi.anorexia, Predictor = "Genetic")
+CI.comb.chi.anxiety <- CI.comb.chi[9,]
+CI.comb.chi.anxiety <- add_column(CI.comb.chi.anxiety, prs = "Anxiety")
+CI.comb.chi.anxiety <- add_column(CI.comb.chi.anxiety, Predictor = "Genetic")
+CI.comb.chi.ASD <- CI.comb.chi[10,]
+CI.comb.chi.ASD <- add_column(CI.comb.chi.ASD, prs = "Autism")
+CI.comb.chi.ASD <- add_column(CI.comb.chi.ASD, Predictor = "Genetic")
+CI.comb.chi.BIP <- CI.comb.chi[11,]
+CI.comb.chi.BIP <- add_column(CI.comb.chi.BIP, prs = "Bipolar disorder")
+CI.comb.chi.BIP <- add_column(CI.comb.chi.BIP, Predictor = "Genetic")
+CI.comb.chi.BMI <- CI.comb.chi[12,]
+CI.comb.chi.BMI <- add_column(CI.comb.chi.BMI, prs = "Body mass index")
+CI.comb.chi.BMI <- add_column(CI.comb.chi.BMI, Predictor = "Genetic")
+CI.comb.chi.depression <- CI.comb.chi[13,]
+CI.comb.chi.depression <- add_column(CI.comb.chi.depression, prs = "Depressive symptoms")
+CI.comb.chi.depression <- add_column(CI.comb.chi.depression, Predictor = "Genetic")
+CI.comb.chi.EA3 <- CI.comb.chi[14,]
+CI.comb.chi.EA3 <- add_column(CI.comb.chi.EA3, prs = "Educational attainment")
+CI.comb.chi.EA3 <- add_column(CI.comb.chi.EA3, Predictor = "Genetic")
+CI.comb.chi.height <- CI.comb.chi[15,]
+CI.comb.chi.height <- add_column(CI.comb.chi.height, prs = "Height")
+CI.comb.chi.height <- add_column(CI.comb.chi.height, Predictor = "Genetic")
+CI.comb.chi.income <- CI.comb.chi[16,]
+CI.comb.chi.income <- add_column(CI.comb.chi.income, prs = "Household income")
+CI.comb.chi.income <- add_column(CI.comb.chi.income, Predictor = "Genetic")
+CI.comb.chi.insomnia <- CI.comb.chi[17,]
+CI.comb.chi.insomnia <- add_column(CI.comb.chi.insomnia, prs = "Insomnia")
+CI.comb.chi.insomnia <- add_column(CI.comb.chi.insomnia, Predictor = "Genetic")
+CI.comb.chi.IQ <- CI.comb.chi[18,]
+CI.comb.chi.IQ <- add_column(CI.comb.chi.IQ, prs = "IQ")
+CI.comb.chi.IQ <- add_column(CI.comb.chi.IQ, Predictor = "Genetic")
+CI.comb.chi.irritability <- CI.comb.chi[19,]
+CI.comb.chi.irritability <- add_column(CI.comb.chi.irritability, prs = "Irritability")
+CI.comb.chi.irritability <- add_column(CI.comb.chi.irritability, Predictor = "Genetic")
+CI.comb.chi.MDD <- CI.comb.chi[20,]
+CI.comb.chi.MDD <- add_column(CI.comb.chi.MDD, prs = "Major depressive disorder")
+CI.comb.chi.MDD <- add_column(CI.comb.chi.MDD, Predictor = "Genetic")
+CI.comb.chi.mood <- CI.comb.chi[21,]
+CI.comb.chi.mood <- add_column(CI.comb.chi.mood, prs = "Mood swings")
+CI.comb.chi.mood <- add_column(CI.comb.chi.mood, Predictor = "Genetic")
+CI.comb.chi.neuroticism <- CI.comb.chi[22,]
+CI.comb.chi.neuroticism <- add_column(CI.comb.chi.neuroticism, prs = "Neuroticism")
+CI.comb.chi.neuroticism <- add_column(CI.comb.chi.neuroticism, Predictor = "Genetic")
+CI.comb.chi.OCD <- CI.comb.chi[23,]
+CI.comb.chi.OCD <- add_column(CI.comb.chi.OCD, prs = "OCD")
+CI.comb.chi.OCD <- add_column(CI.comb.chi.OCD, Predictor = "Genetic")
+CI.comb.chi.PTSD <- CI.comb.chi[24,]
+CI.comb.chi.PTSD <- add_column(CI.comb.chi.PTSD, prs = "PTSD")
+CI.comb.chi.PTSD <- add_column(CI.comb.chi.PTSD, Predictor = "Genetic")
+CI.comb.chi.SCZ <- CI.comb.chi[25,]
+CI.comb.chi.SCZ <- add_column(CI.comb.chi.SCZ, prs = "Schizophrenia")
+CI.comb.chi.SCZ <- add_column(CI.comb.chi.SCZ, Predictor = "Genetic")
+CI.comb.chi.SWB <- CI.comb.chi[26,]
+CI.comb.chi.SWB <- add_column(CI.comb.chi.SWB, prs = "Subjective wellbeing")
+CI.comb.chi.SWB <- add_column(CI.comb.chi.SWB, Predictor = "Genetic")
+CI.comb.chi.risk <- CI.comb.chi[27,]
+CI.comb.chi.risk <- add_column(CI.comb.chi.risk, prs = "Risky behaviours")
+CI.comb.chi.risk <- add_column(CI.comb.chi.risk, Predictor = "Genetic")
+```
+
+```{r Confidence intervals comb dom}
+
+#Environmental
+CI.comb.dom <- tidy(dom_model_comb_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.comb.dom <- add_column(CI.comb.dom, Model = "Partner abuse")
+CI.comb.dom <- add_column(CI.comb.dom, Type = "Multivariable")
+CI.comb.dom 
+CI.comb.dom.pre_par <- CI.comb.dom[2,]
+CI.comb.dom.pre_par <- add_column(CI.comb.dom.pre_par, prs = "Pre-school (parent report)")
+CI.comb.dom.pre_par <- add_column(CI.comb.dom.pre_par, Predictor = "Environmental")
+CI.comb.dom.mid_par <- CI.comb.dom[3,]
+CI.comb.dom.mid_par <- add_column(CI.comb.dom.mid_par, prs = "Middle childhood (parent report)")
+CI.comb.dom.mid_par <- add_column(CI.comb.dom.mid_par, Predictor = "Environmental")
+CI.comb.dom.mid_twin <- CI.comb.dom[4,]
+CI.comb.dom.mid_twin <- add_column(CI.comb.dom.mid_twin, prs = "Middle childhood (self report)")
+CI.comb.dom.mid_twin <- add_column(CI.comb.dom.mid_twin, Predictor = "Environmental")
+CI.comb.dom.adl_par <- CI.comb.dom[5,]
+CI.comb.dom.adl_par <- add_column(CI.comb.dom.adl_par, prs = "Early adolescence (parent report)")
+CI.comb.dom.adl_par <- add_column(CI.comb.dom.adl_par, Predictor = "Environmental")
+CI.comb.dom.adl_twin <- CI.comb.dom[6,]
+CI.comb.dom.adl_twin <- add_column(CI.comb.dom.adl_twin, prs = "Early adolescence (self report)")
+CI.comb.dom.adl_twin <- add_column(CI.comb.dom.adl_twin, Predictor = "Environmental")
+
+#PRS
+CI.comb.dom.ADHD <- CI.comb.dom[7,]
+CI.comb.dom.ADHD <- add_column(CI.comb.dom.ADHD, prs = "ADHD")
+CI.comb.dom.ADHD <- add_column(CI.comb.dom.ADHD, Predictor = "Genetic")
+CI.comb.dom.anorexia <- CI.comb.dom[8,]
+CI.comb.dom.anorexia <- add_column(CI.comb.dom.anorexia, prs = "Anorexia")
+CI.comb.dom.anorexia <- add_column(CI.comb.dom.anorexia, Predictor = "Genetic")
+CI.comb.dom.anxiety <- CI.comb.dom[9,]
+CI.comb.dom.anxiety <- add_column(CI.comb.dom.anxiety, prs = "Anxiety")
+CI.comb.dom.anxiety <- add_column(CI.comb.dom.anxiety, Predictor = "Genetic")
+CI.comb.dom.ASD <- CI.comb.dom[10,]
+CI.comb.dom.ASD <- add_column(CI.comb.dom.ASD, prs = "Autism")
+CI.comb.dom.ASD <- add_column(CI.comb.dom.ASD, Predictor = "Genetic")
+CI.comb.dom.BIP <- CI.comb.dom[11,]
+CI.comb.dom.BIP <- add_column(CI.comb.dom.BIP, prs = "Bipolar disorder")
+CI.comb.dom.BIP <- add_column(CI.comb.dom.BIP, Predictor = "Genetic")
+CI.comb.dom.BMI <- CI.comb.dom[12,]
+CI.comb.dom.BMI <- add_column(CI.comb.dom.BMI, prs = "Body mass index")
+CI.comb.dom.BMI <- add_column(CI.comb.dom.BMI, Predictor = "Genetic")
+CI.comb.dom.depression <- CI.comb.dom[13,]
+CI.comb.dom.depression <- add_column(CI.comb.dom.depression, prs = "Depressive symptoms")
+CI.comb.dom.depression <- add_column(CI.comb.dom.depression, Predictor = "Genetic")
+CI.comb.dom.EA3 <- CI.comb.dom[14,]
+CI.comb.dom.EA3 <- add_column(CI.comb.dom.EA3, prs = "Educational attainment")
+CI.comb.dom.EA3 <- add_column(CI.comb.dom.EA3, Predictor = "Genetic")
+CI.comb.dom.height <- CI.comb.dom[15,]
+CI.comb.dom.height <- add_column(CI.comb.dom.height, prs = "Height")
+CI.comb.dom.height <- add_column(CI.comb.dom.height, Predictor = "Genetic")
+CI.comb.dom.income <- CI.comb.dom[16,]
+CI.comb.dom.income <- add_column(CI.comb.dom.income, prs = "Household income")
+CI.comb.dom.income <- add_column(CI.comb.dom.income, Predictor = "Genetic")
+CI.comb.dom.insomnia <- CI.comb.dom[17,]
+CI.comb.dom.insomnia <- add_column(CI.comb.dom.insomnia, prs = "Insomnia")
+CI.comb.dom.insomnia <- add_column(CI.comb.dom.insomnia, Predictor = "Genetic")
+CI.comb.dom.IQ <- CI.comb.dom[18,]
+CI.comb.dom.IQ <- add_column(CI.comb.dom.IQ, prs = "IQ")
+CI.comb.dom.IQ <- add_column(CI.comb.dom.IQ, Predictor = "Genetic")
+CI.comb.dom.irritability <- CI.comb.dom[19,]
+CI.comb.dom.irritability <- add_column(CI.comb.dom.irritability, prs = "Irritability")
+CI.comb.dom.irritability <- add_column(CI.comb.dom.irritability, Predictor = "Genetic")
+CI.comb.dom.MDD <- CI.comb.dom[20,]
+CI.comb.dom.MDD <- add_column(CI.comb.dom.MDD, prs = "Major depressive disorder")
+CI.comb.dom.MDD <- add_column(CI.comb.dom.MDD, Predictor = "Genetic")
+CI.comb.dom.mood <- CI.comb.dom[21,]
+CI.comb.dom.mood <- add_column(CI.comb.dom.mood, prs = "Mood swings")
+CI.comb.dom.mood <- add_column(CI.comb.dom.mood, Predictor = "Genetic")
+CI.comb.dom.neuroticism <- CI.comb.dom[22,]
+CI.comb.dom.neuroticism <- add_column(CI.comb.dom.neuroticism, prs = "Neuroticism")
+CI.comb.dom.neuroticism <- add_column(CI.comb.dom.neuroticism, Predictor = "Genetic")
+CI.comb.dom.OCD <- CI.comb.dom[23,]
+CI.comb.dom.OCD <- add_column(CI.comb.dom.OCD, prs = "OCD")
+CI.comb.dom.OCD <- add_column(CI.comb.dom.OCD, Predictor = "Genetic")
+CI.comb.dom.PTSD <- CI.comb.dom[24,]
+CI.comb.dom.PTSD <- add_column(CI.comb.dom.PTSD, prs = "PTSD")
+CI.comb.dom.PTSD <- add_column(CI.comb.dom.PTSD, Predictor = "Genetic")
+CI.comb.dom.SCZ <- CI.comb.dom[25,]
+CI.comb.dom.SCZ <- add_column(CI.comb.dom.SCZ, prs = "Schizophrenia")
+CI.comb.dom.SCZ <- add_column(CI.comb.dom.SCZ, Predictor = "Genetic")
+CI.comb.dom.SWB <- CI.comb.dom[26,]
+CI.comb.dom.SWB <- add_column(CI.comb.dom.SWB, prs = "Subjective wellbeing")
+CI.comb.dom.SWB <- add_column(CI.comb.dom.SWB, Predictor = "Genetic")
+CI.comb.dom.risk <- CI.comb.dom[27,]
+CI.comb.dom.risk <- add_column(CI.comb.dom.risk, prs = "Risky behaviours")
+CI.comb.dom.risk <- add_column(CI.comb.dom.risk, Predictor = "Genetic")
+```
+
+```{r Confidence intervals comb dom}
+
+#Environmental
+CI.comb.lif <- tidy(lif_model_comb_pool, conf.int = TRUE, exponantiate = TRUE)
+CI.comb.lif <- add_column(CI.comb.lif, Model = "Life events")
+CI.comb.lif <- add_column(CI.comb.lif, Type = "Multivariable")
+CI.comb.lif 
+CI.comb.lif.pre_par <- CI.comb.lif[2,]
+CI.comb.lif.pre_par <- add_column(CI.comb.lif.pre_par, prs = "Pre-school (parent report)")
+CI.comb.lif.pre_par <- add_column(CI.comb.lif.pre_par, Predictor = "Environmental")
+CI.comb.lif.mid_par <- CI.comb.lif[3,]
+CI.comb.lif.mid_par <- add_column(CI.comb.lif.mid_par, prs = "Middle childhood (parent report)")
+CI.comb.lif.mid_par <- add_column(CI.comb.lif.mid_par, Predictor = "Environmental")
+CI.comb.lif.mid_twin <- CI.comb.lif[4,]
+CI.comb.lif.mid_twin <- add_column(CI.comb.lif.mid_twin, prs = "Middle childhood (self report)")
+CI.comb.lif.mid_twin <- add_column(CI.comb.lif.mid_twin, Predictor = "Environmental")
+CI.comb.lif.adl_par <- CI.comb.lif[5,]
+CI.comb.lif.adl_par <- add_column(CI.comb.lif.adl_par, prs = "Early adolescence (parent report)")
+CI.comb.lif.adl_par <- add_column(CI.comb.lif.adl_par, Predictor = "Environmental")
+CI.comb.lif.adl_twin <- CI.comb.lif[6,]
+CI.comb.lif.adl_twin <- add_column(CI.comb.lif.adl_twin, prs = "Early adolescence (self report)")
+CI.comb.lif.adl_twin <- add_column(CI.comb.lif.adl_twin, Predictor = "Environmental")
+
+#PRS
+CI.comb.lif.ADHD <- CI.comb.lif[7,]
+CI.comb.lif.ADHD <- add_column(CI.comb.lif.ADHD, prs = "ADHD")
+CI.comb.lif.ADHD <- add_column(CI.comb.lif.ADHD, Predictor = "Genetic")
+CI.comb.lif.anorexia <- CI.comb.lif[8,]
+CI.comb.lif.anorexia <- add_column(CI.comb.lif.anorexia, prs = "Anorexia")
+CI.comb.lif.anorexia <- add_column(CI.comb.lif.anorexia, Predictor = "Genetic")
+CI.comb.lif.anxiety <- CI.comb.lif[9,]
+CI.comb.lif.anxiety <- add_column(CI.comb.lif.anxiety, prs = "Anxiety")
+CI.comb.lif.anxiety <- add_column(CI.comb.lif.anxiety, Predictor = "Genetic")
+CI.comb.lif.ASD <- CI.comb.lif[10,]
+CI.comb.lif.ASD <- add_column(CI.comb.lif.ASD, prs = "Autism")
+CI.comb.lif.ASD <- add_column(CI.comb.lif.ASD, Predictor = "Genetic")
+CI.comb.lif.BIP <- CI.comb.lif[11,]
+CI.comb.lif.BIP <- add_column(CI.comb.lif.BIP, prs = "Bipolar disorder")
+CI.comb.lif.BIP <- add_column(CI.comb.lif.BIP, Predictor = "Genetic")
+CI.comb.lif.BMI <- CI.comb.lif[12,]
+CI.comb.lif.BMI <- add_column(CI.comb.lif.BMI, prs = "Body mass index")
+CI.comb.lif.BMI <- add_column(CI.comb.lif.BMI, Predictor = "Genetic")
+CI.comb.lif.depression <- CI.comb.lif[13,]
+CI.comb.lif.depression <- add_column(CI.comb.lif.depression, prs = "Depressive symptoms")
+CI.comb.lif.depression <- add_column(CI.comb.lif.depression, Predictor = "Genetic")
+CI.comb.lif.EA3 <- CI.comb.lif[14,]
+CI.comb.lif.EA3 <- add_column(CI.comb.lif.EA3, prs = "Educational attainment")
+CI.comb.lif.EA3 <- add_column(CI.comb.lif.EA3, Predictor = "Genetic")
+CI.comb.lif.height <- CI.comb.lif[15,]
+CI.comb.lif.height <- add_column(CI.comb.lif.height, prs = "Height")
+CI.comb.lif.height <- add_column(CI.comb.lif.height, Predictor = "Genetic")
+CI.comb.lif.income <- CI.comb.lif[16,]
+CI.comb.lif.income <- add_column(CI.comb.lif.income, prs = "Household income")
+CI.comb.lif.income <- add_column(CI.comb.lif.income, Predictor = "Genetic")
+CI.comb.lif.insomnia <- CI.comb.lif[17,]
+CI.comb.lif.insomnia <- add_column(CI.comb.lif.insomnia, prs = "Insomnia")
+CI.comb.lif.insomnia <- add_column(CI.comb.lif.insomnia, Predictor = "Genetic")
+CI.comb.lif.IQ <- CI.comb.lif[18,]
+CI.comb.lif.IQ <- add_column(CI.comb.lif.IQ, prs = "IQ")
+CI.comb.lif.IQ <- add_column(CI.comb.lif.IQ, Predictor = "Genetic")
+CI.comb.lif.irritability <- CI.comb.lif[19,]
+CI.comb.lif.irritability <- add_column(CI.comb.lif.irritability, prs = "Irritability")
+CI.comb.lif.irritability <- add_column(CI.comb.lif.irritability, Predictor = "Genetic")
+CI.comb.lif.MDD <- CI.comb.lif[20,]
+CI.comb.lif.MDD <- add_column(CI.comb.lif.MDD, prs = "Major depressive disorder")
+CI.comb.lif.MDD <- add_column(CI.comb.lif.MDD, Predictor = "Genetic")
+CI.comb.lif.mood <- CI.comb.lif[21,]
+CI.comb.lif.mood <- add_column(CI.comb.lif.mood, prs = "Mood swings")
+CI.comb.lif.mood <- add_column(CI.comb.lif.mood, Predictor = "Genetic")
+CI.comb.lif.neuroticism <- CI.comb.lif[22,]
+CI.comb.lif.neuroticism <- add_column(CI.comb.lif.neuroticism, prs = "Neuroticism")
+CI.comb.lif.neuroticism <- add_column(CI.comb.lif.neuroticism, Predictor = "Genetic")
+CI.comb.lif.OCD <- CI.comb.lif[23,]
+CI.comb.lif.OCD <- add_column(CI.comb.lif.OCD, prs = "OCD")
+CI.comb.lif.OCD <- add_column(CI.comb.lif.OCD, Predictor = "Genetic")
+CI.comb.lif.PTSD <- CI.comb.lif[24,]
+CI.comb.lif.PTSD <- add_column(CI.comb.lif.PTSD, prs = "PTSD")
+CI.comb.lif.PTSD <- add_column(CI.comb.lif.PTSD, Predictor = "Genetic")
+CI.comb.lif.SCZ <- CI.comb.lif[25,]
+CI.comb.lif.SCZ <- add_column(CI.comb.lif.SCZ, prs = "Schizophrenia")
+CI.comb.lif.SCZ <- add_column(CI.comb.lif.SCZ, Predictor = "Genetic")
+CI.comb.lif.SWB <- CI.comb.lif[26,]
+CI.comb.lif.SWB <- add_column(CI.comb.lif.SWB, prs = "Subjective wellbeing")
+CI.comb.lif.SWB <- add_column(CI.comb.lif.SWB, Predictor = "Genetic")
+CI.comb.lif.risk <- CI.comb.lif[27,]
+CI.comb.lif.risk <- add_column(CI.comb.lif.risk, prs = "Risky behaviours")
+CI.comb.lif.risk <- add_column(CI.comb.lif.risk, Predictor = "Genetic")
+```
+
+## Gather
+```{r combine all confidence intervals}
+fdr.CI.all <- bind_rows(CI.pre_par.chi,
+                        CI.mid_par.chi,
+                        CI.mid_twin.chi,
+                        CI.adl_par.chi,
+                        CI.adl_twin.chi,
+                        CI.all.env.chi.pre_par,
+                        CI.all.env.chi.mid_par,
+                        CI.all.env.chi.mid_twin,
+                        CI.all.env.chi.adl_par,
+                        CI.all.env.chi.adl_twin,
+                        CI.ADHD.chi,
+                        CI.anorexia.chi,
+                        CI.anxiety.chi,
+                        CI.ASD.chi,
+                        CI.BIP.chi,
+                        CI.BMI.chi,
+                        CI.depression.chi,
+                        CI.EA3.chi,
+                        CI.height.chi,
+                        CI.income.chi,
+                        CI.insomnia.chi,
+                        CI.IQ.chi,
+                        CI.irritability.chi,
+                        CI.MDD.chi,
+                        CI.mood.chi,
+                        CI.neuroticism.chi,
+                        CI.OCD.chi,
+                        CI.PTSD.chi,
+                        CI.SCZ.chi,
+                        CI.SWB.chi,
+                        CI.risk.chi,
+                        CI.all.chi.ADHD,
+                        CI.all.chi.anorexia,
+                        CI.all.chi.anxiety,
+                        CI.all.chi.ASD,
+                        CI.all.chi.BIP,
+                        CI.all.chi.BMI,
+                        CI.all.chi.depression,
+                        CI.all.chi.EA3,
+                        CI.all.chi.height,
+                        CI.all.chi.income,
+                        CI.all.chi.insomnia,
+                        CI.all.chi.IQ,
+                        CI.all.chi.irritability,
+                        CI.all.chi.MDD,
+                        CI.all.chi.mood,
+                        CI.all.chi.neuroticism,
+                        CI.all.chi.OCD,
+                        CI.all.chi.PTSD,
+                        CI.all.chi.SCZ,
+                        CI.all.chi.SWB,
+                        CI.all.chi.risk,
+                        CI.comb.chi.pre_par,
+                        CI.comb.chi.mid_par,
+                        CI.comb.chi.mid_twin,
+                        CI.comb.chi.adl_par,
+                        CI.comb.chi.adl_twin,
+                        CI.comb.chi.ADHD,
+                        CI.comb.chi.anorexia,
+                        CI.comb.chi.anxiety,
+                        CI.comb.chi.ASD,
+                        CI.comb.chi.BIP,
+                        CI.comb.chi.BMI,
+                        CI.comb.chi.depression,
+                        CI.comb.chi.EA3,
+                        CI.comb.chi.height,
+                        CI.comb.chi.income,
+                        CI.comb.chi.insomnia,
+                        CI.comb.chi.IQ,
+                        CI.comb.chi.irritability,
+                        CI.comb.chi.MDD,
+                        CI.comb.chi.mood,
+                        CI.comb.chi.neuroticism,
+                        CI.comb.chi.OCD,
+                        CI.comb.chi.PTSD,
+                        CI.comb.chi.SCZ,
+                        CI.comb.chi.SWB,
+                        CI.comb.chi.risk,
+                        CI.comb.dom.pre_par,
+                        CI.comb.dom.mid_par,
+                        CI.comb.dom.mid_twin,
+                        CI.comb.dom.adl_par,
+                        CI.comb.dom.adl_twin,
+                        CI.comb.dom.ADHD,
+                        CI.comb.dom.anorexia,
+                        CI.comb.dom.anxiety,
+                        CI.comb.dom.ASD,
+                        CI.comb.dom.BIP,
+                        CI.comb.dom.BMI,
+                        CI.comb.dom.depression,
+                        CI.comb.dom.EA3,
+                        CI.comb.dom.height,
+                        CI.comb.dom.income,
+                        CI.comb.dom.insomnia,
+                        CI.comb.dom.IQ,
+                        CI.comb.dom.irritability,
+                        CI.comb.dom.MDD,
+                        CI.comb.dom.mood,
+                        CI.comb.dom.neuroticism,
+                        CI.comb.dom.OCD,
+                        CI.comb.dom.PTSD,
+                        CI.comb.dom.SCZ,
+                        CI.comb.dom.SWB,
+                        CI.comb.dom.risk,
+                        CI.comb.lif.pre_par,
+                        CI.comb.lif.mid_par,
+                        CI.comb.lif.mid_twin,
+                        CI.comb.lif.adl_par,
+                        CI.comb.lif.adl_twin,
+                        CI.comb.lif.ADHD,
+                        CI.comb.lif.anorexia,
+                        CI.comb.lif.anxiety,
+                        CI.comb.lif.ASD,
+                        CI.comb.lif.BIP,
+                        CI.comb.lif.BMI,
+                        CI.comb.lif.depression,
+                        CI.comb.lif.EA3,
+                        CI.comb.lif.height,
+                        CI.comb.lif.income,
+                        CI.comb.lif.insomnia,
+                        CI.comb.lif.IQ,
+                        CI.comb.lif.irritability,
+                        CI.comb.lif.MDD,
+                        CI.comb.lif.mood,
+                        CI.comb.lif.neuroticism,
+                        CI.comb.lif.OCD,
+                        CI.comb.lif.PTSD,
+                        CI.comb.lif.SCZ,
+                        CI.comb.lif.SWB,
+                        CI.comb.lif.risk)
+```
+
+## Correction
+```{r false discovery rate correction}
+fdr.CI.adj <- fdr.CI.all %>% 
+  mutate(p.value.adjusted = p.adjust(p.value, method = "fdr"))
+```
+
+Add row for significance
+```{r significant}
+fdr.CI.adj$Significant <- ifelse(fdr.CI.adj$p.value.adjusted < 0.05, "p < 0.05", "p > 0.05") 
+fdr.CI.adj
+```
+
+#Plots
+
+```{r}
+bluecolour <- "#0099CC"
+greencolour <- "#63D1F4"
+redcolour <- "#55AE3A"
+yellowcolour  <- "#BCED91"
+```
+
+## Environmental
+Combine the data together
+```{r select relevant rows}
+  chi.CI.env <- fdr.CI.adj %>% 
+  filter(Model == "Environmental")
+
+chi.CI.env
+```
+
+Make the predictors into a factor 
+```{r reorder levels}
+chi.CI.env$Composite <- factor(chi.CI.env$Composite, 
+                                     levels = c("Early adolescence (self report)", "Early adolescence (parent report)", "Middle childhood (self report)", "Middle childhood (parent report)", "Pre-school (parent report)"))
+chi.CI.env$Type <- factor(chi.CI.env$Type, 
+                                     levels = c("Multivariable", "Univariable"))
+
+chi.CI.env$Significant <- factor(chi.CI.env$Significant, 
+                                     levels = c("p < 0.05", "p > 0.05"))
+```
+
+```{r environmental plot mono}
+
+png("Childhoodtraumaenv.png", width = 1200, height = 400)
+
+ggplot(
+  chi.CI.env,
+  aes(x = Composite,
+      y = estimate,
+      ymin = conf.low,
+      ymax = conf.high,
+      color = Type,
+      shape = Significant)) +
+  geom_pointrange(position = position_dodge(width = 1), size = 1) +
+  labs(y = "Estimate [95% CI]",
+       x = "Polygenic score",
+       title = "Association between environmental difficulties and reported childhood trauma",
+       subtitle = paste("n(total) = ", length(data_ct$ADHD_st))) +
+  geom_errorbar(aes(ymin= conf.low, ymax= conf.high),width=0.3,cex=1, position = position_dodge(width = 1))+
+  theme(panel.grid.major.x = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        panel.grid.major.y = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        plot.title=element_text(size=20,face="bold"),
+        plot.subtitle=element_text(size=20),
+        axis.title.x = element_text(size=20,face="bold"),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(colour="black", size = 20),
+        axis.text.y = element_text(colour="black", size = 20),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.background = element_blank(),
+        legend.position = "right",
+        legend.title =element_text(size=20),
+        legend.text=element_text(size=20)) +
+  guides(color = guide_legend(reverse = TRUE, title = "Model", override.aes = list(shape = 15))) +
+  guides(shape = guide_legend(reverse = TRUE, title = "Significance after FDR correction", override.aes = list(color = redcolour))) +
+  geom_hline(linetype = "dashed", yintercept = 0) +
+  scale_shape_manual(values=c(15,0)) + 
+  scale_color_manual(values = c(redcolour, yellowcolour)) +
+  ylim(-1,3.2) +
+  coord_flip()
+
+dev.off()
+```
+
+## PRS
+```{r select relevant rows}
+chi.CI.prs <- fdr.CI.adj %>% 
+  filter(Model == "Genetic")
+
+chi.CI.prs
+```
+
+Make the predictors into a factor 
+```{r reorder levels}
+chi.CI.prs$prs <- factor(chi.CI.prs$prs, 
+                                     levels = c("Subjective wellbeing", "Schizophrenia", "Risky behaviours", "PTSD", "OCD", "Neuroticism", "Mood swings", "Major depressive disorder", "Irritability", "IQ", "Insomnia", "Household income", "Height", "Educational attainment", "Depressive symptoms", "Body mass index", "Bipolar disorder", "Autism", "Anxiety", "Anorexia", "ADHD"))
+chi.CI.prs$Type <- factor(chi.CI.prs$Type, 
+                                     levels = c("Multivariable", "Univariable"))
+
+chi.CI.prs$Significant <- factor(chi.CI.prs$Significant, 
+                                     levels = c("p < 0.05", "p > 0.05"))
+```
+
+```{r genetic plot mono}
+
+png("Childhoodtraumaprs.png", width = 1200, height = 1000)
+
+ggplot(
+  chi.CI.prs,
+  aes(prs,
+      y = estimate,
+      ymin = conf.low,
+      ymax = conf.high,
+      color = Type,
+      shape = Significant)) +
+  geom_pointrange(position = position_dodge(width = 1), size = 1) +
+  labs(y = "Estimate [95% CI]",
+       x = "Polygenic score",
+       title = "Association between genome-wide polygenic scores and reported childhood trauma",
+       subtitle = paste("n(total) = ", length(data_ct$ADHD_st))) +
+  geom_errorbar(aes(ymin= conf.low, ymax= conf.high),width=0.3,cex=1, position = position_dodge(width = 1))+
+  theme(panel.grid.major.x = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        panel.grid.major.y = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        plot.title=element_text(size=20,face="bold"),
+        plot.subtitle=element_text(size=20),
+        axis.title.x = element_text(size=20,face="bold"),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(colour="black", size = 20),
+        axis.text.y = element_text(colour="black", size = 20),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.background = element_blank(),
+        legend.position = "right",
+        legend.title =element_text(size=20),
+        legend.text=element_text(size=20)) +
+  guides(color = guide_legend(reverse = TRUE, title = "Model", override.aes = list(shape = 15))) +
+  guides(shape = guide_legend(reverse = TRUE, title = "Significance after FDR correction", override.aes = list(color = bluecolour))) +
+  geom_hline(linetype = "dashed", yintercept = 0) +
+  scale_shape_manual(values=c(15,0)) + 
+  scale_color_manual(values = c(bluecolour, greencolour)) +
+  ylim(-1,3) +  
+  coord_flip()
+
+dev.off()
+```
+
+## Combined
+### Childhood trauma
+```{r select relevant rows}
+chi.CI.comb <- fdr.CI.adj %>% 
+  filter(Model == "Childhood trauma")
+
+chi.CI.comb
+```
+
+Make the predictors into a factor 
+```{r reorder levels}
+chi.CI.comb$prs <- factor(chi.CI.comb$prs, 
+                                     levels = c("Subjective wellbeing", "Schizophrenia", "Risky behaviours", "PTSD", "OCD", "Neuroticism", "Mood swings", "Major depressive disorder", "Irritability", "IQ", "Insomnia", "Household income", "Height", "Educational attainment", "Depressive symptoms", "Body mass index", "Bipolar disorder", "Autism", "Anxiety", "Anorexia", "ADHD", "Early adolescence (self report)", "Early adolescence (parent report)", "Middle childhood (self report)", "Middle childhood (parent report)", "Pre-school (parent report)"))
+
+chi.CI.comb$Predictor <- factor(chi.CI.comb$Predictor, 
+                                     levels = c("Genetic", "Environmental"))
+
+chi.CI.comb$Significant <- factor(chi.CI.comb$Significant, 
+                                     levels = c("p < 0.05", "p > 0.05"))
+```
+
+```{r combined plot childhood}
+
+png("Childhoodtraumacomb.png", width = 1200, height = 1000)
+
+ggplot(
+  chi.CI.comb,
+  aes(prs,
+      y = estimate,
+      ymin = conf.low,
+      ymax = conf.high,
+      color = Predictor,
+      shape = Significant)) +
+  geom_pointrange(position = position_dodge(width = 1), size = 1) +
+  labs(y = "Estimate [95% CI]",
+       x = "Polygenic score",
+       title = "Association of environmental and polygenic predictors with reported childhood trauma",
+       subtitle = paste("n(total) = ", length(data_ct$ADHD_st))) +
+  geom_errorbar(aes(ymin= conf.low, ymax= conf.high),width=0.3,cex=1, position = position_dodge(width = 1))+
+  theme(panel.grid.major.x = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        panel.grid.major.y = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        plot.title=element_text(size=20,face="bold"),
+        plot.subtitle=element_text(size=20),
+        axis.title.x = element_text(size=20,face="bold"),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(colour="black", size = 20),
+        axis.text.y = element_text(colour="black", size = 20),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.background = element_blank(),
+        legend.position = "right",
+        legend.title =element_text(size=20),
+        legend.text=element_text(size=20)) +
+  guides(shape = guide_legend(reverse = TRUE, title = "Significance after FDR correction", override.aes = list(color = bluecolour))) +
+  guides(color = guide_legend(reverse = TRUE, override.aes = list(shape = c(15)))) +
+  geom_hline(linetype = "dashed", yintercept = 0) +
+  scale_shape_manual(values=c(15,0)) + 
+  scale_color_manual(values = c(bluecolour, redcolour)) +
+  ylim(-1,3) +
+  coord_flip()
+
+dev.off()
+```
+
+### Partner abuse
+```{r select relevant rows}
+dom.CI.comb <- fdr.CI.adj %>% 
+  filter(Model == "Partner abuse")
+
+dom.CI.comb
+```
+
+Make the predictors into a factor 
+```{r reorder levels}
+dom.CI.comb$prs <- factor(dom.CI.comb$prs, 
+                                     levels = c("Subjective wellbeing", "Schizophrenia", "Risky behaviours", "PTSD", "OCD", "Neuroticism", "Mood swings", "Major depressive disorder", "Irritability", "IQ", "Insomnia", "Household income", "Height", "Educational attainment", "Depressive symptoms", "Body mass index", "Bipolar disorder", "Autism", "Anxiety", "Anorexia", "ADHD", "Early adolescence (self report)", "Early adolescence (parent report)", "Middle childhood (self report)", "Middle childhood (parent report)", "Pre-school (parent report)"))
+
+dom.CI.comb$Predictor <- factor(dom.CI.comb$Predictor, 
+                                     levels = c("Genetic", "Environmental"))
+
+dom.CI.comb$Significant <- factor(dom.CI.comb$Significant, 
+                                     levels = c("p < 0.05", "p > 0.05"))
+```
+
+```{r combined plot partner}
+
+png("Partnerabusecomb.png", width = 1250, height = 900)
+
+ggplot(
+  dom.CI.comb,
+  aes(x = prs,
+      y = estimate,
+      ymin = conf.low,
+      ymax = conf.high,
+      color = Predictor,
+      shape = Significant)) +
+  geom_pointrange(position = position_dodge(width = 1), size = 1) +
+  labs(y = "Estimate [95% CI)]",
+       x = "Polygenic score",
+       title = "Association of environmental and polygenic predictors with reported partner abuse",
+       subtitle = paste("n(total) = ", length(data_ct$ADHD_st))) +
+  geom_errorbar(aes(ymin= conf.low, ymax= conf.high),width=0.3,cex=1, position = position_dodge(width = 1))+
+  theme(panel.grid.major.x = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        panel.grid.major.y = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        plot.title=element_text(size=20,face="bold"),
+        plot.subtitle=element_text(size=20),
+        axis.title.x = element_text(size=20,face="bold"),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(colour="black", size = 20),
+        axis.text.y = element_text(colour="black", size = 20),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.background = element_blank(),
+        legend.position = "right",
+        legend.title =element_text(size=20),
+        legend.text=element_text(size=20)) +
+  guides(shape = guide_legend(reverse = TRUE, title = "Significance after FDR correction", override.aes = list(color = bluecolour))) +
+  guides(color = guide_legend(reverse = TRUE, override.aes = list(shape = c(15)))) +
+  geom_hline(linetype = "dashed", yintercept = 0) +
+  scale_shape_manual(values=c(15,0)) + 
+  scale_color_manual(values = c(bluecolour, redcolour)) +
+  ylim(-1.1,3) +
+  coord_flip()
+
+dev.off()
+```
+
+### Life events
+```{r select relevant rows}
+lif.CI.comb <- fdr.CI.adj %>% 
+  filter(Model == "Life events")
+```
+
+Make the predictors into a factor 
+```{r reorder levels}
+lif.CI.comb$prs <- factor(lif.CI.comb$prs, 
+                                     levels = c("Subjective wellbeing", "Schizophrenia", "Risky behaviours", "PTSD", "OCD", "Neuroticism", "Mood swings", "Major depressive disorder", "Irritability", "IQ", "Insomnia", "Household income", "Height", "Educational attainment", "Depressive symptoms", "Body mass index", "Bipolar disorder", "Autism", "Anxiety", "Anorexia", "ADHD", "Early adolescence (self report)", "Early adolescence (parent report)", "Middle childhood (self report)", "Middle childhood (parent report)", "Pre-school (parent report)"))
+
+lif.CI.comb$Predictor <- factor(lif.CI.comb$Predictor, 
+                                     levels = c("Genetic", "Environmental"))
+
+lif.CI.comb$Significant <- factor(lif.CI.comb$Significant, 
+                                     levels = c("p < 0.05", "p > 0.05"))
+```
+
+```{r combined plot life events}
+
+png("Lifeeventscomb.png", width = 1250, height = 900)
+
+ggplot(
+  lif.CI.comb,
+  aes(x = prs,
+      y = estimate,
+      ymin = conf.low,
+      ymax = conf.high,
+      color = Predictor,
+      shape = Significant)) +
+  geom_pointrange(position = position_dodge(width = 1), size = 1) +
+  labs(y = "Estimate (95% CI)",
+       x = "Polygenic score",
+       title = "Association of environmental and polygenic predictors with reported life events",
+       subtitle = paste("n(total) = ", length(data_ct$ADHD_st))) +
+  geom_errorbar(aes(ymin= conf.low, ymax= conf.high),width=0.3,cex=1, position = position_dodge(width = 1))+
+  theme(panel.grid.major.x = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        panel.grid.major.y = element_line(size = 0.5,
+                                          linetype = 'dashed',
+                                          colour = "gray"),
+        plot.title=element_text(size=20,face="bold"),
+        plot.subtitle=element_text(size=20),
+        axis.title.x = element_text(size=20,face="bold"),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(colour="black", size = 20),
+        axis.text.y = element_text(colour="black", size = 20),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.background = element_blank(),
+        legend.position = "right",
+        legend.title =element_text(size=20),
+        legend.text=element_text(size=20)) +
+  guides(shape = guide_legend(reverse = TRUE, title = "Significance after FDR correction", override.aes = list(color = bluecolour))) +
+  guides(color = guide_legend(reverse = TRUE, override.aes = list(shape = c(15)))) +
+  geom_hline(linetype = "dashed", yintercept = 0) +
+  scale_shape_manual(values=c(15,0)) + 
+  scale_color_manual(values = c(bluecolour, redcolour)) +
+  ylim(-1,3) +
+  coord_flip()
+
+dev.off()
+```

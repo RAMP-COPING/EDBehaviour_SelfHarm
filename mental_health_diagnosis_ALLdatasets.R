@@ -170,7 +170,7 @@ if(GLAD == TRUE){
 }
 
 ##GLAD + COPING, recoding
-#For some disorders, participants are asked both in GLAD and COPING whether or not they have a mental heatlh diagnosis. The code below captures anyone who endorsed a mental health disorder in at least one of these questions.
+#For some disorders, participants are asked both in GLAD and COPING whether or not they have a mental health diagnosis. The code below captures anyone who endorsed a mental health disorder in at least one of these questions.
 
 #Depression
 if(GLAD == TRUE){
@@ -334,7 +334,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
- 
+
 #Autism spectrum disorder
 if(GLAD == TRUE){
   
@@ -361,7 +361,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
-  
+
 #Attention deficit hyperactivity disorder
 if(GLAD == TRUE){
   
@@ -388,7 +388,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
- 
+
 #Attention deficit hyperactivity disorder
 if(GLAD == TRUE){
   
@@ -766,7 +766,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
- 
+
 #Bulimia nervosa
 if(GLAD == TRUE){
   
@@ -793,7 +793,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
-   
+
 #Binge-eating disorder
 if(GLAD == TRUE){
   
@@ -820,7 +820,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
-   
+
 
 ## EDGI
 if(EDGI == TRUE) {
@@ -1457,7 +1457,7 @@ if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE) {
 if(EDGI == TRUE | NBR == TRUE | GLAD == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
-      eating_disorders_numeric =
+      eating_disorders_diagnosed_numeric =
         case_when(
           mhd.anorexia_nervosa_numeric == "1" ~ 1,
           mhd.atypical_anorexia_nervosa_numeric == "1" ~ 1,
@@ -1472,6 +1472,7 @@ if(EDGI == TRUE | NBR == TRUE | GLAD == TRUE) {
           mhd.rumination_disorder_numeric == "1" ~ 1,
           mhd.feeding_eating_disorder_numeric == "1" ~ 1,
           mhd.other_eating_disorder_numeric == "1" ~ 1,
+        
           (mhd.anorexia_nervosa_numeric == "0" &
              mhd.atypical_anorexia_nervosa_numeric == "0" &
              mhd.atypical_anorexia_nervosa_numeric == "0" &
@@ -1490,15 +1491,15 @@ if(EDGI == TRUE | NBR == TRUE | GLAD == TRUE) {
     )
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
-      eating_disorders =
-        recode_factor(eating_disorders_numeric,
+      eating_disorders_diagnosed =
+        recode_factor(eating_disorders_diagnosed_numeric,
                       "0" = "No eating disorder",
                       "1" = "Eating disorder",
                       missing = NA_character_
         )
     )
   mhd.raw.id %>%
-    freq(eating_disorders,
+    freq(eating_disorders_diagnosed,
          cumul = F)
 }
 
@@ -1507,7 +1508,7 @@ if(EDGI == TRUE | NBR == TRUE | GLAD == TRUE) {
 if(RAMP == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
-      eating_disorders_numeric =
+      eating_disorders_diagnosed_numeric =
         case_when(
           mhd.anorexia_nervosa_numeric == "1" ~ 1,
           mhd.atypical_anorexia_nervosa_numeric == "1" ~ 1,
@@ -1521,15 +1522,15 @@ if(RAMP == TRUE) {
     )
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
-      eating_disorders =
-        recode_factor(eating_disorders_numeric,
+      eating_disorders_diagnosed =
+        recode_factor(eating_disorders_diagnosed_numeric,
                       "0" = "No eating disorder",
                       "1" = "Eating disorder",
                       missing = NA_character_
         )
     )
   mhd.raw.id %>%
-    freq(eating_disorders,
+    freq(eating_disorders_diagnosed,
          cumul = F)
 }
 
@@ -1698,7 +1699,7 @@ if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE | RAMP == TRUE) {
 #1. Paranoid                        
 #2. Schizoid                      
 #3. Schizotypal                      
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
       personality_cluster_a_numeric =
@@ -1731,7 +1732,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 }
 
 
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id %>%
     select(
       personality_cluster_a,
@@ -1748,7 +1749,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 #6. Histrionic                        
 #7. Narcissistic                      
 
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
       personality_cluster_b_numeric =
@@ -1781,7 +1782,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 }
 
 #Check personality_cluster_b
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id %>%
     select(
       personality_cluster_b,
@@ -1796,7 +1797,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 #8. Avoidant/anxious                
 #9. Dependent                        
 #10. Obsessive-compulsive
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
       personality_cluster_c_numeric =
@@ -1830,7 +1831,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 
 
 #Check personality_cluster_c
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id %>%
     select(
       personality_cluster_c,
@@ -1838,5 +1839,34 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
       mhd.personality_disorder_diagnosed,
       mhd.personality_disorder_diagnosed_numeric
     )
+  
+  
+  if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE | RAMP == TRUE){
+    mhd.raw.id <- mhd.raw.id %>%
+      mutate(
+        PERSONALITY_DISORDER_NUMERIC =
+          case_when(
+            mhd.personality_disorder_numeric == 1 |
+              personality_cluster_c_numeric == 1 |
+              personality_cluster_b_numeric == 1|
+              personality_cluster_a_numeric == 1 ~ 1,
+            
+            mhd.personality_disorder_numeric == 0 &
+              personality_cluster_c_numeric == 0 &
+              personality_cluster_b_numeric == 0 &
+              personality_cluster_a_numeric == 0 ~ 0
+          )
+      )
+    mhd.raw.id <- mhd.raw.id %>%
+      mutate(
+        PERSONALITY_DISORDER_FACTOR =
+          recode_factor(
+            PERSONALITY_DISORDER_NUMERIC,
+            `0` = "No personality disorder",
+            `1` = "Personality disorder"
+          )
+      )
+    mhd.raw.id %>%
+      freq(PERSONALITY_DISORDER_FACTOR)
+  }
 }
-

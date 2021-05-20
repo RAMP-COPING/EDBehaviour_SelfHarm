@@ -10,14 +10,17 @@ if(EDGI == TRUE) {
         if_else(
           depressive_disorders_numeric == "0" &
             anxiety_disorders_numeric == "0" &
-            eating_disorders_numeric == "0" &
+            mhd.suspected_eating_disorder_diagnosed_numeric == "0" & #Never suspected ED (these people would not have been asked the question about diagnosis...)
+            eating_disorders_diagnosed_numeric == "0" &  #...but this code included people who indicated they had never suspected an ED!
             obsessive_compulsive_disorders_numeric == "0" &
             psychotic_disorders_numeric == "0" &
             mhd.mania_hypomania_bipolar_or_manicdepression_numeric == "0" &
             mhd.posttraumatic_stress_disorder_ptsd_numeric == "0" &
             autism_spectrum_disorder_numeric == "0" &
             mhd.attention_deficit_hyperactivity_disorder_numeric == "0" &
-            mhd.personality_disorder_numeric == "0" &
+           # mhd.personality_disorder_numeric == "0" &
+            PERSONALITY_DISORDER_NUMERIC == "0" &
+            agoraphobia_panic_disorder_numeric == "0" &
             mhd.dont_know_eating_disorder_numeric  == "0" & #**Need to ask why these are here??
             mhd.prefer_not_to_answer_eating_disorder_numeric  == "0" &
             mhd.dont_know_numeric  == "0" &
@@ -74,14 +77,17 @@ if(NBR == TRUE) {
         if_else(
           depressive_disorders_numeric == "0" &
             anxiety_disorders_numeric == "0" &
-            eating_disorders_numeric == "0" &
+            mhd.suspected_eating_disorder_diagnosed_numeric == "0" & #Never suspected ED (these people would not have been asked the question about diagnosis...)
+            eating_disorders_diagnosed_numeric == "0" &  #...but this code included people who indicated they had never suspected an ED!
             obsessive_compulsive_disorders_numeric == "0" &
             psychotic_disorders_numeric == "0" &
             mhd.mania_hypomania_bipolar_or_manicdepression_numeric == "0" &
             mhd.posttraumatic_stress_disorder_ptsd_numeric == "0" &
+            PERSONALITY_DISORDER_NUMERIC == "0" &
+            agoraphobia_panic_disorder_numeric == "0" &
             autism_spectrum_disorder_numeric == "0" &
             mhd.attention_deficit_hyperactivity_disorder_numeric == "0" &
-            mhd.personality_disorder_numeric == "0" &
+           # mhd.personality_disorder_numeric == "0" &
             mhd.dont_know_eating_disorder_numeric  == "0" & #**Need to ask why these are here??
             mhd.prefer_not_to_answer_eating_disorder_numeric  == "0" &
             mhd.dont_know_numeric  == "0" &
@@ -89,8 +95,9 @@ if(NBR == TRUE) {
             mhd.dont_know.1_numeric == "0" &
             mhd.prefer_not_to_answer.1_numeric  == "0" &
             (mhd.none_of_the_above.1_numeric == "1" | is.na(mhd.none_of_the_above.1_numeric)) &
-            (mhd.none_of_the_above.2_numeric == "1" | is.na(mhd.none_of_the_above.2_numeric)) &
-            (mhd.none_of_the_above_eating_disorder_numeric == "1" | is.na(mhd.none_of_the_above_eating_disorder_numeric)), #Check this - this would mean 'controls' may have answered 'None of the above' to all but one, in which the remaining one is NA. Does this really make them a control?
+            (mhd.none_of_the_above.2_numeric == "1" | is.na(mhd.none_of_the_above.2_numeric)),
+           # (mhd.none_of_the_above_eating_disorder_numeric == "1" | is.na(mhd.none_of_the_above_eating_disorder_numeric)), 
+      #Check this - this would mean 'controls' may have answered 'None of the above' to all but one, in which the remaining one is NA. Does this really make them a control? #Updated 19/06/21 - not everyone is shown the ED question because there's a screener; these people are for some reason coming up as 0 which means they're not considered a control! The rest of the code should ensure that only those with NO history of EDs can be considered controls (i.e., answer "No" to the question: Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?)
           true = 1,
           false = 0,
           NA_real_)
@@ -130,14 +137,17 @@ if(GLAD == TRUE) {
         if_else(
           depressive_disorders_numeric == "0" &
             anxiety_disorders_numeric == "0" &
-            eating_disorders_numeric == "0" &
+            mhd.suspected_eating_disorder_diagnosed_numeric == "0" & #Never suspected ED (these people would not have been asked the question about diagnosis...)
+            eating_disorders_diagnosed_numeric == "0" &  #...but this code included people who indicated they had never suspected an ED!
             obsessive_compulsive_disorders_numeric == "0" &
             psychotic_disorders_numeric == "0" &
             mhd.mania_hypomania_bipolar_or_manicdepression_numeric == "0" &
             mhd.posttraumatic_stress_disorder_ptsd_numeric == "0" &
             autism_spectrum_disorder_numeric == "0" &
             mhd.attention_deficit_hyperactivity_disorder_numeric == "0" &
-            mhd.personality_disorder_numeric == "0" &
+           # mhd.personality_disorder_numeric == "0" &
+            PERSONALITY_DISORDER_NUMERIC == "0" &
+            agoraphobia_panic_disorder_numeric == "0" &
             mhd.dont_know_numeric == "0" &
             mhd.prefer_not_to_answer_numeric == "0" &
             mhd.dont_know.1_numeric == "0" &
@@ -148,7 +158,8 @@ if(GLAD == TRUE) {
             mhd.none_of_the_above.2_numeric != "0" &
             mhd.none_of_the_above.3_numeric != "0" &
             mhd.none_of_the_above.4_numeric != "0" &
-            mhd.none_of_the_above_eating_disorder_numeric != "0", #Check this - this would mean 'controls' may have answered 'None of the above' to all but one, in which the remaining one is NA. Does this really make them a control?
+            mhd.none_of_the_above_eating_disorder_numeric != "0", #Check this - this would mean 'controls' may have answered 'None of the above' to all but one, in which the remaining one is NA. Does this really make them a control? 
+    
           true = 1,
           false = 0,
           NA_real_)
@@ -199,14 +210,17 @@ if(RAMP == TRUE) {
         if_else(
           depressive_disorders_numeric == "0" &
             anxiety_disorders_numeric == "0" &
-            eating_disorders_numeric == "0" &
+            #mhd.suspected_eating_disorder_diagnosed_numeric == "0" & #Never suspected ED (these people would not have been asked the question about diagnosis...)
+            eating_disorders_diagnosed_numeric == "0" &  #In RAMP, participants are only asked diagnosis, not whether they have suspected an ED
             obsessive_compulsive_disorders_numeric == "0" &
             psychotic_disorders_numeric == "0" &
             mhd.mania_hypomania_bipolar_or_manicdepression_numeric == "0" &
             mhd.posttraumatic_stress_disorder_ptsd_numeric == "0" &
             autism_spectrum_disorder_numeric == "0" &
             mhd.attention_deficit_hyperactivity_disorder_numeric == "0" &
-            mhd.personality_disorder_numeric == "0" &
+           # mhd.personality_disorder_numeric == "0" &
+            PERSONALITY_DISORDER_NUMERIC == "0" &
+            agoraphobia_panic_disorder_numeric == "0" &
             mhd.dont_know_numeric == "0" &
             mhd.prefer_not_to_answer_numeric == "0" &
             mhd.dont_know.1_numeric == "0" &
@@ -255,20 +269,40 @@ if(RAMP == TRUE) {
 
 #**Check - does this work with EDGI? NBR?
 
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | EDGI == TRUE) {
   mhd.raw.id %>%
     select(
       control,
       depressive_disorders_numeric,
       anxiety_disorders_numeric,
-      eating_disorders_numeric,
+      mhd.suspected_eating_disorder_diagnosed_numeric,
+      eating_disorders_diagnosed_numeric,
       obsessive_compulsive_disorders_numeric,
       psychotic_disorders_numeric,
       mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
       mhd.posttraumatic_stress_disorder_ptsd_numeric,
       autism_spectrum_disorder_numeric,
       mhd.attention_deficit_hyperactivity_disorder_numeric,
-      mhd.personality_disorder_numeric
+      PERSONALITY_DISORDER_NUMERIC,
+      agoraphobia_panic_disorder_numeric
     )
+}
+  if(RAMP == TRUE ) {
+    mhd.raw.id %>%
+      select(
+        control,
+        depressive_disorders_numeric,
+        anxiety_disorders_numeric,
+        #mhd.suspected_eating_disorder_diagnosed_numeric,
+        eating_disorders_diagnosed_numeric,
+        obsessive_compulsive_disorders_numeric,
+        psychotic_disorders_numeric,
+        mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
+        mhd.posttraumatic_stress_disorder_ptsd_numeric,
+        autism_spectrum_disorder_numeric,
+        mhd.attention_deficit_hyperactivity_disorder_numeric,
+        PERSONALITY_DISORDER_NUMERIC,
+        agoraphobia_panic_disorder_numeric
+      )
 }
 

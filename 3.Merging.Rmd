@@ -32,17 +32,18 @@ library(skimr)
 
 # Import baseline data
 ```{r export data}
-glad_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_glad.rds")
+glad_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_glad2021-05-20.rds")
 dim(glad_baseline)
 
-edgi_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_edgi.rds")
+edgi_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_edgi2021-05-20.rds")
 dim(edgi_baseline)
 
-nbr_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_nbr.rds")
+nbr_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_nbr2021-05-20.rds")
 dim(nbr_baseline)
 
-ramp_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_ramp.rds")
+ramp_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_ramp2021-05-20.rds")
 dim(ramp_baseline)
+
 
 ```
 ##Make list of edeq baseline columns only in RAMP
@@ -118,6 +119,8 @@ edgi_baseline[edeq_baseline_columnNames] <- NA
 #sex & age_category_numeric not in RAMP
 ramp_baseline$sex <- NA
 ramp_baseline$age_category_numeric <- NA
+ramp_baseline$mhd.suspected_eating_disorder_diagnosed_numeric <- NA
+nbr_baseline$transgender <- NA
 
 #age called "age_unc" in RAMP
   ramp_baseline <- ramp_baseline %>% 
@@ -131,6 +134,10 @@ ramp_baseline$highest_education_prepan <- NA
 ramp_baseline$highest_education_prepan_numeric <- NA
 nbr_baseline$highest_education_prepan <- NA
 nbr_baseline$highest_education_prepan_numeric <- NA
+
+#age category in COPING
+nbr_baseline$age_category_COPING <- NA
+ramp_baseline$age_category_COPING <- NA
 ```
 
 ##Merge all baseline data
@@ -213,11 +220,10 @@ nrow(TAF)
 
 
 ##Merge TAF and EDEQ
-taf_edeq <- merge(TAF,
-                  EDEQ,
-                  by = "ID"
+taf_edeq <- plyr::join(TAF,
+             EDEQ,
+             type="left")
   
-  )
 
 #check col names 
 colnames(taf_edeq)
@@ -231,16 +237,16 @@ nrow(taf_edeq)
 #Bind edeq_taf with baseline data
 ```{r}
 
-data.merged <- merge(dat,
+data.merged <-  merge(dat,
                   taf_edeq,
-                  by = "ID")
+                 by="ID")
+
 
 #check col names 
 colnames(data.merged)
 
 #check no of participants
 nrow(data.merged)
-
 
 ```
 
@@ -263,9 +269,9 @@ nrow(baseline_ED_groups_data)
 #Merge merged data with grouping ED data
 ```{r}
 
-data.merged.with.ED.groups <- merge(baseline_ED_groups_data,
-                  data.merged,
-                  by = "ID")
+data.merged.with.ED.groups <- merge(data.merged,
+                                    baseline_ED_groups_data,
+                                    by = "ID")
 
 dim(data.merged.with.ED.groups)
 

@@ -16,7 +16,9 @@ if(NBR == TRUE) {
   
   
   #Calculate dem.age(remove NAs as it throws an error)
-  ages <- eeptools::age_calc(na.omit(nbr.dem.raw.id$Birthdate), enddate = Sys.Date(), units = "years")
+  ages <- eeptools::age_calc(na.omit(nbr.dem.raw.id$Birthdate),
+                             enddate = as.Date(nbr.dem.raw.id$endDate),
+                             units = "years")
   
   #Create dem.agecolumn
   nbr.dem.raw.id$age_unc<- NA

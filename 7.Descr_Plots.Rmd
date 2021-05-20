@@ -1,0 +1,1507 @@
+---
+title: "7.Descr_Plots"
+author: "Helena Davies"
+date: "19/05/2021"
+output: html_document
+---
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Delete everything in your global environment
+```{r Delete everything in your global environment}
+remove(list = ls())
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
+#### R functions
+
+```{r call in function library functions}
+# source all functions in the function folder
+source("./functions.R")
+```
+
+# Read in data
+```{r}
+dat <- readRDS(file = "../data_cleaned/test_dat2021-05-19.rds")
+dim(dat)
+colnames(dat)
+```
+######### BINGE EATING ###########
+
+#Create one variable for experience of binge eating
+```{r}
+dat <- dat %>%
+  mutate(experience_binge_eating = 
+           case_when(lifetime_binge_eating_baseline_numeric == 1 ~ "Previous experience of binge eating",
+                     
+                     lifetime_binge_eating_baseline_numeric == 0 &
+                       NEW_binge_eating_pandemic == 0 ~ "No previous or pandemic experience of binge eating",
+                     
+                      lifetime_binge_eating_baseline_numeric == 0 &
+                     NEW_binge_eating_pandemic == 1 ~ "New pandemic experience of binge eating"
+                    
+           )
+    
+  )
+
+
+dat %>%
+  freq(experience_binge_eating) # People who are NA did not fill out any follow up questionnaires
+
+
+```
+
+
+#Binge eating: Bar plot of GENDER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_binge_eating))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(gender_cleaned))
+
+#Plot 
+gender_experience_plot_BE <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = gender_cleaned,
+       y = (stat(count)),
+       fill = experience_binge_eating,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+
+gender_experience_plot_BE
+
+```
+
+
+#Binge eating: Bar plot of ETHNICITY and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_binge_eating))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(ethnicity_binary))
+
+#Plot 
+ethnicity_experience_plot_BE <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = ethnicity_binary,
+       y = (stat(count)),
+       fill = experience_binge_eating,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+
+ethnicity_experience_plot_BE
+
+```
+
+#Binge eating: Bar plot of EDUCATION and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Rename education labels
+dat <- dat %>%
+  mutate(highest_education_renamed =
+           case_when(highest_education == "No formal qualifications" ~ "No formal qualifications",
+                     highest_education == "GCSE/CSE" ~ "GCSE/CSE",
+                     highest_education == "NVQ" ~ "NVQ",
+                       highest_education == "A-levels" ~"A-levels",
+                       highest_education == "University/Other professional qualifications" ~ "Uni/Prof qual"
+             
+           ))
+
+#Check
+dat %>%
+  freq(highest_education_renamed)
+
+#Change order
+dat$highest_education_renamed <- ordered(dat$highest_education_renamed,
+                                         levels = c("No formal qualifications",
+                                                    "GCSE/CSE",
+                                                    "NVQ",
+                                                    "A-levels",
+                                                    "Uni/Prof qual"))
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_binge_eating))
+
+#Remove NAs
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(highest_education_renamed))
+
+
+#Plot 
+education_experience_plot_BE <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = highest_education_renamed,
+       y = (stat(count)),
+       fill = experience_binge_eating,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+ #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.x = element_text(vjust=0.6)) 
+
+education_experience_plot_BE
+
+```
+#Binge eating: Bar plot of COMORBIDITIES COUNT and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_binge_eating))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(comorbidities_count))
+
+#Filter out people with EDs?
+dat_no_nas <- dat_no_nas %>%
+  filter(!comorbidities == "Diagnosed eating disorder")
+
+dat_no_nas <- dat_no_nas %>%
+  filter(!comorbidities == "Suspected eating disorder")
+
+#Plot 
+comorbid_count_experience_plot_BE <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = comorbidities_count,
+       y = (stat(count)),
+       fill = experience_binge_eating,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+
+comorbid_count_experience_plot_BE
+
+```
+#Binge eating: Bar plot of CONTROLS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_binge_eating))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(control_numeric))
+
+#Filter out people with EDs?
+dat_no_nas <- dat_no_nas %>%
+  filter(!comorbidities == "Diagnosed eating disorder")
+
+dat_no_nas <- dat_no_nas %>%
+  filter(!comorbidities == "Suspected eating disorder")
+
+#Create new variable - control as a factor
+dat_no_nas <- dat_no_nas %>%
+  mutate(control_factor = 
+           case_when(control_numeric == 1 ~ "Control",
+                     control_numeric ==0 ~ "Not control"
+             
+           )
+  )
+         
+#Plot 
+control_experience_plot_BE <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = control_factor,
+       y = (stat(count)),
+       fill = experience_binge_eating,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+
+control_experience_plot_BE
+
+```
+
+
+
+
+
+#Binge eating: Bar plot of COMORBIDITY TYPE and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+**SORT THIS!
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_binge_eating))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(comorbidities))
+
+#Filter out people with EDs?
+dat_no_nas <- dat_no_nas %>%
+  filter(!comorbidities == "Eating disorder")
+
+#Plot 
+comorbid_experience_plot_BE <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = comorbidities,
+       y = (stat(count)),
+       fill = experience_binge_eating,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'comorbidities', y = 'Percentage', fill = 'Experience')
+
+comorbid_experience_plot_BE
+
+```
+
+#Binge eating: Bar plot of AGE and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_binge_eating))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(age_category_COVID_baseline))
+
+
+#Plot 
+age_experience_plot_BE <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = age_category_COVID_baseline,
+       y = (stat(count)),
+       fill = experience_binge_eating,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Age', y = 'Percentage', fill = 'Experience')
+
+age_experience_plot_BE
+
+```
+
+#Binge eating: Bar plot of KEY WORKER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_binge_eating))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(key_worker))
+
+
+#Plot 
+key_worker_experience_plot_BE <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = key_worker,
+       y = (stat(count)),
+       fill = experience_binge_eating,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+
+key_worker_experience_plot_BE
+
+```
+
+######### LOW WEIGHT ###########
+
+#Create one variable for experience of low weight
+```{r}
+dat <- dat %>%
+  mutate(experience_low_weight = 
+           case_when(lifetime_low_weight_baseline_numeric == 1 ~ "Previous experience of low weight",
+                     
+                     lifetime_low_weight_baseline_numeric == 0 &
+                       NEW_low_weight_pandemic == 0 ~ "No previous or pandemic experience of low weight",
+                     
+                      lifetime_low_weight_baseline_numeric == 0 &
+                     NEW_low_weight_pandemic == 1 ~ "New pandemic experience of low weight"
+                    
+           )
+    
+  )
+
+
+dat %>%
+  freq(experience_low_weight) # People who are NA did not fill out any follow up questionnaires
+
+```
+
+
+#Low weight: Bar plot of GENDER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_low_weight))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(gender_cleaned))
+
+#Plot 
+gender_experience_plot_LW <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = gender_cleaned,
+       y = (stat(count)),
+       fill = experience_low_weight,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+
+gender_experience_plot_LW
+
+```
+
+
+#Binge eating: Bar plot of ETHNICITY and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_low_weight))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(ethnicity_binary))
+
+#Plot 
+ethnicity_experience_plot_LW <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = ethnicity_binary,
+       y = (stat(count)),
+       fill = experience_low_weight,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+
+ethnicity_experience_plot_LW
+
+```
+
+#Low weight: Bar plot of EDUCATION and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_low_weight))
+
+#Remove NAs
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(highest_education_renamed))
+
+
+#Plot 
+education_experience_plot_LW <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = highest_education_renamed,
+       y = (stat(count)),
+       fill = experience_low_weight,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+ #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.x = element_text(vjust=0.6)) 
+
+education_experience_plot_LW
+
+```
+
+#Low weight: Bar plot of AGE and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_low_weight))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(age_category_COVID_baseline))
+
+
+#Plot 
+age_experience_plot_LW <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = age_category_COVID_baseline,
+       y = (stat(count)),
+       fill = experience_low_weight,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Age', y = 'Percentage', fill = 'Experience')
+
+age_experience_plot_LW
+
+```
+
+#Low weight: Bar plot of COMORBIDITIES COUNT and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_low_weight))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(comorbidities_count))
+
+#Filter out people with EDs?
+dat_no_nas <- dat_no_nas %>%
+  filter(!comorbidities == "Diagnosed eating disorder")
+
+dat_no_nas <- dat_no_nas %>%
+  filter(!comorbidities == "Suspected eating disorder")
+
+#Plot 
+comorbid_count_experience_plot_LW <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = comorbidities_count,
+       y = (stat(count)),
+       fill = experience_low_weight,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+
+comorbid_count_experience_plot_LW
+
+```
+#Low weight: Bar plot of CONTROLS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_low_weight))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(control_numeric))
+
+#Filter out people with EDs?
+dat_no_nas <- dat_no_nas %>%
+  filter(!comorbidities == "Diagnosed eating disorder")
+
+dat_no_nas <- dat_no_nas %>%
+  filter(!comorbidities == "Suspected eating disorder")
+
+#Create new variable - control as a factor
+dat_no_nas <- dat_no_nas %>%
+  mutate(control_factor = 
+           case_when(control_numeric == 1 ~ "Control",
+                     control_numeric ==0 ~ "Not control"
+             
+           )
+  )
+         
+#Plot 
+control_experience_plot_LW <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = control_factor,
+       y = (stat(count)),
+       fill = experience_low_weight,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+
+control_experience_plot_LW
+
+```
+#Key worker: Bar plot of KEY WORKER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_low_weight))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(key_worker))
+
+
+#Plot 
+key_worker_experience_plot_LW <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = key_worker,
+       y = (stat(count)),
+       fill = experience_low_weight,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+
+key_worker_experience_plot_LW
+
+```
+
+######### PASSIVE SUICIDAL IDEATION ###########
+
+#Create one variable for experience of suicidal ideation
+```{r}
+dat <- dat %>%
+  mutate(experience_passive_suicidal_ideation = 
+           case_when(
+             baseline_passive_suicidal_ideation == 1 ~ "Previous experience of passive suicidal ideation",
+                     
+                     baseline_passive_suicidal_ideation == 0 &
+                       NEW_passive_suicidal_ideation_pandemic == 0 ~ "No previous or pandemic experience of passive suicidal ideation",
+                     
+                      baseline_passive_suicidal_ideation == 0 &
+                     NEW_passive_suicidal_ideation_pandemic == 1 ~ "New pandemic experience of passive suicidal ideation"
+                    
+           )
+    
+  )
+
+
+dat %>%
+  freq(experience_passive_suicidal_ideation) # People who are NA did not fill out any follow up questionnaires
+
+```
+
+
+#Passive suicidal ideation: Bar plot of GENDER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_passive_suicidal_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(gender_cleaned))
+
+#Plot 
+gender_experience_plot_PSI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = gender_cleaned,
+       y = (stat(count)),
+       fill = experience_passive_suicidal_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+
+gender_experience_plot_PSI
+
+```
+
+
+#Passive suicidal ideation: Bar plot of ETHNICITY and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_passive_suicidal_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(ethnicity_binary))
+
+#Plot 
+ethnicity_experience_plot_PSI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = ethnicity_binary,
+       y = (stat(count)),
+       fill = experience_passive_suicidal_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+
+ethnicity_experience_plot_PSI
+
+```
+
+#Passive suicidal ideation: Bar plot of EDUCATION and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_passive_suicidal_ideation))
+
+#Remove NAs
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(highest_education_renamed))
+
+
+#Plot 
+education_experience_plot_PSI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = highest_education_renamed,
+       y = (stat(count)),
+       fill = experience_passive_suicidal_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+ #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.x = element_text(vjust=0.6)) 
+
+education_experience_plot_PSI
+
+```
+
+#Passive suicidal ideation: Bar plot of AGE and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_passive_suicidal_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(age_category_COVID_baseline))
+
+
+#Plot 
+age_experience_plot_PSI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = age_category_COVID_baseline,
+       y = (stat(count)),
+       fill = experience_passive_suicidal_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+ labs(x = 'Age', y = 'Percentage', fill = 'Experience')+
+  theme(axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.x = element_text(vjust=0.6)) 
+
+age_experience_plot_PSI
+
+```
+
+#Passive suicidal ideation: Bar plot of COMORBIDITIES COUNT and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_passive_suicidal_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(comorbidities_count))
+
+#Plot 
+comorbid_count_experience_plot_PSI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = comorbidities_count,
+       y = (stat(count)),
+       fill = experience_passive_suicidal_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+
+comorbid_count_experience_plot_PSI
+
+```
+#Passive suicidal ideation: Bar plot of CONTROLS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_passive_suicidal_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(control_numeric))
+
+
+#Create new variable - control as a factor
+dat_no_nas <- dat_no_nas %>%
+  mutate(control_factor = 
+           case_when(control_numeric == 1 ~ "Control",
+                     control_numeric ==0 ~ "Not control"
+             
+           )
+  )
+         
+#Plot 
+control_experience_plot_PSI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = control_factor,
+       y = (stat(count)),
+       fill = experience_passive_suicidal_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+
+control_experience_plot_PSI
+
+```
+
+#Passive suicidal ideation: Bar plot of KEY WORKER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_passive_suicidal_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(key_worker))
+
+
+#Plot 
+key_worker_experience_plot_PSI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = key_worker,
+       y = (stat(count)),
+       fill = experience_passive_suicidal_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+
+key_worker_experience_plot_PSI
+
+```
+######### SELF-HARM IDEATION ###########
+
+#Create one variable for experience of self-harm ideation
+```{r}
+dat <- dat %>%
+  mutate(experience_selfharm_ideation = 
+           case_when(
+             baseline_selfharm_ideation  == 1 ~ "Previous experience of self-harm ideation",
+                     
+                     baseline_selfharm_ideation  == 0 &
+                       NEW_selfharm_ideation_pandemic == 0 ~ "No previous or pandemic experience of self-harm ideation",
+                     
+                      baseline_selfharm_ideation  == 0 &
+                     NEW_selfharm_ideation_pandemic == 1 ~ "New pandemic experience of self-harm ideation"
+                    
+           )
+    
+  )
+
+
+dat %>%
+  freq(experience_selfharm_ideation) # People who are NA did not fill out any follow up questionnaires
+
+```
+
+
+#self-harm ideation: Bar plot of GENDER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(gender_cleaned))
+
+#Plot 
+gender_experience_plot_SHI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = gender_cleaned,
+       y = (stat(count)),
+       fill = experience_selfharm_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+
+gender_experience_plot_SHI
+
+```
+
+
+#self-harm ideation: Bar plot of ETHNICITY and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(ethnicity_binary))
+
+#Plot 
+ethnicity_experience_plot_SHI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = ethnicity_binary,
+       y = (stat(count)),
+       fill = experience_selfharm_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+
+ethnicity_experience_plot_SHI
+
+```
+
+#self-harm ideation: Bar plot of EDUCATION and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm_ideation))
+
+#Remove NAs
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(highest_education_renamed))
+
+
+#Plot 
+education_experience_plot_SHI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = highest_education_renamed,
+       y = (stat(count)),
+       fill = experience_selfharm_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+ #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.x = element_text(vjust=0.6)) 
+
+education_experience_plot_SHI
+
+```
+
+#self-harm ideation: Bar plot of AGE and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(age_category_COVID_baseline))
+
+
+#Plot 
+age_experience_plot_SHI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = age_category_COVID_baseline,
+       y = (stat(count)),
+       fill = experience_selfharm_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+ labs(x = 'Age', y = 'Percentage', fill = 'Experience')+
+  theme(axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.x = element_text(vjust=0.6)) 
+
+age_experience_plot_SHI
+
+```
+
+#self-harm ideation: Bar plot of COMORBIDITIES COUNT and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(comorbidities_count))
+
+#Plot 
+comorbid_count_experience_plot_SHI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = comorbidities_count,
+       y = (stat(count)),
+       fill = experience_selfharm_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+
+comorbid_count_experience_plot_SHI
+
+```
+
+#self-harm ideation: Bar plot of CONTROLS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(control_numeric))
+
+
+#Create new variable - control as a factor
+dat_no_nas <- dat_no_nas %>%
+  mutate(control_factor = 
+           case_when(control_numeric == 1 ~ "Control",
+                     control_numeric ==0 ~ "Not control"
+             
+           )
+  )
+         
+#Plot 
+control_experience_plot_SHI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = control_factor,
+       y = (stat(count)),
+       fill = experience_selfharm_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+
+control_experience_plot_SHI
+
+```
+#self-harm ideation: Bar plot of KEY WORKER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(key_worker))
+
+
+#Plot 
+key_worker_experience_plot_SHI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = key_worker,
+       y = (stat(count)),
+       fill = experience_selfharm_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+
+key_worker_experience_plot_SHI
+
+```
+
+######### SELF-HARM ###########
+
+#Create one variable for experience of self-harm 
+```{r}
+dat <- dat %>%
+  mutate(experience_selfharm = 
+           case_when(
+             baseline_selfharm == 1 ~ "Previous experience of self-harm",
+                     
+                     baseline_selfharm  == 0 &
+                       NEW_selfharm_pandemic == 0 ~ "No previous or pandemic experience of self-harm",
+                     
+                      baseline_selfharm  == 0 &
+                     NEW_selfharm_pandemic == 1 ~ "New pandemic experience of self-harm"
+                    
+           )
+    
+  )
+
+
+dat %>%
+  freq(experience_selfharm) # People who are NA did not fill out any follow up questionnaires
+
+```
+
+
+#Self-harm: Bar plot of GENDER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(gender_cleaned))
+
+#Plot 
+gender_experience_plot_SH <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = gender_cleaned,
+       y = (stat(count)),
+       fill = experience_selfharm,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+
+gender_experience_plot_SH
+
+```
+
+
+#Self-harm: Bar plot of ETHNICITY and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(ethnicity_binary))
+
+#Plot 
+ethnicity_experience_plot_SH <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = ethnicity_binary,
+       y = (stat(count)),
+       fill = experience_selfharm,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+
+ethnicity_experience_plot_SH
+
+```
+
+#Self-harm: Bar plot of EDUCATION and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm))
+
+#Remove NAs
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(highest_education_renamed))
+
+
+#Plot 
+education_experience_plot_SH <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = highest_education_renamed,
+       y = (stat(count)),
+       fill = experience_selfharm,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+ #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.x = element_text(vjust=0.6)) 
+
+education_experience_plot_SH
+
+```
+
+#Self-harm: Bar plot of AGE and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(age_category_COVID_baseline))
+
+
+#Plot 
+age_experience_plot_SH <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = age_category_COVID_baseline,
+       y = (stat(count)),
+       fill = experience_selfharm,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+ labs(x = 'Age', y = 'Percentage', fill = 'Experience')+
+  theme(axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.x = element_text(vjust=0.6)) 
+
+age_experience_plot_SH
+
+```
+
+#Self-harm: Bar plot of COMORBIDITIES COUNT and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(comorbidities_count))
+
+#Plot 
+comorbid_count_experience_plot_SH <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = comorbidities_count,
+       y = (stat(count)),
+       fill = experience_selfharm,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+
+comorbid_count_experience_plot_SH
+
+```
+
+#Self-harm: Bar plot of CONTROLS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(control_numeric))
+
+
+#Create new variable - control as a factor
+dat_no_nas <- dat_no_nas %>%
+  mutate(control_factor = 
+           case_when(control_numeric == 1 ~ "Control",
+                     control_numeric ==0 ~ "Not control"
+             
+           )
+  )
+         
+#Plot 
+control_experience_plot_SH <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = control_factor,
+       y = (stat(count)),
+       fill = experience_selfharm,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+
+control_experience_plot_SH
+
+```
+
+#Self-harm: Bar plot of KEY WORKER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(key_worker))
+
+
+#Plot 
+key_worker_experience_plot_SH <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = key_worker,
+       y = (stat(count)),
+       fill = experience_selfharm,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+
+key_worker_experience_plot_SH
+
+```

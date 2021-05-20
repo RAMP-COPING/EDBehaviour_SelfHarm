@@ -1,0 +1,196 @@
+---
+title: "low weight plots"
+author: "Helena Davies"
+date: "18/05/2021"
+output: html_document
+---
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Delete everything in your global environment
+```{r Delete everything in your global environment}
+remove(list = ls())
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+#### Call in functions script
+
+```{r source files}
+source("./functions.R")
+```
+
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
+# Read in data
+```{r}
+dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-05-12.rds")
+dim(dat)
+colnames(dat)
+
+#Drop one dup cohort name columns
+dat$cohort_name.y <- NULL
+
+dat <- dat %>% 
+  rename(
+    cohort_name = cohort_name.x
+    )
+
+```
+
+
+##NEW experience of low weight; phases
+```{r}
+
+dat <- dat %>%
+  mutate(new_low_weight_each_wave =
+           case_when(lifetime_low_weight_baseline_numeric == 0 &
+                     ed_scid5.weigh_weighed_past_month_.Wave_1b == "Yes" ~ 1,
+                     
+                     lifetime_low_weight_baseline_numeric == 0 &
+                     ed_scid5.weigh_weighed_past_month_.Wave_2b == "Yes" ~ 2,
+                     
+                     lifetime_low_weight_baseline_numeric == 0 &
+                     ed_scid5.weigh_weighed_past_month_.Wave_3b == "Yes" ~ 3,
+                     
+                     lifetime_low_weight_baseline_numeric == 0 &
+                     ed_scid5.weigh_weighed_past_month_.Wave_4b == "Yes" ~ 4,
+                     
+                     lifetime_low_weight_baseline_numeric == 0 &
+                     ed_scid5.weigh_weighed_past_month_.Wave_6b == "Yes" ~ 5,
+                     
+                     lifetime_low_weight_baseline_numeric == 0 &
+                     ed_scid5.weigh_weighed_past_month_.Wave_8b == "Yes" ~ 6,
+                     
+                     lifetime_low_weight_baseline_numeric == 0 &
+                     ed_scid5.weigh_weighed_past_month_.Wave_10b == "Yes" ~ 7,
+                     
+                     lifetime_low_weight_baseline_numeric == 0 &
+                     ed_scid5.weigh_weighed_past_month_.Wave_12b == "Yes" ~ 8
+                     )
+                     )
+                     
+                     
+                   
+        
+#Check
+dat %>%
+  freq(new_low_weight_each_wave)
+
+
+```
+
+#Check number of people who answered screener at each wave
+```{r}
+
+#Phase 1b
+phase1b <- dat %>%
+  filter(!is.na(ed_scid5.weigh_weighed_past_month_.Wave_1b)
+         )
+  
+phase1b$ID.dup <- duplicated(phase1b$ID)
+
+phase1b <- phase1b %>%
+ filter(ID.dup == FALSE)
+
+nrow(phase1b)
+
+#Phase 2b
+phase2b <- dat %>%
+  filter(!is.na(ed_scid5.weigh_weighed_past_month_.Wave_2b)
+         )
+
+phase2b$ID.dup <- duplicated(phase2b$ID)
+
+phase2b <- phase2b %>%
+ filter(ID.dup == FALSE)
+
+nrow(phase2b)
+
+#Phase 3b
+phase3b <- dat %>%
+  filter(!is.na(ed_scid5.weigh_weighed_past_month_.Wave_3b)
+         )
+
+phase3b$ID.dup <- duplicated(phase3b$ID)
+
+phase3b <- phase3b %>%
+ filter(ID.dup == FALSE)
+
+nrow(phase3b)
+
+#Phase 4b
+phase4b <- dat %>%
+  filter(!is.na(ed_scid5.weigh_weighed_past_month_.Wave_4b)
+         )
+
+phase4b$ID.dup <- duplicated(phase4b$ID)
+
+phase4b <- phase4b %>%
+ filter(ID.dup == FALSE)
+
+nrow(phase4b)
+
+#Phase 6b
+phase6b <- dat %>%
+  filter(!is.na(ed_scid5.weigh_weighed_past_month_.Wave_6b)
+         )
+
+phase6b$ID.dup <- duplicated(phase6b$ID)
+
+phase6b <- phase6b %>%
+ filter(ID.dup == FALSE)
+
+nrow(phase6b)
+
+#Phase 8b
+phase8b <- dat %>%
+  filter(!is.na(ed_scid5.weigh_weighed_past_month_.Wave_8b)
+         )
+
+phase8b$ID.dup <- duplicated(phase8b$ID)
+
+phase8b <- phase8b %>%
+ filter(ID.dup == FALSE)
+
+nrow(phase8b)
+
+#Phase 10b
+phase10b <- dat %>%
+  filter(!is.na(ed_scid5.weigh_weighed_past_month_.Wave_10b)
+         )
+
+phase10b$ID.dup <- duplicated(phase10b$ID)
+
+phase10b <- phase10b %>%
+ filter(ID.dup == FALSE)
+
+nrow(phase10b)
+
+#Phase 12b
+phase12b <- dat %>%
+  filter(!is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b)
+         )
+
+phase12b$ID.dup <- duplicated(phase12b$ID)
+
+phase12b <- phase12b %>%
+ filter(ID.dup == FALSE)
+
+nrow(phase12b)
+```
+
+

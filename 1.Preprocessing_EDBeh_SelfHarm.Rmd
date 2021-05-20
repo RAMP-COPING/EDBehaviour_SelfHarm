@@ -43,8 +43,8 @@ source("./functions.R")
 GLAD = FALSE
 EDGI = FALSE
 RAMP = FALSE
-NBR = FALSE
-COPING = TRUE
+NBR = TRUE
+COPING = FALSE
 ```
 
 
@@ -78,7 +78,7 @@ glad.coping.dem.raw.id <- glad.coping.dem.raw %>% #new dataset with ID
          ID = externalDataReference, # ID
          cohort_name, # Sample
          startDate_baseline = startDate,
-         #endDate,
+         endDate,
          #Age_uncleaned = demographics.how_old_are_you_now.txt, # Age
          gender_unc = dem.which_gender_do_you_identify_with, # Gender
          sex = dem.select_questionnaire_items_medical, #Sex
@@ -106,6 +106,7 @@ glad.coping.dem.raw.id <- glad.coping.dem.raw %>% #new dataset with ID
          age_lowest_weight_unc = dem.adult_height_lowest_weight.txt,
          uk_location = dem.live,
          current_country = dem.in_which_country_do_you_currently_reside
+         
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -300,6 +301,9 @@ glad.dem3.raw.id <- glad.dem3.raw %>% #new dataset with ID
          cohort_name, # Sample
          startDate_prepandemic = startDate,
          age_unc = dem.how_old_are_you_now.txt,
+         dem.day,
+         dem.month,
+         dem.year,
          ethnicity_unc = dem.questions_based_ethnic_origin,
          ethnicity_unc_text = dem.questions_based_ethnic_origin.txt,
          dem.college_or_university_degree,
@@ -364,7 +368,7 @@ edgi.coping.dem.raw.id <- edgi.coping.dem.raw %>% #new dataset with ID
          ID = externalDataReference, # ID
          cohort_name, # Sample
          startDate_baseline = startDate,
-         #endDate,
+         endDate,
          #startDate.prepandemic = startDate, #Date when participant signed up to glad
          #Age_uncleaned = demographics.how_old_are_you_now.txt, # Age
          gender_unc = dem.which_gender_do_you_identify_with, # Gender
@@ -586,6 +590,9 @@ edgi.dem3.raw.id <- edgi.dem3.raw %>% #new dataset with ID
          cohort_name, # Sample
          startDate_prepandemic = startDate,
          age_unc = dem.how_old_are_you_now.txt,
+         dem.month,
+         dem.day,
+         dem.year,
          ethnicity_unc = demographics.what_is_your_ethnic_origin,
          ethnicity_unc_text = demographics.what_is_your_ethnic_origin.txt,
          transgender = demographics.do_you_consider_yourself_to_be_transgender,
@@ -881,7 +888,7 @@ nbr.dem.raw.id <- nbr.dem.raw %>% #new dataset with ID
          ID = subjectid, # ID
          cohort_name, # Sample
          startDate_baseline = startDate,
-         #endDate,
+         endDate,
          #startDate.prepandemic = startDate, #Date when participant signed up to glad
          #Age_uncleaned = demographics.how_old_are_you_now.txt, # Age
          gender_unc = demographics.which_gender_do_you_identify_with, # Gender
@@ -2178,9 +2185,20 @@ source("./ethnicity_ALLdatasets.R")
 
 ##AGE
 ###Source script for CREATING AGE variable in nbr (age_unc),cleaning it (in all datasets), and categorising it (nbr, edgi, glad - to match ramp)
+1. AGE AT SIGN UP (i.e., EDGI and GLAD signup not COPING questionnaire)
+
 ```{r source script age}
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
-source("./age_ALLdatasets.R")
+source("./age_signup_ALLdatasets.R")
+}
+
+```
+
+1. AGE AT COVID ASSESSMENT (i.e., EDGI and GLAD COPING baseline questionnaire NOT GLAD/EDGI signup)
+For RAMP and NBR, can just age at signup (this is effectively their COVID baseline)
+```{r source script age}
+if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
+source("./age_at_COVID_assessment_ALLdatasets.R")
 }
 
 ```
@@ -2205,12 +2223,14 @@ source("./employment_ALLdatasets.R")
 ```
 
 
+
 ##MENTAL HEALTH DIAGNOSIS
 ###Call script for recoding/grouping mental health diagnoses
 ```{r mental health diagnoses all cohorts}
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./mental_health_diagnosis_ALLdatasets.R")
 }
+
 
 ```
 
@@ -2220,6 +2240,7 @@ source("./mental_health_diagnosis_ALLdatasets.R")
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./Controls.R")
 }
+
 
 ```
 
@@ -2907,24 +2928,28 @@ saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = "../data_cleaned/NE
 ##EDGI select variables from each dataset
 ```{r EDGI select variables}
 if(EDGI == TRUE) {
-edgi.1 <- edgi.coping.dem.raw.id %>% #590
+  
+  
+edgi.1 <- edgi.coping.dem.raw.id %>% 
   select(ID,
   cohort_name,
   gender_unc,
   sex,
   uk_location,
-  current_country)
+  current_country,
+  age_category_COPING)
   
-edgi.2 <- edgi.dem3.raw.id %>% #3251
+edgi.2 <- edgi.dem3.raw.id %>% 
   select(ID,
   cohort_name,
   age_category_numeric,
   age_category,
   highest_education_prepan_numeric,
   highest_education_prepan,
-  ethnicity)
+  ethnicity, 
+  transgender)
   
-edgi.3 <- edgi.coping.dem4.employ.raw.id %>% #590
+edgi.3 <- edgi.coping.dem4.employ.raw.id %>% 
   select(ID,
   cohort_name,
   highest_education_numeric,
@@ -2956,9 +2981,13 @@ edgi.5 <- mhd.raw.id %>% #3251
          control_numeric,
          depressive_disorders_numeric,
          anxiety_disorders_numeric,
-         eating_disorders_numeric,
+         eating_disorders_diagnosed_numeric,
          obsessive_compulsive_disorders_numeric,
          psychotic_disorders_numeric,
+         PERSONALITY_DISORDER_NUMERIC,
+         agoraphobia_panic_disorder_numeric,
+         depression_and_anxiety_numeric,
+         bipolar_and_schizophrenia_numeric,
          mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
          mhd.posttraumatic_stress_disorder_ptsd_numeric, 
          autism_spectrum_disorder_numeric,
@@ -2987,6 +3016,28 @@ edgi.6 <- taf.edgi.coping.baseline.raw.id %>%
   taf.pandemic_felt_.Wavebaseline,
   taf.pandemic_felt.1_.Wavebaseline,
   taf.meant_end_life_pandemic_.Wavebaseline)
+
+
+edgi.7 <- edgi.coping.dem2.raw.id %>%
+  select(ID,
+         cohort_name,
+         dem2.member_vulnerable_group,
+         dem2.solid_organ_transplant_recipient,
+         dem2.lung_cancer_radical_radiotherapy,
+         dem2.bone_marrow_blood_leukaemia,
+         dem2.immunotherapy_cancer_continuing_antibody,
+         dem2.parp_inhibitors_affect_immune,
+         dem2.stem_cell_transplants_bone,
+         dem2.severe_copd_cystic_fibrosis,
+         dem2.inborn_errors_rare_diseases,
+         dem2.taking_medicine_that_weakens_your_immune_system,
+         dem2.condition_infections_makes,
+         dem2.congenital_pregnant_acquired_significant,
+         dem2.pregnant,
+         dem2.over_70_years_old,
+         dem2.prefer_not_to_say.2,
+         dem2.unsure)
+  
 
 ##See if IDs match with edgi.5
 x <- edgi.5[edgi.5$ID %in% edgi.4$ID,]
@@ -3018,7 +3069,8 @@ dfs.list <- list(
   edgi.2,
   edgi.3,
   edgi.4,
-  edgi.5
+  edgi.5,
+  edgi.7
 )
 }
 
@@ -3059,6 +3111,7 @@ dat.raw.edgi <- dat.raw.edgi %>%
   filter(ID.dup == FALSE)
 
 colnames(dat.raw.edgi)
+
 }
 
 ```
@@ -3067,13 +3120,16 @@ colnames(dat.raw.edgi)
 ```{r GLAD data frame list}
 if(GLAD == TRUE) {
  
+
 glad.1 <-  glad.coping.dem.raw.id %>%
      select(ID,
             cohort_name,
             sex,
             gender_unc,
             uk_location,
-            current_country)
+            current_country,
+            age_category_COPING
+            )
    
 glad.2 <- glad.dem3.raw.id %>%
   select(ID,
@@ -3082,7 +3138,8 @@ glad.2 <- glad.dem3.raw.id %>%
          age_category,
          ethnicity,
          highest_education_prepan_numeric,
-         highest_education_prepan)
+         highest_education_prepan,
+         transgender)
 
 glad.3 <- glad.coping.dem4.employ.raw.id %>% 
   select(ID,
@@ -3115,9 +3172,13 @@ glad.5 <- mhd.raw.id %>%
          control_numeric,
          depressive_disorders_numeric,
          anxiety_disorders_numeric,
-         eating_disorders_numeric,
+         eating_disorders_diagnosed_numeric,
          obsessive_compulsive_disorders_numeric,
          psychotic_disorders_numeric,
+         PERSONALITY_DISORDER_NUMERIC,
+         agoraphobia_panic_disorder_numeric,
+         depression_and_anxiety_numeric,
+         bipolar_and_schizophrenia_numeric,
          mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
         mhd.posttraumatic_stress_disorder_ptsd_numeric, 
         autism_spectrum_disorder_numeric,
@@ -3139,8 +3200,27 @@ glad.5 <- mhd.raw.id %>%
           mhd.feeding_eating_disorder_numeric, 
           mhd.other_eating_disorder_numeric)
 
-
-
+glad.6 <- glad.coping.dem2.raw.id %>%
+  select(ID,
+         cohort_name,
+         dem2.member_vulnerable_group,
+         dem2.solid_organ_transplant_recipient,
+         dem2.lung_cancer_radical_radiotherapy,
+         dem2.bone_marrow_blood_leukaemia,
+         dem2.immunotherapy_cancer_continuing_antibody,
+         dem2.parp_inhibitors_affect_immune,
+         dem2.stem_cell_transplants_bone,
+         dem2.severe_copd_cystic_fibrosis,
+         dem2.inborn_errors_rare_diseases,
+         dem2.taking_medicine_that_weakens_your_immune_system,
+         dem2.condition_infections_makes,
+         dem2.congenital_pregnant_acquired_significant,
+         dem2.pregnant,
+         dem2.over_70_years_old,
+         dem2.prefer_not_to_say.2,
+         dem2.unsure)
+  
+  
 ##See if IDs match with glad.3
 x <- glad.3[glad.3$ID %in% glad.1$ID,]
 
@@ -3169,7 +3249,8 @@ dfs.list <- list(
   glad.2,
   glad.3,
   glad.4,
-  glad.5
+  glad.5,
+  glad.6
   )
 }
 
@@ -3266,9 +3347,13 @@ nbr.5 <- mhd.raw.id %>%
          control_numeric,
          depressive_disorders_numeric,
          anxiety_disorders_numeric,
-         eating_disorders_numeric,
+         eating_disorders_diagnosed_numeric,
          obsessive_compulsive_disorders_numeric,
          psychotic_disorders_numeric,
+         PERSONALITY_DISORDER_NUMERIC,
+         agoraphobia_panic_disorder_numeric,
+         depression_and_anxiety_numeric,
+         bipolar_and_schizophrenia_numeric,
          mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
         mhd.posttraumatic_stress_disorder_ptsd_numeric, 
         autism_spectrum_disorder_numeric,
@@ -3291,7 +3376,26 @@ nbr.5 <- mhd.raw.id %>%
           mhd.other_eating_disorder_numeric)
 
 
-
+nbr.6 <- nbr.dem2.raw.id %>%
+  select(ID,
+         cohort_name,
+         dem2.member_vulnerable_group,
+         dem2.solid_organ_transplant_recipient,
+         dem2.lung_cancer_radical_radiotherapy,
+         dem2.bone_marrow_blood_leukaemia,
+         dem2.immunotherapy_cancer_continuing_antibody,
+         dem2.parp_inhibitors_affect_immune,
+         dem2.stem_cell_transplants_bone,
+         dem2.severe_copd_cystic_fibrosis,
+         dem2.inborn_errors_rare_diseases,
+         dem2.taking_medicine_that_weakens_your_immune_system,
+         dem2.condition_infections_makes,
+         dem2.congenital_pregnant_acquired_significant,
+         dem2.pregnant,
+         dem2.over_70_years_old,
+         dem2.prefer_not_to_say.2,
+         dem2.unsure)
+  
 
 #Check nbr mhd data IDs
 x <- nbr.5[nbr.5$ID %in% nbr.1$ID,]
@@ -3329,7 +3433,8 @@ dfs.list <- list(
   nbr.2,
   nbr.3,
   nbr.4,
-  nbr.5
+  nbr.5,
+  nbr.6
 )
 }
 ```
@@ -3376,12 +3481,30 @@ colnames(dat.raw.nbr)
 ```{r RAMP variable list}
 if(RAMP == TRUE) {
 
+  
+ 
   ramp.1 <- ramp.dem.raw.id %>%
     select(ID,
            cohort_name,
            gender_unc,
            ethnicity,
-           age_unc)
+           age_unc,
+           dem2.member_vulnerable_group,
+           dem2.solid_organ_transplant_recipient,
+           dem2.lung_cancer_radical_radiotherapy,
+           dem2.bone_marrow_blood_leukaemia,
+           dem2.immunotherapy_cancer_continuing_antibody,
+           dem2.parp_inhibitors_affect_immune,
+           dem2.stem_cell_transplants_bone,
+           dem2.severe_copd_cystic_fibrosis, #= dem2.cystic_fibrosis_severe_asthma,
+           dem2.inborn_errors_rare_diseases, # = dem2.inborn_errors_metabolism_infections,
+           dem2.taking_medicine_that_weakens_your_immune_system,
+           dem2.congenital_pregnant_acquired_significant, # = dem2.condition_infections_makes,
+           dem2.pregnant,
+           dem2.over_70_years_old,
+           dem2.prefer_not_to_say.2, # = dem2.prefer_not_to_say.1,
+           dem2.unsure,
+           transgender)
 
   ramp.2 <- ramp.dem.employ.raw.id %>%
     select(ID,
@@ -3462,9 +3585,13 @@ edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric,
          control_numeric,
          depressive_disorders_numeric,
          anxiety_disorders_numeric,
-         eating_disorders_numeric,
+         eating_disorders_diagnosed_numeric,
          obsessive_compulsive_disorders_numeric,
          psychotic_disorders_numeric,
+         PERSONALITY_DISORDER_NUMERIC,
+         agoraphobia_panic_disorder_numeric,
+         depression_and_anxiety_numeric,
+         bipolar_and_schizophrenia_numeric,
          mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
          mhd.posttraumatic_stress_disorder_ptsd_numeric, 
          autism_spectrum_disorder_numeric,
@@ -3493,13 +3620,6 @@ ramp.6 <- taf.ramp.baseline.raw.id %>% #for retro prepan
   taf.pandemic_felt_.Wavebaseline,
   taf.pandemic_felt.1_.Wavebaseline,
   taf.meant_end_life_pandemic_.Wavebaseline)
-
-
-ramp.7 <- edeq.ramp.baseline.raw.id %>% 
-  select(ID,
-  cohort_name,
- 
-  )
 
 
 #Check ramp.4 has same IDs as other datasets
@@ -3535,8 +3655,7 @@ dfs.list <- list(
   ramp.3,
   ramp.4,
   ramp.5,
-  ramp.6,
-  ramp.7
+  ramp.6
   
 )
 }
@@ -3580,20 +3699,20 @@ dat.raw.ramp <- dat.raw.ramp %>%
 # Export baseline data
 ```{r export data}
 if(GLAD == TRUE) {
-saveRDS(object = dat.raw.glad, file = "../data_cleaned/NEW_baseline_glad.rds")
+saveRDS(object = dat.raw.glad, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/NEW_baseline_glad", date, ".rds"))
 }
 
 if(EDGI == TRUE) {
-saveRDS(object = dat.raw.edgi, file = "../data_cleaned/NEW_baseline_edgi.rds")
+saveRDS(object = dat.raw.edgi, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/NEW_baseline_edgi", date, ".rds"))
   
 }
 if(RAMP == TRUE) {
-  saveRDS(object = dat.raw.ramp, file = "../data_cleaned/NEW_baseline_ramp.rds")
+  saveRDS(object = dat.raw.ramp, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/NEW_baseline_ramp", date, ".rds"))
 }
 
 
 if(NBR == TRUE) {
-  saveRDS(object = dat.raw.nbr, file = "../data_cleaned/NEW_baseline_nbr.rds")
+  saveRDS(object = dat.raw.nbr, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/NEW_baseline_nbr", date, ".rds"))
 }
 
 

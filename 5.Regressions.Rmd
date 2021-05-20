@@ -1,0 +1,497 @@
+---
+title: "Regression_analyses"
+author: "Helena Davies"
+date: "06/05/2021"
+output: html_document
+---
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Delete everything in your global environment
+```{r Delete everything in your global environment}
+remove(list = ls())
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
+#### R functions
+
+```{r call in function library functions}
+# source all functions in the function folder
+source("./functions.R")
+```
+
+# Read in data
+```{r}
+dat <- readRDS(file = "../data_cleaned/test_dat2021-05-20.rds")
+dim(dat)
+colnames(dat)
+```
+## CORRELATION MATRICES ##
+```{r}
+
+#Categorical variables for dummy coding
+
+descriptives.columns.dummy <- c(
+"gender_cleaned",
+  "age_category_COVID_baseline",
+  "ethnicity_binary",
+  "highest_education",
+  "control_factor",
+  "key_worker",
+"vulnerable_group_member"
+)
+
+```
+
+#Dummy coding for categorical variables
+```{r descriptives data frame}
+dat_dummy <- fastDummies::dummy_cols(dat,
+                                              select_columns = descriptives.columns.dummy)
+
+colnames(dat_dummy)
+
+```
+
+
+```{r}
+#Make binary variables numeric 
+
+
+
+# Select items for correlation matrix
+dat.corr.mat <- dat_dummy %>%
+  select("Male" = "gender_cleaned_Male",
+  "Female" = "gender_cleaned_Female",
+  "Minoritised_gender" = "gender_cleaned_Minoritised gender",
+  "16-25" = "age_category_COVID_baseline_16-25",
+  "26-35" = "age_category_COVID_baseline_26-35",
+   "36-45" = "age_category_COVID_baseline_36-45",
+   "46-55" = "age_category_COVID_baseline_46-55",
+    "56-65" = "age_category_COVID_baseline_56-65",
+ "66-70" =  "age_category_COVID_baseline_66-70",
+   "71-75" = "age_category_COVID_baseline_71-75",
+  "75+" = "age_category_COVID_baseline_75+",
+  "Racially_minoritised" = "ethnicity_binary_Racially minoritised",
+   "White" = "ethnicity_binary_White", 
+"No_formal_education" = "highest_education_No formal qualifications",
+ "GCSE/CSE"="highest_education_GCSE/CSE",
+ "NVQ" = "highest_education_NVQ",
+ "A-Levels" = "highest_education_A-levels",
+ "Uni/Prof_qual" = "highest_education_University/Other professional qualifications",
+ "Control" = "control_factor_Control",
+ "Not_control" ="control_factor_Not a control",
+ "Not_key_worker" = "key_worker_No key worker",
+ "Key_worker"="key_worker_Key worker",
+"Not_vulnerable_group" = "vulnerable_group_member_I am not a member of a vulnerable group",
+"Vulnerable_group" = "vulnerable_group_member_Not I am not a member of a vulnerable group"
+) %>%
+  polycor::hetcor(use = "pairwise.complete.obs") #Remember to specify "pairwise.complete.obs"!
+
+
+# Save the correlations from the correlation matrix in an object
+dat.corr.matrix <- as.matrix(dat.corr.mat)
+
+# Save the p values from the correlation matrix in an object
+dat.p.matrix <- as.matrix(dat.corr.mat$tests)
+```
+
+# 16. Create the correlation matrix plot using the corrplot package
+```{r Correlation matrix at t1 plot, fig.height=7}
+
+dat.corr.matrix %>%
+  corrplot::corrplot(method = "color", # objects to represent the correlations on plot
+         type = "lower", # only use the lower triangle of the matrix
+         diag = FALSE, # do not show the correlations on the diagonal
+         addgrid.col = NA,
+         addCoef.col = "black", # colour for the correlation coefficients in the plot
+         tl.cex = 0.8,
+         number.cex = 0.75,
+         tl.col = "black",
+         col=colorRampPalette(c("dodgerblue4",
+                                "white",
+                                "firebrick4"))(200), # colours for correlations
+         # Combine with significance
+         p.mat = dat.p.matrix, # Matrix with p values
+         sig.level = 0.01, # Choose significant level
+         insig = "blank") # Nonsignificant correlations have no colour
+         
+
+         
+```
+
+
+### BASIC MODELS ###
+
+# Age + gender + ethnicity - Binge eating
+```{r}
+# Age and gender and ethnicity 
+model1 <- glm(NEW_binge_eating_pandemic ~ gender_cleaned +age_category_COVID_baseline +  ethnicity_binary,
+               data = dat,
+               family = "binomial")
+
+tidy(model1,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model1) %>% 
+  length()
+
+```
+
+#Plot! Age + gender + ethnicity - Binge eating
+```{r}
+
+dat_plot <- dat %>%
+  select("Age" = "age_category_COVID_baseline",
+         "Gender" = "gender_cleaned",
+         "Race" = "ethnicity_binary",
+         "Pandemic_binge_eating" = "NEW_binge_eating_pandemic")
+
+
+#1. Plot
+explanatory <- c("Age",
+                 "Gender",
+                 "Race")
+
+
+dependent <- "Pandemic_binge_eating"
+
+
+dat_plot %>%
+  finalfit::or_plot(dependent, explanatory, 
+          breaks = c(0.5, 1, 5, 10, 20, 30),
+          table_text_size = 3.0,
+          title_text_size = 15,
+          dependent_label = "New experience of binge eating during pandemic",
+          remove_ref = TRUE)
+
+
+```
+
+
+# Age + gender + ethnicity - Low weight
+```{r}
+# Age and gender and ethnicity 
+model2 <- glm(NEW_low_weight_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary,
+               data = dat,
+               family = "binomial")
+
+tidy(model2,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model2) %>% 
+  length()
+```
+
+#Plot! Age + gender + ethnicity - Low weight
+```{r}
+
+dat_plot <- dat %>%
+  select("Age" = "age_category_COVID_baseline",
+         "Gender" = "gender_cleaned",
+         "Race" = "ethnicity_binary",
+         "Pandemic_low_weight" = "NEW_low_weight_pandemic")
+
+
+#1. Plot
+explanatory <- c("Age",
+                 "Gender",
+                 "Race")
+
+
+dependent <- "Pandemic_low_weight"
+
+
+dat_plot %>%
+  finalfit::or_plot(dependent, explanatory, 
+          breaks = c(0.5, 1, 5, 10, 20, 30),
+          table_text_size = 3.0,
+          title_text_size = 15,
+          dependent_label = "New experience of low weight during pandemic",
+          remove_ref = TRUE)
+
+
+```
+# Age + gender + ethnicity - Passive suicial ideation
+```{r}
+
+# Age and gender and ethnicity 
+model3 <- glm(NEW_passive_suicidal_ideation_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary,
+               data = dat,
+               family = "binomial")
+
+tidy(model3,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model3) %>% 
+  length()
+
+```
+
+#Plot! Age + gender + ethnicity - Passive suicial ideation
+```{r}
+
+dat_plot <- dat %>%
+  select("Age" = "age_category_COVID_baseline",
+         "Gender" = "gender_cleaned",
+         "Race" = "ethnicity_binary",
+         "Pandemic_passive_suicidal_ideation" = "NEW_passive_suicidal_ideation_pandemic")
+
+
+#1. Plot
+explanatory <- c("Age",
+                 "Gender",
+                 "Race")
+
+
+dependent <- "Pandemic_passive_suicidal_ideation"
+
+
+dat_plot %>%
+  finalfit::or_plot(dependent, explanatory, 
+          breaks = c(0.5, 1, 5, 10, 20, 30),
+          table_text_size = 3.0,
+          title_text_size = 13,
+          dependent_label = "New experience of passive suicidal ideation during pandemic",
+          remove_ref = TRUE)
+
+
+```
+
+
+# Age + gender + ethnicity - Self harm ideation
+```{r}
+
+# Age and gender and ethnicity 
+model4 <- glm(NEW_selfharm_ideation_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary,
+               data = dat,
+               family = "binomial")
+
+tidy(model4,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model4) %>% 
+  length()
+```
+
+#Plot! Age + gender + ethnicity - Self harm ideation
+```{r}
+
+dat_plot <- dat %>%
+  select("Age" = "age_category_COVID_baseline",
+         "Gender" = "gender_cleaned",
+         "Race" = "ethnicity_binary",
+         "Pandemic_selfharm_ideation" = "NEW_selfharm_ideation_pandemic")
+
+
+#1. Plot
+explanatory <- c("Age",
+                 "Gender",
+                 "Race")
+
+
+dependent <- "Pandemic_selfharm_ideation"
+
+
+dat_plot %>%
+  finalfit::or_plot(dependent, explanatory, 
+          breaks = c(0.5, 1, 5, 10, 20, 30),
+          table_text_size = 3.0,
+          title_text_size = 13,
+          dependent_label = "New experience of self-harm ideation during pandemic",
+          remove_ref = TRUE)
+
+
+```
+# Age + gender + ethnicity- Self harm 
+```{r}
+
+# Age and gender and ethnicity 
+model5 <- glm(NEW_selfharm_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary,
+               data = dat,
+               family = "binomial")
+
+tidy(model5,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model5) %>% 
+  length()
+
+
+```
+
+#Plot! Age + gender + ethnicity - Self harm ideation
+```{r}
+
+dat_plot <- dat %>%
+  select("Age" = "age_category_COVID_baseline",
+         "Gender" = "gender_cleaned",
+         "Race" = "ethnicity_binary",
+         "Pandemic_selfharm" = "NEW_selfharm_pandemic")
+
+
+#1. Plot
+explanatory <- c("Age",
+                 "Gender",
+                 "Race")
+
+
+dependent <- "Pandemic_selfharm"
+
+
+dat_plot %>%
+  finalfit::or_plot(dependent, explanatory, 
+          breaks = c(0.5, 1, 5, 10, 20, 30),
+          table_text_size = 3.0,
+          title_text_size = 15,
+          dependent_label = "New experience of self-harm during pandemic",
+          remove_ref = TRUE)
+
+
+```
+         
+#### ADDING EDUCATION + CONTROL + KEY WORKER + VULNERABLE GROUP ####
+
+**should i exclude ED cases here?
+# Age + gender + ethnicity + highest education +  control + vulnerable group + key worker status - Binge eating
+
+```{r}
+
+
+#  Age + gender + ethnicity + highest education + control _
+model6 <- glm(NEW_binge_eating_pandemic ~  age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + control_factor + key_worker + vulnerable_group_member,
+               data = dat,
+               family = "binomial")
+
+tidy(model6,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model6) %>% 
+  length()
+
+```
+
+#Plot! AAge + gender + ethnicity + highest education +  control + vulnerable group + key worker status - Binge eating
+```{r}
+
+dat_plot <- dat %>%
+  select("Age" = "age_category_COVID_baseline",
+         "Gender" = "gender_cleaned",
+         "Race" = "ethnicity_binary",
+         "Pandemic_binge_eating" = "NEW_binge_eating_pandemic",
+         "Highest_education" = "highest_education",
+         "Control_status" = "control_factor",
+         "Key_worker_status" = "key_worker",
+         "Vulnerable_group_member" ="vulnerable_group_member" 
+)
+
+#1. Plot
+explanatory <- c("Age",
+                 "Gender",
+                 "Race",
+                 "Highest_education",
+                 "Control_status",
+                 "Key_worker_status",
+                 "Vulnerable_group_member")
+
+
+dependent <- "Pandemic_binge_eating"
+
+
+dat_plot %>%
+  finalfit::or_plot(dependent, explanatory, 
+          breaks = c(0.5, 1, 5, 10, 20, 30),
+          table_text_size = 3.0,
+          title_text_size = 15,
+          dependent_label = "New experience of binge eating during pandemic",
+          remove_ref = TRUE)
+
+
+```
+#  Age + gender + ethnicity + highest education + comorbidities  - Low weight
+```{r}
+#  Age + gender + ethnicity + highest education + comorbidities 
+model7 <- glm(NEW_low_weight_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary+ highest_education + comorbidities + comorbidities_count,
+               data = dat,
+               family = "binomial")
+
+tidy(model7,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model7) %>% 
+  length()
+```
+
+#  Age + gender + ethnicity + highest education + comorbidities  - Passive suicial ideation
+```{r}
+
+#  Age + gender + ethnicity + highest education + comorbidities 
+model8 <- glm(NEW_passive_suicidal_ideation_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + comorbidities + comorbidities_count,
+               data = dat,
+               family = "binomial")
+
+tidy(model8,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model8) %>% 
+  length()
+
+```
+
+#  Age + gender + ethnicity + highest education + comorbidities  - Self harm ideation
+```{r}
+
+#  Age + gender + ethnicity + highest education + comorbidities 
+model9 <- glm(NEW_selfharm_ideation_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + comorbidities + comorbidities_count,
+               data = dat,
+               family = "binomial")
+
+tidy(model9,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model9) %>% 
+  length()
+```
+
+#  Age + gender + ethnicity + highest education + comorbidities  - Self harm 
+```{r}
+
+#  Age + gender + ethnicity + highest education + comorbidities 
+model10 <- glm(NEW_selfharm_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + comorbidities + comorbidities_count,
+               data = dat,
+               family = "binomial")
+
+tidy(model10,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model10) %>% 
+  length()
+
+
+```
