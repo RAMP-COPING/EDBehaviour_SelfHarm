@@ -1,16 +1,21 @@
 ---
-title: "Deriving Variables"
+title: "Deriving variables V2"
 author: "Helena Davies"
-date: "06/05/2021"
+date: "24/05/2021"
 output: html_document
 ---
 
 ORDER OF SCRIPTS
-1. Preprocessing
+1. Pre-processing
 2. Baseline ED groupings
 3. Merging
 4. Deriving variables
 
+Want to control for PREPANDEMIC experiences - fine for self-harm as questions explicitly ask about BEFORE the pandemic
+FOR LOW WEIGHT/BINGE EATING:
+
+1. Age + (length of time at low weight) = maximum
+2. 
 
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -144,7 +149,6 @@ dat <- dat %>%
 
 dat %>%
   freq(NEW_binge_eating_pandemic)
-
 
 ```
 
@@ -363,8 +367,6 @@ dat %>%
 ```
 
 ## Baseline passive suicidal ideation - NEVER experienced
-
-taf.pandemic_felt_.Wavebaseline = Many people have thoughts that life is not worth living. Have you felt that way before the pandemic?
 taf.worth_living_life_people_.Wavebaseline = Many people have thoughts that life is not worth living. Have you felt that way?
 ```{r}
 
@@ -372,10 +374,9 @@ taf.worth_living_life_people_.Wavebaseline = Many people have thoughts that life
 dat <- dat %>%
   mutate(baseline_passive_suicidal_ideation =
            case_when(
-                    taf.worth_living_life_people_.Wavebaseline == "No" ~ 0, #Never experienced it
+                    taf.felt_weeks_past_.Wavebaseline == "No" ~ 0, #Never experienced it
                     
-                    taf.worth_living_life_people_.Wavebaseline == "Yes, once" |
-                   taf.worth_living_life_people_.Wavebaseline == "Yes, more than once" ~ 1
+                   taf.felt_weeks_past_.Wavebaseline == "Yes" ~ 1
                )
     
   )
@@ -385,23 +386,23 @@ dat <- dat %>%
 dat %>%
   freq(baseline_passive_suicidal_ideation)
 
-
 ```
 
-#Baseline  passive suicidal ideation - NEW experience DURING pandemic
+#PREPANDEMIC passive suicidal ideation 
+taf.pandemic_felt_.Wavebaseline = Many people have thoughts that life is not worth living. Have you felt that way before the pandemic?
 ```{r}
 
 ##At baseline indicated NEW experience
 
 dat <- dat %>%
-  mutate(BASELINE_PANDEMIC_passive_suicidal_ideation =
+  mutate(PREPANDEMIC_passive_suicidal_ideation =
            case_when(
              
-              (taf.worth_living_life_people_.Wavebaseline == "Yes, once" |
-                       taf.worth_living_life_people_.Wavebaseline == "Yes, more than once") & #YES they have experienced it
-                     
-                    taf.pandemic_felt_.Wavebaseline == "No" ~ 1 # BUT Not experienced before pandemic, therefore first experience is DURING pandemic
-                    
+                  taf.worth_living_life_people_.Wavebaseline == "No" ~ 0, #Never experienced it
+                  
+                    taf.pandemic_felt_.Wavebaseline == "No" ~ 0, # Have but Not experienced before pandemic
+                    taf.pandemic_felt_.Wavebaseline == "Yes" ~ 1 #Have experienced it before pandemic
+ 
                      
                        )
                       
@@ -410,7 +411,8 @@ dat <- dat %>%
 
 #Check 
 dat %>%
-  freq(BASELINE_PANDEMIC_passive_suicidal_ideation)
+  freq(PREPANDEMIC_passive_suicidal_ideation)
+
 ```
 
 
@@ -420,25 +422,24 @@ dat %>%
 ```{r}
 #Then, of those who had never experienced it before the pandemic, who had a NEW experience
 dat <- dat %>%
-  mutate(NEW_passive_suicidal_ideation_pandemic =
-           case_when
+  mutate(passive_suicidal_ideation_PANDEMIC =
+           case_when(
          
-          (
-            baseline_passive_suicidal_ideation == 0 & #At baseline, have never experienced it
-             (TWO_WEEKS_PANDEMIC_passive_suicidal_ideation == 1 | #FIRST experience DURING pandemic (answered yes to 2 week question during pandemic)
-                EVER_PANDEMIC_passive_suicidal_ideation == 1 ) ~ 1, #FIRST experience DURING pandemic (answered yes to EVER question during pandemic)
+       
+             (TWO_WEEKS_PANDEMIC_passive_suicidal_ideation == 1 | #experience DURING pandemic (answered yes to 2 week question during pandemic)
+                EVER_PANDEMIC_passive_suicidal_ideation == 1 ) ~ 1, #experience DURING pandemic (answered yes to EVER question during pandemic)
            
-             BASELINE_PANDEMIC_passive_suicidal_ideation == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
+             baseline_passive_suicidal_ideation == 1 ~ 1, #experience DURING pandemic (indicated at baseline)
 
-          baseline_passive_suicidal_ideation == 0 &
-             EVER_PANDEMIC_passive_suicidal_ideation == 0 ~ 0, #Baseline never experienced, and NO to EVER experiencing at ANY phase
+          baseline_passive_suicidal_ideation == 0 |
+             EVER_PANDEMIC_passive_suicidal_ideation == 0 ~ 0, #Baseline never experienced, and/or NO to EVER experiencing at ANY phase (people who have endorsed it EVER during the pandemic will be captured above)
            )
     
   )
 
 #Check
 dat %>%
-  freq(NEW_passive_suicidal_ideation_pandemic)
+  freq(passive_suicidal_ideation_PANDEMIC)
 
 ```
 
@@ -600,10 +601,9 @@ taf.have_you_contemplated_harming_yourself_.Wavebaseline = Have you contemplated
 dat <- dat %>%
   mutate(baseline_selfharm_ideation =
            case_when(
-                    taf.have_you_contemplated_harming_yourself_.Wavebaseline == "No" ~ 0, #Never experienced it
+                    taf.felt_weeks_past.1_.Wavebaseline == "No" ~ 0, #Never experienced it
                     
-                    taf.have_you_contemplated_harming_yourself_.Wavebaseline == "Yes, once" |
-                     taf.have_you_contemplated_harming_yourself_.Wavebaseline ==  "Yes, more than once" ~ 1
+                    taf.felt_weeks_past.1_.Wavebaseline == "Yes" ~ 1
                      
                   
            )
@@ -615,21 +615,21 @@ dat <- dat %>%
 dat %>%
   freq(baseline_selfharm_ideation)
 
-
 ```
-#Baseline  self-harm ideation - NEW experience DURING pandemic
+
+
+#PREPANDEMIC self-harm ideation 
 ```{r}
 
 ##At baseline indicated NEW experience
 
 dat <- dat %>%
-  mutate(BASELINE_PANDEMIC_selfharm_ideation =
+  mutate(PREPANDEMIC_selfharm_ideation =
            case_when(
-             
-              (taf.have_you_contemplated_harming_yourself_.Wavebaseline == "Yes, once" |
-                       taf.have_you_contemplated_harming_yourself_.Wavebaseline == "Yes, more than once") & #YES they have experienced it
-                     
-                    taf.pandemic_felt.1_.Wavebaseline == "No" ~ 1 # BUT Not experienced BEFORE pandemic, therefore first experience is DURING pandemic
+                     taf.have_you_contemplated_harming_yourself_.Wavebaseline == "No" ~ 0, #Never experienced it
+          
+                    taf.pandemic_felt.1_.Wavebaseline == "No" ~ 0, # Have experienced it but not BEFORE pandemic
+                    taf.pandemic_felt.1_.Wavebaseline == "Yes" ~ 1 #Experienced before pandemic
                     
                      
                        )
@@ -639,34 +639,36 @@ dat <- dat %>%
 
 #Check 
 dat %>%
-  freq(BASELINE_PANDEMIC_selfharm_ideation)
+  freq(PREPANDEMIC_selfharm_ideation)
 ```
-
 
 #Combined - self-harm ideation: NEW BASELINE experience OR NEW FOLLOW UP experience 
 
 ```{r}
 #Then, of those who had never experienced it before the pandemic, who had a NEW experience
 dat <- dat %>%
-  mutate(NEW_selfharm_ideation_pandemic =
-           case_when
+  mutate(selfharm_ideation_PANDEMIC =
+           case_when(
          
-         (baseline_selfharm_ideation == 0 & #At baseline, have never experienced it
-             (TWO_WEEKS_PANDEMIC_selfharm_ideation == 1 | #FIRST experience DURING pandemic (answered yes to 2 week question during pandemic)
-                EVER_PANDEMIC_selfharm_ideation == 1 ) ~ 1, #FIRST experience DURING pandemic (answered yes to EVER question during pandemic)
+             (TWO_WEEKS_PANDEMIC_selfharm_ideation == 1 | #Experience DURING pandemic (answered yes to 2 week question during pandemic)
+                EVER_PANDEMIC_selfharm_ideation == 1 ) ~ 1, #Experience DURING pandemic (answered yes to EVER question during pandemic)
            
-              BASELINE_PANDEMIC_selfharm_ideation == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
+              baseline_selfharm_ideation == 1 ~ 1, #Experience DURING pandemic (indicated at baseline)
 
              
-          baseline_selfharm_ideation == 0 &
-             EVER_PANDEMIC_selfharm_ideation == 0 ~ 0, #Baseline never experienced, and NO to EVER experiencing at ANY phase
+          baseline_selfharm_ideation == 0 |
+             EVER_PANDEMIC_selfharm_ideation == 0 ~ 0 #Baseline never experienced, and/or NO to EVER experiencing at ANY phase (people who have endorsed it EVER during the pandemic will be captured above)
+          
+          
+          
            )
     
   )
 
 #Check
 dat %>%
-  freq(NEW_selfharm_ideation_pandemic)
+  freq(selfharm_ideation_PANDEMIC)
+
 
 
 ```
@@ -747,9 +749,9 @@ taf.meant_life_end_weeks_.Wavebaseline = In the last two weeks, have you deliber
 taf.meant_end_life_pandemic_.Wavebaseline = Before the pandemic, had you deliberately harmed yourself, whether or not you meant to end your life?
 ```{r}
 
-##At baseline indiciated NEVER experiencing it OR indicated experiencing it but NOT before the pandemic
+##At baseline indicated NEVER experiencing it 
 dat <- dat %>%
-  mutate(baseline_selfharm =
+  mutate(PREPANDEMIC_selfharm =
            case_when(
                     taf.meant_end_life_pandemic_.Wavebaseline == "No" ~ 0 ,
                     taf.meant_end_life_pandemic_.Wavebaseline == "Yes" ~ 1
@@ -761,7 +763,7 @@ dat <- dat %>%
 
 #Check 
 dat %>%
-  freq(baseline_selfharm)
+  freq(PREPANDEMIC_selfharm)
 
 
 ```
@@ -773,18 +775,19 @@ dat %>%
 ##At baseline indicated NEW experience
 
 dat <- dat %>%
-  mutate(BASELINE_PANDEMIC_selfharm =
+  mutate(baseline_pandemic_selfharm =
            case_when(
              
-              taf.meant_life_end_weeks_.Wavebaseline ==  "Yes" & #Self harmed during past two weeks
-                taf.meant_end_life_pandemic_.Wavebaseline == "No" ~ 1 #BUT had not self harmed BEFORE the pandemic, so FIRST experience is DURING the pandemic
+              taf.meant_life_end_weeks_.Wavebaseline ==  "Yes" ~  1,
+              taf.meant_life_end_weeks_.Wavebaseline== "No" ~ 0) #Self harmed during past two weeks (at baseline)
+               
               )
-  )
+  
     
 
 #Check 
 dat %>%
-  freq(BASELINE_PANDEMIC_selfharm)
+  freq(baseline_pandemic_selfharm)
 
 
 ```
@@ -796,15 +799,14 @@ NB: This question is shown to everyone, so I don't need to use the same logic as
 ```{r}
 #Then, of those who had never experienced it before the pandemic, who had a NEW experience
 dat <- dat %>%
-  mutate(NEW_selfharm_pandemic =
+  mutate(selfharm_PANDEMIC =
            case_when(
             
-             BASELINE_PANDEMIC_selfharm == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
+             baseline_pandemic_selfharm == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
              
-             baseline_selfharm == 0 &  #before pandemic, have never experienced it
-                     TWO_WEEKS_PANDEMIC_selfharm == 1 ~ 1,#FIRST experience DURING pandemic (answered yes to 2 week question during pandemic)
+             TWO_WEEKS_PANDEMIC_selfharm == 1 ~ 1,#FIRST experience DURING pandemic (answered yes to 2 week question during pandemic)
                      
-                     baseline_selfharm == 0 &  
+                     baseline_pandemic_selfharm == 0 |  
                      TWO_WEEKS_PANDEMIC_selfharm == 0 ~ 0 #Baseline never experienced, and NO to EVER experiencing at ANY phase
                      
            )
@@ -814,7 +816,7 @@ dat <- dat %>%
 
 #Check
 dat %>%
-  freq(NEW_selfharm_pandemic)
+  freq(selfharm_PANDEMIC)
 
 
 ```
@@ -827,17 +829,18 @@ BASIC MODEL:
   •	gender
   •	Ethnicity 
   •	Education 
+  •	Pre-pandemic experience (for self-harm only) 
   
 MENTAL/PHYSICAL HEALTH MODEL:
-  • Control status (removing people with EDs)
+  • Control status (removing people with EDs for ED ones only)
   • BMI at baseline
   • Pre-existing physical health condition
   • Disability
     
 COVID MODEL - baseline/before symptom:
   • Key worker status at baseline
-  • Defined as vulnerable person according to Goverment 
-  • Positive covid test at baseline (or somewhere down the line - needs to be BEFORE symptom)
+  • Defined as vulnerable person according to Government 
+  • Positive COVID test at baseline (or somewhere down the line - needs to be BEFORE symptom)
   • Change in employment status
   • Living situation
   • Pandemic worry
@@ -1177,16 +1180,19 @@ test_dat <- dat %>%
          highest_education,
          comorbidities,
          comorbidities_count,
-         NEW_selfharm_pandemic,
-         NEW_selfharm_ideation_pandemic,
+         selfharm_PANDEMIC,
+         selfharm_ideation_PANDEMIC,
+         passive_suicidal_ideation_PANDEMIC,
          NEW_binge_eating_pandemic,
          NEW_low_weight_pandemic,
-         NEW_passive_suicidal_ideation_pandemic,
+         PREPANDEMIC_passive_suicidal_ideation,
+         PREPANDEMIC_selfharm_ideation,
+         PREPANDEMIC_selfharm,
          lifetime_low_weight_baseline_numeric,
          lifetime_binge_eating_baseline_numeric,
-         baseline_passive_suicidal_ideation,
-         baseline_selfharm_ideation,
-         baseline_selfharm,
+       #  baseline_passive_suicidal_ideation,
+       #  baseline_selfharm_ideation,
+       #  baseline_selfharm,
          control_numeric,
          key_worker,
          control_factor,
@@ -1203,9 +1209,6 @@ saveRDS(object = test_dat,
        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/test_dat", date, ".rds"))
 
 ```
-
-
-
 
 
 

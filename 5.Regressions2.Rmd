@@ -1,7 +1,7 @@
 ---
-title: "Regression_analyses"
+title: "Regressions2"
 author: "Helena Davies"
-date: "06/05/2021"
+date: "24/05/2021"
 output: html_document
 ---
 
@@ -39,7 +39,7 @@ source("./functions.R")
 
 # Read in data
 ```{r}
-dat <- readRDS(file = "../data_cleaned/test_dat2021-05-20.rds")
+dat <- readRDS(file = "../data_cleaned/test_dat2021-05-24.rds")
 dim(dat)
 colnames(dat)
 ```
@@ -55,7 +55,10 @@ descriptives.columns.dummy <- c(
   "highest_education",
   "control_factor",
   "key_worker",
-"vulnerable_group_member"
+"vulnerable_group_member",
+"PREPANDEMIC_selfharm_ideation",
+"PREPANDEMIC_passive_suicidal_ideation",
+"PREPANDEMIC_selfharm"
 )
 
 ```
@@ -69,7 +72,7 @@ colnames(dat_dummy)
 
 ```
 
-
+# EATING DISORDER CORR MATRIX
 ```{r}
 #Make binary variables numeric 
 
@@ -134,8 +137,108 @@ dat.corr.matrix %>%
          
 ```
 
+#SELF-HARM CORR MATRIX
+[53] "vulnerable_group_member_NA"                                          "PREPANDEMIC_selfharm_ideation_0"                                    
+[55] "PREPANDEMIC_selfharm_ideation_1"                                     "PREPANDEMIC_selfharm_ideation_NA"                                   
+[57] "PREPANDEMIC_passive_suicidal_ideation_0"                             "PREPANDEMIC_passive_suicidal_ideation_1"                            
+[59] "PREPANDEMIC_passive_suicidal_ideation_NA"                            "PREPANDEMIC_selfharm_0"                                             
+[61] "PREPANDEMIC_selfharm_1"                                              "PREPANDEMIC_selfharm_NA"     
+```{r}
+#Make binary variables numeric 
+
+# Select items for correlation matrix
+dat.corr.mat <- dat_dummy %>%
+  select("Male" = "gender_cleaned_Male",
+   "Female" = "gender_cleaned_Female",
+   "Minoritised_gender" = "gender_cleaned_Minoritised gender",
+   "16-25" = "age_category_COVID_baseline_16-25",
+   "26-35" = "age_category_COVID_baseline_26-35",
+   "36-45" = "age_category_COVID_baseline_36-45",
+   "46-55" = "age_category_COVID_baseline_46-55",
+   "56-65" = "age_category_COVID_baseline_56-65",
+   "66-70" =  "age_category_COVID_baseline_66-70",
+   "71-75" = "age_category_COVID_baseline_71-75",
+   "75+" = "age_category_COVID_baseline_75+",
+   "Racially_minoritised" = "ethnicity_binary_Racially minoritised",
+   "White" = "ethnicity_binary_White", 
+   "No_formal_education" = "highest_education_No formal qualifications",
+  "GCSE/CSE"="highest_education_GCSE/CSE",
+  "NVQ" = "highest_education_NVQ",
+  "A-Levels" = "highest_education_A-levels",
+  "Uni/Prof_qual" = "highest_education_University/Other professional qualifications",
+  "Control" = "control_factor_Control",
+  "Not_control" ="control_factor_Not a control",
+  "Not_key_worker" = "key_worker_No key worker",
+  "Key_worker"= "key_worker_Key worker",
+  "Not_vulnerable_group" = "vulnerable_group_member_I am not a member of a vulnerable group",
+  "Vulnerable_group" = "vulnerable_group_member_Not I am not a member of a vulnerable group",
+  "Prepan_suicidal_ideation" = "PREPANDEMIC_passive_suicidal_ideation_1",
+  "Prepan_selfharm_ideation" = "PREPANDEMIC_selfharm_ideation_1",
+  "Prepan_selfharm" = "PREPANDEMIC_selfharm_1"
+) %>%
+  polycor::hetcor(use = "pairwise.complete.obs") #Remember to specify "pairwise.complete.obs"!
+
+
+# Save the correlations from the correlation matrix in an object
+dat.corr.matrix <- as.matrix(dat.corr.mat)
+
+# Save the p values from the correlation matrix in an object
+dat.p.matrix <- as.matrix(dat.corr.mat$tests)
+```
+
+# 16. Create the correlation matrix plot using the corrplot package
+```{r Correlation matrix at t1 plot, fig.height=7}
+
+dat.corr.matrix %>%
+  corrplot::corrplot(method = "color", # objects to represent the correlations on plot
+         type = "lower", # only use the lower triangle of the matrix
+         diag = FALSE, # do not show the correlations on the diagonal
+         addgrid.col = NA,
+         addCoef.col = "black", # colour for the correlation coefficients in the plot
+         tl.cex = 0.8,
+         number.cex = 0.75,
+         tl.col = "black",
+         col=colorRampPalette(c("dodgerblue4",
+                                "white",
+                                "firebrick4"))(200), # colours for correlations
+         # Combine with significance
+         p.mat = dat.p.matrix, # Matrix with p values
+         sig.level = 0.01, # Choose significant level
+         insig = "blank") # Nonsignificant correlations have no colour
+         
+
+         
+```
 
 ### BASIC MODELS ###
+
+```{r}
+#Rename education labels
+dat <- dat %>%
+  mutate(highest_education_renamed =
+           case_when(highest_education == "No formal qualifications" ~ "No formal qualifications",
+                     highest_education == "GCSE/CSE" ~ "GCSE/CSE",
+                     highest_education == "NVQ" ~ "NVQ",
+                       highest_education == "A-levels" ~"A-levels",
+                       highest_education == "University/Other professional qualifications" ~ "Uni/Prof qual"
+             
+           ))
+
+
+#Reorder education 
+#Change order
+dat$highest_education_renamed_ordered <- ordered(dat$highest_education_renamed,
+                                         levels = c("No formal qualifications",
+                                                    "GCSE/CSE",
+                                                    "NVQ",
+                                                    "A-levels",
+                                                    "Uni/Prof qual"))
+
+#Change back to character
+dat$highest_education_renamed <- as.character(dat$highest_education_renamed_ordered)
+
+```
+
 
 # Age + gender + ethnicity + highest education- Binge eating
 ```{r}
@@ -161,7 +264,7 @@ dat_plot <- dat %>%
          "Gender" = "gender_cleaned",
          "Race" = "ethnicity_binary",
          "Pandemic_binge_eating" = "NEW_binge_eating_pandemic",
-         "Education" = "highest_education")
+         "Education" = "highest_education_renamed")
 
 
 #1. Plot
@@ -209,7 +312,7 @@ dat_plot <- dat %>%
          "Gender" = "gender_cleaned",
          "Race" = "ethnicity_binary",
          "Pandemic_low_weight" = "NEW_low_weight_pandemic",
-         "Education" = "highest_education")
+         "Education" = "highest_education_renamed")
 
 
 #1. Plot
@@ -234,9 +337,19 @@ dat_plot %>%
 ```
 # Age + gender + ethnicity + highest_education- Passive suicial ideation
 ```{r}
+#Recode to factor
+dat <- dat %>%
+  mutate(PREPANDEMIC_passive_suicidal_ideation_factor = 
+           case_when(PREPANDEMIC_passive_suicidal_ideation == 1 ~ "Yes",
+                     PREPANDEMIC_passive_suicidal_ideation == 0 ~ "No")
+         )
 
-# Age and gender and ethnicity 
-model3 <- glm(NEW_passive_suicidal_ideation_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary+ highest_education,
+
+dat %>%
+  freq(PREPANDEMIC_passive_suicidal_ideation)
+
+# Age and gender and ethnicity and pre-pan exp
+model3 <- glm(passive_suicidal_ideation_PANDEMIC ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary+ highest_education + PREPANDEMIC_passive_suicidal_ideation_factor,
                data = dat,
                family = "binomial")
 
@@ -245,26 +358,28 @@ tidy(model3,
      exponentiate=TRUE)
 
 fitted(model3) %>% 
-  length()
+  length() 
 
 ```
 
-#Plot! Age + gender + ethnicity + highest_education- Passive suicial ideation
+#Plot! Age + gender + ethnicity + highest_education + prepan experience - Passive suicial ideation
 ```{r}
 
 dat_plot <- dat %>%
   select("Age" = "age_category_COVID_baseline",
          "Gender" = "gender_cleaned",
          "Race" = "ethnicity_binary",
-         "Pandemic_passive_suicidal_ideation" = "NEW_passive_suicidal_ideation_pandemic",
-         "Education" = "highest_education")
+         "Pandemic_passive_suicidal_ideation" = "passive_suicidal_ideation_PANDEMIC",
+         "Education" = "highest_education_renamed",
+         "Prepan_experience" = "PREPANDEMIC_passive_suicidal_ideation_factor")
 
 
 #1. Plot
 explanatory <- c("Age",
                  "Gender",
                  "Race",
-                 "Education")
+                 "Education",
+                 "Prepan_experience")
 
 
 dependent <- "Pandemic_passive_suicidal_ideation"
@@ -275,18 +390,29 @@ dat_plot %>%
           breaks = c(0.5, 1, 5, 10, 20, 30),
           table_text_size = 3.0,
           title_text_size = 13,
-          dependent_label = "New experience of passive suicidal ideation during pandemic",
+          dependent_label = "Passive suicidal ideation during pandemic",
           remove_ref = TRUE)
 
 
 ```
 
 
-# Age + gender + ethnicity + highest_education- Self harm ideation
+# Age + gender + ethnicity + highest_education + prepandemic experience - Self harm ideation
 ```{r}
+#Recode to factor
+dat <- dat %>%
+  mutate(PREPANDEMIC_selfharm_ideation_factor = 
+           case_when(PREPANDEMIC_selfharm_ideation == 1 ~ "Yes",
+                     PREPANDEMIC_selfharm_ideation == 0 ~ "No")
+         )
+
+
+dat %>%
+  freq(PREPANDEMIC_selfharm_ideation_factor)
+
 
 # Age and gender and ethnicity 
-model4 <- glm(NEW_selfharm_ideation_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary+ highest_education,
+model4 <- glm(selfharm_ideation_PANDEMIC ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary+ highest_education + PREPANDEMIC_selfharm_ideation_factor,
                data = dat,
                family = "binomial")
 
@@ -305,15 +431,17 @@ dat_plot <- dat %>%
   select("Age" = "age_category_COVID_baseline",
          "Gender" = "gender_cleaned",
          "Race" = "ethnicity_binary",
-         "Pandemic_selfharm_ideation" = "NEW_selfharm_ideation_pandemic",
-         "Education" = "highest_education")
+         "Pandemic_selfharm_ideation" = "selfharm_ideation_PANDEMIC",
+         "Education" = "highest_education_renamed",
+         "Prepan_experience" = "PREPANDEMIC_selfharm_ideation_factor")
 
 
 #1. Plot
 explanatory <- c("Age",
                  "Gender",
                  "Race",
-                 "Education")
+                 "Education",
+                 "Prepan_experience")
 
 
 dependent <- "Pandemic_selfharm_ideation"
@@ -324,16 +452,29 @@ dat_plot %>%
           breaks = c(0.5, 1, 5, 10, 20, 30),
           table_text_size = 3.0,
           title_text_size = 13,
-          dependent_label = "New experience of self-harm ideation during pandemic",
+          dependent_label = "Self-harm ideation during pandemic",
           remove_ref = TRUE)
 
 
 ```
-# Age + gender + ethnicity + highest_education- Self harm 
+
+# Age + gender + ethnicity + highest_education + prepan experience- Self harm 
 ```{r}
 
+#Recode to factor
+dat <- dat %>%
+  mutate(PREPANDEMIC_selfharm_factor = 
+           case_when(PREPANDEMIC_selfharm == 1 ~ "Yes",
+                     PREPANDEMIC_selfharm == 0 ~ "No")
+         )
+
+
+dat %>%
+  freq(PREPANDEMIC_selfharm_factor)
+
+
 # Age and gender and ethnicity 
-model5 <- glm(NEW_selfharm_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education,
+model5 <- glm(selfharm_PANDEMIC ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + PREPANDEMIC_selfharm,
                data = dat,
                family = "binomial")
 
@@ -354,15 +495,17 @@ dat_plot <- dat %>%
   select("Age" = "age_category_COVID_baseline",
          "Gender" = "gender_cleaned",
          "Race" = "ethnicity_binary",
-         "Pandemic_selfharm" = "NEW_selfharm_pandemic",
-         "Education" = "highest_education")
+         "Pandemic_selfharm" = "selfharm_PANDEMIC",
+         "Education" = "highest_education_renamed",
+         "Prepan_experience" = "PREPANDEMIC_selfharm_factor")
 
 
 #1. Plot
 explanatory <- c("Age",
                  "Gender",
                  "Race",
-                 "Education")
+                 "Education",
+                 "Prepan_experience")
 
 
 dependent <- "Pandemic_selfharm"
@@ -373,15 +516,16 @@ dat_plot %>%
           breaks = c(0.5, 1, 5, 10, 20, 30),
           table_text_size = 3.0,
           title_text_size = 15,
-          dependent_label = "New experience of self-harm during pandemic",
+          dependent_label = "Self-harm during pandemic",
           remove_ref = TRUE)
 
 
 ```
          
+
+
 #### ADDING CONTROL STATUS + KEY WORKER + VULNERABLE GROUP ####
 
-**should i exclude ED cases here?
 # Age + gender + ethnicity + highest_education +  control + vulnerable group + key worker status - Binge eating
 
 ```{r}
