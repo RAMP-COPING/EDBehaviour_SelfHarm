@@ -32,16 +32,16 @@ library(skimr)
 
 # Import baseline data
 ```{r export data}
-glad_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_glad2021-05-20.rds")
+glad_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_glad2021-05-31.rds")
 dim(glad_baseline)
 
-edgi_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_edgi2021-05-20.rds")
+edgi_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_edgi2021-05-31.rds")
 dim(edgi_baseline)
 
-nbr_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_nbr2021-05-20.rds")
+nbr_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_nbr2021-05-31.rds")
 dim(nbr_baseline)
 
-ramp_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_ramp2021-05-20.rds")
+ramp_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_ramp2021-05-31.rds")
 dim(ramp_baseline)
 
 
@@ -182,6 +182,13 @@ dim(edeq_coping_screener)
 edeq_ramp_screener <- readRDS(file = "../data_cleaned/NEW_edeq_screener_ramp.rds")
 dim(edeq_ramp_screener)
 
+
+virus_ramp <- readRDS(file = "../data_cleaned/virus_ramp_followup.rds")
+dim(virus_ramp)
+  
+virus_coping <- readRDS(file = "../data_cleaned/virus_coping_followup.rds")
+dim(virus_coping)
+
 ```
 ##Create empty wave 1a and 1bs in COPING to merge with RAMP 
 
@@ -197,7 +204,6 @@ edeq_coping_screener$ed_scid5.weigh_weighed_past_month_.Wave_1b <- NULL
 ```{r}
 
 #bind all edeq data
-
 EDEQ <- bind_rows(edeq_ramp_screener,
                  edeq_coping_screener)
 
@@ -232,6 +238,20 @@ colnames(taf_edeq)
 nrow(taf_edeq)
 
 ```
+#Bind virus data together
+```{r}
+VIRUS <- bind_rows(virus_ramp,
+                 virus_coping)
+
+
+#check col names edeq
+colnames(VIRUS)
+
+#check no of participants edeq
+nrow(VIRUS)
+
+
+```
 
 
 #Bind edeq_taf with baseline data
@@ -249,6 +269,25 @@ colnames(data.merged)
 nrow(data.merged)
 
 ```
+
+#Bind VIRUS data with merged baseline data
+```{r}
+
+##Merge TAF and EDEQ
+data.merged2 <- plyr::join(data.merged,
+             VIRUS,
+             type="left")
+  
+
+#check col names 
+colnames(data.merged2)
+
+#check no of participants
+nrow(data.merged2)
+
+
+```
+
 
 ### Read in ED group data
 ```{r}
@@ -269,7 +308,7 @@ nrow(baseline_ED_groups_data)
 #Merge merged data with grouping ED data
 ```{r}
 
-data.merged.with.ED.groups <- merge(data.merged,
+data.merged.with.ED.groups <- merge(data.merged2,
                                     baseline_ED_groups_data,
                                     by = "ID")
 

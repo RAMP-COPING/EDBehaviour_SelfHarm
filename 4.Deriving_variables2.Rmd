@@ -11,11 +11,7 @@ ORDER OF SCRIPTS
 3. Merging
 4. Deriving variables
 
-Want to control for PREPANDEMIC experiences - fine for self-harm as questions explicitly ask about BEFORE the pandemic
-FOR LOW WEIGHT/BINGE EATING:
 
-1. Age + (length of time at low weight) = maximum
-2. 
 
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -51,7 +47,7 @@ source("./functions.R")
 
 # Read in data
 ```{r}
-dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-05-20.rds")
+dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-05-31.rds")
 dim(dat)
 colnames(dat)
 
@@ -70,6 +66,12 @@ dat <- dat %>%
   rename(
     transgender = transgender.x
     )
+
+
+dat %>%
+  freq(cohort_name)
+
+
 ```
 
 
@@ -1167,6 +1169,598 @@ dat %>%
   freq(dem2.member_vulnerable_group)
 
 ```
+                           
+#Positive covid test
+**Will probably combine 'negative test' and 'not had a test'?
+```{r}
+dat <- dat %>%
+  mutate(covid_test =
+           case_when(
+                      #Had at least one positive covid test
+                    (virus.back_positive_antibodies_covid_.Wave_1b == "Yes" |
+                      
+                    virus.back_positive_antibodies_covid_.Wave_2b == "Yes" |
+                      
+                    virus.back_positive_antibodies_covid_.Wave_3b == "Yes" |
+                      
+                    virus.back_positive_antibodies_covid_.Wave_4b == "Yes" |
+                      
+                    virus.back_positive_antibodies_covid_.Wave_6b == "Yes" |
+                      
+                    virus.back_positive_antibodies_covid_.Wave_8b == "Yes" |
+                      
+                    virus.back_positive_antibodies_covid_.Wave_10b == "Yes" |
+                      
+                    virus.back_positive_antibodies_covid_.Wave_12b == "Yes" ~ "Positive test"),
+                    
+                    #Not answered whether they'd taken a test
+                    (is.na(virus.past_surveys_include_reported_.Wave_1b) &
+                      
+                    is.na(virus.past_surveys_include_reported_.Wave_2b)  &
+                      
+                    is.na(virus.past_surveys_include_reported_.Wave_3b)  &
+                      
+                    is.na(virus.past_surveys_include_reported_.Wave_4b)  &
+                      
+                    is.na(virus.past_surveys_include_reported_.Wave_6b)  &
+                      
+                    is.na(virus.past_surveys_include_reported_.Wave_8b)  &
+                      
+                    is.na(virus.past_surveys_include_reported_.Wave_10b)  &
+                      
+                    is.na(virus.past_surveys_include_reported_.Wave_12b) ~ "Missing whether taken test"),
+                   
+                   
+                    #Not had a test
+                    (virus.past_surveys_include_reported_.Wave_1b == "No" |
+                   
+                     virus.past_surveys_include_reported_.Wave_2b == "No" |
+                     
+                      virus.past_surveys_include_reported_.Wave_3b == "No" |
+                      
+                      virus.past_surveys_include_reported_.Wave_4b == "No" |
+             
+                      virus.past_surveys_include_reported_.Wave_6b == "No" |
+               
+                      virus.past_surveys_include_reported_.Wave_8b == "No" |
+                      
+                      virus.past_surveys_include_reported_.Wave_10b == "No" |
+                      
+                      virus.past_surveys_include_reported_.Wave_12b == "No"  ~ "Not had a test"),
+     
+                     #Negative test result 
+                    (virus.back_positive_antibodies_covid_.Wave_1b == "No" |
+                   
+                     virus.back_positive_antibodies_covid_.Wave_2b == "No" |
+                     
+                      virus.back_positive_antibodies_covid_.Wave_3b == "No" |
+                      
+                      virus.back_positive_antibodies_covid_.Wave_4b == "No" |
+             
+                      virus.back_positive_antibodies_covid_.Wave_6b == "No" |
+               
+                      virus.back_positive_antibodies_covid_.Wave_8b == "No" |
+                      
+                      virus.back_positive_antibodies_covid_.Wave_10b == "No" |
+                      
+                      virus.back_positive_antibodies_covid_.Wave_12b == "No"  ~ "Negative test")
+     )
+)
+                   
+                      
+dat %>%
+  freq(covid_test) #Those who are NA are put 'unsure/inconclusive' as the result of their test
+
+
+##Create final variable for use in regression
+dat <- dat %>%
+  mutate(covid_test_final =
+           case_when(covid_test == "Negative test" |
+                       covid_test == "Not had a test" ~ "No test or negative result",
+                     
+                     covid_test == "Positive test" ~ "Positive result")
+  )
+
+dat %>%
+  freq(covid_test_final) 
+
+```
+
+
+#Pandemic worry at baseline
+#Before working out total score - First need to work out if there were any 'not applicable' / missing
+
+```{r}
+
+##Own Employment
+dat <- dat %>%
+  mutate(not_applicable_or_missing_own_employment =
+           case_when(panworry.impact_on_your_employment_status == "Not applicable" |
+                       is.na(panworry.impact_on_your_employment_status) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_own_employment)
+
+##household employment
+dat <- dat %>%
+  mutate(not_applicable_or_missing_household_employment =
+           case_when(panworry.employment_status_household_key == "Not applicable" |
+                       is.na(panworry.employment_status_household_key) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_household_employment)
+
+##own education / exams
+dat <- dat %>%
+  mutate(not_applicable_or_missing_own_education_exams =
+           case_when(panworry.impact_on_your_education_or_exams == "Not applicable" |
+                       is.na(panworry.impact_on_your_education_or_exams) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_own_education_exams)
+
+##children's exams
+dat <- dat %>%
+  mutate(not_applicable_or_missing_childrens_education_exams =
+           case_when(panworry.exams_impact_education_children == "Not applicable" |
+                       is.na(panworry.exams_impact_education_children) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_childrens_education_exams)
+
+##financial impact
+dat <- dat %>%
+  mutate(not_applicable_or_missing_financial_impact =
+           case_when(panworry.financial_impact == "Not applicable" |
+                       is.na(panworry.financial_impact) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_financial_impact)
+
+##Contracting virus
+dat <- dat %>%
+  mutate(not_applicable_or_missing_contracting_virus =
+           case_when(panworry.contracting_the_virus == "Not applicable" |
+                       is.na(panworry.contracting_the_virus) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_contracting_virus)
+
+##People you know contracting virus
+dat <- dat %>%
+  mutate(not_applicable_or_missing_people_know_contracting_virus =
+           case_when(panworry.people_you_know_contracting_the_virus == "Not applicable" |
+                       is.na(panworry.people_you_know_contracting_the_virus) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_people_know_contracting_virus)
+
+
+##People you don't know contracting virus
+dat <- dat %>%
+  mutate(not_applicable_or_missing_people_dont_know_contracting_virus =
+           case_when(panworry.people_you_dont_know_contracting_the_virus == "Not applicable" |
+                       is.na(panworry.people_you_dont_know_contracting_the_virus) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_people_dont_know_contracting_virus)
+
+##mental health
+dat <- dat %>%
+  mutate(not_applicable_or_missing_impact_mental_health =
+           case_when(panworry.impact_mental_health_wellbeing == "Not applicable" |
+                       is.na(panworry.impact_mental_health_wellbeing) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_impact_mental_health)
+
+##Childrens mental health
+dat <- dat %>%
+  mutate(not_applicable_or_missing_impact_childrens_mental_health =
+           case_when(panworry.impact_mental_health_childrens == "Not applicable" |
+                       is.na(panworry.impact_mental_health_childrens) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_impact_childrens_mental_health)
+
+##Relative's mental health
+dat <- dat %>%
+  mutate(not_applicable_or_missing_impact_relatives_mental_health =
+           case_when(panworry.impact_relatives_mental_health == "Not applicable" |
+                       is.na(panworry.impact_relatives_mental_health) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_impact_relatives_mental_health)
+
+#Social isolation
+dat <- dat %>%
+  mutate(not_applicable_or_missing_social_isolation =
+           case_when(panworry.being_socially_isolated == "Not applicable" |
+                       is.na(panworry.being_socially_isolated) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_social_isolation)
+
+
+#People you know social isolation
+dat <- dat %>%
+  mutate(not_applicable_or_missing_people_know_social_isolation =
+           case_when(panworry.people_you_know_being_socially_isolated == "Not applicable" |
+                       is.na(panworry.people_you_know_being_socially_isolated) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_people_know_social_isolation)
+
+#Shortage of essentials
+dat <- dat %>%
+  mutate(not_applicable_or_missing_shortage_essentials =
+           case_when(panworry.shortage_of_essential_supplies == "Not applicable" |
+                       is.na(panworry.shortage_of_essential_supplies) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_shortage_essentials)
+
+#Shortage of medication / accesss to healthcare
+dat <- dat %>%
+  mutate(not_applicable_or_missing_shortage_medication_access_healthcare =
+           case_when(panworry.shortage_of_medication_or_access_to_healthcare == "Not applicable" |
+                       is.na(panworry.shortage_of_medication_or_access_to_healthcare) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_shortage_medication_access_healthcare)
+
+#People healthcare/shortage essentials
+dat <- dat %>%
+  mutate(not_applicable_or_missing_healthcare_people_essentials =
+           case_when(panworry.healthcare_people_essential_supplies == "Not applicable" |
+                       is.na(panworry.healthcare_people_essential_supplies) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_healthcare_people_essentials)
+
+#Government info accuracy
+dat <- dat %>%
+  mutate(not_applicable_or_missing_gov_info_accurary =
+           case_when(panworry.information_virus_government_accuracy == "Not applicable" |
+                       is.na(panworry.information_virus_government_accuracy) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_gov_info_accurary)
+
+#Government response to pandemic
+dat <- dat %>%
+  mutate(not_applicable_or_missing_gov_response_pandemic =
+           case_when(panworry.the_governments_response_to_the_pandemic == "Not applicable" |
+                       is.na(panworry.the_governments_response_to_the_pandemic) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_gov_response_pandemic)
+
+#Separation from family members
+dat <- dat %>%
+  mutate(not_applicable_or_missing_separation_family =
+           case_when(panworry.separation_from_family_members == "Not applicable" |
+                       is.na(panworry.separation_from_family_members) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_separation_family)
+
+#Impact global recession
+dat <- dat %>%
+  mutate(not_applicable_or_missing_impact_global_recession =
+           case_when(panworry.standing_impact_global_recession == "Not applicable" |
+                       is.na(panworry.standing_impact_global_recession) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_impact_global_recession)
+
+
+#Other worry
+dat <- dat %>%
+  mutate(not_applicable_or_missing_other_worry =
+           case_when(panworry.other_ == "Not applicable" |
+                       is.na(panworry.other_) ~ 1
+             
+           ))
+
+#Check 
+dat %>%
+  freq(not_applicable_or_missing_other_worry)
+
+```
+
+#Sum score of 'missingness/not applicable'
+```{r}
+
+dat$panworry_sumscore_missingness_not_applicable <- rowSums(dat[ ,
+                                 c("not_applicable_or_missing_own_employment",
+                                   "not_applicable_or_missing_household_employment",
+                                   "not_applicable_or_missing_own_education_exams",
+                                   "not_applicable_or_missing_childrens_education_exams",
+                                   "not_applicable_or_missing_financial_impact",
+                                   "not_applicable_or_missing_contracting_virus",
+                                   "not_applicable_or_missing_people_know_contracting_virus",
+                                   "not_applicable_or_missing_people_dont_know_contracting_virus",
+                                   "not_applicable_or_missing_impact_mental_health",
+                                   "not_applicable_or_missing_impact_childrens_mental_health",
+                                   "not_applicable_or_missing_impact_relatives_mental_health",
+                                   "not_applicable_or_missing_social_isolation",
+                                   "not_applicable_or_missing_people_know_social_isolation",
+                                   "not_applicable_or_missing_shortage_essentials",
+                                   "not_applicable_or_missing_shortage_medication_access_healthcare",
+                                   "not_applicable_or_missing_healthcare_people_essentials",
+                                   "not_applicable_or_missing_gov_info_accurary",
+                                   "not_applicable_or_missing_gov_response_pandemic",
+                                   "not_applicable_or_missing_separation_family",
+                                   "not_applicable_or_missing_impact_global_recession",
+                                   "not_applicable_or_missing_other_worry")],
+                                  na.rm = TRUE)
+
+#Summary
+freq(dat$panworry_sumscore_missingness_not_applicable)    
+```
+
+#Total number answered / applicable
+```{r}
+
+dat$panworry_total_applicable <- 21 - dat$panworry_sumscore_missingness_not_applicable
+
+#Summary
+freq(dat$panworry_total_applicable)    
+```
+#Total possible score 
+```{r}
+
+dat$panworry_total_possible_score <- dat$panworry_total_applicable * 4 #x 4 because the highest score for each question is '4' = Extremely worried
+
+#Summary
+freq(dat$panworry_total_possible_score)    
+```
+
+#Actual scores 
+
+#First need to create new variables in which '5' i.e., 'Not applicable' = 0
+```{r}
+
+##Own Employment
+dat$panworry.impact_on_your_employment_status_numeric[dat$panworry.impact_on_your_employment_status_numeric == 5] <- 0
+
+
+##household employment
+dat$panworry.employment_status_household_key_numeric[dat$panworry.employment_status_household_key_numeric == 5] <- 0
+
+##own education / exams
+
+dat$panworry.impact_on_your_education_or_exams_numeric[dat$panworry.impact_on_your_education_or_exams_numeric == 5] <- 0
+
+
+##children's exams
+
+dat$panworry.exams_impact_education_children_numeric[dat$panworry.exams_impact_education_children_numeric == 5] <- 0
+
+
+##financial impact
+
+dat$panworry.financial_impact_numeric[dat$panworry.financial_impact_numeric == 5] <- 0
+
+
+##Contracting virus
+dat$panworry.contracting_the_virus_numeric[dat$panworry.contracting_the_virus_numeric == 5] <- 0
+
+
+##People you know contracting virus
+
+dat$panworry.people_you_know_contracting_the_virus_numeric[dat$panworry.people_you_know_contracting_the_virus_numeric == 5] <- 0
+
+
+##People you don't know contracting virus
+dat$panworry.people_you_dont_know_contracting_the_virus_numeric[dat$panworry.people_you_dont_know_contracting_the_virus_numeric == 5] <- 0
+
+##mental health
+
+dat$panworry.impact_mental_health_wellbeing_numeric[dat$panworry.impact_mental_health_wellbeing_numeric == 5] <- 0
+
+
+##Childrens mental health
+
+dat$panworry.impact_mental_health_childrens_numeric[dat$panworry.impact_mental_health_childrens_numeric == 5] <- 0
+
+
+##Relative's mental health
+
+dat$panworry.impact_relatives_mental_health_numeric[dat$panworry.impact_relatives_mental_health_numeric == 5] <- 0
+
+
+#Social isolation
+
+dat$panworry.being_socially_isolated_numeric[dat$panworry.being_socially_isolated_numeric == 5] <- 0
+
+
+#People you know social isolation
+
+dat$panworry.people_you_know_being_socially_isolated_numeric[dat$panworry.people_you_know_being_socially_isolated_numeric == 5] <- 0
+
+
+#Shortage of essentials
+
+dat$panworry.shortage_of_essential_supplies_numeric[dat$panworry.shortage_of_essential_supplies_numeric == 5] <- 0
+
+
+#Shortage of medication / accesss to healthcare
+
+dat$panworry.shortage_of_medication_or_access_to_healthcare_numeric[dat$panworry.shortage_of_medication_or_access_to_healthcare_numeric == 5] <- 0
+
+
+#People healthcare/shortage essentials
+
+dat$panworry.healthcare_people_essential_supplies_numeric[dat$panworry.healthcare_people_essential_supplies_numeric == 5] <- 0
+
+
+#Government info accuracy
+
+dat$panworry.information_virus_government_accuracy_numeric[dat$panworry.information_virus_government_accuracy_numeric == 5] <- 0
+
+#Government response to pandemic
+dat$panworry.the_governments_response_to_the_pandemic_numeric[dat$panworry.the_governments_response_to_the_pandemic_numeric == 5] <- 0
+
+
+#Separation from family members
+
+dat$panworry.separation_from_family_members_numeric[dat$panworry.separation_from_family_members_numeric == 5] <- 0
+
+
+#Impact global recession
+
+dat$panworry.standing_impact_global_recession_numeric[dat$panworry.standing_impact_global_recession_numeric == 5] <- 0
+
+
+#Other worry
+dat$panworry.other__numeric[dat$panworry.other__numeric == 5] <- 0
+
+
+```
+
+#Sum score of answers
+```{r}
+
+dat$panworry_total_raw_score <- rowSums(dat[ ,
+                                 c("panworry.impact_on_your_employment_status_numeric",
+                                   "panworry.employment_status_household_key_numeric",
+                                   "panworry.impact_on_your_education_or_exams_numeric",
+                                   "panworry.exams_impact_education_children_numeric",
+                                   "panworry.financial_impact_numeric",
+                                   "panworry.contracting_the_virus_numeric",
+                                   "panworry.people_you_know_contracting_the_virus_numeric",
+                                   "panworry.people_you_dont_know_contracting_the_virus_numeric",
+                                   "panworry.impact_mental_health_wellbeing_numeric",
+                                   "panworry.impact_mental_health_childrens_numeric",
+                                   "panworry.impact_relatives_mental_health_numeric",
+                                   "panworry.being_socially_isolated_numeric",
+                                   "panworry.people_you_know_being_socially_isolated_numeric",
+                                   "panworry.shortage_of_essential_supplies_numeric",
+                                   "panworry.shortage_of_medication_or_access_to_healthcare_numeric",
+                                   "panworry.healthcare_people_essential_supplies_numeric",
+                                   "panworry.information_virus_government_accuracy_numeric",
+                                   "panworry.the_governments_response_to_the_pandemic_numeric",
+                                   "panworry.separation_from_family_members_numeric",
+                                   "panworry.standing_impact_global_recession_numeric",
+                                   "panworry.other__numeric")],
+                                  na.rm = TRUE)
+
+#Summary
+freq(dat$panworry_total_raw_score)    
+```
+
+#Answers as a percentage of possible scores
+```{r}
+
+dat$panworry_total_score_percent <- (dat$panworry_total_raw_score/dat$panworry_total_possible_score)*100
+
+#Summary
+freq(dat$panworry_total_score_percent)  
+
+```
+
+#Answers as factors (1-20, 20-40, 40-50, 60-80, 80-100)
+```{r}
+
+dat <- dat %>%
+  mutate(panworry_factor =
+           case_when(
+             panworry_total_score_percent >= 0 & panworry_total_score_percent <= 20 ~ "0-20",
+             panworry_total_score_percent >= 21 & panworry_total_score_percent <= 40 ~ "21-40",
+             panworry_total_score_percent >= 41 & panworry_total_score_percent <= 60 ~ "41-60",
+             panworry_total_score_percent >= 61 & panworry_total_score_percent <= 80 ~ "61-80",
+             panworry_total_score_percent >= 81 & panworry_total_score_percent <= 100 ~ "81-100"
+           )
+    
+  )
+
+dat %>%
+  freq(panworry_factor)
+
+dat$panworry_factor <- as.factor(dat$panworry_factor)
+```
+
+#Answers as factors TEST (1-20, 20-40, 40-50, 60-80, 80-100)
+```{r}
+
+dat <- dat %>%
+  mutate(panworry_factor_TEST =
+           case_when(
+             panworry_total_score_percent >= 0 & panworry_total_score_percent <= 50 ~ "0-50",
+             panworry_total_score_percent >= 51 & panworry_total_score_percent <= 100 ~ "51-100"
+           )
+    
+  )
+
+dat %>%
+  freq(panworry_factor_TEST)
+
+dat$panworry_factor_TEST <- as.factor(dat$panworry_factor_TEST)
+```
+
+
 
 
 ##FOR NOW - SAVE THE VARIABLES NEEDED FOR INTERIM ANALYSIS
@@ -1196,7 +1790,10 @@ test_dat <- dat %>%
          control_numeric,
          key_worker,
          control_factor,
-         vulnerable_group_member =dem2.member_vulnerable_group
+         vulnerable_group_member =dem2.member_vulnerable_group,
+         panworry_total_score_percent, #NB *Don't have this info for NBR or RAMP yet
+         covid_test_final,
+       panworry_factor
          
       )
 ```
