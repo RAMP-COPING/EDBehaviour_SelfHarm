@@ -47,7 +47,7 @@ source("./functions.R")
 
 # Read in data
 ```{r}
-dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-05-31.rds")
+dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-06-04.rds")
 dim(dat)
 colnames(dat)
 
@@ -1104,7 +1104,7 @@ dat %>%
 dat$comorbidities_count_raw <- rowSums(dat[ ,
                                  c("depressive_disorders_numeric",
                                    "anxiety_disorders_numeric",
-                                 #  "eating_disorders_numeric",
+                                 "eating_disorders_diagnosed_numeric",
                                    "obsessive_compulsive_disorders_numeric",
                                  "mhd.suspected_eating_disorder_diagnosed_numeric",
                                    "psychotic_disorders_numeric",
@@ -1138,23 +1138,20 @@ dat %>%
   freq(comorbidities_count)  
 
 ```
-#Covert numeric control to factor
+#Covert numeric control to psych disorder factor
 ```{r}
 
 dat <- dat %>% 
-  mutate(control_factor =
-           case_when(control_numeric == 1 ~ "Control",
-                     control_numeric == 0 ~ "Not a control"
+  mutate(psych_disorder_factor =
+           case_when(control_numeric == 1 ~ "No psychiatric disorder",
+                     control_numeric == 0 ~ "Psychiatric disorder"
              
            ))
   
 #Check
 dat %>%
-  freq(control_factor)
+  freq(psych_disorder_factor)
 ```
-
-
-
 
 #Key worker status at baseline
 ```{r}
@@ -1172,6 +1169,7 @@ dat %>%
                            
 #Positive covid test
 **Will probably combine 'negative test' and 'not had a test'?
+**Why are first 4 waves empty?
 ```{r}
 dat <- dat %>%
   mutate(covid_test =
@@ -1748,8 +1746,10 @@ dat$panworry_factor <- as.factor(dat$panworry_factor)
 dat <- dat %>%
   mutate(panworry_factor_TEST =
            case_when(
-             panworry_total_score_percent >= 0 & panworry_total_score_percent <= 50 ~ "0-50",
-             panworry_total_score_percent >= 51 & panworry_total_score_percent <= 100 ~ "51-100"
+             panworry_total_score_percent >= 0 & panworry_total_score_percent <= 33 ~ "0-33",
+             panworry_total_score_percent > 33 & panworry_total_score_percent <= 66 ~ "34-66",
+             panworry_total_score_percent > 66 & panworry_total_score_percent <= 100 ~ "67-100",
+
            )
     
   )
@@ -1758,10 +1758,496 @@ dat %>%
   freq(panworry_factor_TEST)
 
 dat$panworry_factor_TEST <- as.factor(dat$panworry_factor_TEST)
+
+```
+
+## Losing someone due to COVID-19 (grief)
+
+#Baseline losing someone
+grief.covid_lost_due_close = In the past month, have you lost someone close to you due to COVID-19?
+```{r}
+
+dat <- dat %>%
+  mutate(lost_someone_baseline = 
+           case_when(grief.covid_lost_due_close == "Yes" ~ "Lost someone",
+                     grief.covid_lost_due_close == "No" ~ "Not lost someone",
+                     grief.covid_lost_due_close == "Prefer not to say" ~ "PNTA"
+             
+           ))
+ 
+#Check
+dat %>%
+  freq(lost_someone_baseline)
+
+```
+
+#Phases - Losing someone
+```{r}
+
+dat <- dat %>%
+  mutate(lost_someone_phases = 
+           case_when(grief.due_past_month_lost_.Wave_1b  == "Yes" |
+                       grief.due_past_month_lost_.Wave_2b  == "Yes" |
+                       grief.due_past_month_lost_.Wave_3b  == "Yes" |
+                       grief.due_past_month_lost_.Wave_4b  == "Yes" |
+                       grief.due_past_month_lost_.Wave_6b  == "Yes" |
+                       grief.due_past_month_lost_.Wave_8b  == "Yes" |
+                       grief.due_past_month_lost_.Wave_10b  == "Yes" |
+                       grief.due_past_month_lost_.Wave_12b  == "Yes" ~ "Lost someone",
+                     
+                       is.na(grief.due_past_month_lost_.Wave_1b) &
+                       is.na(grief.due_past_month_lost_.Wave_2b)  &
+                       is.na(grief.due_past_month_lost_.Wave_3b)  &
+                       is.na(grief.due_past_month_lost_.Wave_4b)  &
+                       is.na(grief.due_past_month_lost_.Wave_6b)  &
+                       is.na(grief.due_past_month_lost_.Wave_8b)  &
+                       is.na(grief.due_past_month_lost_.Wave_10b)  &
+                       is.na(grief.due_past_month_lost_.Wave_12b)  ~ "Missing at every phase",
+                       
+                       grief.due_past_month_lost_.Wave_1b  == "Prefer not to say" |
+                       grief.due_past_month_lost_.Wave_2b  == "Prefer not to say" |
+                       grief.due_past_month_lost_.Wave_3b  == "Prefer not to say" |
+                       grief.due_past_month_lost_.Wave_4b  == "Prefer not to say" |
+                       grief.due_past_month_lost_.Wave_6b  == "Prefer not to say" |
+                       grief.due_past_month_lost_.Wave_8b  == "Prefer not to say" |
+                       grief.due_past_month_lost_.Wave_10b  == "Prefer not to say" |
+                       grief.due_past_month_lost_.Wave_12b  == "Prefer not to say" ~ "PNTA at at least one phase",
+                       
+                       grief.due_past_month_lost_.Wave_1b  == "No" |
+                       grief.due_past_month_lost_.Wave_2b  == "No" |
+                       grief.due_past_month_lost_.Wave_3b  == "No" |
+                       grief.due_past_month_lost_.Wave_4b  == "No" |
+                       grief.due_past_month_lost_.Wave_6b  == "No" |
+                       grief.due_past_month_lost_.Wave_8b  == "No" |
+                       grief.due_past_month_lost_.Wave_10b  == "No" |
+                       grief.due_past_month_lost_.Wave_12b  == "No" ~ "Not lost someone"
+                     
+                     
+                       ))
+ 
+
+
+
+#Check
+dat %>%
+  freq(lost_someone_phases)
+
 ```
 
 
+#Phases - Losing someone
+```{r}
 
+dat <- dat %>%
+  mutate(loss_of_loved_one_final = 
+           case_when(lost_someone_phases == "Lost someone" |
+                     lost_someone_baseline == "Lost someone" ~ "Yes",
+                     
+                     lost_someone_phases == "PNTA at at least one phase" |
+                     lost_someone_baseline == "PNTA" ~ NA_character_, #Can't be sure that they have not lost someone as they have answered PNTA at least once
+                     
+                     lost_someone_baseline == "Not lost someone" |
+                      lost_someone_phases == "Not lost someone" ~ "No"
+                      
+             ))
+ 
+
+
+
+#Check
+dat %>%
+  freq(panworry_total_score_percent)
+
+```
+
+## Loneliness at baseline
+
+Create numeric variable that demonstrates pre-pandemic loneliness score
+```{r}
+
+#Score of loneliness at baseline
+dat <- dat %>%
+  mutate(lack_companionship_numeric =
+           case_when(
+            lone.felt_that_you_lack_companionship == "Hardly ever" ~ 0,
+           lone.felt_that_you_lack_companionship == "Some of the time" ~ 1,
+           lone.felt_that_you_lack_companionship == "Often" ~ 2
+  )
+  )
+
+
+dat <- dat %>%
+  mutate(felt_left_out_numeric =
+           case_when(
+           lone.felt_left_out == "Hardly ever" ~ 0,
+           lone.felt_left_out == "Some of the time" ~ 1,
+           lone.felt_left_out == "Often" ~ 2
+  )
+)
+
+dat <- dat %>%
+  mutate(felt_isolated_from_others_numeric =
+           case_when(
+           lone.felt_isolated_from_others == "Hardly ever" ~ 0,
+           lone.felt_isolated_from_others == "Some of the time" ~ 1,
+           lone.felt_isolated_from_others == "Often" ~ 2
+  )
+)
+
+dat <- dat %>%
+  mutate(felt_alone_numeric =
+           case_when(
+           lone.felt_alone == "Hardly ever" ~ 0,
+           lone.felt_alone == "Some of the time" ~ 1,
+           lone.felt_alone == "Often" ~ 2
+  )
+)
+            
+
+#Count of comorbidities
+dat$loneliness_prepan_count <- rowSums(dat[ ,
+                                 c("felt_alone_numeric",
+                                   "felt_isolated_from_others_numeric",
+                                   "felt_left_out_numeric",
+                                   "lack_companionship_numeric")],
+                                  na.rm = TRUE)
+
+#Check
+dat %>%
+  freq(loneliness_prepan_count)
+
+```
+
+Create numeric variable that demonstrates pandemic loneliness score
+```{r}
+
+#Score of loneliness at baseline
+dat <- dat %>%
+  mutate(lack_companionship_pandemic_numeric =
+           case_when(
+            lone.felt_that_you_lack_companionship.1 == "Hardly ever" ~ 0,
+           lone.felt_that_you_lack_companionship.1 == "Some of the time" ~ 1,
+           lone.felt_that_you_lack_companionship.1 == "Often" ~ 2
+  )
+  )
+
+
+dat <- dat %>%
+  mutate(felt_left_out_pandemic_numeric =
+           case_when(
+           lone.felt_left_out.1 == "Hardly ever" ~ 0,
+           lone.felt_left_out.1 == "Some of the time" ~ 1,
+           lone.felt_left_out.1 == "Often" ~ 2
+  )
+)
+
+dat <- dat %>%
+  mutate(felt_isolated_from_others_pandemic_numeric =
+           case_when(
+           lone.felt_isolated_from_others.1 == "Hardly ever" ~ 0,
+           lone.felt_isolated_from_others.1 == "Some of the time" ~ 1,
+           lone.felt_isolated_from_others.1 == "Often" ~ 2
+  )
+)
+
+dat <- dat %>%
+  mutate(felt_alone_pandemic_numeric =
+           case_when(
+           lone.felt_alone.1 == "Hardly ever" ~ 0,
+           lone.felt_alone.1 == "Some of the time" ~ 1,
+           lone.felt_alone.1 == "Often" ~ 2
+  )
+)
+            
+
+#Count of comorbidities
+dat$loneliness_pandemic_count <- rowSums(dat[ ,
+                                 c("felt_alone_pandemic_numeric",
+                                   "felt_isolated_from_others_pandemic_numeric",
+                                   "felt_left_out_pandemic_numeric",
+                                   "lack_companionship_pandemic_numeric")],
+                                  na.rm = TRUE)
+
+#Check
+dat %>%
+  freq(loneliness_pandemic_count)
+
+```
+
+Final variable to demonstrate change in loneliness
+```{r}
+
+dat <- dat %>%
+  mutate(increased_loneliness_during_pandemic =
+           case_when(
+           loneliness_prepan_count < loneliness_pandemic_count ~ "Yes",
+         
+         loneliness_prepan_count >= loneliness_pandemic_count ~ "No",
+         
+          )
+  )
+
+#Check
+dat %>%
+  freq(increased_loneliness_during_pandemic)
+```
+
+#Change in main eco activity (work/education)
+Create baseline variable indicating if change
+```{r}
+
+dat <- dat %>%
+  mutate(eco_activity_change_baseline =
+           case_when(employ.my_employment_status_has_not_changed == "My employment status has not changed" ~ "No",
+                     
+                     employ.my_employment_status_has_not_changed == "Not My employment status has not changed" ~ "Yes",
+                     
+                     employ.no_impact == "Not No impact" ~ "Yes",
+                     
+                     employ.no_impact == "No impact" ~ "No"
+                     
+             
+             
+           ))
+
+dat <- dat %>%
+  mutate(eco_activity_change_phases =
+           case_when(is.na(dem.nothing_has_changed_.Wave_1a) &
+                       is.na(dem.nothing_has_changed_.Wave_1b)&
+                       is.na(dem.nothing_has_changed_.Wave_2a)&
+                       is.na(dem.nothing_has_changed_.Wave_2b)&
+                       is.na(dem.nothing_has_changed_.Wave_3a)&
+                       is.na(dem.nothing_has_changed_.Wave_3b)&
+                       is.na(dem.nothing_has_changed_.Wave_4a)&
+                       is.na(dem.nothing_has_changed_.Wave_4b)&
+                       is.na(dem.nothing_has_changed_.Wave_5a)&
+                       is.na(dem.nothing_has_changed_.Wave_6b)&
+                       is.na(dem.nothing_has_changed_.Wave_7a)&
+                       is.na(dem.nothing_has_changed_.Wave_8b)&
+                       is.na(dem.nothing_has_changed_.Wave_9a)&
+                       is.na(dem.nothing_has_changed_.Wave_10b)&
+                       is.na(dem.nothing_has_changed_.Wave_11a)&
+                       is.na(dem.nothing_has_changed_.Wave_12b) &              
+                     
+                       is.na(dem.employment_.Wave_1a) &
+                       is.na(dem.employment_.Wave_1b)&
+                       is.na(dem.employment_.Wave_2a)&
+                       is.na(dem.employment_.Wave_2b)&
+                       is.na(dem.employment_.Wave_3a)&
+                       is.na(dem.employment_.Wave_3b)&
+                       is.na(dem.employment_.Wave_4a)&
+                       is.na(dem.employment_.Wave_4b)&
+                       is.na(dem.employment_.Wave_5a)&
+                       is.na(dem.employment_.Wave_6b)&
+                       is.na(dem.employment_.Wave_7a)&
+                       is.na(dem.employment_.Wave_8b)&
+                       is.na(dem.employment_.Wave_9a)&
+                       is.na(dem.employment_.Wave_10b)&
+                       is.na(dem.employment_.Wave_11a)&
+                       is.na(dem.employment_.Wave_12b) ~ "Missing at every phase",
+                     
+                     
+                       dem.employment_.Wave_1a == "Employment" |
+                       dem.employment_.Wave_1b == "Employment" |
+                       dem.employment_.Wave_2a == "Employment" |
+                       dem.employment_.Wave_2b == "Employment" |
+                       dem.employment_.Wave_3a == "Employment" |
+                       dem.employment_.Wave_3b == "Employment" |
+                       dem.employment_.Wave_4a == "Employment" |
+                       dem.employment_.Wave_4b == "Employment" |
+                       dem.employment_.Wave_5a == "Employment" |
+                       dem.employment_.Wave_6b == "Employment" |
+                       dem.employment_.Wave_7a == "Employment" |
+                       dem.employment_.Wave_8b == "Employment" |
+                       dem.employment_.Wave_9a == "Employment" |
+                       dem.employment_.Wave_10b == "Employment" |
+                       dem.employment_.Wave_11a == "Employment" |
+                       dem.employment_.Wave_12b == "Employment" ~ "Yes",
+                     
+                       dem.nothing_has_changed_.Wave_1a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_1b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_2a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_2b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_3a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_3b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_4a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_4b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_5a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_6b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_7a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_8b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_9a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_10b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_11a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_12b == "Nothing has changed" ~ "No",
+                      
+                      dem.employment_.Wave_1a == "Not Employment" |
+                       dem.employment_.Wave_1b == "Not Employment" |
+                       dem.employment_.Wave_2a == "Not Employment" |
+                       dem.employment_.Wave_2b == "Not Employment" |
+                       dem.employment_.Wave_3a == "Not Employment" |
+                       dem.employment_.Wave_3b == "Not Employment" |
+                       dem.employment_.Wave_4a == "Not Employment" |
+                       dem.employment_.Wave_4b == "Not Employment" |
+                       dem.employment_.Wave_5a == "Not Employment" |
+                       dem.employment_.Wave_6b == "Not Employment" |
+                       dem.employment_.Wave_7a == "Not Employment" |
+                       dem.employment_.Wave_8b == "Not Employment" |
+                       dem.employment_.Wave_9a == "Not Employment" |
+                       dem.employment_.Wave_10b == "Not Employment" |
+                       dem.employment_.Wave_11a == "Not Employment" |
+                       dem.employment_.Wave_12b == "Not Employment" ~ "No"
+                     
+                   ))
+
+
+dat %>%
+  freq(eco_activity_change_phases)
+```
+Recode to final variable - change in main eco activity
+```{r}
+
+dat <- dat%>%
+  mutate(main_economic_activity_change =
+           case_when(eco_activity_change_baseline == "Yes" |
+                eco_activity_change_phases == "Yes" ~ "Yes",
+               
+                eco_activity_change_baseline == "No" |
+                 eco_activity_change_phases == "No" ~ "No")
+)
+
+#Check
+dat %>%
+  freq(main_economic_activity_change)
+```
+
+#Change in housing
+```{r}
+dat <- dat %>%
+  mutate(living_situation_baseline =
+           case_when(dem2.living_situation_change_pandemic == "Yes" ~ "Yes",
+                     
+                     dem2.living_situation_change_pandemic == "No" ~ "No"
+                     
+                )
+  )
+
+dat %>%
+  freq(living_situation_baseline)
+
+
+dat <- dat %>%
+  mutate(living_situation_change_phases =
+           case_when(is.na(dem.nothing_has_changed_.Wave_1a) &
+                       is.na(dem.nothing_has_changed_.Wave_1b)&
+                       is.na(dem.nothing_has_changed_.Wave_2a)&
+                       is.na(dem.nothing_has_changed_.Wave_2b)&
+                       is.na(dem.nothing_has_changed_.Wave_3a)&
+                       is.na(dem.nothing_has_changed_.Wave_3b)&
+                       is.na(dem.nothing_has_changed_.Wave_4a)&
+                       is.na(dem.nothing_has_changed_.Wave_4b)&
+                       is.na(dem.nothing_has_changed_.Wave_5a)&
+                       is.na(dem.nothing_has_changed_.Wave_6b)&
+                       is.na(dem.nothing_has_changed_.Wave_7a)&
+                       is.na(dem.nothing_has_changed_.Wave_8b)&
+                       is.na(dem.nothing_has_changed_.Wave_9a)&
+                       is.na(dem.nothing_has_changed_.Wave_10b)&
+                       is.na(dem.nothing_has_changed_.Wave_11a)&
+                       is.na(dem.nothing_has_changed_.Wave_12b) &              
+                     
+                       is.na(dem.living_situation_.Wave_1a) &
+                       is.na(dem.living_situation_.Wave_1b)&
+                       is.na(dem.living_situation_.Wave_2a)&
+                       is.na(dem.living_situation_.Wave_2b)&
+                       is.na(dem.living_situation_.Wave_3a)&
+                       is.na(dem.living_situation_.Wave_3b)&
+                       is.na(dem.living_situation_.Wave_4a)&
+                       is.na(dem.living_situation_.Wave_4b)&
+                       is.na(dem.living_situation_.Wave_5a)&
+                       is.na(dem.living_situation_.Wave_6b)&
+                       is.na(dem.living_situation_.Wave_7a)&
+                       is.na(dem.living_situation_.Wave_8b)&
+                       is.na(dem.living_situation_.Wave_9a)&
+                       is.na(dem.living_situation_.Wave_10b)&
+                       is.na(dem.living_situation_.Wave_11a)&
+                       is.na(dem.living_situation_.Wave_12b) ~ "Missing at every phase",
+                     
+                     
+                       dem.living_situation_.Wave_1a == "Living situation" |
+                       dem.living_situation_.Wave_1b == "Living situation" |
+                       dem.living_situation_.Wave_2a == "Living situation" |
+                       dem.living_situation_.Wave_2b == "Living situation" |
+                       dem.living_situation_.Wave_3a == "Living situation" |
+                       dem.living_situation_.Wave_3b == "Living situation" |
+                       dem.living_situation_.Wave_4a == "Living situation" |
+                       dem.living_situation_.Wave_4b == "Living situation" |
+                       dem.living_situation_.Wave_5a == "Living situation" |
+                       dem.living_situation_.Wave_6b == "Living situation" |
+                       dem.living_situation_.Wave_7a == "Living situation" |
+                       dem.living_situation_.Wave_8b == "Living situation" |
+                       dem.living_situation_.Wave_9a == "Living situation" |
+                       dem.living_situation_.Wave_10b == "Living situation" |
+                       dem.living_situation_.Wave_11a == "Living situation" |
+                       dem.living_situation_.Wave_12b == "Living situation" ~ "Yes",
+                     
+                       dem.nothing_has_changed_.Wave_1a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_1b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_2a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_2b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_3a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_3b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_4a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_4b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_5a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_6b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_7a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_8b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_9a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_10b == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_11a == "Nothing has changed" |
+                       dem.nothing_has_changed_.Wave_12b == "Nothing has changed" ~ "No",
+                      
+                     dem.living_situation_.Wave_1a == "Not Living situation" |
+                       dem.living_situation_.Wave_1b == "Not Living situation" |
+                       dem.living_situation_.Wave_2a == "Not Living situation" |
+                       dem.living_situation_.Wave_2b == "Not Living situation" |
+                       dem.living_situation_.Wave_3a == "Not Living situation" |
+                       dem.living_situation_.Wave_3b == "Not Living situation" |
+                       dem.living_situation_.Wave_4a == "Not Living situation" |
+                       dem.living_situation_.Wave_4b == "Not Living situation" |
+                       dem.living_situation_.Wave_5a == "Not Living situation" |
+                       dem.living_situation_.Wave_6b == "Not Living situation" |
+                       dem.living_situation_.Wave_7a == "Not Living situation" |
+                       dem.living_situation_.Wave_8b == "Not Living situation" |
+                       dem.living_situation_.Wave_9a == "Not Living situation" |
+                       dem.living_situation_.Wave_10b == "Not Living situation" |
+                       dem.living_situation_.Wave_11a == "Not Living situation" |
+                       dem.living_situation_.Wave_12b == "Not Living situation" ~ "Yes",
+                     
+                   ))
+
+
+dat %>%
+  freq(living_situation_change_phases)
+```
+Recode to final variable - change in living situation
+```{r}
+
+
+dat <- dat%>%
+  mutate(living_situation_change =
+           case_when(living_situation_change_phases == "Yes" |
+                    living_situation_change_phases == "Yes" ~ "Yes",
+               
+                living_situation_baseline == "No" |
+                 living_situation_baseline == "No" ~ "No")
+)
+
+#Check
+dat %>%
+  freq(living_situation_change) ##Next time - check who is missing?
+
+```
 
 ##FOR NOW - SAVE THE VARIABLES NEEDED FOR INTERIM ANALYSIS
 ```{r}
@@ -1789,14 +2275,45 @@ test_dat <- dat %>%
        #  baseline_selfharm,
          control_numeric,
          key_worker,
-         control_factor,
+         psych_disorder_factor,
          vulnerable_group_member =dem2.member_vulnerable_group,
          panworry_total_score_percent, #NB *Don't have this info for NBR or RAMP yet
          covid_test_final,
-       panworry_factor
+      
+       loss_of_loved_one_final,
+       panworry_factor_TEST, #waiting on data!
+       increased_loneliness_during_pandemic,
+       main_economic_activity_change,
+       living_situation_change
          
       )
 ```
+
+
+
+
+
+grief.covid_lost_due_close
+```{r}
+dat$gr
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #Save final dataset (interim analysis)

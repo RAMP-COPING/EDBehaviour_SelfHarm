@@ -43,8 +43,8 @@ source("./functions.R")
 GLAD = FALSE
 EDGI = FALSE
 RAMP = FALSE
-NBR = TRUE
-COPING = FALSE
+NBR = FALSE
+COPING = TRUE
 ```
 
 
@@ -703,6 +703,7 @@ glad.coping.dem4.employ.raw.id <- glad.coping.dem4.employ.raw %>% #new dataset w
          employ.change_in_deadlines,
          employ.change_in_lesson_delivery,
          employ.past_performance_grade_decided,
+         employ.cannot_complete_degree,
          employ.cancelled_classes,
          employ.impact_on_studies_still_unknown,
          employ.other.1,
@@ -816,7 +817,8 @@ edgi.coping.dem4.employ.raw.id <- edgi.coping.dem4.employ.raw %>% #new dataset w
          employ.change_in_format_of_exams,
          employ.automatic_pass,
          employ.change_in_deadlines,
-         employ.change_in_lesson_delivery,
+           employ.cannot_complete_degree,
+            employ.change_in_lesson_delivery,
          employ.past_performance_grade_decided,
          employ.cancelled_classes,
          employ.impact_on_studies_still_unknown,
@@ -919,7 +921,9 @@ nbr.dem.raw.id <- nbr.dem.raw %>% #new dataset with ID
          age_highest_weight_unc = demographics.highest_weight.txt,
          age_lowest_weight_unc = demographics.adult_height_lowest_weight.txt,
          uk_location = demographics.live,
-         current_country = demographics.in_which_country_do_you_currently_reside
+         current_country = demographics.in_which_country_do_you_currently_reside,
+         
+         
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1146,6 +1150,7 @@ nbr.dem.employ.raw.id <- nbr.dem.employ.raw%>% #new dataset with ID
          employ.change_in_format_of_exams,
          employ.automatic_pass,
          employ.change_in_deadlines,
+          employ.cannot_complete_degree,
          employ.change_in_lesson_delivery,
          employ.past_performance_grade_decided,
          employ.cancelled_classes,
@@ -1207,6 +1212,8 @@ exclude_cols_dem <- c("ID",
                   "startDate",
                   "endDate")
 
+
+
 ramp.dem.raw.id <- ramp.dem.raw %>% #new dataset with ID
   drop_na(`Login ID`) %>% # Drop NAs
   distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
@@ -1222,18 +1229,32 @@ ramp.dem.raw.id <- ramp.dem.raw %>% #new dataset with ID
          gender_unc = dem2.which_gender_do_you_identify_with, # Gender
          pregnant_binary = dem2.are_you_pregnant, 
          #dem2.what_is_your_current_maritalrelationship_status #Not in COPING 
+            
+         #Need to rename all to same as GLAD/EDGI/NBR
          dem2.living_situation_change_pandemic,
          dem2.living_alone.1,
-         dem2.living_with_partner_or_spouse.1,
+         dem2.living_with_partner_or_spouse.1,             
          dem2.living_with_housemates.1,
-         dem2.age_children_living.2,
-         dem2.age_children_living.3 = dem2.living_children_under_the_age_of_18, #Renamed to be same as coping glad/edgi
-         dem2.living_with_other_members_of_my_family.1,
-         dem2.spouse_members_partner_living.1,
-         dem2.staying_live.2,
+         dem2.age_children_living.2,                      
+         dem2.age_children_living.3 = dem2.living_children_under_the_age_of_18,
+         dem2.living_with_other_members_of_my_family.1,  
+          dem2.spouse_partner_members_living.1 = dem2.spouse_members_partner_living.1,
+         dem2.staying_live.2,                               
          dem2.staying_live.3,
          dem2.prefer_not_to_say.1,
-         dem2.relationships_describe_question_place = dem2.describe_relationships_live_living, #Rename to be same as coping glad/edgi
+         
+         dem2.living_alone,
+         dem2.living_with_partner_or_spouse,
+         dem2.living_with_housemates,
+         dem2.age_children_living,
+         dem2.age_children_living.1 = dem2.living_children_under_the_age_of_18.1,
+         dem2.living_with_other_members_of_my_family,        
+         dem2.spouse_partner_members_living = dem2.spouse_members_partner_living,
+         dem2.staying_live,                                 
+         dem2.staying_live.1, 
+         dem2.prefer_not_to_say,
+        
+          dem2.relationships_describe_question_place = dem2.describe_relationships_live_living, #Rename to be same as coping glad/edgi
          dem2.household_living_place_answer, 
          dem2.include_living_areas_count = dem2.count_bathrooms_bedrooms_hallways,
          dem2.cats,
@@ -1392,6 +1413,7 @@ ramp.dem.employ.raw.id <- ramp.dem.employ.raw %>% #new dataset with ID
          employ.change_in_lesson_delivery,
          employ.past_performance_grade_decided,
          employ.cancelled_classes,
+          employ.cannot_complete_degree,
          employ.impact_on_studies_still_unknown,
          employ.other.1,
          employ.other_text.txt.1,
@@ -1405,8 +1427,8 @@ ramp.dem.employ.raw.id <- ramp.dem.employ.raw %>% #new dataset with ID
         # employ.type_role.1 = employ.role_type.1,
         # employ.does_your_job_include_caring_for_others,
         # employ.is_your_job_public_facing_,
-        # employ.losing_job_due_risk = employ.scale_line_losing_click,
-        # employ.increased_due_job_pandemic
+         employ.losing_job_due_risk = employ.scale_line_losing_click,
+         employ.increased_due_job_pandemic
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1587,13 +1609,13 @@ exclude_cols_dem <- c("ID",
                       "cohort_name")
 
 nbr_pan_worry.id <- nbr_pan_worry %>% #new dataset with ID
-  drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  drop_na(subjectid) %>% # Drop NAs
+  distinct(subjectid, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "nbr", .before = "panworry.impact_on_your_employment_status") %>% #create new column
   select(
-     ID = externalDataReference, # ID
+     ID = subjectid, # ID
      cohort_name,
          panworry.impact_on_your_employment_status,                                    
          panworry.employment_status_household_key,              
@@ -1656,13 +1678,13 @@ exclude_cols_dem <- c("ID",
                       "cohort_name")
 
 ramp_pan_worry.id <- ramp_pan_worry %>% #new dataset with ID
-  drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  drop_na(`Login ID`) %>% # Drop NAs
+  distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
   #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "ramp", .before = "panworry.impact_on_your_employment_status") %>% #create new column
   select(
-         ID = externalDataReference, # ID
+         ID = `Login ID`, # ID
          cohort_name,
          panworry.impact_on_your_employment_status,                                    
          panworry.employment_status_household_key,              
@@ -1708,6 +1730,451 @@ dim(ramp_pan_worry)[1]-dim(ramp_pan_worry.id)[1]
 }
 
 ```
+
+#Losing someone due to COVID - GLAD
+```{r}
+if(GLAD == TRUE) {
+  
+glad.loss.baseline.raw <- readRDS(file = "../data_raw/glad/grief_coping_glad.rds")
+dim(glad.loss.baseline.raw)
+colnames(glad.loss.baseline.raw)
+}
+  
+```
+### Select variables
+```{r GLAD losing somone due to COVID baseline select variables}
+if(GLAD == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "endDate")
+
+glad.loss.baseline.raw.id <- glad.loss.baseline.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_glad", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+       grief.covid_lost_due_close,
+       grief.suffered_past_month_loss
+       
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(glad.loss.baseline.raw.id)
+# Inspect colnames
+colnames(glad.loss.baseline.raw.id)
+#Differences
+dim(glad.loss.baseline.raw.id)[1]-dim(glad.loss.baseline.raw)[1]
+}
+```
+
+#Losing someone due to COVID - EDGI
+```{r}
+if(EDGI == TRUE) {
+  
+edgi.loss.baseline.raw <- readRDS(file = "../data_raw/edgi/grief_coping_edgi.rds")
+dim(edgi.loss.baseline.raw)
+colnames(edgi.loss.baseline.raw)
+}
+  
+```
+### Select variables
+```{r EDGI losing somone due to COVIDselect variables}
+if(EDGI == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "endDate")
+
+edgi.loss.baseline.raw.id <- edgi.loss.baseline.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+       grief.covid_lost_due_close = grief.covid_due_lost_past,
+       grief.suffered_past_month_loss = grief.significant_relationship_suffered_loss
+       
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(edgi.loss.baseline.raw.id)
+# Inspect colnames
+colnames(edgi.loss.baseline.raw.id)
+#Differences
+dim(edgi.loss.baseline.raw.id)[1]-dim(edgi.loss.baseline.raw)[1]
+}
+```
+
+#Losing someone due to COVID - NBR
+```{r}
+if(NBR == TRUE) {
+  
+nbr.loss.baseline.raw<- readRDS(file = "../data_raw/nbr/grief_coping_nbr.rds")
+dim(nbr.loss.baseline.raw)
+colnames(nbr.loss.baseline.raw)
+}
+  
+```
+
+### Select variables
+```{r NBR losing somone due to COVID baseline select variables}
+if(NBR == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "endDate")
+
+nbr.loss.baseline.raw.id <- nbr.loss.baseline.raw %>% #new dataset with ID
+  drop_na(subjectid) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "nbr", .before = "startDate") %>% #create new column 
+  select(
+         ID = subjectid, # ID
+         cohort_name, # Sample
+       grief.covid_lost_due_close,
+       grief.suffered_past_month_loss = grief.significant_relationship_suffered_past
+       
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(nbr.loss.baseline.raw.id)
+# Inspect colnames
+colnames(nbr.loss.baseline.raw.id)
+#Differences
+dim(nbr.loss.baseline.raw.id)[1]-dim(nbr.loss.baseline.raw)[1]
+}
+
+```
+
+#Losing someone due to COVID - RAMP
+```{r}
+if(RAMP == TRUE) {
+  
+ramp.loss.baseline.raw<- readRDS(file = "../data_raw/ramp/grief_ramp.rds")
+dim(ramp.loss.baseline.raw)
+colnames(ramp.loss.baseline.raw)
+}
+  
+```
+### Select variables
+```{r RAMP losing somone due to COVID baseline select variables}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "endDate")
+
+ramp.loss.baseline.raw.id <- ramp.loss.baseline.raw %>% #new dataset with ID
+  drop_na(`Login ID`) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = `Login ID`, # ID
+         cohort_name, # Sample
+       grief.covid_lost_due_close,
+       grief.suffered_past_month_loss = grief.significant_relationship_suffered_past
+       
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(ramp.loss.baseline.raw.id)
+# Inspect colnames
+colnames(ramp.loss.baseline.raw.id)
+#Differences
+dim(ramp.loss.baseline.raw.id)[1]-dim(ramp.loss.baseline.raw)[1]
+}
+```
+
+
+#Loneliness at baseline - GLAD
+```{r}
+if(GLAD == TRUE) {
+  
+glad.loneliness.baseline.raw <- readRDS(file = "../data_raw/glad/lone_coping_glad.rds")
+dim(glad.loneliness.baseline.raw)
+colnames(glad.loneliness.baseline.raw)
+}
+  
+```
+### Select variables
+```{r GLAD loneliness baseline select variables}
+if(GLAD == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "endDate")
+
+glad.loneliness.baseline.raw.id <- glad.loneliness.baseline.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_glad", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+        lone.felt_that_you_lack_companionship,
+        lone.felt_left_out,
+        lone.felt_isolated_from_others,
+        lone.felt_alone,lone.similar_felt_pandemic,
+        lone.felt_that_you_lack_companionship.1,
+        lone.felt_left_out.1,
+        lone.felt_isolated_from_others.1,
+        lone.felt_alone.1
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(glad.loneliness.baseline.raw.id)
+# Inspect colnames
+colnames(glad.loneliness.baseline.raw.id)
+#Differences
+dim(glad.loneliness.baseline.raw)[1]-dim(glad.loneliness.baseline.raw.id)[1]
+}
+```
+#Loneliness at baseline - EDGI
+```{r}
+if(EDGI == TRUE) {
+  
+edgi.loneliness.baseline.raw <- readRDS(file = "../data_raw/edgi/lone_coping_edgi.rds")
+dim(edgi.loneliness.baseline.raw)
+colnames(edgi.loneliness.baseline.raw)
+}
+  
+```
+### Select variables
+```{r GLAD loneliness baseline select variables}
+if(EDGI == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "endDate")
+
+edgi.loneliness.baseline.raw.id <- edgi.loneliness.baseline.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+        lone.felt_that_you_lack_companionship,
+        lone.felt_left_out,
+        lone.felt_isolated_from_others,
+        lone.felt_alone,lone.similar_felt_pandemic,
+        lone.felt_that_you_lack_companionship.1,
+        lone.felt_left_out.1,
+        lone.felt_isolated_from_others.1,
+        lone.felt_alone.1
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(edgi.loneliness.baseline.raw.id)
+# Inspect colnames
+colnames(edgi.loneliness.baseline.raw.id)
+#Differences
+dim(edgi.loneliness.baseline.raw.id)[1]-dim(edgi.loneliness.baseline.raw.id)[1]
+}
+```
+
+#Loneliness at baseline - RAMP
+```{r}
+if(RAMP == TRUE) {
+  
+ramp.loneliness.baseline.raw <- readRDS(file = "../data_raw/ramp/lone_ramp.rds")
+dim(ramp.loneliness.baseline.raw)
+colnames(ramp.loneliness.baseline.raw)
+}
+  
+```
+### Select variables
+```{r RAMP loneliness baseline select variables}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "endDate")
+
+ramp.loneliness.baseline.raw.id <- ramp.loneliness.baseline.raw %>% #new dataset with ID
+  drop_na(`Login ID`) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = `Login ID`, # ID
+         cohort_name, # Sample
+        lone.felt_that_you_lack_companionship,
+        lone.felt_left_out,
+        lone.felt_isolated_from_others,
+        lone.felt_alone,lone.similar_felt_pandemic,
+        lone.felt_that_you_lack_companionship.1,
+        lone.felt_left_out.1,
+        lone.felt_isolated_from_others.1,
+        lone.felt_alone.1
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(ramp.loneliness.baseline.raw.id)
+# Inspect colnames
+colnames(ramp.loneliness.baseline.raw.id)
+#Differences
+dim(ramp.loneliness.baseline.raw.id)[1]-dim(ramp.loneliness.baseline.raw)[1]
+}
+```
+
+#Loneliness at baseline - NBR
+```{r}
+if(NBR == TRUE) {
+
+  nbr.loneliness.baseline.raw <- readRDS(file = "../data_raw/nbr/lone_coping_nbr.rds")
+dim(nbr.loneliness.baseline.raw)
+colnames(nbr.loneliness.baseline.raw)
+}
+  
+```
+### Select variables
+```{r NBR loneliness baseline select variables}
+if(NBR == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "endDate")
+
+nbr.loneliness.baseline.raw.id <- nbr.loneliness.baseline.raw %>% #new dataset with ID
+  drop_na(subjectid) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "nbr", .before = "startDate") %>% #create new column 
+  select(
+         ID = subjectid, # ID
+         cohort_name, # Sample
+        lone.felt_that_you_lack_companionship,
+        lone.felt_left_out,
+        lone.felt_isolated_from_others,
+        lone.felt_alone,lone.similar_felt_pandemic,
+        lone.felt_that_you_lack_companionship.1,
+        lone.felt_left_out.1,
+        lone.felt_isolated_from_others.1,
+        lone.felt_alone.1
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(nbr.loneliness.baseline.raw.id)
+# Inspect colnames
+colnames(nbr.loneliness.baseline.raw.id)
+#Differences
+dim(nbr.loneliness.baseline.raw)[1]-dim(nbr.loneliness.baseline.raw.id)[1]
+}
+```
+
+
+
+
+
+
+
 
 ###Read in EDEQ baseline data (need this to assess current symptoms; although note that is only present in RAMP)
 ## RAMP baseline
@@ -2548,6 +3015,555 @@ dim(taf.ramp.followupb.raw)[1]-dim(taf.ramp.followupb.raw.id)[1]
 }
 ```
 
+##Dem follow up RAMP
+```{r}
+if(RAMP == TRUE) {
+  
+dem.ramp.followupa.raw <- readRDS(file = "../data_raw/ramp/dem_ramp_followupa.rds")
+dim(dem.ramp.followupa.raw)
+colnames(dem.ramp.followupa.raw)
+}
+  
+```
+### Select variables
+```{r RAMP dem follow up a select variables}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+dem.ramp.followupa.raw.id <- dem.ramp.followupa.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         dem.nothing_has_changed,                                     
+         dem.living_situation,
+         dem.employment,
+         dem.physical_health,
+         dem.health_of_a_relative,
+         dem.household_employment_status_key,
+         dem.children__dependants_returning_to_school__other_education,
+         dem.living_alone,
+         dem.living_with_partner_or_spouse,
+         dem.living_with_housemates,
+         dem.age_children_living,
+         dem.age_children_living.1,
+         dem.living_with_other_members_of_my_family,
+         dem.spouse_partner_members_living,
+         dem.staying_live,
+         dem.staying_live.1,
+         dem.prefer_not_to_say,
+         dem.made_redundant,
+         dem.became_unemployed,
+         dem.reduction_in_hours,
+         dem.reduction_in_salary,
+         dem.benefits_increased,
+         dem.benefits_decreased,
+         dem.change_in_duties_or_responsibilites,
+         dem.became_employed,
+         dem.increased_hours,
+         dem.increased_salary,
+         dem.furloughed_or_paid_leave_government_funded,
+         dem.furloughed_or_paid_leave_company_funded,
+         dem.paid_leave_furloughed,
+         dem.paid_leave_returned_work,
+         dem.retired,
+        
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(dem.ramp.followupa.raw.id)
+# Inspect colnames
+colnames(dem.ramp.followupa.raw.id)
+#Differences
+dim(dem.ramp.followupa.raw.id)[1]-dim(dem.ramp.followupa.raw)[1]
+}
+```
+
+##Dem follow up RAMP
+```{r}
+if(RAMP == TRUE) {
+  
+dem.ramp.followupb.raw <- readRDS(file = "../data_raw/ramp/dem_ramp_followupb.rds")
+dim(dem.ramp.followupb.raw)
+colnames(dem.ramp.followupb.raw)
+}
+  
+```
+### Select variables
+```{r RAMP dem follow up b select variables}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+dem.ramp.followupb.raw.id <- dem.ramp.followupb.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         dem.nothing_has_changed,                                     
+         dem.living_situation,
+         dem.employment,
+         dem.physical_health,
+         dem.health_of_a_relative,
+         dem.household_employment_status_key,
+         dem.children__dependants_returning_to_school__other_education,
+         dem.living_alone,
+         dem.living_with_partner_or_spouse,
+         dem.living_with_housemates,
+         dem.age_children_living,
+         dem.age_children_living.1,
+         dem.living_with_other_members_of_my_family,
+         dem.spouse_partner_members_living,
+         dem.staying_live,
+         dem.staying_live.1,
+         dem.prefer_not_to_say,
+         dem.made_redundant,
+         dem.became_unemployed,
+         dem.reduction_in_hours,
+         dem.reduction_in_salary,
+         dem.benefits_increased,
+         dem.benefits_decreased,
+         dem.change_in_duties_or_responsibilites,
+         dem.became_employed,
+         dem.increased_hours,
+         dem.increased_salary,
+         dem.furloughed_or_paid_leave_government_funded,
+         dem.furloughed_or_paid_leave_company_funded,
+         dem.paid_leave_furloughed,
+         dem.paid_leave_returned_work =dem.paid_leave_returned_furlough,
+         dem.retired,
+        
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(dem.ramp.followupb.raw.id)
+# Inspect colnames
+colnames(dem.ramp.followupb.raw.id)
+#Differences
+dim(dem.ramp.followupb.raw)[1]-dim(dem.ramp.followupb.raw.id)[1]
+}
+```
+
+##Dem follow up COPING
+```{r}
+if(COPING == TRUE) {
+  
+coping.dem.followupa.raw <- readRDS(file = "../data_raw/coping/dem_coping_followupa.rds")
+dim(coping.dem.followupa.raw)
+colnames(coping.dem.followupa.raw)
+}
+  
+```
+### Select variables
+```{r COPING dem follow up a select variables}
+if(COPING == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+coping.dem.followupa.raw.id.1 <- coping.dem.followupa.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         dem.nothing_has_changed,                                     
+         dem.living_situation,
+         dem.employment,
+         dem.physical_health,
+         dem.health_of_a_relative,
+         dem.household_employment_status_key,
+         dem.children__dependants_returning_to_school__other_education = dem.school_children_dependants_returning,
+         dem.living_alone,
+         dem.living_with_partner_or_spouse,
+         dem.living_with_housemates,
+         dem.age_children_living = dem.age_living_children,
+         dem.age_children_living.1 = dem.age_living_children.1,
+         dem.living_with_other_members_of_my_family,
+         dem.spouse_partner_members_living,
+         dem.staying_live,
+         dem.staying_live.1,
+         dem.prefer_not_to_say,
+         dem.made_redundant,
+         dem.became_unemployed,
+         dem.reduction_in_hours,
+         dem.reduction_in_salary,
+         dem.benefits_increased,
+         dem.benefits_decreased,
+         dem.change_in_duties_or_responsibilites,
+         dem.became_employed,
+         dem.increased_hours,
+         dem.increased_salary,
+         dem.furloughed_or_paid_leave_government_funded,
+         dem.furloughed_or_paid_leave_company_funded,
+         dem.paid_leave_furloughed,
+         dem.paid_leave_returned_work,
+         dem.retired,
+        
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(coping.dem.followupa.raw.id.1)
+# Inspect colnames
+colnames(coping.dem.followupa.raw.id.1)
+#Differences
+dim(coping.dem.followupa.raw.id.1)[1]-dim(coping.dem.followupa.raw)[1]
+}
+```
+
+##Dem follow up COPING
+```{r}
+if(COPING == TRUE) {
+  
+coping.dem.followupa.ongoing.raw <- readRDS(file = "../data_raw/coping/dem_coping_followupa_ongoing.rds")
+dim(coping.dem.followupa.ongoing.raw)
+colnames(coping.dem.followupa.ongoing.raw)
+}
+  
+```
+### Select variables
+```{r COPING dem follow up a ongoing select variables}
+if(COPING == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+coping.dem.followupa.ongoing.raw.id <- coping.dem.followupa.ongoing.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         dem.nothing_has_changed,                                     
+         dem.living_situation,
+         dem.employment,
+         dem.physical_health,
+         dem.health_of_a_relative,
+         dem.household_employment_status_key,
+         dem.children__dependants_returning_to_school__other_education= dem.school_children_dependants_returning,
+         dem.living_alone,
+         dem.living_with_partner_or_spouse,
+         dem.living_with_housemates,
+         dem.age_children_living,
+         dem.age_children_living.1,
+         dem.living_with_other_members_of_my_family,
+         dem.spouse_partner_members_living,
+         dem.staying_live,
+         dem.staying_live.1,
+         dem.prefer_not_to_say,
+         dem.made_redundant,
+         dem.became_unemployed,
+         dem.reduction_in_hours,
+         dem.reduction_in_salary,
+         dem.benefits_increased,
+         dem.benefits_decreased,
+         dem.change_in_duties_or_responsibilites,
+         dem.became_employed,
+         dem.increased_hours,
+         dem.increased_salary,
+         dem.furloughed_or_paid_leave_government_funded,
+         dem.furloughed_or_paid_leave_company_funded,
+         dem.paid_leave_furloughed,
+         dem.paid_leave_returned_work,
+         dem.retired,
+        
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(coping.dem.followupa.ongoing.raw.id)
+# Inspect colnames
+colnames(coping.dem.followupa.ongoing.raw.id)
+#Differences
+dim(coping.dem.followupa.ongoing.raw)[1]-dim(coping.dem.followupa.ongoing.raw.id)[1]
+}
+```
+
+#Combine dem coping follow up A datasets 
+```{r}
+if(COPING == TRUE){
+    coping.dem.followupa.raw.id <- rbind(coping.dem.followupa.raw.id.1,
+                                         coping.dem.followupa.ongoing.raw.id) 
+# Inspect dimensions
+  dim(coping.dem.followupa.raw.id)
+# Inspect colnames
+  colnames(coping.dem.followupa.raw.id)
+}
+```
+
+
+##Dem follow up COPING
+```{r}
+if(COPING == TRUE) {
+  
+coping.dem.followupb.raw <- readRDS(file = "../data_raw/coping/dem_coping_followupb.rds")
+dim(coping.dem.followupb.raw)
+colnames(coping.dem.followupb.raw)
+}
+  
+```
+### Select variables
+```{r COPING dem follow up b ongoing select variables}
+if(COPING == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+coping.dem.followupb.raw.id <- coping.dem.followupb.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         dem.nothing_has_changed,                                     
+         dem.living_situation,
+         dem.employment,
+         dem.physical_health,
+         dem.health_of_a_relative,
+         dem.household_employment_status_key,
+         dem.children__dependants_returning_to_school__other_education = dem.school_children_dependants_returning,
+         dem.living_alone,
+         dem.living_with_partner_or_spouse,
+         dem.living_with_housemates,
+         dem.age_children_living,
+         dem.age_children_living.1,
+         dem.living_with_other_members_of_my_family,
+         dem.spouse_partner_members_living,
+         dem.staying_live,
+         dem.staying_live.1,
+         dem.prefer_not_to_say,
+         dem.made_redundant,
+         dem.became_unemployed,
+         dem.reduction_in_hours,
+         dem.reduction_in_salary,
+         dem.benefits_increased,
+         dem.benefits_decreased,
+         dem.change_in_duties_or_responsibilites,
+         dem.became_employed,
+         dem.increased_hours,
+         dem.increased_salary,
+         dem.furloughed_or_paid_leave_government_funded,
+         dem.furloughed_or_paid_leave_company_funded,
+         dem.paid_leave_furloughed,
+         dem.paid_leave_returned_work = dem.paid_leave_returned_furlough,
+         dem.retired
+        
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(coping.dem.followupb.raw.id)
+# Inspect colnames
+colnames(coping.dem.followupb.raw.id)
+#Differences
+dim(coping.dem.followupb.raw)[1]-dim(coping.dem.followupb.raw.id)[1]
+}
+```
+
+#Losing someone due to COVID - follow up
+```{r}
+if(COPING == TRUE) {
+  
+coping.loss.followupb.raw <- readRDS(file = "../data_raw/coping/grief_coping_followupb.rds")
+dim(coping.loss.followupb.raw)
+colnames(coping.loss.followupb.raw)
+}
+  
+```
+
+### Select variables
+```{r COPING loss follow up b select variables}
+if(COPING == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+coping.loss.followupb.raw.id <- coping.loss.followupb.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         grief.due_past_month_lost,
+         grief.suffered_past_month_loss
+        
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(coping.loss.followupb.raw.id)
+# Inspect colnames
+colnames(coping.loss.followupb.raw.id)
+#Differences
+dim(coping.loss.followupb.raw.id)[1]-dim(coping.loss.followupb.raw)[1]
+}
+```
+
+#Losing someone due to COVID - follow up
+```{r}
+if(RAMP == TRUE) {
+  
+ramp.loss.followupb.raw <- readRDS(file = "../data_raw/ramp/grief_ramp_followupb.rds")
+dim(ramp.loss.followupb.raw)
+colnames(ramp.loss.followupb.raw)
+}
+  
+```
+
+### Select variables
+```{r RAMP loss follow up b select variables}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         grief.due_past_month_lost = grief.due_past_month_covid,
+         grief.suffered_past_month_loss = grief.loss_suffered_past_month
+        
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(ramp.loss.followupb.raw.id)
+# Inspect colnames
+colnames(ramp.loss.followupb.raw.id)
+#Differences
+dim(ramp.loss.followupb.raw.id)[1]-dim(ramp.loss.followupb.raw)[1]
+}
+```
 #CLEANING DEMOGRAPHICS 
 
 # GENDER - Source script for synchronising gender categories - GLAD, EDGI, NBR
@@ -2627,7 +3643,7 @@ source("./Controls.R")
 ```
 
 
-#TIMEPOINTS - TAF
+#TIMEPOINTS - DEM
 
 ## 1. Create a wave columns in follow up data - RAMP
 ```{r identify wave dates ramp}
@@ -2638,6 +3654,781 @@ source("./timepoints_RAMP.R")
 ```
 
 ##2. Join TAF follow ups (RAMP)
+```{r RAMP join dem data}
+if(RAMP == TRUE) {
+dat.raw.dem.ramp.followup <- rbind(dem.ramp.followupa.raw.id,
+    dem.ramp.followupb.raw.id)
+
+#check column names
+colnames(dat.raw.dem.ramp.followup)
+}
+```
+
+##checking for number of entries per wave!
+
+```{r}
+if(RAMP == TRUE) {
+
+dat.raw.dem.ramp.followup %>%
+  group_by(wave_dem) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single timepoint
+```{r}
+if(RAMP == TRUE) {
+
+##Identify dup IDs in a single wave 
+dat.raw.dem.ramp.followup %>%
+   group_by(wave_dem, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+
+##***FOR NOW - Want the LATER data entry from people who answered twice within a single wave 
+Later on - want to create variable with 'answered YES at least once'
+
+[want ID AND wave to be unique]
+```{r}
+if(RAMP == TRUE) {
+
+ ##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(dat.raw.dem.ramp.followup)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_dem,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(dat.raw.dem.ramp.followup)
+}
+```
+
+## 3. Change follow up TAF RAMP to long format
+```{r DEM RAMP long format}
+if(RAMP == TRUE) {
+dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
+  group_by(wave_dem) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_dem, 
+                     values_from = c(
+                      dem.nothing_has_changed,                                     
+         dem.living_situation,
+         dem.employment,
+         dem.physical_health,
+         dem.health_of_a_relative,
+         dem.household_employment_status_key,
+         dem.children__dependants_returning_to_school__other_education,
+         dem.living_alone,
+         dem.living_with_partner_or_spouse,
+         dem.living_with_housemates,
+         dem.age_children_living,
+         dem.age_children_living.1,
+         dem.living_with_other_members_of_my_family,
+         dem.spouse_partner_members_living,
+         dem.staying_live,
+         dem.staying_live.1,
+         dem.prefer_not_to_say,
+         dem.made_redundant,
+         dem.became_unemployed,
+         dem.reduction_in_hours,
+         dem.reduction_in_salary,
+         dem.benefits_increased,
+         dem.benefits_decreased,
+         dem.change_in_duties_or_responsibilites,
+         dem.became_employed,
+         dem.increased_hours,
+         dem.increased_salary,
+         dem.furloughed_or_paid_leave_government_funded,
+         dem.furloughed_or_paid_leave_company_funded,
+         dem.paid_leave_furloughed,
+         dem.paid_leave_returned_work,
+         dem.retired )) 
+  
+}
+
+```
+
+
+##4. Select variables for dataset TAF RAMP
+```{r}
+if(RAMP == TRUE) {
+dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
+  select(ID,
+         `dem.nothing_has_changed_.Wave_1a`,
+         `dem.nothing_has_changed_.Wave_1b`,
+         `dem.nothing_has_changed_.Wave_2a`,
+         `dem.nothing_has_changed_.Wave_2b`,
+         `dem.nothing_has_changed_.Wave_3a`,
+         `dem.nothing_has_changed_.Wave_3b`,
+         `dem.nothing_has_changed_.Wave_4a`,
+         `dem.nothing_has_changed_.Wave_4b`,
+         `dem.nothing_has_changed_.Wave_5a`,
+         `dem.nothing_has_changed_.Wave_6b`,
+         `dem.nothing_has_changed_.Wave_7a`,
+         `dem.nothing_has_changed_.Wave_8b`,
+         `dem.nothing_has_changed_.Wave_9a`,
+         `dem.nothing_has_changed_.Wave_10b`,
+         `dem.nothing_has_changed_.Wave_11a`,
+         `dem.nothing_has_changed_.Wave_12b`,
+         
+         `dem.living_situation_.Wave_1a`,
+         `dem.living_situation_.Wave_1b`,
+         `dem.living_situation_.Wave_2a`,
+         `dem.living_situation_.Wave_2b`,
+         `dem.living_situation_.Wave_3a`,
+         `dem.living_situation_.Wave_3b`,
+         `dem.living_situation_.Wave_4a`,
+         `dem.living_situation_.Wave_4b`,
+         `dem.living_situation_.Wave_5a`,
+         `dem.living_situation_.Wave_6b`,
+         `dem.living_situation_.Wave_7a`,
+         `dem.living_situation_.Wave_8b`,
+         `dem.living_situation_.Wave_9a`,
+         `dem.living_situation_.Wave_10b`,
+         `dem.living_situation_.Wave_11a`,
+         `dem.living_situation_.Wave_12b`,
+         
+          
+         `dem.employment_.Wave_1a`,
+         `dem.employment_.Wave_1b`,
+         `dem.employment_.Wave_2a`,
+         `dem.employment_.Wave_2b`,
+         `dem.employment_.Wave_3a`,
+         `dem.employment_.Wave_3b`,
+         `dem.employment_.Wave_4a`,
+         `dem.employment_.Wave_4b`,
+         `dem.employment_.Wave_5a`,
+         `dem.employment_.Wave_6b`,
+         `dem.employment_.Wave_7a`,
+         `dem.employment_.Wave_8b`,
+         `dem.employment_.Wave_9a`,
+         `dem.employment_.Wave_10b`,
+         `dem.employment_.Wave_11a`,
+         `dem.employment_.Wave_12b`,
+         
+         `dem.physical_health_.Wave_1a`,
+         `dem.physical_health_.Wave_1b`,
+         `dem.physical_health_.Wave_2a`,
+         `dem.physical_health_.Wave_2b`,
+         `dem.physical_health_.Wave_3a`,
+         `dem.physical_health_.Wave_3b`,
+         `dem.physical_health_.Wave_4a`,
+         `dem.physical_health_.Wave_4b`,
+         `dem.physical_health_.Wave_5a`,
+         `dem.physical_health_.Wave_6b`,
+         `dem.physical_health_.Wave_7a`,
+         `dem.physical_health_.Wave_8b`,
+         `dem.physical_health_.Wave_9a`,
+         `dem.physical_health_.Wave_10b`,
+         `dem.physical_health_.Wave_11a`,
+         `dem.physical_health_.Wave_12b`,
+         
+         `dem.health_of_a_relative_.Wave_1a`,
+         `dem.health_of_a_relative_.Wave_1b`,
+         `dem.health_of_a_relative_.Wave_2a`,
+         `dem.health_of_a_relative_.Wave_2b`,
+         `dem.health_of_a_relative_.Wave_3a`,
+         `dem.health_of_a_relative_.Wave_3b`,
+         `dem.health_of_a_relative_.Wave_4a`,
+         `dem.health_of_a_relative_.Wave_4b`,
+         `dem.health_of_a_relative_.Wave_5a`,
+         `dem.health_of_a_relative_.Wave_6b`,
+         `dem.health_of_a_relative_.Wave_7a`,
+         `dem.health_of_a_relative_.Wave_8b`,
+         `dem.health_of_a_relative_.Wave_9a`,
+         `dem.health_of_a_relative_.Wave_10b`,
+         `dem.health_of_a_relative_.Wave_11a`,
+         `dem.health_of_a_relative_.Wave_12b`,
+         
+         `dem.household_employment_status_key_.Wave_1a`,
+         `dem.household_employment_status_key_.Wave_1b`,
+         `dem.household_employment_status_key_.Wave_2a`,
+         `dem.household_employment_status_key_.Wave_2b`,
+         `dem.household_employment_status_key_.Wave_3a`,
+         `dem.household_employment_status_key_.Wave_3b`,
+         `dem.household_employment_status_key_.Wave_4a`,
+         `dem.household_employment_status_key_.Wave_4b`,
+         `dem.household_employment_status_key_.Wave_5a`,
+         `dem.household_employment_status_key_.Wave_6b`,
+         `dem.household_employment_status_key_.Wave_7a`,
+         `dem.household_employment_status_key_.Wave_8b`,
+         `dem.household_employment_status_key_.Wave_9a`,
+         `dem.household_employment_status_key_.Wave_10b`,
+         `dem.household_employment_status_key_.Wave_11a`,
+         `dem.household_employment_status_key_.Wave_12b`,
+         
+         `dem.children__dependants_returning_to_school__other_education_.Wave_1a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_1b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_2a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_2b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_3a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_3b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_4a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_4b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_5a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_6b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_7a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_8b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_9a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_10b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_11a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_12b`,
+         
+         `dem.living_alone_.Wave_1a`,
+         `dem.living_alone_.Wave_1b`,
+         `dem.living_alone_.Wave_2a`,
+         `dem.living_alone_.Wave_2b`,
+         `dem.living_alone_.Wave_3a`,
+         `dem.living_alone_.Wave_3b`,
+         `dem.living_alone_.Wave_4a`,
+         `dem.living_alone_.Wave_4b`,
+         `dem.living_alone_.Wave_5a`,
+         `dem.living_alone_.Wave_6b`,
+         `dem.living_alone_.Wave_7a`,
+         `dem.living_alone_.Wave_8b`,
+         `dem.living_alone_.Wave_9a`,
+         `dem.living_alone_.Wave_10b`,
+         `dem.living_alone_.Wave_11a`,
+         `dem.living_alone_.Wave_12b`,
+         
+         `dem.living_with_partner_or_spouse_.Wave_1a`,
+         `dem.living_with_partner_or_spouse_.Wave_1b`,
+         `dem.living_with_partner_or_spouse_.Wave_2a`,
+         `dem.living_with_partner_or_spouse_.Wave_2b`,
+         `dem.living_with_partner_or_spouse_.Wave_3a`,
+         `dem.living_with_partner_or_spouse_.Wave_3b`,
+         `dem.living_with_partner_or_spouse_.Wave_4a`,
+         `dem.living_with_partner_or_spouse_.Wave_4b`,
+         `dem.living_with_partner_or_spouse_.Wave_5a`,
+         `dem.living_with_partner_or_spouse_.Wave_6b`,
+         `dem.living_with_partner_or_spouse_.Wave_7a`,
+         `dem.living_with_partner_or_spouse_.Wave_8b`,
+         `dem.living_with_partner_or_spouse_.Wave_9a`,
+         `dem.living_with_partner_or_spouse_.Wave_10b`,
+         `dem.living_with_partner_or_spouse_.Wave_11a`,
+         `dem.living_with_partner_or_spouse_.Wave_12b`,
+         
+         `dem.living_with_housemates_.Wave_1a`,
+         `dem.living_with_housemates_.Wave_1b`,
+         `dem.living_with_housemates_.Wave_2a`,
+         `dem.living_with_housemates_.Wave_2b`,
+         `dem.living_with_housemates_.Wave_3a`,
+         `dem.living_with_housemates_.Wave_3b`,
+         `dem.living_with_housemates_.Wave_4a`,
+         `dem.living_with_housemates_.Wave_4b`,
+         `dem.living_with_housemates_.Wave_5a`,
+         `dem.living_with_housemates_.Wave_6b`,
+         `dem.living_with_housemates_.Wave_7a`,
+         `dem.living_with_housemates_.Wave_8b`,
+         `dem.living_with_housemates_.Wave_9a`,
+         `dem.living_with_housemates_.Wave_10b`,
+         `dem.living_with_housemates_.Wave_11a`,
+         `dem.living_with_housemates_.Wave_12b`,
+         
+         `dem.age_children_living_.Wave_1a`,
+         `dem.age_children_living_.Wave_1b`,
+         `dem.age_children_living_.Wave_2a`,
+         `dem.age_children_living_.Wave_2b`,
+         `dem.age_children_living_.Wave_3a`,
+         `dem.age_children_living_.Wave_3b`,
+         `dem.age_children_living_.Wave_4a`,
+         `dem.age_children_living_.Wave_4b`,
+         `dem.age_children_living_.Wave_5a`,
+         `dem.age_children_living_.Wave_6b`,
+         `dem.age_children_living_.Wave_7a`,
+         `dem.age_children_living_.Wave_8b`,
+         `dem.age_children_living_.Wave_9a`,
+         `dem.age_children_living_.Wave_10b`,
+         `dem.age_children_living_.Wave_11a`,
+         `dem.age_children_living_.Wave_12b`,
+         
+         `dem.age_children_living.1_.Wave_1a`,
+         `dem.age_children_living.1_.Wave_1b`,
+         `dem.age_children_living.1_.Wave_2a`,
+         `dem.age_children_living.1_.Wave_2b`,
+         `dem.age_children_living.1_.Wave_3a`,
+         `dem.age_children_living.1_.Wave_3b`,
+         `dem.age_children_living.1_.Wave_4a`,
+         `dem.age_children_living.1_.Wave_4b`,
+         `dem.age_children_living.1_.Wave_5a`,
+         `dem.age_children_living.1_.Wave_6b`,
+         `dem.age_children_living.1_.Wave_7a`,
+         `dem.age_children_living.1_.Wave_8b`,
+         `dem.age_children_living.1_.Wave_9a`,
+         `dem.age_children_living.1_.Wave_10b`,
+         `dem.age_children_living.1_.Wave_11a`,
+         `dem.age_children_living.1_.Wave_12b`,
+         
+         `dem.living_with_other_members_of_my_family_.Wave_1a`,
+         `dem.living_with_other_members_of_my_family_.Wave_1b`,
+         `dem.living_with_other_members_of_my_family_.Wave_2a`,
+         `dem.living_with_other_members_of_my_family_.Wave_2b`,
+         `dem.living_with_other_members_of_my_family_.Wave_3a`,
+         `dem.living_with_other_members_of_my_family_.Wave_3b`,
+         `dem.living_with_other_members_of_my_family_.Wave_4a`,
+         `dem.living_with_other_members_of_my_family_.Wave_4b`,
+         `dem.living_with_other_members_of_my_family_.Wave_5a`,
+         `dem.living_with_other_members_of_my_family_.Wave_6b`,
+         `dem.living_with_other_members_of_my_family_.Wave_7a`,
+         `dem.living_with_other_members_of_my_family_.Wave_8b`,
+         `dem.living_with_other_members_of_my_family_.Wave_9a`,
+         `dem.living_with_other_members_of_my_family_.Wave_10b`,
+         `dem.living_with_other_members_of_my_family_.Wave_11a`,
+         `dem.living_with_other_members_of_my_family_.Wave_12b`,
+         
+         `dem.spouse_partner_members_living_.Wave_1a`,
+         `dem.spouse_partner_members_living_.Wave_1b`,
+         `dem.spouse_partner_members_living_.Wave_2a`,
+         `dem.spouse_partner_members_living_.Wave_2b`,
+         `dem.spouse_partner_members_living_.Wave_3a`,
+         `dem.spouse_partner_members_living_.Wave_3b`,
+         `dem.spouse_partner_members_living_.Wave_4a`,
+         `dem.spouse_partner_members_living_.Wave_4b`,
+         `dem.spouse_partner_members_living_.Wave_5a`,
+         `dem.spouse_partner_members_living_.Wave_6b`,
+         `dem.spouse_partner_members_living_.Wave_7a`,
+         `dem.spouse_partner_members_living_.Wave_8b`,
+         `dem.spouse_partner_members_living_.Wave_9a`,
+         `dem.spouse_partner_members_living_.Wave_10b`,
+         `dem.spouse_partner_members_living_.Wave_11a`,
+         `dem.spouse_partner_members_living_.Wave_12b`,
+         
+         `dem.staying_live_.Wave_1a`,
+         `dem.staying_live_.Wave_1b`,
+         `dem.staying_live_.Wave_2a`,
+         `dem.staying_live_.Wave_2b`,
+         `dem.staying_live_.Wave_3a`,
+         `dem.staying_live_.Wave_3b`,
+         `dem.staying_live_.Wave_4a`,
+         `dem.staying_live_.Wave_4b`,
+         `dem.staying_live_.Wave_5a`,
+         `dem.staying_live_.Wave_6b`,
+         `dem.staying_live_.Wave_7a`,
+         `dem.staying_live_.Wave_8b`,
+         `dem.staying_live_.Wave_9a`,
+         `dem.staying_live_.Wave_10b`,
+         `dem.staying_live_.Wave_11a`,
+         `dem.staying_live_.Wave_12b`,
+         
+         `dem.staying_live.1_.Wave_1a`,
+         `dem.staying_live.1_.Wave_1b`,
+         `dem.staying_live.1_.Wave_2a`,
+         `dem.staying_live.1_.Wave_2b`,
+         `dem.staying_live.1_.Wave_3a`,
+         `dem.staying_live.1_.Wave_3b`,
+         `dem.staying_live.1_.Wave_4a`,
+         `dem.staying_live.1_.Wave_4b`,
+         `dem.staying_live.1_.Wave_5a`,
+         `dem.staying_live.1_.Wave_6b`,
+         `dem.staying_live.1_.Wave_7a`,
+         `dem.staying_live.1_.Wave_8b`,
+         `dem.staying_live.1_.Wave_9a`,
+         `dem.staying_live.1_.Wave_10b`,
+         `dem.staying_live.1_.Wave_11a`,
+         `dem.staying_live.1_.Wave_12b`,
+   
+         `dem.prefer_not_to_say_.Wave_1a`,
+         `dem.prefer_not_to_say_.Wave_1b`,
+         `dem.prefer_not_to_say_.Wave_2a`,
+         `dem.prefer_not_to_say_.Wave_2b`,
+         `dem.prefer_not_to_say_.Wave_3a`,
+         `dem.prefer_not_to_say_.Wave_3b`,
+         `dem.prefer_not_to_say_.Wave_4a`,
+         `dem.prefer_not_to_say_.Wave_4b`,
+         `dem.prefer_not_to_say_.Wave_5a`,
+         `dem.prefer_not_to_say_.Wave_6b`,
+         `dem.prefer_not_to_say_.Wave_7a`,
+         `dem.prefer_not_to_say_.Wave_8b`,
+         `dem.prefer_not_to_say_.Wave_9a`,
+         `dem.prefer_not_to_say_.Wave_10b`,
+         `dem.prefer_not_to_say_.Wave_11a`,
+         `dem.prefer_not_to_say_.Wave_12b`,
+         
+         
+         `dem.made_redundant_.Wave_1a`,
+         `dem.made_redundant_.Wave_1b`,
+         `dem.made_redundant_.Wave_2a`,
+         `dem.made_redundant_.Wave_2b`,
+         `dem.made_redundant_.Wave_3a`,
+         `dem.made_redundant_.Wave_3b`,
+         `dem.made_redundant_.Wave_4a`,
+         `dem.made_redundant_.Wave_4b`,
+         `dem.made_redundant_.Wave_5a`,
+         `dem.made_redundant_.Wave_6b`,
+         `dem.made_redundant_.Wave_7a`,
+         `dem.made_redundant_.Wave_8b`,
+         `dem.made_redundant_.Wave_9a`,
+         `dem.made_redundant_.Wave_10b`,
+         `dem.made_redundant_.Wave_11a`,
+         `dem.made_redundant_.Wave_12b`,
+         
+         `dem.became_unemployed_.Wave_1a`,
+         `dem.became_unemployed_.Wave_1b`,
+         `dem.became_unemployed_.Wave_2a`,
+         `dem.became_unemployed_.Wave_2b`,
+         `dem.became_unemployed_.Wave_3a`,
+         `dem.became_unemployed_.Wave_3b`,
+         `dem.became_unemployed_.Wave_4a`,
+         `dem.became_unemployed_.Wave_4b`,
+         `dem.became_unemployed_.Wave_5a`,
+         `dem.became_unemployed_.Wave_6b`,
+         `dem.became_unemployed_.Wave_7a`,
+         `dem.became_unemployed_.Wave_8b`,
+         `dem.became_unemployed_.Wave_9a`,
+         `dem.became_unemployed_.Wave_10b`,
+         `dem.became_unemployed_.Wave_11a`,
+         `dem.became_unemployed_.Wave_12b`,
+         
+         `dem.reduction_in_hours_.Wave_1a`,
+         `dem.reduction_in_hours_.Wave_1b`,
+         `dem.reduction_in_hours_.Wave_2a`,
+         `dem.reduction_in_hours_.Wave_2b`,
+         `dem.reduction_in_hours_.Wave_3a`,
+         `dem.reduction_in_hours_.Wave_3b`,
+         `dem.reduction_in_hours_.Wave_4a`,
+         `dem.reduction_in_hours_.Wave_4b`,
+         `dem.reduction_in_hours_.Wave_5a`,
+         `dem.reduction_in_hours_.Wave_6b`,
+         `dem.reduction_in_hours_.Wave_7a`,
+         `dem.reduction_in_hours_.Wave_8b`,
+         `dem.reduction_in_hours_.Wave_9a`,
+         `dem.reduction_in_hours_.Wave_10b`,
+         `dem.reduction_in_hours_.Wave_11a`,
+         `dem.reduction_in_hours_.Wave_12b`,
+         
+         `dem.reduction_in_salary_.Wave_1a`,
+         `dem.reduction_in_salary_.Wave_1b`,
+         `dem.reduction_in_salary_.Wave_2a`,
+         `dem.reduction_in_salary_.Wave_2b`,
+         `dem.reduction_in_salary_.Wave_3a`,
+         `dem.reduction_in_salary_.Wave_3b`,
+         `dem.reduction_in_salary_.Wave_4a`,
+         `dem.reduction_in_salary_.Wave_4b`,
+         `dem.reduction_in_salary_.Wave_5a`,
+         `dem.reduction_in_salary_.Wave_6b`,
+         `dem.reduction_in_salary_.Wave_7a`,
+         `dem.reduction_in_salary_.Wave_8b`,
+         `dem.reduction_in_salary_.Wave_9a`,
+         `dem.reduction_in_salary_.Wave_10b`,
+         `dem.reduction_in_salary_.Wave_11a`,
+         `dem.reduction_in_salary_.Wave_12b`,
+         
+         `dem.benefits_increased_.Wave_1a`,
+         `dem.benefits_increased_.Wave_1b`,
+         `dem.benefits_increased_.Wave_2a`,
+         `dem.benefits_increased_.Wave_2b`,
+         `dem.benefits_increased_.Wave_3a`,
+         `dem.benefits_increased_.Wave_3b`,
+         `dem.benefits_increased_.Wave_4a`,
+         `dem.benefits_increased_.Wave_4b`,
+         `dem.benefits_increased_.Wave_5a`,
+         `dem.benefits_increased_.Wave_6b`,
+         `dem.benefits_increased_.Wave_7a`,
+         `dem.benefits_increased_.Wave_8b`,
+         `dem.benefits_increased_.Wave_9a`,
+         `dem.benefits_increased_.Wave_10b`,
+         `dem.benefits_increased_.Wave_11a`,
+         `dem.benefits_increased_.Wave_12b`,
+         
+         `dem.benefits_decreased_.Wave_1a`,
+         `dem.benefits_decreased_.Wave_1b`,
+         `dem.benefits_decreased_.Wave_2a`,
+         `dem.benefits_decreased_.Wave_2b`,
+         `dem.benefits_decreased_.Wave_3a`,
+         `dem.benefits_decreased_.Wave_3b`,
+         `dem.benefits_decreased_.Wave_4a`,
+         `dem.benefits_decreased_.Wave_4b`,
+         `dem.benefits_decreased_.Wave_5a`,
+         `dem.benefits_decreased_.Wave_6b`,
+         `dem.benefits_decreased_.Wave_7a`,
+         `dem.benefits_decreased_.Wave_8b`,
+         `dem.benefits_decreased_.Wave_9a`,
+         `dem.benefits_decreased_.Wave_10b`,
+         `dem.benefits_decreased_.Wave_11a`,
+         `dem.benefits_decreased_.Wave_12b`,
+         
+         `dem.change_in_duties_or_responsibilites_.Wave_1a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_1b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_2a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_2b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_3a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_3b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_4a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_4b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_5a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_6b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_7a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_8b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_9a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_10b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_11a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_12b`,
+         
+         `dem.became_employed_.Wave_1a`,
+         `dem.became_employed_.Wave_1b`,
+         `dem.became_employed_.Wave_2a`,
+         `dem.became_employed_.Wave_2b`,
+         `dem.became_employed_.Wave_3a`,
+         `dem.became_employed_.Wave_3b`,
+         `dem.became_employed_.Wave_4a`,
+         `dem.became_employed_.Wave_4b`,
+         `dem.became_employed_.Wave_5a`,
+         `dem.became_employed_.Wave_6b`,
+         `dem.became_employed_.Wave_7a`,
+         `dem.became_employed_.Wave_8b`,
+         `dem.became_employed_.Wave_9a`,
+         `dem.became_employed_.Wave_10b`,
+         `dem.became_employed_.Wave_11a`,
+         `dem.became_employed_.Wave_12b`,
+         
+         `dem.increased_hours_.Wave_1a`,
+         `dem.increased_hours_.Wave_1b`,
+         `dem.increased_hours_.Wave_2a`,
+         `dem.increased_hours_.Wave_2b`,
+         `dem.increased_hours_.Wave_3a`,
+         `dem.increased_hours_.Wave_3b`,
+         `dem.increased_hours_.Wave_4a`,
+         `dem.increased_hours_.Wave_4b`,
+         `dem.increased_hours_.Wave_5a`,
+         `dem.increased_hours_.Wave_6b`,
+         `dem.increased_hours_.Wave_7a`,
+         `dem.increased_hours_.Wave_8b`,
+         `dem.increased_hours_.Wave_9a`,
+         `dem.increased_hours_.Wave_10b`,
+         `dem.increased_hours_.Wave_11a`,
+         `dem.increased_hours_.Wave_12b`,
+         
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_1a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_1b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_2a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_2b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_3a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_3b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_4a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_4b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_5a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_6b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_7a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_8b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_9a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_10b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_11a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_12b`,
+         
+          `dem.furloughed_or_paid_leave_company_funded_.Wave_1a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_1b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_2a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_2b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_3a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_3b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_4a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_4b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_5a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_6b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_7a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_8b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_9a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_10b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_11a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_12b`,
+         
+          `dem.paid_leave_furloughed_.Wave_1a`,
+         `dem.paid_leave_furloughed_.Wave_1b`,
+         `dem.paid_leave_furloughed_.Wave_2a`,
+         `dem.paid_leave_furloughed_.Wave_2b`,
+         `dem.paid_leave_furloughed_.Wave_3a`,
+         `dem.paid_leave_furloughed_.Wave_3b`,
+         `dem.paid_leave_furloughed_.Wave_4a`,
+         `dem.paid_leave_furloughed_.Wave_4b`,
+         `dem.paid_leave_furloughed_.Wave_5a`,
+         `dem.paid_leave_furloughed_.Wave_6b`,
+         `dem.paid_leave_furloughed_.Wave_7a`,
+         `dem.paid_leave_furloughed_.Wave_8b`,
+         `dem.paid_leave_furloughed_.Wave_9a`,
+         `dem.paid_leave_furloughed_.Wave_10b`,
+         `dem.paid_leave_furloughed_.Wave_11a`,
+         `dem.paid_leave_furloughed_.Wave_12b`,
+         
+          `dem.paid_leave_returned_work_.Wave_1a`,
+         `dem.paid_leave_returned_work_.Wave_1b`,
+         `dem.paid_leave_returned_work_.Wave_2a`,
+         `dem.paid_leave_returned_work_.Wave_2b`,
+         `dem.paid_leave_returned_work_.Wave_3a`,
+         `dem.paid_leave_returned_work_.Wave_3b`,
+         `dem.paid_leave_returned_work_.Wave_4a`,
+         `dem.paid_leave_returned_work_.Wave_4b`,
+         `dem.paid_leave_returned_work_.Wave_5a`,
+         `dem.paid_leave_returned_work_.Wave_6b`,
+         `dem.paid_leave_returned_work_.Wave_7a`,
+         `dem.paid_leave_returned_work_.Wave_8b`,
+         `dem.paid_leave_returned_work_.Wave_9a`,
+         `dem.paid_leave_returned_work_.Wave_10b`,
+         `dem.paid_leave_returned_work_.Wave_11a`,
+         `dem.paid_leave_returned_work_.Wave_12b`,
+         
+          `dem.retired_.Wave_1a`,
+         `dem.retired_.Wave_1b`,
+         `dem.retired_.Wave_2a`,
+         `dem.retired_.Wave_2b`,
+         `dem.retired_.Wave_3a`,
+         `dem.retired_.Wave_3b`,
+         `dem.retired_.Wave_4a`,
+         `dem.retired_.Wave_4b`,
+         `dem.retired_.Wave_5a`,
+         `dem.retired_.Wave_6b`,
+         `dem.retired_.Wave_7a`,
+         `dem.retired_.Wave_8b`,
+         `dem.retired_.Wave_9a`,
+         `dem.retired_.Wave_10b`,
+         `dem.retired_.Wave_11a`,
+         `dem.retired_.Wave_12b`
+         
+         )
+}
+```
+
+##5. Remove duplicate IDs TAF RAMP
+```{r}
+if(RAMP == TRUE) {
+##Check col names
+colnames(dat.raw.dem.ramp.followup)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+dat.raw.dem.ramp.followup  <- dat.raw.dem.ramp.followup %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(dat.raw.dem.ramp.followup)
+}
+
+```
+
+
+##RAMP - loss of loved one due to COVID 
+
+```{r}
+if(RAMP == TRUE) {
+
+ramp.loss.followupb.raw.id %>%
+  group_by(wave_loss) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single timepoint
+```{r}
+if(RAMP == TRUE) {
+
+##Identify dup IDs in a single wave 
+ramp.loss.followupb.raw.id %>%
+   group_by(wave_loss, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+
+##***FOR NOW - Want the LATER data entry from people who answered twice within a single wave 
+Later on - want to create variable with 'answered YES at least once'
+
+[want ID AND wave to be unique]
+```{r}
+if(RAMP == TRUE) {
+
+ ##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(ramp.loss.followupb.raw.id)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw.id %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_loss,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(ramp.loss.followupb.raw.id)
+}
+```
+
+## 3. Change follow up TAF RAMP to long format
+```{r DEM RAMP long format}
+if(RAMP == TRUE) {
+ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw.id %>%
+  group_by(wave_loss) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_loss, 
+                     values_from = c( grief.due_past_month_lost,
+                                      grief.suffered_past_month_loss
+                       )) 
+  
+}
+
+```
+
+
+##4. Select variables for dataset TAF RAMP
+```{r}
+if(RAMP == TRUE) {
+ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw.id %>%
+  select(ID,
+         `grief.due_past_month_lost_.Wave_1b`,
+         `grief.due_past_month_lost_.Wave_2b`,
+         `grief.due_past_month_lost_.Wave_3b`,
+         `grief.due_past_month_lost_.Wave_4b`,
+         `grief.due_past_month_lost_.Wave_6b`,
+         `grief.due_past_month_lost_.Wave_8b`,
+       #  `grief.due_past_month_lost_.Wave_10b`,
+        # `grief.due_past_month_lost_.Wave_12b`,
+         
+         `grief.suffered_past_month_loss_.Wave_1b`,
+         `grief.suffered_past_month_loss_.Wave_2b`,
+         `grief.suffered_past_month_loss_.Wave_3b`,
+         `grief.suffered_past_month_loss_.Wave_4b`,
+         `grief.suffered_past_month_loss_.Wave_6b`,
+         `grief.suffered_past_month_loss_.Wave_8b`,
+        # `grief.suffered_past_month_loss_.Wave_10b`,
+        # `grief.suffered_past_month_loss_.Wave_12b`
+         
+         
+         )
+}
+```
+
+##5. Remove duplicate IDs TAF RAMP
+```{r}
+if(RAMP == TRUE) {
+##Check col names
+colnames(ramp.loss.followupb.raw.id)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+ramp.loss.followupb.raw.id  <- ramp.loss.followupb.raw.id %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(ramp.loss.followupb.raw.id)
+}
+
+```
+
+
+#TIMEPOINTS - TAF
+
+##1. Join TAF follow ups (RAMP)
 ```{r RAMP join taf data}
 if(RAMP == TRUE) {
 dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
@@ -2955,6 +4746,679 @@ nrow(edeq.ramp.followupb.screener.raw.id)
 
 ```
 
+#TIMEPOINTS - DEM COPING
+
+## 1. Create a wave columns in follow up data - RAMP
+```{r identify wave dates ramp}
+if (COPING ==TRUE) {
+source("./timepoints_COPING.R")
+
+}
+```
+
+##2. Join TAF follow ups (RAMP)
+```{r RAMP join dem data}
+if(COPING == TRUE) {
+dat.raw.dem.coping.followup <- rbind(coping.dem.followupb.raw.id,
+    coping.dem.followupa.raw.id)
+
+#check column names
+colnames(dat.raw.dem.coping.followup)
+}
+```
+
+##checking for number of entries per wave!
+
+```{r}
+if(COPING == TRUE) {
+
+dat.raw.dem.coping.followup %>%
+  group_by(wave_dem) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single timepoint
+```{r}
+if(COPING == TRUE) {
+
+##Identify dup IDs in a single wave 
+dat.raw.dem.coping.followup %>%
+   group_by(wave_dem, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+
+##***FOR NOW - Want the LATER data entry from people who answered twice within a single wave 
+Later on - want to create variable with 'answered YES at least once'
+
+[want ID AND wave to be unique]
+```{r}
+if(COPING == TRUE) {
+
+ ##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(dat.raw.dem.coping.followup)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_dem,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(dat.raw.dem.coping.followup)
+}
+```
+
+## 3. Change follow up TAF RAMP to long format
+```{r DEM RAMP long format}
+if(COPING == TRUE) {
+dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
+  group_by(wave_dem) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_dem, 
+                     values_from = c(
+                      dem.nothing_has_changed,                                     
+         dem.living_situation,
+         dem.employment,
+         dem.physical_health,
+         dem.health_of_a_relative,
+         dem.household_employment_status_key,
+         dem.children__dependants_returning_to_school__other_education,
+         dem.living_alone,
+         dem.living_with_partner_or_spouse,
+         dem.living_with_housemates,
+         dem.age_children_living,
+         dem.age_children_living.1,
+         dem.living_with_other_members_of_my_family,
+         dem.spouse_partner_members_living,
+         dem.staying_live,
+         dem.staying_live.1,
+         dem.prefer_not_to_say,
+         dem.made_redundant,
+         dem.became_unemployed,
+         dem.reduction_in_hours,
+         dem.reduction_in_salary,
+         dem.benefits_increased,
+         dem.benefits_decreased,
+         dem.change_in_duties_or_responsibilites,
+         dem.became_employed,
+         dem.increased_hours,
+         dem.increased_salary,
+         dem.furloughed_or_paid_leave_government_funded,
+         dem.furloughed_or_paid_leave_company_funded,
+         dem.paid_leave_furloughed,
+         dem.paid_leave_returned_work,
+         dem.retired )) 
+  
+}
+
+```
+
+
+##4. Select variables for dataset TAF RAMP
+```{r}
+if(COPING == TRUE) {
+dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
+  select(ID,
+        # `dem.nothing_has_changed_.Wave_1a`,
+        # `dem.nothing_has_changed_.Wave_1b`,
+         `dem.nothing_has_changed_.Wave_2a`,
+         `dem.nothing_has_changed_.Wave_2b`,
+         `dem.nothing_has_changed_.Wave_3a`,
+         `dem.nothing_has_changed_.Wave_3b`,
+         `dem.nothing_has_changed_.Wave_4a`,
+         `dem.nothing_has_changed_.Wave_4b`,
+         `dem.nothing_has_changed_.Wave_5a`,
+         `dem.nothing_has_changed_.Wave_6b`,
+         `dem.nothing_has_changed_.Wave_7a`,
+         `dem.nothing_has_changed_.Wave_8b`,
+         `dem.nothing_has_changed_.Wave_9a`,
+         `dem.nothing_has_changed_.Wave_10b`,
+         `dem.nothing_has_changed_.Wave_11a`,
+         `dem.nothing_has_changed_.Wave_12b`,
+         
+        # `dem.living_situation_.Wave_1a`,
+        # `dem.living_situation_.Wave_1b`,
+         `dem.living_situation_.Wave_2a`,
+         `dem.living_situation_.Wave_2b`,
+         `dem.living_situation_.Wave_3a`,
+         `dem.living_situation_.Wave_3b`,
+         `dem.living_situation_.Wave_4a`,
+         `dem.living_situation_.Wave_4b`,
+         `dem.living_situation_.Wave_5a`,
+         `dem.living_situation_.Wave_6b`,
+         `dem.living_situation_.Wave_7a`,
+         `dem.living_situation_.Wave_8b`,
+         `dem.living_situation_.Wave_9a`,
+         `dem.living_situation_.Wave_10b`,
+         `dem.living_situation_.Wave_11a`,
+         `dem.living_situation_.Wave_12b`,
+         
+          
+        # `dem.employment_.Wave_1a`,
+        # `dem.employment_.Wave_1b`,
+         `dem.employment_.Wave_2a`,
+         `dem.employment_.Wave_2b`,
+         `dem.employment_.Wave_3a`,
+         `dem.employment_.Wave_3b`,
+         `dem.employment_.Wave_4a`,
+         `dem.employment_.Wave_4b`,
+         `dem.employment_.Wave_5a`,
+         `dem.employment_.Wave_6b`,
+         `dem.employment_.Wave_7a`,
+         `dem.employment_.Wave_8b`,
+         `dem.employment_.Wave_9a`,
+         `dem.employment_.Wave_10b`,
+         `dem.employment_.Wave_11a`,
+         `dem.employment_.Wave_12b`,
+         
+        # `dem.physical_health_.Wave_1a`,
+        # `dem.physical_health_.Wave_1b`,
+         `dem.physical_health_.Wave_2a`,
+         `dem.physical_health_.Wave_2b`,
+         `dem.physical_health_.Wave_3a`,
+         `dem.physical_health_.Wave_3b`,
+         `dem.physical_health_.Wave_4a`,
+         `dem.physical_health_.Wave_4b`,
+         `dem.physical_health_.Wave_5a`,
+         `dem.physical_health_.Wave_6b`,
+         `dem.physical_health_.Wave_7a`,
+         `dem.physical_health_.Wave_8b`,
+         `dem.physical_health_.Wave_9a`,
+         `dem.physical_health_.Wave_10b`,
+         `dem.physical_health_.Wave_11a`,
+         `dem.physical_health_.Wave_12b`,
+         
+        # `dem.health_of_a_relative_.Wave_1a`,
+        # `dem.health_of_a_relative_.Wave_1b`,
+         `dem.health_of_a_relative_.Wave_2a`,
+         `dem.health_of_a_relative_.Wave_2b`,
+         `dem.health_of_a_relative_.Wave_3a`,
+         `dem.health_of_a_relative_.Wave_3b`,
+         `dem.health_of_a_relative_.Wave_4a`,
+         `dem.health_of_a_relative_.Wave_4b`,
+         `dem.health_of_a_relative_.Wave_5a`,
+         `dem.health_of_a_relative_.Wave_6b`,
+         `dem.health_of_a_relative_.Wave_7a`,
+         `dem.health_of_a_relative_.Wave_8b`,
+         `dem.health_of_a_relative_.Wave_9a`,
+         `dem.health_of_a_relative_.Wave_10b`,
+         `dem.health_of_a_relative_.Wave_11a`,
+         `dem.health_of_a_relative_.Wave_12b`,
+         
+        # `dem.household_employment_status_key_.Wave_1a`,
+        # `dem.household_employment_status_key_.Wave_1b`,
+         `dem.household_employment_status_key_.Wave_2a`,
+         `dem.household_employment_status_key_.Wave_2b`,
+         `dem.household_employment_status_key_.Wave_3a`,
+         `dem.household_employment_status_key_.Wave_3b`,
+         `dem.household_employment_status_key_.Wave_4a`,
+         `dem.household_employment_status_key_.Wave_4b`,
+         `dem.household_employment_status_key_.Wave_5a`,
+         `dem.household_employment_status_key_.Wave_6b`,
+         `dem.household_employment_status_key_.Wave_7a`,
+         `dem.household_employment_status_key_.Wave_8b`,
+         `dem.household_employment_status_key_.Wave_9a`,
+         `dem.household_employment_status_key_.Wave_10b`,
+         `dem.household_employment_status_key_.Wave_11a`,
+         `dem.household_employment_status_key_.Wave_12b`,
+         
+        # `dem.children__dependants_returning_to_school__other_education_.Wave_1a`,
+        # `dem.children__dependants_returning_to_school__other_education_.Wave_1b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_2a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_2b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_3a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_3b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_4a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_4b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_5a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_6b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_7a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_8b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_9a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_10b`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_11a`,
+         `dem.children__dependants_returning_to_school__other_education_.Wave_12b`,
+         
+        # `dem.living_alone_.Wave_1a`,
+        # `dem.living_alone_.Wave_1b`,
+         `dem.living_alone_.Wave_2a`,
+         `dem.living_alone_.Wave_2b`,
+         `dem.living_alone_.Wave_3a`,
+         `dem.living_alone_.Wave_3b`,
+         `dem.living_alone_.Wave_4a`,
+         `dem.living_alone_.Wave_4b`,
+         `dem.living_alone_.Wave_5a`,
+         `dem.living_alone_.Wave_6b`,
+         `dem.living_alone_.Wave_7a`,
+         `dem.living_alone_.Wave_8b`,
+         `dem.living_alone_.Wave_9a`,
+         `dem.living_alone_.Wave_10b`,
+         `dem.living_alone_.Wave_11a`,
+         `dem.living_alone_.Wave_12b`,
+         
+        # `dem.living_with_partner_or_spouse_.Wave_1a`,
+        # `dem.living_with_partner_or_spouse_.Wave_1b`,
+         `dem.living_with_partner_or_spouse_.Wave_2a`,
+         `dem.living_with_partner_or_spouse_.Wave_2b`,
+         `dem.living_with_partner_or_spouse_.Wave_3a`,
+         `dem.living_with_partner_or_spouse_.Wave_3b`,
+         `dem.living_with_partner_or_spouse_.Wave_4a`,
+         `dem.living_with_partner_or_spouse_.Wave_4b`,
+         `dem.living_with_partner_or_spouse_.Wave_5a`,
+         `dem.living_with_partner_or_spouse_.Wave_6b`,
+         `dem.living_with_partner_or_spouse_.Wave_7a`,
+         `dem.living_with_partner_or_spouse_.Wave_8b`,
+         `dem.living_with_partner_or_spouse_.Wave_9a`,
+         `dem.living_with_partner_or_spouse_.Wave_10b`,
+         `dem.living_with_partner_or_spouse_.Wave_11a`,
+         `dem.living_with_partner_or_spouse_.Wave_12b`,
+         
+        # `dem.living_with_housemates_.Wave_1a`,
+        # `dem.living_with_housemates_.Wave_1b`,
+         `dem.living_with_housemates_.Wave_2a`,
+         `dem.living_with_housemates_.Wave_2b`,
+         `dem.living_with_housemates_.Wave_3a`,
+         `dem.living_with_housemates_.Wave_3b`,
+         `dem.living_with_housemates_.Wave_4a`,
+         `dem.living_with_housemates_.Wave_4b`,
+         `dem.living_with_housemates_.Wave_5a`,
+         `dem.living_with_housemates_.Wave_6b`,
+         `dem.living_with_housemates_.Wave_7a`,
+         `dem.living_with_housemates_.Wave_8b`,
+         `dem.living_with_housemates_.Wave_9a`,
+         `dem.living_with_housemates_.Wave_10b`,
+         `dem.living_with_housemates_.Wave_11a`,
+         `dem.living_with_housemates_.Wave_12b`,
+         
+        # `dem.age_children_living_.Wave_1a`,
+        # `dem.age_children_living_.Wave_1b`,
+         `dem.age_children_living_.Wave_2a`,
+         `dem.age_children_living_.Wave_2b`,
+         `dem.age_children_living_.Wave_3a`,
+         `dem.age_children_living_.Wave_3b`,
+         `dem.age_children_living_.Wave_4a`,
+         `dem.age_children_living_.Wave_4b`,
+         `dem.age_children_living_.Wave_5a`,
+         `dem.age_children_living_.Wave_6b`,
+         `dem.age_children_living_.Wave_7a`,
+         `dem.age_children_living_.Wave_8b`,
+         `dem.age_children_living_.Wave_9a`,
+         `dem.age_children_living_.Wave_10b`,
+         `dem.age_children_living_.Wave_11a`,
+         `dem.age_children_living_.Wave_12b`,
+         
+       #  `dem.age_children_living.1_.Wave_1a`,
+       #  `dem.age_children_living.1_.Wave_1b`,
+         `dem.age_children_living.1_.Wave_2a`,
+         `dem.age_children_living.1_.Wave_2b`,
+         `dem.age_children_living.1_.Wave_3a`,
+         `dem.age_children_living.1_.Wave_3b`,
+         `dem.age_children_living.1_.Wave_4a`,
+         `dem.age_children_living.1_.Wave_4b`,
+         `dem.age_children_living.1_.Wave_5a`,
+         `dem.age_children_living.1_.Wave_6b`,
+         `dem.age_children_living.1_.Wave_7a`,
+         `dem.age_children_living.1_.Wave_8b`,
+         `dem.age_children_living.1_.Wave_9a`,
+         `dem.age_children_living.1_.Wave_10b`,
+         `dem.age_children_living.1_.Wave_11a`,
+         `dem.age_children_living.1_.Wave_12b`,
+         
+       #  `dem.living_with_other_members_of_my_family_.Wave_1a`,
+       #  `dem.living_with_other_members_of_my_family_.Wave_1b`,
+         `dem.living_with_other_members_of_my_family_.Wave_2a`,
+         `dem.living_with_other_members_of_my_family_.Wave_2b`,
+         `dem.living_with_other_members_of_my_family_.Wave_3a`,
+         `dem.living_with_other_members_of_my_family_.Wave_3b`,
+         `dem.living_with_other_members_of_my_family_.Wave_4a`,
+         `dem.living_with_other_members_of_my_family_.Wave_4b`,
+         `dem.living_with_other_members_of_my_family_.Wave_5a`,
+         `dem.living_with_other_members_of_my_family_.Wave_6b`,
+         `dem.living_with_other_members_of_my_family_.Wave_7a`,
+         `dem.living_with_other_members_of_my_family_.Wave_8b`,
+         `dem.living_with_other_members_of_my_family_.Wave_9a`,
+         `dem.living_with_other_members_of_my_family_.Wave_10b`,
+         `dem.living_with_other_members_of_my_family_.Wave_11a`,
+         `dem.living_with_other_members_of_my_family_.Wave_12b`,
+         
+        # `dem.spouse_partner_members_living_.Wave_1a`,
+        # `dem.spouse_partner_members_living_.Wave_1b`,
+         `dem.spouse_partner_members_living_.Wave_2a`,
+         `dem.spouse_partner_members_living_.Wave_2b`,
+         `dem.spouse_partner_members_living_.Wave_3a`,
+         `dem.spouse_partner_members_living_.Wave_3b`,
+         `dem.spouse_partner_members_living_.Wave_4a`,
+         `dem.spouse_partner_members_living_.Wave_4b`,
+         `dem.spouse_partner_members_living_.Wave_5a`,
+         `dem.spouse_partner_members_living_.Wave_6b`,
+         `dem.spouse_partner_members_living_.Wave_7a`,
+         `dem.spouse_partner_members_living_.Wave_8b`,
+         `dem.spouse_partner_members_living_.Wave_9a`,
+         `dem.spouse_partner_members_living_.Wave_10b`,
+         `dem.spouse_partner_members_living_.Wave_11a`,
+         `dem.spouse_partner_members_living_.Wave_12b`,
+         
+        # `dem.staying_live_.Wave_1a`,
+        # `dem.staying_live_.Wave_1b`,
+         `dem.staying_live_.Wave_2a`,
+         `dem.staying_live_.Wave_2b`,
+         `dem.staying_live_.Wave_3a`,
+         `dem.staying_live_.Wave_3b`,
+         `dem.staying_live_.Wave_4a`,
+         `dem.staying_live_.Wave_4b`,
+         `dem.staying_live_.Wave_5a`,
+         `dem.staying_live_.Wave_6b`,
+         `dem.staying_live_.Wave_7a`,
+         `dem.staying_live_.Wave_8b`,
+         `dem.staying_live_.Wave_9a`,
+         `dem.staying_live_.Wave_10b`,
+         `dem.staying_live_.Wave_11a`,
+         `dem.staying_live_.Wave_12b`,
+         
+        # `dem.staying_live.1_.Wave_1a`,
+        # `dem.staying_live.1_.Wave_1b`,
+         `dem.staying_live.1_.Wave_2a`,
+         `dem.staying_live.1_.Wave_2b`,
+         `dem.staying_live.1_.Wave_3a`,
+         `dem.staying_live.1_.Wave_3b`,
+         `dem.staying_live.1_.Wave_4a`,
+         `dem.staying_live.1_.Wave_4b`,
+         `dem.staying_live.1_.Wave_5a`,
+         `dem.staying_live.1_.Wave_6b`,
+         `dem.staying_live.1_.Wave_7a`,
+         `dem.staying_live.1_.Wave_8b`,
+         `dem.staying_live.1_.Wave_9a`,
+         `dem.staying_live.1_.Wave_10b`,
+         `dem.staying_live.1_.Wave_11a`,
+         `dem.staying_live.1_.Wave_12b`,
+   
+        # `dem.prefer_not_to_say_.Wave_1a`,
+        # `dem.prefer_not_to_say_.Wave_1b`,
+         `dem.prefer_not_to_say_.Wave_2a`,
+         `dem.prefer_not_to_say_.Wave_2b`,
+         `dem.prefer_not_to_say_.Wave_3a`,
+         `dem.prefer_not_to_say_.Wave_3b`,
+         `dem.prefer_not_to_say_.Wave_4a`,
+         `dem.prefer_not_to_say_.Wave_4b`,
+         `dem.prefer_not_to_say_.Wave_5a`,
+         `dem.prefer_not_to_say_.Wave_6b`,
+         `dem.prefer_not_to_say_.Wave_7a`,
+         `dem.prefer_not_to_say_.Wave_8b`,
+         `dem.prefer_not_to_say_.Wave_9a`,
+         `dem.prefer_not_to_say_.Wave_10b`,
+         `dem.prefer_not_to_say_.Wave_11a`,
+         `dem.prefer_not_to_say_.Wave_12b`,
+         
+         
+        # `dem.made_redundant_.Wave_1a`,
+        # `dem.made_redundant_.Wave_1b`,
+         `dem.made_redundant_.Wave_2a`,
+         `dem.made_redundant_.Wave_2b`,
+         `dem.made_redundant_.Wave_3a`,
+         `dem.made_redundant_.Wave_3b`,
+         `dem.made_redundant_.Wave_4a`,
+         `dem.made_redundant_.Wave_4b`,
+         `dem.made_redundant_.Wave_5a`,
+         `dem.made_redundant_.Wave_6b`,
+         `dem.made_redundant_.Wave_7a`,
+         `dem.made_redundant_.Wave_8b`,
+         `dem.made_redundant_.Wave_9a`,
+         `dem.made_redundant_.Wave_10b`,
+         `dem.made_redundant_.Wave_11a`,
+         `dem.made_redundant_.Wave_12b`,
+         
+        # `dem.became_unemployed_.Wave_1a`,
+        # `dem.became_unemployed_.Wave_1b`,
+         `dem.became_unemployed_.Wave_2a`,
+         `dem.became_unemployed_.Wave_2b`,
+         `dem.became_unemployed_.Wave_3a`,
+         `dem.became_unemployed_.Wave_3b`,
+         `dem.became_unemployed_.Wave_4a`,
+         `dem.became_unemployed_.Wave_4b`,
+         `dem.became_unemployed_.Wave_5a`,
+         `dem.became_unemployed_.Wave_6b`,
+         `dem.became_unemployed_.Wave_7a`,
+         `dem.became_unemployed_.Wave_8b`,
+         `dem.became_unemployed_.Wave_9a`,
+         `dem.became_unemployed_.Wave_10b`,
+         `dem.became_unemployed_.Wave_11a`,
+         `dem.became_unemployed_.Wave_12b`,
+         
+         #`dem.reduction_in_hours_.Wave_1a`,
+         #`dem.reduction_in_hours_.Wave_1b`,
+         `dem.reduction_in_hours_.Wave_2a`,
+         `dem.reduction_in_hours_.Wave_2b`,
+         `dem.reduction_in_hours_.Wave_3a`,
+         `dem.reduction_in_hours_.Wave_3b`,
+         `dem.reduction_in_hours_.Wave_4a`,
+         `dem.reduction_in_hours_.Wave_4b`,
+         `dem.reduction_in_hours_.Wave_5a`,
+         `dem.reduction_in_hours_.Wave_6b`,
+         `dem.reduction_in_hours_.Wave_7a`,
+         `dem.reduction_in_hours_.Wave_8b`,
+         `dem.reduction_in_hours_.Wave_9a`,
+         `dem.reduction_in_hours_.Wave_10b`,
+         `dem.reduction_in_hours_.Wave_11a`,
+         `dem.reduction_in_hours_.Wave_12b`,
+         
+         #`dem.reduction_in_salary_.Wave_1a`,
+         #`dem.reduction_in_salary_.Wave_1b`,
+         `dem.reduction_in_salary_.Wave_2a`,
+         `dem.reduction_in_salary_.Wave_2b`,
+         `dem.reduction_in_salary_.Wave_3a`,
+         `dem.reduction_in_salary_.Wave_3b`,
+         `dem.reduction_in_salary_.Wave_4a`,
+         `dem.reduction_in_salary_.Wave_4b`,
+         `dem.reduction_in_salary_.Wave_5a`,
+         `dem.reduction_in_salary_.Wave_6b`,
+         `dem.reduction_in_salary_.Wave_7a`,
+         `dem.reduction_in_salary_.Wave_8b`,
+         `dem.reduction_in_salary_.Wave_9a`,
+         `dem.reduction_in_salary_.Wave_10b`,
+         `dem.reduction_in_salary_.Wave_11a`,
+         `dem.reduction_in_salary_.Wave_12b`,
+         
+        # `dem.benefits_increased_.Wave_1a`,
+        # `dem.benefits_increased_.Wave_1b`,
+         `dem.benefits_increased_.Wave_2a`,
+         `dem.benefits_increased_.Wave_2b`,
+         `dem.benefits_increased_.Wave_3a`,
+         `dem.benefits_increased_.Wave_3b`,
+         `dem.benefits_increased_.Wave_4a`,
+         `dem.benefits_increased_.Wave_4b`,
+         `dem.benefits_increased_.Wave_5a`,
+         `dem.benefits_increased_.Wave_6b`,
+         `dem.benefits_increased_.Wave_7a`,
+         `dem.benefits_increased_.Wave_8b`,
+         `dem.benefits_increased_.Wave_9a`,
+         `dem.benefits_increased_.Wave_10b`,
+         `dem.benefits_increased_.Wave_11a`,
+         `dem.benefits_increased_.Wave_12b`,
+         
+        # `dem.benefits_decreased_.Wave_1a`,
+        # `dem.benefits_decreased_.Wave_1b`,
+         `dem.benefits_decreased_.Wave_2a`,
+         `dem.benefits_decreased_.Wave_2b`,
+         `dem.benefits_decreased_.Wave_3a`,
+         `dem.benefits_decreased_.Wave_3b`,
+         `dem.benefits_decreased_.Wave_4a`,
+         `dem.benefits_decreased_.Wave_4b`,
+         `dem.benefits_decreased_.Wave_5a`,
+         `dem.benefits_decreased_.Wave_6b`,
+         `dem.benefits_decreased_.Wave_7a`,
+         `dem.benefits_decreased_.Wave_8b`,
+         `dem.benefits_decreased_.Wave_9a`,
+         `dem.benefits_decreased_.Wave_10b`,
+         `dem.benefits_decreased_.Wave_11a`,
+         `dem.benefits_decreased_.Wave_12b`,
+         
+        # `dem.change_in_duties_or_responsibilites_.Wave_1a`,
+        # `dem.change_in_duties_or_responsibilites_.Wave_1b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_2a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_2b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_3a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_3b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_4a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_4b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_5a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_6b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_7a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_8b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_9a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_10b`,
+         `dem.change_in_duties_or_responsibilites_.Wave_11a`,
+         `dem.change_in_duties_or_responsibilites_.Wave_12b`,
+         
+       #  `dem.became_employed_.Wave_1a`,
+       #  `dem.became_employed_.Wave_1b`,
+         `dem.became_employed_.Wave_2a`,
+         `dem.became_employed_.Wave_2b`,
+         `dem.became_employed_.Wave_3a`,
+         `dem.became_employed_.Wave_3b`,
+         `dem.became_employed_.Wave_4a`,
+         `dem.became_employed_.Wave_4b`,
+         `dem.became_employed_.Wave_5a`,
+         `dem.became_employed_.Wave_6b`,
+         `dem.became_employed_.Wave_7a`,
+         `dem.became_employed_.Wave_8b`,
+         `dem.became_employed_.Wave_9a`,
+         `dem.became_employed_.Wave_10b`,
+         `dem.became_employed_.Wave_11a`,
+         `dem.became_employed_.Wave_12b`,
+         
+       #  `dem.increased_hours_.Wave_1a`,
+       #  `dem.increased_hours_.Wave_1b`,
+         `dem.increased_hours_.Wave_2a`,
+         `dem.increased_hours_.Wave_2b`,
+         `dem.increased_hours_.Wave_3a`,
+         `dem.increased_hours_.Wave_3b`,
+         `dem.increased_hours_.Wave_4a`,
+         `dem.increased_hours_.Wave_4b`,
+         `dem.increased_hours_.Wave_5a`,
+         `dem.increased_hours_.Wave_6b`,
+         `dem.increased_hours_.Wave_7a`,
+         `dem.increased_hours_.Wave_8b`,
+         `dem.increased_hours_.Wave_9a`,
+         `dem.increased_hours_.Wave_10b`,
+         `dem.increased_hours_.Wave_11a`,
+         `dem.increased_hours_.Wave_12b`,
+         
+        # `dem.furloughed_or_paid_leave_government_funded_.Wave_1a`,
+        # `dem.furloughed_or_paid_leave_government_funded_.Wave_1b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_2a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_2b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_3a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_3b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_4a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_4b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_5a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_6b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_7a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_8b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_9a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_10b`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_11a`,
+         `dem.furloughed_or_paid_leave_government_funded_.Wave_12b`,
+         
+         # `dem.furloughed_or_paid_leave_company_funded_.Wave_1a`,
+         #`dem.furloughed_or_paid_leave_company_funded_.Wave_1b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_2a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_2b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_3a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_3b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_4a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_4b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_5a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_6b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_7a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_8b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_9a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_10b`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_11a`,
+         `dem.furloughed_or_paid_leave_company_funded_.Wave_12b`,
+         
+         # `dem.paid_leave_furloughed_.Wave_1a`,
+         #`dem.paid_leave_furloughed_.Wave_1b`,
+         `dem.paid_leave_furloughed_.Wave_2a`,
+         `dem.paid_leave_furloughed_.Wave_2b`,
+         `dem.paid_leave_furloughed_.Wave_3a`,
+         `dem.paid_leave_furloughed_.Wave_3b`,
+         `dem.paid_leave_furloughed_.Wave_4a`,
+         `dem.paid_leave_furloughed_.Wave_4b`,
+         `dem.paid_leave_furloughed_.Wave_5a`,
+         `dem.paid_leave_furloughed_.Wave_6b`,
+         `dem.paid_leave_furloughed_.Wave_7a`,
+         `dem.paid_leave_furloughed_.Wave_8b`,
+         `dem.paid_leave_furloughed_.Wave_9a`,
+         `dem.paid_leave_furloughed_.Wave_10b`,
+         `dem.paid_leave_furloughed_.Wave_11a`,
+         `dem.paid_leave_furloughed_.Wave_12b`,
+         
+       #  `dem.paid_leave_returned_work_.Wave_1b`,
+        #  `dem.paid_leave_returned_work_.Wave_1a`,
+         `dem.paid_leave_returned_work_.Wave_2a`,
+         `dem.paid_leave_returned_work_.Wave_2b`,
+         `dem.paid_leave_returned_work_.Wave_3a`,
+         `dem.paid_leave_returned_work_.Wave_3b`,
+         `dem.paid_leave_returned_work_.Wave_4a`,
+         `dem.paid_leave_returned_work_.Wave_4b`,
+         `dem.paid_leave_returned_work_.Wave_5a`,
+         `dem.paid_leave_returned_work_.Wave_6b`,
+         `dem.paid_leave_returned_work_.Wave_7a`,
+         `dem.paid_leave_returned_work_.Wave_8b`,
+         `dem.paid_leave_returned_work_.Wave_9a`,
+         `dem.paid_leave_returned_work_.Wave_10b`,
+         `dem.paid_leave_returned_work_.Wave_11a`,
+         `dem.paid_leave_returned_work_.Wave_12b`,
+         
+        #  `dem.retired_.Wave_1a`,
+        # `dem.retired_.Wave_1b`,
+        `dem.retired_.Wave_2a`,
+         `dem.retired_.Wave_2b`,
+         `dem.retired_.Wave_3a`,
+         `dem.retired_.Wave_3b`,
+         `dem.retired_.Wave_4a`,
+         `dem.retired_.Wave_4b`,
+         `dem.retired_.Wave_5a`,
+         `dem.retired_.Wave_6b`,
+         `dem.retired_.Wave_7a`,
+         `dem.retired_.Wave_8b`,
+         `dem.retired_.Wave_9a`,
+         `dem.retired_.Wave_10b`,
+         `dem.retired_.Wave_11a`,
+         `dem.retired_.Wave_12b`
+         
+         )
+}
+```
+
+##5. Remove duplicate IDs TAF RAMP
+```{r}
+if(COPING == TRUE) {
+##Check col names
+colnames(dat.raw.dem.coping.followup)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+dat.raw.dem.coping.followup  <- dat.raw.dem.coping.followup %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(dat.raw.dem.coping.followup)
+}
+
+```
+
+
+#####COPING TIMEPOINTS #####
 ##1.Create a wave columns in follow up data - COPING
 ```{r identify wave dates coping}
 if (COPING ==TRUE) {
@@ -2964,7 +5428,120 @@ source("./timepoints_COPING.R")
 
 ```
 
-##2. Join TAF follow ups (COPING)
+##COPING - loss of loved one due to COVID - HEZ
+
+```{r}
+if(COPING == TRUE) {
+
+coping.loss.followupb.raw.id %>%
+  group_by(wave_loss) %>%
+  count()
+
+}
+```
+
+
+##Idenfitying duplicate IDs in a single timepoint
+```{r}
+if(COPING == TRUE) {
+
+##Identify dup IDs in a single wave 
+coping.loss.followupb.raw.id %>%
+   group_by(wave_loss, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+
+##***FOR NOW - Want the LATER data entry from people who answered twice within a single wave 
+Later on - want to create variable with 'answered YES at least once'
+
+[want ID AND wave to be unique]
+```{r}
+if(COPING == TRUE) {
+
+ ##FOLLOW UP A
+##confirm number of rows in current dataset 
+nrow(coping.loss.followupb.raw.id)
+
+#Filter out duplicated IDs AND wave, keeping the LAST entry
+coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_loss,
+                      fromLast = TRUE)
+           )
+
+##confirm number of rows in dataset after filtering 
+nrow(coping.loss.followupb.raw.id)
+}
+```
+
+## 3. Change follow up TAF RAMP to long format
+```{r DEM RAMP long format}
+if(COPING == TRUE) {
+coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>%
+  group_by(wave_loss) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_loss, 
+                     values_from = c( grief.due_past_month_lost,
+                                      grief.suffered_past_month_loss
+                       )) 
+  
+}
+
+```
+
+
+##4. Select variables for dataset TAF RAMP
+```{r}
+
+if(COPING == TRUE) {
+coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>%
+  select(ID,
+        # `grief.due_past_month_lost_.Wave_1a`,
+        # `grief.due_past_month_lost_.Wave_1b`,
+         `grief.due_past_month_lost_.Wave_2b`,
+         `grief.due_past_month_lost_.Wave_3b`,
+         `grief.due_past_month_lost_.Wave_4b`,
+         `grief.due_past_month_lost_.Wave_6b`,
+         `grief.due_past_month_lost_.Wave_8b`,
+         `grief.due_past_month_lost_.Wave_10b`,
+         `grief.due_past_month_lost_.Wave_12b`,
+         
+       #   `grief.suffered_past_month_loss_.Wave_1a`,
+       #  `grief.suffered_past_month_loss_.Wave_1b`,
+         `grief.suffered_past_month_loss_.Wave_2b`,
+         `grief.suffered_past_month_loss_.Wave_3b`,
+         `grief.suffered_past_month_loss_.Wave_4b`,
+         `grief.suffered_past_month_loss_.Wave_6b`,
+         `grief.suffered_past_month_loss_.Wave_8b`,
+         `grief.suffered_past_month_loss_.Wave_10b`,
+         `grief.suffered_past_month_loss_.Wave_12b`
+         
+         )
+}
+```
+
+##5. Remove duplicate IDs TAF RAMP
+```{r}
+if(COPING == TRUE) {
+##Check col names
+colnames(coping.loss.followupb.raw.id)
+
+##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+coping.loss.followupb.raw.id  <- coping.loss.followupb.raw.id %>%
+  filter(., !duplicated(ID)) 
+
+##Check number of rows
+nrow(coping.loss.followupb.raw.id)
+}
+
+```
+
+
+##1. Join TAF follow ups (COPING)
 ```{r COPING join taf}
 if(COPING == TRUE) {
 dat.raw.taf.coping <- rbind(taf.coping.followupa.raw.id,
@@ -3291,6 +5868,11 @@ saveRDS(object = dat.raw.taf.coping, file = "../data_cleaned/NEW_taf_coping.rds"
 
 saveRDS(object = edeq.coping.followupb.screener.raw.id, file = "../data_cleaned/NEW_edeq_screener_coping.rds")
 
+saveRDS(object = dat.raw.dem.coping.followup, file = "../data_cleaned/dem_followup_coping.rds")
+
+saveRDS(object = coping.loss.followupb.raw.id, file = "../data_cleaned/loss_coping_followup.rds")
+
+
 }
 
 if(RAMP == TRUE) {
@@ -3298,6 +5880,9 @@ saveRDS(object = dat.raw.taf.ramp, file = "../data_cleaned/NEW_taf_ramp.rds")
 
 saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = "../data_cleaned/NEW_edeq_screener_ramp.rds")
 
+saveRDS(object = dat.raw.dem.ramp.followup, file = "../data_cleaned/dem_followup_ramp.rds")
+
+saveRDS(object = ramp.loss.followupb.raw.id, file = "../data_cleaned/loss_ramp_followup.rds")
 
 }
 
@@ -3570,7 +6155,49 @@ edgi.3 <- edgi.coping.dem4.employ.raw.id %>%
   employment_change_numeric,
   employment_change,
   key_worker,
-  key_worker_numeric)
+  key_worker_numeric,
+  employ.fulltime_employed,
+  employ.parttime_employed,
+  employ.unemployed,
+  employ.zerohours_contract,
+  employ.stayathome_parent_or_carer,
+  employ.selfemployed,
+  employ.contract_or_freelance_work,
+  employ.small_business_owner,
+  employ.receiving_state_income,
+  employ.retired,
+  employ.student_gcse_or_a_level,
+  employ.student_university,
+  employ.my_employment_status_has_not_changed,
+  employ.became_unemployed,
+  employ.reduction_in_hours,
+  employ.reduction_in_salary,
+  employ.benefits_increased,
+  employ.benefits_decreased,
+  employ.change_in_duties_or_responsibilities,
+  employ.became_employed,
+  employ.increased_hours,
+  employ.increased_salary,
+  employ.furloughed_or_paid_leave_government_funded,
+  employ.furloughed_or_paid_leave_company_funded,
+  employ.paid_leave_furloughed,
+  employ.taking_unpaid_leave,
+  employ.other,
+  employ.other_text.txt,
+  employ.no_impact,
+  employ.cancelled_exams,
+  employ.change_in_format_of_exams,
+  employ.automatic_pass,
+  employ.change_in_deadlines,
+  employ.change_in_lesson_delivery,
+  employ.past_performance_grade_decided,
+  employ.cancelled_classes,
+  employ.cannot_complete_degree,
+  employ.impact_on_studies_still_unknown,
+  employ.other.1,
+  employ.other_text.txt.1,
+  employ.losing_job_due_risk,
+  employ.increased_due_job_pandemic)
   
 edgi.4 <- taf.edgi.coping.baseline.raw.id %>% 
   select(ID,
@@ -3632,6 +6259,31 @@ edgi.6 <- taf.edgi.coping.baseline.raw.id %>%
 edgi.7 <- edgi.coping.dem2.raw.id %>%
   select(ID,
          cohort_name,
+         
+         dem2.living_with_partner_or_spouse,
+         dem2.living_alone,
+         dem2.living_with_partner_or_spouse,
+         dem2.living_with_housemates,
+         dem2.age_children_living,
+         dem2.age_children_living.1,
+         dem2.living_with_other_members_of_my_family,
+         dem2.spouse_partner_members_living,
+         dem2.staying_live,
+         dem2.staying_live.1,
+         dem2.prefer_not_to_say,
+         dem2.living_situation_change_pandemic,
+         dem2.living_alone.1,
+         dem2.living_with_partner_or_spouse.1,
+         dem2.living_with_housemates.1,
+         dem2.age_children_living.2,
+         dem2.age_children_living.3,
+         dem2.living_with_other_members_of_my_family.1,
+         dem2.spouse_partner_members_living.1,
+         dem2.staying_live.2,
+         dem2.staying_live.3,
+         dem2.prefer_not_to_say.1,
+         
+         
          dem2.member_vulnerable_group,
          dem2.solid_organ_transplant_recipient,
          dem2.lung_cancer_radical_radiotherapy,
@@ -3696,7 +6348,26 @@ edgi.8 <- edgi_pan_worry.id %>%
          panworry.standing_impact_global_recession_numeric,
          panworry.other__numeric)
   
+edgi.9 <- edgi.loneliness.baseline.raw.id %>%
+  select(ID,
+         cohort_name,
+         lone.felt_that_you_lack_companionship,
+        lone.felt_left_out,
+        lone.felt_isolated_from_others,
+        lone.felt_alone,lone.similar_felt_pandemic,
+        lone.felt_that_you_lack_companionship.1,
+        lone.felt_left_out.1,
+        lone.felt_isolated_from_others.1,
+        lone.felt_alone.1
+  )
 
+edgi.10 <- edgi.loss.baseline.raw.id %>%
+  select(ID, 
+         cohort_name,
+         grief.covid_lost_due_close,
+         grief.suffered_past_month_loss)
+  
+       
 ##See if IDs match with edgi.5
 x <- edgi.5[edgi.5$ID %in% edgi.4$ID,]
 
@@ -3729,7 +6400,9 @@ dfs.list <- list(
   edgi.4,
   edgi.5,
   edgi.7,
-  edgi.8
+  edgi.8,
+  edgi.9, 
+  edgi.10
 )
 }
 
@@ -3788,6 +6461,7 @@ glad.coping.dem.raw.id <- glad.coping.dem.raw.id %>%
     cohort_name = cohort_name.x
     )
 
+
 glad.1 <-  glad.coping.dem.raw.id %>%
      select(ID,
             cohort_name,
@@ -3821,7 +6495,50 @@ glad.3 <- glad.coping.dem4.employ.raw.id %>%
          employment_change,
          employment_change_numeric,
          key_worker,
-         key_worker_numeric)
+         key_worker_numeric,
+         
+         employ.fulltime_employed,
+  employ.parttime_employed,
+  employ.unemployed,
+  employ.zerohours_contract,
+  employ.stayathome_parent_or_carer,
+  employ.selfemployed,
+  employ.contract_or_freelance_work,
+  employ.small_business_owner,
+  employ.receiving_state_income,
+  employ.retired,
+  employ.student_gcse_or_a_level,
+  employ.student_university,
+  employ.my_employment_status_has_not_changed,
+  employ.became_unemployed,
+  employ.reduction_in_hours,
+  employ.reduction_in_salary,
+  employ.benefits_increased,
+  employ.benefits_decreased,
+  employ.change_in_duties_or_responsibilities,
+  employ.became_employed,
+  employ.increased_hours,
+  employ.increased_salary,
+  employ.furloughed_or_paid_leave_government_funded,
+  employ.furloughed_or_paid_leave_company_funded,
+  employ.paid_leave_furloughed,
+  employ.taking_unpaid_leave,
+  employ.other,
+  employ.other_text.txt,
+  employ.no_impact,
+  employ.cancelled_exams,
+  employ.change_in_format_of_exams,
+  employ.automatic_pass,
+  employ.change_in_deadlines,
+  employ.change_in_lesson_delivery,
+  employ.past_performance_grade_decided,
+  employ.cancelled_classes,
+  employ.cannot_complete_degree,
+  employ.impact_on_studies_still_unknown,
+  employ.other.1,
+  employ.other_text.txt.1,
+  employ.losing_job_due_risk,
+  employ.increased_due_job_pandemic)
 
 glad.4 <- taf.glad.coping.baseline.raw.id%>%
   select(ID,
@@ -3873,6 +6590,30 @@ glad.5 <- mhd.raw.id %>%
 glad.6 <- glad.coping.dem2.raw.id %>%
   select(ID,
          cohort_name,
+         
+         dem2.living_with_partner_or_spouse,
+         dem2.living_alone,
+         dem2.living_with_partner_or_spouse,
+         dem2.living_with_housemates,
+         dem2.age_children_living,
+         dem2.age_children_living.1,
+         dem2.living_with_other_members_of_my_family,
+         dem2.spouse_partner_members_living,
+         dem2.staying_live,
+         dem2.staying_live.1,
+         dem2.prefer_not_to_say,
+         dem2.living_situation_change_pandemic,
+         dem2.living_alone.1,
+         dem2.living_with_partner_or_spouse.1,
+         dem2.living_with_housemates.1,
+         dem2.age_children_living.2,
+         dem2.age_children_living.3,
+         dem2.living_with_other_members_of_my_family.1,
+         dem2.spouse_partner_members_living.1,
+         dem2.staying_live.2,
+         dem2.staying_live.3,
+         dem2.prefer_not_to_say.1,
+         
          dem2.member_vulnerable_group,
          dem2.solid_organ_transplant_recipient,
          dem2.lung_cancer_radical_radiotherapy,
@@ -3937,7 +6678,25 @@ glad.7 <- glad_pan_worry.id %>%
          panworry.standing_impact_global_recession_numeric,
          panworry.other__numeric)
 
+glad.8 <- glad.loneliness.baseline.raw.id %>%
+  select(ID,
+         cohort_name,
+         lone.felt_that_you_lack_companionship,
+        lone.felt_left_out,
+        lone.felt_isolated_from_others,
+        lone.felt_alone,lone.similar_felt_pandemic,
+        lone.felt_that_you_lack_companionship.1,
+        lone.felt_left_out.1,
+        lone.felt_isolated_from_others.1,
+        lone.felt_alone.1
+  )
 
+glad.9 <- glad.loss.baseline.raw.id %>%
+  select(ID, 
+         cohort_name,
+         grief.covid_lost_due_close,
+         grief.suffered_past_month_loss)
+  
 ##See if IDs match with glad.3
 x <- glad.3[glad.3$ID %in% glad.1$ID,]
 
@@ -3968,7 +6727,9 @@ dfs.list <- list(
   glad.4,
   glad.5,
   glad.6,
-  glad.7
+  glad.7,
+  glad.8,
+  glad.9
   )
 }
 
@@ -4027,7 +6788,50 @@ if(NBR == TRUE) {
            employment_prior_covid,
            employment_prior_covid_numeric,
            key_worker,
-           key_worker_numeric)
+           key_worker_numeric,
+           
+           employ.fulltime_employed,
+  employ.parttime_employed,
+  employ.unemployed,
+  employ.zerohours_contract,
+  employ.stayathome_parent_or_carer,
+  employ.selfemployed,
+  employ.contract_or_freelance_work,
+  employ.small_business_owner,
+  employ.receiving_state_income,
+  employ.retired,
+  employ.student_gcse_or_a_level,
+  employ.student_university,
+  employ.my_employment_status_has_not_changed,
+  employ.became_unemployed,
+  employ.reduction_in_hours,
+  employ.reduction_in_salary,
+  employ.benefits_increased,
+  employ.benefits_decreased,
+  employ.change_in_duties_or_responsibilities,
+  employ.became_employed,
+  employ.increased_hours,
+  employ.increased_salary,
+  employ.furloughed_or_paid_leave_government_funded,
+  employ.furloughed_or_paid_leave_company_funded,
+  employ.paid_leave_furloughed,
+  employ.taking_unpaid_leave,
+  employ.other,
+  employ.other_text.txt,
+  employ.no_impact,
+  employ.cancelled_exams,
+  employ.change_in_format_of_exams,
+  employ.automatic_pass,
+  employ.change_in_deadlines,
+  employ.change_in_lesson_delivery,
+  employ.past_performance_grade_decided,
+  employ.cancelled_classes,
+  employ.cannot_complete_degree,
+  employ.impact_on_studies_still_unknown,
+  employ.other.1,
+  employ.other_text.txt.1,
+  employ.losing_job_due_risk,
+  employ.increased_due_job_pandemic,)
   
 nbr.2 <- nbr.dem.raw.id.complete %>%
   select(ID,
@@ -4097,6 +6901,30 @@ nbr.5 <- mhd.raw.id %>%
 nbr.6 <- nbr.dem2.raw.id %>%
   select(ID,
          cohort_name,
+         
+         dem2.living_with_partner_or_spouse,
+         dem2.living_alone,
+         dem2.living_with_partner_or_spouse,
+         dem2.living_with_housemates,
+         dem2.age_children_living,
+         dem2.age_children_living.1,
+         dem2.living_with_other_members_of_my_family,
+         dem2.spouse_partner_members_living, 
+         dem2.staying_live,
+         dem2.staying_live.1,
+         dem2.prefer_not_to_say,
+         dem2.living_situation_change_pandemic,
+         dem2.living_alone.1,
+         dem2.living_with_partner_or_spouse.1,
+         dem2.living_with_housemates.1,
+         dem2.age_children_living.2,
+         dem2.age_children_living.3,
+         dem2.living_with_other_members_of_my_family.1,
+         dem2.spouse_partner_members_living.1, 
+         dem2.staying_live.2,
+         dem2.staying_live.3,
+         dem2.prefer_not_to_say.1,
+         
          dem2.member_vulnerable_group,
          dem2.solid_organ_transplant_recipient,
          dem2.lung_cancer_radical_radiotherapy,
@@ -4163,6 +6991,25 @@ nbr.7 <- nbr_pan_worry.id %>%
          panworry.standing_impact_global_recession_numeric,
          panworry.other__numeric)
 
+nbr.8 <- nbr.loneliness.baseline.raw.id %>%
+  select(ID,
+         cohort_name,
+         lone.felt_that_you_lack_companionship,
+        lone.felt_left_out,
+        lone.felt_isolated_from_others,
+        lone.felt_alone,lone.similar_felt_pandemic,
+        lone.felt_that_you_lack_companionship.1,
+        lone.felt_left_out.1,
+        lone.felt_isolated_from_others.1,
+        lone.felt_alone.1
+  )
+
+nbr.9 <- nbr.loss.baseline.raw.id %>%
+  select(ID, 
+         cohort_name,
+         grief.covid_lost_due_close,
+         grief.suffered_past_month_loss)
+  
 #Check nbr mhd data IDs
 x <- nbr.5[nbr.5$ID %in% nbr.1$ID,]
 
@@ -4180,11 +7027,18 @@ x <- nbr.5[nbr.5$ID %in% nbr.4$ID,]
 
 length(unique(x$ID))
 
+x <- nbr.9[nbr.9$ID %in% nbr.1$ID,]
+
+length(unique(x$ID))    
+
+
 nrow(nbr.5)
 nrow(nbr.4)
 nrow(nbr.3)
 nrow(nbr.2)
 nrow(nbr.1)
+nrow(nbr.9)
+
 }
 
 #NO HIGHEST EDUCATION PREPAN
@@ -4201,7 +7055,9 @@ dfs.list <- list(
   nbr.4,
   nbr.5,
   nbr.6,
-  nbr.7
+  nbr.7,
+  nbr.8,
+  nbr.9
 )
 }
 
@@ -4272,7 +7128,33 @@ if(RAMP == TRUE) {
            dem2.over_70_years_old,
            dem2.prefer_not_to_say.2, # = dem2.prefer_not_to_say.1,
            dem2.unsure,
-           transgender)
+           transgender,
+           
+         dem2.living_with_partner_or_spouse,
+         dem2.living_alone,
+         dem2.living_with_partner_or_spouse,
+         dem2.living_with_housemates,
+         dem2.age_children_living,
+         dem2.age_children_living.1,
+         dem2.living_with_other_members_of_my_family,
+         dem2.spouse_partner_members_living,
+         dem2.staying_live,
+         dem2.staying_live.1,
+         dem2.prefer_not_to_say,
+
+         dem2.living_situation_change_pandemic,
+
+
+         dem2.living_alone.1,
+         dem2.living_with_partner_or_spouse.1,
+         dem2.living_with_housemates.1,
+         dem2.age_children_living.2,
+         dem2.age_children_living.3,
+         dem2.living_with_other_members_of_my_family.1,
+         dem2.spouse_partner_members_living.1,
+         dem2.staying_live.2,
+         dem2.staying_live.3,
+         dem2.prefer_not_to_say.1)
 
   ramp.2 <- ramp.dem.employ.raw.id %>%
     select(ID,
@@ -4284,7 +7166,50 @@ if(RAMP == TRUE) {
            employment_change,
            employment_change_numeric,
            key_worker,
-           key_worker_numeric)
+           key_worker_numeric,
+           
+           employ.fulltime_employed,
+  employ.parttime_employed,
+  employ.unemployed,
+  employ.zerohours_contract,
+  employ.stayathome_parent_or_carer,
+  employ.selfemployed,
+  employ.contract_or_freelance_work,
+  employ.small_business_owner,
+  employ.receiving_state_income,
+  employ.retired,
+  employ.student_gcse_or_a_level,
+  employ.student_university,
+  employ.my_employment_status_has_not_changed,
+  employ.became_unemployed,
+  employ.reduction_in_hours,
+  employ.reduction_in_salary,
+  employ.benefits_increased,
+  employ.benefits_decreased,
+  employ.change_in_duties_or_responsibilities,
+  employ.became_employed,
+  employ.increased_hours,
+  employ.increased_salary,
+  employ.furloughed_or_paid_leave_government_funded,
+  employ.furloughed_or_paid_leave_company_funded,
+  employ.paid_leave_furloughed,
+  #employ.taking_unpaid_leave,
+  employ.other,
+  employ.other_text.txt,
+  employ.no_impact,
+  employ.cancelled_exams,
+  employ.change_in_format_of_exams,
+  employ.automatic_pass,
+  employ.change_in_deadlines,
+  employ.change_in_lesson_delivery,
+  employ.past_performance_grade_decided,
+  employ.cancelled_classes,
+  employ.cannot_complete_degree,
+  employ.impact_on_studies_still_unknown,
+  employ.other.1,
+  employ.other_text.txt.1,
+  employ.losing_job_due_risk,
+  employ.increased_due_job_pandemic)
    
   ramp.3 <- edeq.ramp.baseline.raw.id %>% 
   select(ID,
@@ -4437,6 +7362,26 @@ ramp.7 <- ramp_pan_worry.id %>%
          panworry.standing_impact_global_recession_numeric,
          panworry.other__numeric)
 
+ramp.8 <- ramp.loneliness.baseline.raw.id %>%
+  select(ID,
+         cohort_name,
+         lone.felt_that_you_lack_companionship,
+        lone.felt_left_out,
+        lone.felt_isolated_from_others,
+        lone.felt_alone,lone.similar_felt_pandemic,
+        lone.felt_that_you_lack_companionship.1,
+        lone.felt_left_out.1,
+        lone.felt_isolated_from_others.1,
+        lone.felt_alone.1
+  )
+
+ramp.9 <- ramp.loss.baseline.raw.id %>%
+  select(ID, 
+         cohort_name,
+         grief.covid_lost_due_close,
+         grief.suffered_past_month_loss)
+
+  
 #Check ramp.4 has same IDs as other datasets
 x <- ramp.4[ramp.4$ID %in% ramp.1$ID,]
 
@@ -4455,6 +7400,7 @@ x <- ramp.4[ramp.4$ID %in% ramp.5$ID,]
 length(unique(x$ID))    
 
 
+
 }
 
 #NO SEX
@@ -4471,7 +7417,9 @@ dfs.list <- list(
   ramp.4,
   ramp.5,
   ramp.6,
-  ramp.7
+  ramp.7,
+  ramp.8,
+  ramp.9
   
 )
 }
@@ -4530,7 +7478,6 @@ if(RAMP == TRUE) {
 if(NBR == TRUE) {
   saveRDS(object = dat.raw.nbr, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/NEW_baseline_nbr", date, ".rds"))
 }
-
 
 ```
 

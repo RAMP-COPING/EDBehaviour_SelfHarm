@@ -32,16 +32,16 @@ library(skimr)
 
 # Import baseline data
 ```{r export data}
-glad_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_glad2021-05-31.rds")
+glad_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_glad2021-06-04.rds")
 dim(glad_baseline)
 
-edgi_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_edgi2021-05-31.rds")
+edgi_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_edgi2021-06-04.rds")
 dim(edgi_baseline)
 
-nbr_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_nbr2021-05-31.rds")
+nbr_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_nbr2021-06-04.rds")
 dim(nbr_baseline)
 
-ramp_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_ramp2021-05-31.rds")
+ramp_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_ramp2021-06-04.rds")
 dim(ramp_baseline)
 
 
@@ -121,6 +121,7 @@ ramp_baseline$sex <- NA
 ramp_baseline$age_category_numeric <- NA
 ramp_baseline$mhd.suspected_eating_disorder_diagnosed_numeric <- NA
 nbr_baseline$transgender <- NA
+ramp_baseline$employ.taking_unpaid_leave <- NA
 
 #age called "age_unc" in RAMP
   ramp_baseline <- ramp_baseline %>% 
@@ -155,6 +156,7 @@ dat <- bind_rows(
 colnames(dat)
 nrow(dat)
 ```
+
 ##For now, set: age_category, age_category_numeric and sex to NA as these are in the ED grouping dataset
 ```{r}
 
@@ -188,6 +190,18 @@ dim(virus_ramp)
   
 virus_coping <- readRDS(file = "../data_cleaned/virus_coping_followup.rds")
 dim(virus_coping)
+
+loss_ramp <- readRDS(file = "../data_cleaned/loss_ramp_followup.rds")
+dim(loss_ramp)
+
+loss_coping <- readRDS(file = "../data_cleaned/loss_coping_followup.rds")
+dim(loss_coping)
+
+dem_coping_followup <- readRDS(file = "../data_cleaned/dem_followup_ramp.rds")
+dim(dem_coping_followup) #Named wrong in preprocessing script! have corrected and need to re-run
+
+dem_ramp_followup <- readRDS(file = "../data_cleaned/dem_followup_coping.rds")
+dim(dem_ramp_followup)#Named wrong in preprocessing script! have corrected and need to re-run
 
 ```
 ##Create empty wave 1a and 1bs in COPING to merge with RAMP 
@@ -253,6 +267,35 @@ nrow(VIRUS)
 
 ```
 
+#Bind loss data together
+```{r}
+
+LOSS <- bind_rows(loss_ramp,
+                 loss_coping)
+
+
+#check col names 
+colnames(LOSS)
+
+#check no of participants
+nrow(LOSS)
+
+```
+#Bind DEM follow up data together
+```{r}
+
+DEM_FOLLOWUP <- bind_rows(dem_ramp_followup,
+                 dem_coping_followup)
+
+
+#check col names 
+colnames(DEM_FOLLOWUP)
+
+#check no of participants
+nrow(DEM_FOLLOWUP)
+
+```
+
 
 #Bind edeq_taf with baseline data
 ```{r}
@@ -288,6 +331,42 @@ nrow(data.merged2)
 
 ```
 
+#Bind LOSS data with merged baseline data
+```{r}
+
+##Merge TAF and EDEQ
+data.merged3 <- plyr::join(data.merged2,
+             LOSS,
+             type="left")
+  
+
+#check col names 
+colnames(data.merged3)
+
+#check no of participants
+nrow(data.merged3)
+
+
+```
+
+
+#Bind DEM FOLLOW UP data with merged baseline data
+```{r}
+
+##Merge TAF and EDEQ
+data.merged4 <- plyr::join(data.merged3,
+             DEM_FOLLOWUP,
+             type="left")
+  
+
+#check col names 
+colnames(data.merged4)
+
+#check no of participants
+nrow(data.merged4)
+
+
+```
 
 ### Read in ED group data
 ```{r}
@@ -308,7 +387,7 @@ nrow(baseline_ED_groups_data)
 #Merge merged data with grouping ED data
 ```{r}
 
-data.merged.with.ED.groups <- merge(data.merged2,
+data.merged.with.ED.groups <- merge(data.merged4,
                                     baseline_ED_groups_data,
                                     by = "ID")
 
