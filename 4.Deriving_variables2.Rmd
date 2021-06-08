@@ -49,7 +49,7 @@ source("./functions.R")
 ```{r}
 dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-06-04.rds")
 dim(dat)
-colnames(dat)
+#colnames(dat)
 
 #Drop one dup cohort name columns
 dat$cohort_name.y <- NULL
@@ -974,6 +974,16 @@ dat %>%
 
 #Gender - recode!
 ```{r}
+#Check frequencies
+dat %>%
+  freq(gender_unc)
+
+dat %>%
+  freq(transgender)
+
+dat %>% 
+  group_by(transgender) %>%
+  count(gender_unc)
 
 #Recode 
 dat <- dat %>%
@@ -1080,6 +1090,7 @@ dat %>%
 dat <- dat %>%
   mutate(comorbidities = 
            case_when(depression_and_anxiety_numeric == 1 ~ "Depression and anxiety",
+                     psychotic_disorders_numeric == 1 ~"Psychotic disorder",
                      bipolar_and_schizophrenia_numeric == 1 ~ "Bipolar and schizophrenia",
                      depressive_disorders_numeric == 1 ~ "Depressive disorder",
                      anxiety_disorders_numeric == 1 ~ "Anxiety disorder",
@@ -2288,32 +2299,6 @@ test_dat <- dat %>%
          
       )
 ```
-
-
-
-
-
-grief.covid_lost_due_close
-```{r}
-dat$gr
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #Save final dataset (interim analysis)

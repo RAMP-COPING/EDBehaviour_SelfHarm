@@ -43,7 +43,7 @@ source("./functions.R")
 GLAD = FALSE
 EDGI = FALSE
 RAMP = FALSE
-NBR = FALSE
+NBR = TRUE
 COPING = TRUE
 ```
 
@@ -3618,6 +3618,7 @@ source("./education_ALLdatasets.R")
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
 source("./employment_ALLdatasets.R")
 }
+
 ```
 
 
@@ -6155,6 +6156,9 @@ edgi.3 <- edgi.coping.dem4.employ.raw.id %>%
   employment_change_numeric,
   employment_change,
   key_worker,
+  employed,
+  employ.government_work_key_workers_numeric,
+  employ.government_work_key_workers,
   key_worker_numeric,
   employ.fulltime_employed,
   employ.parttime_employed,
@@ -6496,7 +6500,9 @@ glad.3 <- glad.coping.dem4.employ.raw.id %>%
          employment_change_numeric,
          key_worker,
          key_worker_numeric,
-         
+         employed,
+         employ.government_work_key_workers_numeric,
+           employ.government_work_key_workers,
          employ.fulltime_employed,
   employ.parttime_employed,
   employ.unemployed,
@@ -6789,6 +6795,9 @@ if(NBR == TRUE) {
            employment_prior_covid_numeric,
            key_worker,
            key_worker_numeric,
+           employed,
+           employ.government_work_key_workers_numeric,
+           employ.government_work_key_workers,
            
            employ.fulltime_employed,
   employ.parttime_employed,
@@ -7167,7 +7176,9 @@ if(RAMP == TRUE) {
            employment_change_numeric,
            key_worker,
            key_worker_numeric,
-           
+           employed,
+           employ.government_work_key_workers_numeric,
+           employ.government_work_key_workers,
            employ.fulltime_employed,
   employ.parttime_employed,
   employ.unemployed,
