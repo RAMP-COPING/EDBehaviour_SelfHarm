@@ -198,6 +198,32 @@ dat.long <- dat.long %>%
      values_from = "NEW_value")
 
 ```
+#Create new column indicating if experience was new or not
+```{r}
+dat.long <- dat.long %>%
+  split(factor(dat.long[["ID"]])) %>%
+  map(function(dat){
+        which_new <- which(dat[["ed_scid5.regular_episodes_eating_binges"]] == "Yes")[1]
+        print(which_new)
+        dat[["new_experience"]] <- "Not new"
+        dat[["new_experience"]][which_new] <- "New"
+        dat
+    }) %>%
+  bind_rows() %>%
+  mutate(new_experience =
+           if_else(
+             lifetime_binge_eating_baseline_numeric == 1,
+             "Not new",
+             new_experience
+           )) %>%
+  select(ID, #Check that it worked
+         ed_scid5.regular_episodes_eating_binges,
+         wave,
+         new_experience,
+        lifetime_binge_eating_baseline_numeric)
+        
+        
+```
 
 
 

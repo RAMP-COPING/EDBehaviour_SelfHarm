@@ -32,16 +32,16 @@ library(skimr)
 
 # Import baseline data
 ```{r export data}
-glad_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_glad2021-06-04.rds")
+glad_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_glad2021-06-08.rds")
 dim(glad_baseline)
 
-edgi_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_edgi2021-06-04.rds")
+edgi_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_edgi2021-06-08.rds")
 dim(edgi_baseline)
 
-nbr_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_nbr2021-06-04.rds")
+nbr_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_nbr2021-06-08.rds")
 dim(nbr_baseline)
 
-ramp_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_ramp2021-06-04.rds")
+ramp_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_ramp2021-06-08.rds")
 dim(ramp_baseline)
 
 

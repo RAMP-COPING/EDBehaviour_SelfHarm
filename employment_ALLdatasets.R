@@ -489,7 +489,7 @@ if(GLAD == TRUE) {
 
 ## Employment status
 if(GLAD == TRUE) {
-  #create numeric version of the variable
+  #create factor version of the variable
   glad.coping.dem4.employ.raw.id <- glad.coping.dem4.employ.raw.id  %>%
     mutate(
       employed =
@@ -548,6 +548,27 @@ if(GLAD == TRUE) {
                  employ.benefits_increased == "Benefits increased" |
                  employ.benefits_decreased == "Benefits decreased" |
                  employ.other == "Other") ~ "Student"),
+          
+          ((
+            (employ.retired == "Retired" |
+               employ.unemployed =="Unemployed" |
+               employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
+               employ.receiving_state_income == "Receiving state income" |
+               employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
+               employ.student_university == "Student (University)") &
+              is.na(employ.my_employment_status_has_not_changed)
+          ) ~ "Unemployed"),
+          
+          
+          ((
+            (employ.fulltime_employed == "Full-time employed" |
+               employ.parttime_employed =="Part-time employed" |
+               employ.zerohours_contract == "Zero-hours contract" |
+               employ.selfemployed == "Self-employed" |
+               employ.contract_or_freelance_work == "Contract or freelance work" |
+               employ.small_business_owner == "Small business owner") &
+              is.na(employ.my_employment_status_has_not_changed)
+          ) ~ "Employed"),
           
           
         )
@@ -650,10 +671,32 @@ if(EDGI == TRUE) {
                  employ.benefits_decreased == "Benefits decreased" |
                  employ.other == "Other") ~ "Student"),
           
+          ((
+            (employ.retired == "Retired" |
+               employ.unemployed =="Unemployed" |
+               employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
+               employ.receiving_state_income == "Receiving state income" |
+               employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
+               employ.student_university == "Student (University)") &
+              is.na(employ.my_employment_status_has_not_changed)
+          ) ~ "Unemployed"),
+          
+          
+          ((
+            (employ.fulltime_employed == "Full-time employed" |
+               employ.parttime_employed =="Part-time employed" |
+               employ.zerohours_contract == "Zero-hours contract" |
+               employ.selfemployed == "Self-employed" |
+               employ.contract_or_freelance_work == "Contract or freelance work" |
+               employ.small_business_owner == "Small business owner") &
+              is.na(employ.my_employment_status_has_not_changed)
+          ) ~ "Employed"),
+          
           
         )
     )
 }
+
 ## Key worker status NBR
 if(NBR == TRUE) {
   #create numeric version of the variable
@@ -749,10 +792,32 @@ if(NBR == TRUE) {
                  employ.benefits_decreased == "Benefits decreased" |
                  employ.other == "Other") ~ "Student"),
           
+          ((
+            (employ.retired == "Retired" |
+               employ.unemployed =="Unemployed" |
+               employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
+               employ.receiving_state_income == "Receiving state income" |
+               employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
+               employ.student_university == "Student (University)") &
+              is.na(employ.my_employment_status_has_not_changed)
+          ) ~ "Unemployed"),
+          
+          
+          ((
+            (employ.fulltime_employed == "Full-time employed" |
+               employ.parttime_employed =="Part-time employed" |
+               employ.zerohours_contract == "Zero-hours contract" |
+               employ.selfemployed == "Self-employed" |
+               employ.contract_or_freelance_work == "Contract or freelance work" |
+               employ.small_business_owner == "Small business owner") &
+              is.na(employ.my_employment_status_has_not_changed)
+          ) ~ "Employed"),
+          
           
         )
     )
 }
+
 ## Key worker status RAMP
 if(RAMP == TRUE) {
   #create numeric version of the variable
@@ -788,67 +853,88 @@ if(RAMP == TRUE) {
 }
 ## Employment status
 if(RAMP == TRUE) {
-  #create factor version of the variable
+    #create factor version of the variable
   ramp.dem.employ.raw.id <- ramp.dem.employ.raw.id  %>%
-    mutate(
-      employed =
-        case_when(
-          employ.became_unemployed == "Became unemployed" ~ "Unemployed",
-          
-          employ.became_employed== "Became employed" ~ "Employed",
-          
-          (
-            (employ.unemployed == "Unemployed" |
-               employ.receiving_state_income == "Receiving state income" |
-               employ.retired == "Retired") &
-              (employ.my_employment_status_has_not_changed == "My employment status has not changed" |
-                 employ.other == "Other") ~ "Unemployed"),
-          
-          employ.reduction_in_hours == "Reduction in hours" |
-            employ.reduction_in_salary == "Reduction in salary" |
-            employ.change_in_duties_or_responsibilities == "Change in duties or responsibilities" |
-            employ.increased_hours == "Increased hours" |
-            employ.increased_salary == "Increased salary" |
-            employ.furloughed_or_paid_leave_government_funded == "Furloughed or paid leave (Government funded)" |
-            employ.furloughed_or_paid_leave_company_funded == "Furloughed or paid leave (Company funded)" |
-           # employ.taking_unpaid_leave == "Taking unpaid leave" |
-            employ.paid_leave_furloughed == "Furloughed or paid leave (Government funded with company supplement)" ~ "Employed",
-          
-          (
-            (employ.unemployed == "Unemployed" |
-               employ.receiving_state_income == "Receiving state income" |
-               employ.retired == "Retired")  &
-              (employ.benefits_increased == "Benefits increased" |
-                 employ.benefits_decreased == "Benefits decreased") ~ "Unemployed"),
-          
-          (
-            (employ.fulltime_employed   == "Full-time employed" |
-               employ.parttime_employed == "Part-time employed" |
-               employ.zerohours_contract == "Zero-hours contract" |
-               employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
-               employ.selfemployed == "Self-employed" |
-               employ.contract_or_freelance_work == "Contract or freelance work" |
-               employ.small_business_owner == "Small business owner") &
-              (
-                employ.my_employment_status_has_not_changed == "My employment status has not changed" |
-                  employ.benefits_increased == "Benefits increased" |
-                  employ.benefits_decreased == "Benefits decreased" |
-                  employ.other == "Other") ~ "Employed"),
-          
-          (
-            (employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
-               employ.student_university == "Student (University)"
-            ) &
-              (is.na(employ.my_employment_status_has_not_changed) |
-                 employ.my_employment_status_has_not_changed == "My employment status has not changed" |
-                 employ.reduction_in_hours == "Reduction in hours" |
-                 employ.change_in_duties_or_responsibilities == "Change in duties or responsibilities" |
-                 employ.increased_hours == "Increased hours" |
-                 employ.benefits_increased == "Benefits increased" |
-                 employ.benefits_decreased == "Benefits decreased" |
-                 employ.other == "Other") ~ "Student"),
-          
-          
-        )
-    )
-}
+      mutate(
+        employed =
+          case_when(
+            employ.became_unemployed == "Became unemployed" ~ "Unemployed",
+            
+            employ.became_employed== "Became employed" ~ "Employed",
+            
+            (
+              (employ.unemployed == "Unemployed" |
+                 employ.receiving_state_income == "Receiving state income" |
+                 employ.retired == "Retired") &
+                (employ.my_employment_status_has_not_changed == "My employment status has not changed" |
+                   employ.other == "Other") ~ "Unemployed"),
+            
+            employ.reduction_in_hours == "Reduction in hours" |
+              employ.reduction_in_salary == "Reduction in salary" |
+              employ.change_in_duties_or_responsibilities == "Change in duties or responsibilities" |
+              employ.increased_hours == "Increased hours" |
+              employ.increased_salary == "Increased salary" |
+              employ.furloughed_or_paid_leave_government_funded == "Furloughed or paid leave (Government funded)" |
+              employ.furloughed_or_paid_leave_company_funded == "Furloughed or paid leave (Company funded)" |
+             # employ.taking_unpaid_leave == "Taking unpaid leave" |
+              employ.paid_leave_furloughed == "Furloughed or paid leave (Government funded with company supplement)" ~ "Employed",
+            
+            (
+              (employ.unemployed == "Unemployed" |
+                 employ.receiving_state_income == "Receiving state income" |
+                 employ.retired == "Retired")  &
+                (employ.benefits_increased == "Benefits increased" |
+                   employ.benefits_decreased == "Benefits decreased") ~ "Unemployed"),
+            
+            (
+              (employ.fulltime_employed   == "Full-time employed" |
+                 employ.parttime_employed == "Part-time employed" |
+                 employ.zerohours_contract == "Zero-hours contract" |
+                 employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
+                 employ.selfemployed == "Self-employed" |
+                 employ.contract_or_freelance_work == "Contract or freelance work" |
+                 employ.small_business_owner == "Small business owner") &
+                (
+                  employ.my_employment_status_has_not_changed == "My employment status has not changed" |
+                    employ.benefits_increased == "Benefits increased" |
+                    employ.benefits_decreased == "Benefits decreased" |
+                    employ.other == "Other") ~ "Employed"),
+            
+            (
+              (employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
+                 employ.student_university == "Student (University)"
+              ) &
+                (is.na(employ.my_employment_status_has_not_changed) |
+                   employ.my_employment_status_has_not_changed == "My employment status has not changed" |
+                   employ.reduction_in_hours == "Reduction in hours" |
+                   employ.change_in_duties_or_responsibilities == "Change in duties or responsibilities" |
+                   employ.increased_hours == "Increased hours" |
+                   employ.benefits_increased == "Benefits increased" |
+                   employ.benefits_decreased == "Benefits decreased" |
+                   employ.other == "Other") ~ "Student"),
+            
+            ((
+              (employ.retired == "Retired" |
+                 employ.unemployed =="Unemployed" |
+                 employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
+                 employ.receiving_state_income == "Receiving state income" |
+                 employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
+                 employ.student_university == "Student (University)") &
+                is.na(employ.my_employment_status_has_not_changed)
+            ) ~ "Unemployed"),
+            
+            
+            ((
+              (employ.fulltime_employed == "Full-time employed" |
+                 employ.parttime_employed =="Part-time employed" |
+                 employ.zerohours_contract == "Zero-hours contract" |
+                 employ.selfemployed == "Self-employed" |
+                 employ.contract_or_freelance_work == "Contract or freelance work" |
+                 employ.small_business_owner == "Small business owner") &
+                is.na(employ.my_employment_status_has_not_changed)
+            ) ~ "Employed"),
+            
+            
+          )
+      )
+  }

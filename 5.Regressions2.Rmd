@@ -39,7 +39,7 @@ source("./functions.R")
 
 # Read in data
 ```{r}
-dat <- readRDS(file = "../data_cleaned/test_dat2021-06-07.rds")
+dat <- readRDS(file = "../data_cleaned/test_dat2021-06-09.rds")
 dim(dat)
 colnames(dat)
 
@@ -314,7 +314,20 @@ dat %>%
   freq(psych_disorder_factor)
 ```
 
+Explore absolute risk across each minimal explanatory variable group for each phenotype
 
+Binge eating - age
+```{r}
+dat_no_na <- dat %>%
+  filter(!is.na(NEW_binge_eating_pandemic))
+
+dat_no_na %>%
+  nrow()
+
+dat_no_na %>%
+  group_by(age_category_COVID_baseline) %>%
+  count(NEW_binge_eating_pandemic)
+```
 
 
 #Binge eating - minimal model
@@ -342,7 +355,8 @@ dat_plot <- dat %>%
          "Race" = "ethnicity_binary",
          "Pandemic_binge_eating" = "NEW_binge_eating_pandemic",
          "A_Levels_higher" = "A_Levels_higher",
-         "Psych_disorder" = "psych_disorder_factor")
+         "Psych_disorder" = "psych_disorder_factor"
+         )
 
 
 #1. Plot
@@ -630,13 +644,30 @@ dat <- dat %>%
 
 
 freq(dat$key_worker)
+
+```
+Employment
+```{r}
+dat <- dat %>%
+  mutate(employed_key = factor(employed_key,
+                       levels = c("Yes",
+                                  "Yes, key",
+                                  "No",
+                                  "Student"
+                                  )))
+
+dat %>%
+  freq(employed_key)
+
 ```
 
-# Age + gender + ethnicity + highest_education +  control + vulnerable group + key worker status + pandemic worry + covid test + loss of loved one + loneliness + main eco change + living situation change - Binge eating
+
+
+#COVID model - Binge eating
 
 ```{r}
 #  Age + gender + ethnicity + highest education + control+ vulnerable group + key worker status + pandemic worry + covid test - Binge eating
-model6 <- glm(NEW_binge_eating_pandemic ~  age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor + key_worker + vulnerable_group_member +  covid_test_final + panworry_total_score_percent + loss_of_loved_one_final + increased_loneliness_during_pandemic + main_economic_activity_change + living_situation_change,
+model6 <- glm(NEW_binge_eating_pandemic ~  age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor + employed_key + vulnerable_group_member +  covid_test_final + loss_of_loved_one_final + increased_loneliness_during_pandemic + main_economic_activity_change + living_situation_change,
                data = dat,
                family = "binomial")
 
@@ -647,9 +678,12 @@ tidy(model6,
 fitted(model6) %>% 
   length()
 
+dat %>%
+  freq(employed_key)
 ```
 
-#Plot! Age + gender + ethnicity + highest education +  control + vulnerable group + key worker status + pandemic worry + covid test- Binge eating
+
+#Plot! Binge eating - COVID model
 ```{r}
 
 dat_plot <- dat %>%
@@ -659,7 +693,7 @@ dat_plot <- dat %>%
          "Pandemic_binge_eating" = "NEW_binge_eating_pandemic",
          "A_Levels_higher" = "A_Levels_higher",
          "Psych_disorder" = "psych_disorder_factor",
-         "Key_worker_status" = "key_worker",
+         "Employment" = "employed_key",
          "Vulnerable_group_member" ="vulnerable_group_member",
          "Pandemic_worry" = "panworry_total_score_percent",
          "Covid_test" = "covid_test_final",
@@ -676,7 +710,7 @@ explanatory <- c("Age",
                  "Race",
                  "A_Levels_higher",
                  "Psych_disorder",
-                 "Key_worker_status",
+                 "Employment",
                  "Vulnerable_group_member",
                  "Pandemic_worry",
                  "Covid_test",
@@ -698,13 +732,38 @@ dat_plot %>%
           remove_ref = TRUE) +
 theme_bw()
 
-?or_plot
+```
+Exploring absolute risk of significant predictors in fully adjusted model
+
+Gender
+```{r}
+dat_no_na <- dat %>%
+  filter(!is.na(NEW_binge_eating_pandemic))
+
+dat_no_na %>%
+  nrow()
+
+dat_no_na %>%
+  group_by(gender_cleaned) %>%
+  count(NEW_binge_eating_pandemic)
+```
+Psych disorder
+```{r}
+dat_no_na %>%
+  group_by(psych_disorder_factor) %>%
+  count(NEW_binge_eating_pandemic)
 ```
 
+Living experience
+```{r}
+dat_no_na %>%
+  group_by(living_situation_change) %>%
+  count(NEW_binge_eating_pandemic)
+```
 #  Age + gender + ethnicity + highest education +  control + vulnerable group + key worker status + pandemic worry + covid test- - Low weight
 ```{r}
 #  Age + gender + ethnicity + highest education +  control + vulnerable group + key worker status + pandemic worry + covid test- - Low weight
-model7 <- glm(NEW_low_weight_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor + key_worker + vulnerable_group_member +panworry_total_score_percent + covid_test_final,
+model7 <- glm(NEW_low_weight_pandemic ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor + employed_key + vulnerable_group_member +panworry_total_score_percent + covid_test_final,
                data = dat,
                family = "binomial")
 
@@ -716,7 +775,7 @@ fitted(model7) %>%
   length()
 ```
 
-#Plot! AAge + gender + ethnicity + highest education +  control + vulnerable group + key worker status + pandemic worry + covid test- Low weight
+#Plot!  Low weight - COVID model
 ```{r}
 
 dat_plot <- dat %>%
@@ -726,7 +785,7 @@ dat_plot <- dat %>%
          "Pandemic_low_weight" = "NEW_low_weight_pandemic",
          "A_Levels_higher" = "A_Levels_higher",
          "Psych_disorder" = "psych_disorder_factor",
-         "Key_worker_status" = "key_worker",
+        "Employment" = "employed_key",
          "Vulnerable_group_member" ="vulnerable_group_member",
          "Pandemic_worry" = "panworry_total_score_percent",
          "Covid_test" = "covid_test_final",
@@ -743,7 +802,7 @@ explanatory <- c("Age",
                  "Race",
                  "A_Levels_higher",
                  "Psych_disorder",
-                 "Key_worker_status",
+                 "Employment",
                  "Vulnerable_group_member",
                  "Pandemic_worry",
                  "Covid_test",
@@ -770,7 +829,7 @@ dat_plot %>%
 ```{r}
 
 #  Age + gender + ethnicity + highest education +  control + vulnerable group + key worker status + pandemic worry + covid test- - Low weight
-model8 <- glm(passive_suicidal_ideation_PANDEMIC ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor + PREPANDEMIC_passive_suicidal_ideation_factor + key_worker + vulnerable_group_member +panworry_total_score_percent + covid_test_final,
+model8 <- glm(passive_suicidal_ideation_PANDEMIC ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor + PREPANDEMIC_passive_suicidal_ideation_factor + employed_key + vulnerable_group_member +panworry_total_score_percent + covid_test_final,
                data = dat,
                family = "binomial")
 
@@ -794,7 +853,7 @@ dat_plot <- dat %>%
           "Prepan_experience" = "PREPANDEMIC_passive_suicidal_ideation_factor",
          "A_Levels_higher" = "A_Levels_higher",
          "Psych_disorder" = "psych_disorder_factor",
-         "Key_worker_status" = "key_worker",
+        "Employment" = "employed_key",
          "Vulnerable_group_member" ="vulnerable_group_member",
          "Pandemic_worry" = "panworry_total_score_percent",
          "Covid_test" = "covid_test_final",
@@ -812,7 +871,7 @@ explanatory <- c("Age",
                  "A_Levels_higher",
                  "Psych_disorder",
                  "Prepan_experience",
-                 "Key_worker_status",
+                 "Employment",
                  "Vulnerable_group_member",
                  "Pandemic_worry",
                  "Covid_test",
@@ -839,7 +898,7 @@ dat_plot %>%
 ```{r}
 
 #  Age + gender + ethnicity + highest education +  control + vulnerable group + key worker status + pandemic worry + covid test- - Low weight
-model9 <- glm(selfharm_ideation_PANDEMIC ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor +PREPANDEMIC_selfharm_ideation_factor+ key_worker + vulnerable_group_member +panworry_total_score_percent + covid_test_final,
+model9 <- glm(selfharm_ideation_PANDEMIC ~ age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor +PREPANDEMIC_selfharm_ideation_factor+ employed_key + vulnerable_group_member +panworry_total_score_percent + covid_test_final,
                data = dat,
                family = "binomial")
 
@@ -862,7 +921,7 @@ dat_plot <- dat %>%
           "Prepan_experience" = "PREPANDEMIC_selfharm_ideation_factor",
          "A_Levels_higher" = "A_Levels_higher",
          "Psych_disorder" = "psych_disorder_factor",
-         "Key_worker_status" = "key_worker",
+        "Employment" = "employed_key",
          "Vulnerable_group_member" ="vulnerable_group_member",
          "Pandemic_worry" = "panworry_total_score_percent",
          "Covid_test" = "covid_test_final",
@@ -880,7 +939,7 @@ explanatory <- c("Age",
                  "A_Levels_higher",
                  "Psych_disorder",
                  "Prepan_experience",
-                 "Key_worker_status",
+                 "Employment",
                  "Vulnerable_group_member",
                  "Pandemic_worry",
                  "Covid_test",
@@ -906,7 +965,7 @@ dat_plot %>%
 ```{r}
 
 #  Age + gender + ethnicity + highest education +  control + vulnerable group + key worker status + pandemic worry + covid test- - Low weight
-model10 <- glm(selfharm_PANDEMIC ~age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor + PREPANDEMIC_selfharm_factor + key_worker + vulnerable_group_member +panworry_total_score_percent + covid_test_final,
+model10 <- glm(selfharm_PANDEMIC ~age_category_COVID_baseline + gender_cleaned + ethnicity_binary + highest_education + psych_disorder_factor + PREPANDEMIC_selfharm_factor + employed_key + vulnerable_group_member  + covid_test_final,
                data = dat,
                family = "binomial")
 
@@ -930,7 +989,7 @@ dat_plot <- dat %>%
           "Prepan_experience" = "PREPANDEMIC_selfharm_factor",
          "A_Levels_higher" = "A_Levels_higher",
          "Psych_disorder" = "psych_disorder_factor",
-         "Key_worker_status" = "key_worker",
+        "Employment" = "employed_key",
          "Vulnerable_group_member" ="vulnerable_group_member",
          "Pandemic_worry" = "panworry_total_score_percent",
          "Covid_test" = "covid_test_final",
@@ -948,7 +1007,7 @@ explanatory <- c("Age",
                  "A_Levels_higher",
                  "Psych_disorder",
                  "Prepan_experience",
-                 "Key_worker_status",
+                 "Employment",
                  "Vulnerable_group_member",
                  "Pandemic_worry",
                  "Covid_test",

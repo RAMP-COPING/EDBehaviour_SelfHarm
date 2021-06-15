@@ -47,7 +47,7 @@ source("./functions.R")
 
 # Read in data
 ```{r}
-dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-06-04.rds")
+dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-06-08.rds")
 dim(dat)
 #colnames(dat)
 
@@ -70,7 +70,6 @@ dat <- dat %>%
 
 dat %>%
   freq(cohort_name)
-
 
 ```
 
@@ -2260,6 +2259,29 @@ dat %>%
 
 ```
 
+#Employed + key worker
+```{r}
+
+dat <- dat %>%
+  mutate(employed_key =
+           case_when(key_worker == "Key worker" ~ "Yes, key",
+                     
+                     key_worker == "No key worker" &
+                      employed == "Employed" ~ "Yes",
+                     
+                     employed == "Unemployed" ~ "No",
+                     
+                      employed == "Student" ~ "Student"
+                     )
+           )
+
+
+#Check
+dat %>%
+  freq(employed_key)
+```
+
+
 ##FOR NOW - SAVE THE VARIABLES NEEDED FOR INTERIM ANALYSIS
 ```{r}
 test_dat <- dat %>%
@@ -2295,7 +2317,8 @@ test_dat <- dat %>%
        panworry_factor_TEST, #waiting on data!
        increased_loneliness_during_pandemic,
        main_economic_activity_change,
-       living_situation_change
+       living_situation_change, 
+       employed_key
          
       )
 ```
