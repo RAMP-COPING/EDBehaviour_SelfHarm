@@ -215,20 +215,16 @@ dat.long <- dat.long %>%
              lifetime_binge_eating_baseline_numeric == 1,
              "Not new",
              new_experience
-           )) %>%
-  select(ID, #Check that it worked
-         ed_scid5.regular_episodes_eating_binges,
-         wave,
-         new_experience,
-        lifetime_binge_eating_baseline_numeric)
+           ))
+#%>%
+#  select(ID, #Check that it worked
+ #        ed_scid5.regular_episodes_eating_binges,
+ #        wave,
+ #        new_experience,
+ #       lifetime_binge_eating_baseline_numeric)
         
         
 ```
-
-
-
-
-
 
 
 ##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
@@ -237,7 +233,6 @@ dat.long <- dat.long %>%
 ```{r}
 #get rid of nas
 dat.no.nas <- dat.long[!is.na(dat.long$ed_scid5.regular_episodes_eating_binges),]
-
 ```
 
 #1. Change wave to factor and re-order
@@ -257,11 +252,10 @@ dat.no.nas <- dat.no.nas %>%
 
 
 #Check that this worked
-
 summary(dat.no.nas$phase)
 
 
-
+dat.no.nas$
 ```
 
 #4. Rename waves to dates
@@ -288,37 +282,16 @@ levels(dat.no.nas$phase)[8] <- "9th March - 6th April 2021"
 
 ```
 
-
 #5. Format data to plot
 ```{r}
 #get data in format to plot
 dat_plot <- dat.no.nas %>%
   group_by(phase) %>%
   dplyr::summarise(wcount = table(ed_scid5.regular_episodes_eating_binges) / sum(table(ed_scid5.regular_episodes_eating_binges))) %>%
-  ungroup() %>%
+  ungroup() %>% ##Here - need to add a column of % of "Yes" that are new
   mutate(ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["ed_scid5.regular_episodes_eating_binges"]]),
                     length(levels(dat.no.nas[["phase"]])))) 
   
-
-
-```
-
-
-#5. Format data to plot
-```{r}
-#get data in format to plot
-dat_plot <- dat.no.nas %>%
-  group_by(phase) %>%
-  dplyr::summarise(wcount = table(ed_scid5.regular_episodes_eating_binges) / sum(table(ed_scid5.regular_episodes_eating_binges))) %>%
-  ungroup() %>%
-  mutate(ed_scid5.regular_episodes_eating_binges = rep(levels(dat.no.nas[["ed_scid5.regular_episodes_eating_binges"]]),
-                    length(levels(dat.no.nas[["phase"]]))))
-
-
-
-
-
-
 
 ```
 
@@ -340,7 +313,7 @@ ggplot(dat_plot,
        aes(x = ed_scid5.regular_episodes_eating_binges,
            y = wcount,
            fill = phase,
-           alpha = new_binge_eating_each_wave)) + #*****
+           alpha = new_experience)) + #*****
   geom_bar(aes(group = phase),
            stat = "identity",
            position = "dodge",
