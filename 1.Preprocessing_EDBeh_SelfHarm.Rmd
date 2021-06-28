@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       cache=FALSE)
 ```
 
+
 Delete everything in your global environment
 ```{r Delete everything in your global environment}
 remove(list = ls())
