@@ -1,0 +1,1089 @@
+---
+title: "Deriving Variables"
+author: "Helena Davies"
+date: "06/05/2021"
+output: html_document
+---
+
+ORDER OF SCRIPTS
+1. Preprocessing
+2. Baseline ED groupings
+3. Merging
+4. Deriving variables
+
+
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Delete everything in your global environment
+```{r Delete everything in your global environment}
+remove(list = ls())
+```
+
+#### Call in library script
+
+```{r source files}
+source("./libraries.R")
+```
+
+
+#Retrieve the recent date
+```{r Recent date}
+date = Sys.Date()
+date
+```
+
+#### R functions
+
+```{r call in function library functions}
+# source all functions in the function folder
+source("./functions.R")
+```
+
+# Read in data
+```{r}
+dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-05-12.rds")
+dim(dat)
+colnames(dat)
+
+#Drop one dup cohort name columns
+dat$cohort_name.y <- NULL
+
+dat <- dat %>% 
+  rename(
+    cohort_name = cohort_name.x
+    )
+
+```
+
+
+OUTCOMES
+
+•	NEW Eating disorder behaviour:
+    o	binge eating during the COVID-19 pandemic: binary (1,0)
+    o	low weight during the COVID-19 pandemic: binary (1,0)
+
+•	NEW Self-harm thoughts/behaviour:
+    o	passive suicidal ideation during COVID-19 pandemic: binary (1,0)
+    o	self-harm ideation during the COVID-19 pandemic: binary (1,0)
+    o	self-harm during the COVID-19 pandemic: binary (1,0)
+
+o	Cumulative score; 
+    	scores of 3 indicate someone has experienced all of the above during the pandemic
+    	scores of 2 indicate someone has experienced two of the above during the pandemic
+    	scores of 1 indicate someone has experienced one of the above during the pandemic
+    	scores of 0 indicate someone has experienced none of the above during the pandemic
+
+
+##ANY Binge eating during the COVID-19 pandemic
+```{r}
+
+dat <- dat %>%
+  mutate(pandemic_binge_eating =
+           case_when(ed_scid5.regular_episodes_eating_binges_.Wave_1b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_2b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_3b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_4b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_6b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_8b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_10b == "Yes" |
+                       ed_scid5.regular_episodes_eating_binges_.Wave_12b == "Yes" ~ 1,
+                     
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_1b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_2b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_3b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_4b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_6b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_8b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_10b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b) ~ NA_real_,
+                     
+                      (ed_scid5.regular_episodes_eating_binges_.Wave_1b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_1b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_2b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_2b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_3b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_3b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_4b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_4b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_6b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_6b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_8b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_8b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_10b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_10b)) &
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_12b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b)) ~ 0
+                    
+           ))
+
+#Check
+dat %>%
+  freq(pandemic_binge_eating)
+```
+
+#NEW binge eating experience, i.e., those who at baseline indicated no lifetime experience of binge eating
+```{r}
+
+dat <- dat %>%
+  mutate(NEW_binge_eating_pandemic =
+           case_when(lifetime_binge_eating_baseline_numeric == 0 & #No lifetime binge eating at baseline, but occured at least once during the pandemic
+                     pandemic_binge_eating == 1 ~ 1,
+                     
+                     lifetime_binge_eating_baseline_numeric == 0 &  #No lifetime binge eating at baseline, and no binge eating during the pandemic
+                     pandemic_binge_eating == 0 ~ 0
+                     
+           )
+    
+    
+  )
+
+
+dat %>%
+  freq(NEW_binge_eating_pandemic)
+```
+
+
+##ANY Low weight during the COVID-19 pandemic
+```{r}
+
+dat <- dat %>%
+  mutate(pandemic_low_weight =
+           case_when(ed_scid5.weigh_weighed_past_month_.Wave_1b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_2b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_3b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_4b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_6b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_8b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_10b == "Yes" |
+                       ed_scid5.weigh_weighed_past_month_.Wave_12b == "Yes" ~ 1,
+                     
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_1b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_2b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_3b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_4b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_6b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_8b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_10b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b) ~ NA_real_,
+                     
+                       (ed_scid5.weigh_weighed_past_month_.Wave_1b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_1b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_2b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_2b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_3b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_3b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_4b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_4b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_6b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_6b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_8b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_8b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_10b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_10b)) &
+                       (ed_scid5.weigh_weighed_past_month_.Wave_12b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b)) ~ 0
+                    
+           ))
+
+#Check
+dat %>%
+  freq(pandemic_low_weight)
+
+```
+
+#NEW low weight experience, i.e., those who at baseline indicated no lifetime experience of binge eating
+```{r}
+
+dat <- dat %>%
+  mutate(NEW_low_weight_pandemic =
+           case_when(lifetime_low_weight_baseline_numeric == 0 & #No lifetime low weight at baseline, but occured at least once during the pandemic
+                     pandemic_low_weight == 1 ~ 1,
+                     
+                     lifetime_low_weight_baseline_numeric == 0 &  #No lifetime low weight at baseline, and no low weight during the pandemic
+                     pandemic_low_weight == 0 ~ 0
+                     
+           )
+    
+    
+  )
+
+
+dat %>%
+  freq(NEW_low_weight_pandemic)
+
+
+```
+
+  
+#ANY passive suicidal ideation during COVID-19 pandemic
+```{r}
+#Experience during past two weeks 
+dat <- dat %>%
+  mutate(TWO_WEEKS_PANDEMIC_passive_suicidal_ideation =
+           case_when(
+                     taf.felt_weeks_past_.Wave_1a == "Yes" |
+                       taf.felt_weeks_past_.Wave_1b == "Yes" |
+                       taf.felt_weeks_past_.Wave_2a == "Yes" |
+                       taf.felt_weeks_past_.Wave_2b == "Yes" |
+                       taf.felt_weeks_past_.Wave_3a == "Yes" |
+                       taf.felt_weeks_past_.Wave_3b == "Yes" |
+                       taf.felt_weeks_past_.Wave_4a == "Yes" |
+                       taf.felt_weeks_past_.Wave_4b == "Yes" |
+                       taf.felt_weeks_past_.Wave_5a == "Yes" |
+                       taf.felt_weeks_past_.Wave_6b == "Yes" |
+                       taf.felt_weeks_past_.Wave_7a == "Yes" |
+                       taf.felt_weeks_past_.Wave_8b == "Yes" |
+                       taf.felt_weeks_past_.Wave_9a == "Yes" |
+                       taf.felt_weeks_past_.Wave_10b == "Yes" |
+                       taf.felt_weeks_past_.Wave_11a == "Yes" |
+                       taf.felt_weeks_past_.Wave_12b == "Yes" ~ 1,
+                        
+              
+                       is.na(taf.felt_weeks_past_.Wave_1a) &
+                       is.na(taf.felt_weeks_past_.Wave_1b) &
+                       is.na(taf.felt_weeks_past_.Wave_2a) &
+                       is.na(taf.felt_weeks_past_.Wave_2b) &
+                       is.na(taf.felt_weeks_past_.Wave_3a) &
+                       is.na(taf.felt_weeks_past_.Wave_3b) &
+                       is.na(taf.felt_weeks_past_.Wave_4a) &
+                       is.na(taf.felt_weeks_past_.Wave_4b) &
+                       is.na(taf.felt_weeks_past_.Wave_5a) &
+                       is.na(taf.felt_weeks_past_.Wave_6b) &
+                       is.na(taf.felt_weeks_past_.Wave_7a) &
+                       is.na(taf.felt_weeks_past_.Wave_8b) &
+                       is.na(taf.felt_weeks_past_.Wave_9a) &
+                       is.na(taf.felt_weeks_past_.Wave_10b) &
+                       is.na(taf.felt_weeks_past_.Wave_11a) &
+                       is.na(taf.felt_weeks_past_.Wave_12b) ~ NA_real_,
+                     
+                      
+                       (taf.felt_weeks_past_.Wave_1a == "No" | is.na(taf.felt_weeks_past_.Wave_1a)) &
+                       (taf.felt_weeks_past_.Wave_1b == "No" | is.na(taf.felt_weeks_past_.Wave_1b)) &
+                       (taf.felt_weeks_past_.Wave_2a == "No" | is.na(taf.felt_weeks_past_.Wave_2a)) &
+                       (taf.felt_weeks_past_.Wave_2b == "No" | is.na(taf.felt_weeks_past_.Wave_2b)) &
+                       (taf.felt_weeks_past_.Wave_3a == "No" | is.na(taf.felt_weeks_past_.Wave_3a)) &
+                       (taf.felt_weeks_past_.Wave_3b == "No" | is.na(taf.felt_weeks_past_.Wave_3b)) &
+                       (taf.felt_weeks_past_.Wave_4a == "No" | is.na(taf.felt_weeks_past_.Wave_4a)) &
+                       (taf.felt_weeks_past_.Wave_4b == "No" | is.na(taf.felt_weeks_past_.Wave_4b)) &
+                       (taf.felt_weeks_past_.Wave_5a == "No" | is.na(taf.felt_weeks_past_.Wave_5a)) &
+                       (taf.felt_weeks_past_.Wave_6b == "No" | is.na(taf.felt_weeks_past_.Wave_6b)) &
+                       (taf.felt_weeks_past_.Wave_7a == "No" | is.na(taf.felt_weeks_past_.Wave_7a)) &
+                       (taf.felt_weeks_past_.Wave_8b == "No" | is.na(taf.felt_weeks_past_.Wave_8b)) &
+                       (taf.felt_weeks_past_.Wave_9a == "No" | is.na(taf.felt_weeks_past_.Wave_9a)) &
+                       (taf.felt_weeks_past_.Wave_10b == "No" | is.na(taf.felt_weeks_past_.Wave_10b)) &
+                       (taf.felt_weeks_past_.Wave_11a == "No" | is.na(taf.felt_weeks_past_.Wave_11a)) &
+                       (taf.felt_weeks_past_.Wave_12b == "No" | is.na(taf.felt_weeks_past_.Wave_12b)) ~ 0
+                    
+           ))
+
+#Check
+dat %>%
+  freq(TWO_WEEKS_PANDEMIC_passive_suicidal_ideation)
+
+
+#Experience EVER
+dat <- dat %>%
+  mutate(EVER_PANDEMIC_passive_suicidal_ideation =
+           case_when(
+                     taf.worth_living_life_people_.Wave_1a == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_1b == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_2a == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_2b == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_3a == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_3b == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_4a == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_4b == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_5a == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_6b == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_7a == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_8b == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_9a == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_10b == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_11a == "Yes, once" |
+                       taf.worth_living_life_people_.Wave_12b == "Yes, once" |
+                       
+                       taf.worth_living_life_people_.Wave_1a == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_1b == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_2a == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_2b == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_3a == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_3b == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_4a == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_4b == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_5a == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_6b == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_7a == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_8b == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_9a == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_10b == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_11a == "Yes, more than once" |
+                       taf.worth_living_life_people_.Wave_12b == "Yes, more than once" ~ 1,
+                        
+              
+                       is.na(taf.worth_living_life_people_.Wave_1a) &
+                       is.na(taf.worth_living_life_people_.Wave_1b) &
+                       is.na(taf.worth_living_life_people_.Wave_2a) &
+                       is.na(taf.worth_living_life_people_.Wave_2b) &
+                       is.na(taf.worth_living_life_people_.Wave_3a) &
+                       is.na(taf.worth_living_life_people_.Wave_3b) &
+                       is.na(taf.worth_living_life_people_.Wave_4a) &
+                       is.na(taf.worth_living_life_people_.Wave_4b) &
+                       is.na(taf.worth_living_life_people_.Wave_5a) &
+                       is.na(taf.worth_living_life_people_.Wave_6b) &
+                       is.na(taf.worth_living_life_people_.Wave_7a) &
+                       is.na(taf.worth_living_life_people_.Wave_8b) &
+                       is.na(taf.worth_living_life_people_.Wave_9a) &
+                       is.na(taf.worth_living_life_people_.Wave_10b) &
+                       is.na(taf.worth_living_life_people_.Wave_11a) &
+                       is.na(taf.worth_living_life_people_.Wave_12b) ~ NA_real_,
+                     
+                      
+                       (taf.worth_living_life_people_.Wave_1a == "No" | is.na(taf.worth_living_life_people_.Wave_1a)) &
+                       (taf.worth_living_life_people_.Wave_1b == "No" | is.na(taf.worth_living_life_people_.Wave_1b)) &
+                       (taf.worth_living_life_people_.Wave_2a == "No" | is.na(taf.worth_living_life_people_.Wave_2a)) &
+                       (taf.worth_living_life_people_.Wave_2b == "No" | is.na(taf.worth_living_life_people_.Wave_2b)) &
+                       (taf.worth_living_life_people_.Wave_3a == "No" | is.na(taf.worth_living_life_people_.Wave_3a)) &
+                       (taf.worth_living_life_people_.Wave_3b == "No" | is.na(taf.worth_living_life_people_.Wave_3b)) &
+                       (taf.worth_living_life_people_.Wave_4a == "No" | is.na(taf.worth_living_life_people_.Wave_4a)) &
+                       (taf.worth_living_life_people_.Wave_4b == "No" | is.na(taf.worth_living_life_people_.Wave_4b)) &
+                       (taf.worth_living_life_people_.Wave_5a == "No" | is.na(taf.worth_living_life_people_.Wave_5a)) &
+                       (taf.worth_living_life_people_.Wave_6b == "No" | is.na(taf.worth_living_life_people_.Wave_6b)) &
+                       (taf.worth_living_life_people_.Wave_7a == "No" | is.na(taf.worth_living_life_people_.Wave_7a)) &
+                       (taf.worth_living_life_people_.Wave_8b == "No" | is.na(taf.worth_living_life_people_.Wave_8b)) &
+                       (taf.worth_living_life_people_.Wave_9a == "No" | is.na(taf.worth_living_life_people_.Wave_9a)) &
+                       (taf.worth_living_life_people_.Wave_10b == "No" | is.na(taf.worth_living_life_people_.Wave_10b)) &
+                       (taf.worth_living_life_people_.Wave_11a == "No" | is.na(taf.worth_living_life_people_.Wave_11a)) &
+                       (taf.worth_living_life_people_.Wave_12b == "No" | is.na(taf.worth_living_life_people_.Wave_12b)) ~ 0
+                    
+           ))
+
+#Check
+dat %>%
+  freq(EVER_PANDEMIC_passive_suicidal_ideation)
+
+
+
+```
+
+## Baseline passive suicidal ideation - NEVER experienced
+
+taf.pandemic_felt_.Wavebaseline = Many people have thoughts that life is not worth living. Have you felt that way before the pandemic?
+taf.worth_living_life_people_.Wavebaseline = Many people have thoughts that life is not worth living. Have you felt that way?
+```{r}
+
+##At baseline indicated NEVER experiencing it 
+dat <- dat %>%
+  mutate(baseline_passive_suicidal_ideation =
+           case_when(
+                    taf.worth_living_life_people_.Wavebaseline == "No" ~ 0, #Never experienced it
+               )
+    
+  )
+
+
+#Check 
+dat %>%
+  freq(baseline_passive_suicidal_ideation)
+
+
+```
+
+#Baseline  passive suicidal ideation - NEW experience DURING pandemic
+```{r}
+
+##At baseline indicated NEW experience
+
+dat <- dat %>%
+  mutate(BASELINE_PANDEMIC_passive_suicidal_ideation =
+           case_when(
+             
+              (taf.worth_living_life_people_.Wavebaseline == "Yes, once" |
+                       taf.worth_living_life_people_.Wavebaseline == "Yes, more than once") & #YES they have experienced it
+                     
+                    taf.pandemic_felt_.Wavebaseline == "No" ~ 1 # BUT Not experienced before pandemic, therefore first experience is DURING pandemic
+                    
+                     
+                       )
+                      
+           )
+    
+
+#Check 
+dat %>%
+  freq(BASELINE_PANDEMIC_passive_suicidal_ideation)
+```
+
+
+
+#Combined - passive suicidal ideation: NEW BASELINE experience OR NEW FOLLOW UP experience 
+
+```{r}
+#Then, of those who had never experienced it before the pandemic, who had a NEW experience
+dat <- dat %>%
+  mutate(NEW_passive_suicidal_ideation_pandemic =
+           case_when
+         
+         (baseline_passive_suicidal_ideation == 0 & #At baseline, have never experienced it
+             (TWO_WEEKS_PANDEMIC_passive_suicidal_ideation == 1 | #FIRST experience DURING pandemic (answered yes to 2 week question during pandemic)
+                EVER_PANDEMIC_passive_suicidal_ideation == 1 ) ~ 1, #FIRST experience DURING pandemic (answered yes to EVER question during pandemic)
+           
+              BASELINE_PANDEMIC_passive_suicidal_ideation == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
+
+             
+          baseline_passive_suicidal_ideation == 0 &
+             EVER_PANDEMIC_passive_suicidal_ideation == 0 ~ 0, #Baseline never experienced, and NO to EVER experiencing at ANY phase
+           )
+    
+  )
+
+#Check
+dat %>%
+  freq(NEW_passive_suicidal_ideation_pandemic)
+
+
+```
+
+
+
+
+#ANY self-harm ideation during the COVID-19 pandemic
+```{r}
+dat <- dat %>%
+  mutate(TWO_WEEKS_PANDEMIC_selfharm_ideation =
+           case_when(
+             taf.felt_weeks_past.1_.Wave_1a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_1b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_2a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_2b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_3a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_3b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_4a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_4b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_5a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_6b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_7a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_8b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_9a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_10b == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_11a == "Yes" |
+                       taf.felt_weeks_past.1_.Wave_12b == "Yes" ~ 1,
+                        
+              
+                       is.na(taf.felt_weeks_past.1_.Wave_1a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_1b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_2a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_2b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_3a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_3b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_4a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_4b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_5a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_6b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_7a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_8b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_9a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_10b) &
+                       is.na(taf.felt_weeks_past.1_.Wave_11a) &
+                       is.na(taf.felt_weeks_past.1_.Wave_12b) ~ NA_real_,
+                     
+                      
+                       (taf.felt_weeks_past.1_.Wave_1a == "No" | is.na(taf.felt_weeks_past.1_.Wave_1a)) &
+                       (taf.felt_weeks_past.1_.Wave_1b == "No" | is.na(taf.felt_weeks_past.1_.Wave_1b)) &
+                       (taf.felt_weeks_past.1_.Wave_2a == "No" | is.na(taf.felt_weeks_past.1_.Wave_2a)) &
+                       (taf.felt_weeks_past.1_.Wave_2b == "No" | is.na(taf.felt_weeks_past.1_.Wave_2b)) &
+                       (taf.felt_weeks_past.1_.Wave_3a == "No" | is.na(taf.felt_weeks_past.1_.Wave_3a)) &
+                       (taf.felt_weeks_past.1_.Wave_3b == "No" | is.na(taf.felt_weeks_past.1_.Wave_3b)) &
+                       (taf.felt_weeks_past.1_.Wave_4a == "No" | is.na(taf.felt_weeks_past.1_.Wave_4a)) &
+                       (taf.felt_weeks_past.1_.Wave_4b == "No" | is.na(taf.felt_weeks_past.1_.Wave_4b)) &
+                       (taf.felt_weeks_past.1_.Wave_5a == "No" | is.na(taf.felt_weeks_past.1_.Wave_5a)) &
+                       (taf.felt_weeks_past.1_.Wave_6b == "No" | is.na(taf.felt_weeks_past.1_.Wave_6b)) &
+                       (taf.felt_weeks_past.1_.Wave_7a == "No" | is.na(taf.felt_weeks_past.1_.Wave_7a)) &
+                       (taf.felt_weeks_past.1_.Wave_8b == "No" | is.na(taf.felt_weeks_past.1_.Wave_8b)) &
+                       (taf.felt_weeks_past.1_.Wave_9a == "No" | is.na(taf.felt_weeks_past.1_.Wave_9a)) &
+                       (taf.felt_weeks_past.1_.Wave_10b == "No" | is.na(taf.felt_weeks_past.1_.Wave_10b)) &
+                       (taf.felt_weeks_past.1_.Wave_11a == "No" | is.na(taf.felt_weeks_past.1_.Wave_11a)) &
+                       (taf.felt_weeks_past.1_.Wave_12b == "No" | is.na(taf.felt_weeks_past.1_.Wave_12b)) ~ 0
+                    
+           ))
+
+#Check
+dat %>%
+  freq(TWO_WEEKS_PANDEMIC_selfharm_ideation)
+
+
+#Experience EVER
+dat <- dat %>%
+  mutate(EVER_PANDEMIC_selfharm_ideation =
+           case_when(
+                     taf.have_you_contemplated_harming_yourself_.Wave_1a == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_1b == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_2a == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_2b == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_3a == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_3b == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_4a == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_4b == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_5a == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_6b == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_7a == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_8b == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_9a == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_10b == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_11a == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_12b == "Yes, once" |
+                       
+                       taf.have_you_contemplated_harming_yourself_.Wave_1a == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_1b == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_2a == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_2b == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_3a == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_3b == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_4a == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_4b == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_5a == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_6b == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_7a == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_8b == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_9a == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_10b == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_11a == "Yes, more than once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_12b == "Yes, more than once" ~ 1,
+                        
+              
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_1a) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_1b) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_2a) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_2b) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_3a) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_3b) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_4a) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_4b) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_5a) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_6b) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_7a) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_8b) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_9a) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_10b) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_11a) &
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_12b) ~ NA_real_,
+                     
+                      
+                       (taf.have_you_contemplated_harming_yourself_.Wave_1a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_1a)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_1b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_1b)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_2a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_2a)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_2b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_2b)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_3a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_3a)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_3b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_3b)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_4a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_4a)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_4b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_4b)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_5a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_5a)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_6b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_6b)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_7a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_7a)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_8b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_8b)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_9a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_9a)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_10b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_10b)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_11a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_11a)) &
+                       (taf.have_you_contemplated_harming_yourself_.Wave_12b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_12b)) ~ 0
+                    
+           ))
+
+#Check
+dat %>%
+  freq(EVER_PANDEMIC_selfharm_ideation)
+
+```
+
+## Baseline self-harm ideation - NEVER experienced
+
+taf.pandemic_felt.1_.Wavebaseline = Have you contemplated harming yourself before the pandemic?
+taf.have_you_contemplated_harming_yourself_.Wavebaseline = Have you contemplated harming yourself ?
+```{r}
+
+##At baseline indiciated NEVER experiencing it OR indicated experiencing it but NOT before the pandemic
+dat <- dat %>%
+  mutate(baseline_selfharm_ideation =
+           case_when(
+                    taf.have_you_contemplated_harming_yourself_.Wavebaseline == "No" ~ 0, #Never experienced it
+                     
+                  
+           )
+    
+  )
+
+
+#Check 
+dat %>%
+  freq(baseline_selfharm_ideation)
+
+
+```
+#Baseline  self-harm ideation - NEW experience DURING pandemic
+```{r}
+
+##At baseline indicated NEW experience
+
+dat <- dat %>%
+  mutate(BASELINE_PANDEMIC_selfharm_ideation =
+           case_when(
+             
+              (taf.have_you_contemplated_harming_yourself_.Wavebaseline == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wavebaseline == "Yes, more than once") & #YES they have experienced it
+                     
+                    taf.pandemic_felt.1_.Wavebaseline == "No" ~ 1 # BUT Not experienced BEFORE pandemic, therefore first experience is DURING pandemic
+                    
+                     
+                       )
+                      
+           )
+    
+
+#Check 
+dat %>%
+  freq(BASELINE_PANDEMIC_selfharm_ideation)
+```
+
+
+#Combined - self-harm ideation: NEW BASELINE experience OR NEW FOLLOW UP experience 
+
+```{r}
+#Then, of those who had never experienced it before the pandemic, who had a NEW experience
+dat <- dat %>%
+  mutate(NEW_selfharm_ideation_pandemic =
+           case_when
+         
+         (baseline_selfharm_ideation == 0 & #At baseline, have never experienced it
+             (TWO_WEEKS_PANDEMIC_selfharm_ideation == 1 | #FIRST experience DURING pandemic (answered yes to 2 week question during pandemic)
+                EVER_PANDEMIC_selfharm_ideation == 1 ) ~ 1, #FIRST experience DURING pandemic (answered yes to EVER question during pandemic)
+           
+              BASELINE_PANDEMIC_selfharm_ideation == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
+
+             
+          baseline_selfharm_ideation == 0 &
+             EVER_PANDEMIC_selfharm_ideation == 0 ~ 0, #Baseline never experienced, and NO to EVER experiencing at ANY phase
+           )
+    
+  )
+
+#Check
+dat %>%
+  freq(NEW_selfharm_ideation_pandemic)
+
+
+```
+
+#ANY self-harm during the COVID-19 pandemic
+
+NB: There is no 'ever' question for self-harm
+```{r}
+
+dat <- dat %>%
+mutate(TWO_WEEKS_PANDEMIC_selfharm =
+           case_when(
+                     taf.meant_life_end_weeks_.Wave_1a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_1b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_2a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_2b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_3a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_3b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_4a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_4b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_5a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_6b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_7a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_8b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_9a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_10b == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_11a == "Yes" |
+                       taf.meant_life_end_weeks_.Wave_12b == "Yes" ~ 1,
+                        
+              
+                       is.na(taf.meant_life_end_weeks_.Wave_1a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_1b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_2a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_2b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_3a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_3b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_4a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_4b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_5a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_6b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_7a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_8b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_9a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_10b) &
+                       is.na(taf.meant_life_end_weeks_.Wave_11a) &
+                       is.na(taf.meant_life_end_weeks_.Wave_12b) ~ NA_real_,
+                     
+                      
+                       (taf.meant_life_end_weeks_.Wave_1a == "No" | is.na(taf.meant_life_end_weeks_.Wave_1a)) &
+                       (taf.meant_life_end_weeks_.Wave_1b == "No" | is.na(taf.meant_life_end_weeks_.Wave_1b)) &
+                       (taf.meant_life_end_weeks_.Wave_2a == "No" | is.na(taf.meant_life_end_weeks_.Wave_2a)) &
+                       (taf.meant_life_end_weeks_.Wave_2b == "No" | is.na(taf.meant_life_end_weeks_.Wave_2b)) &
+                       (taf.meant_life_end_weeks_.Wave_3a == "No" | is.na(taf.meant_life_end_weeks_.Wave_3a)) &
+                       (taf.meant_life_end_weeks_.Wave_3b == "No" | is.na(taf.meant_life_end_weeks_.Wave_3b)) &
+                       (taf.meant_life_end_weeks_.Wave_4a == "No" | is.na(taf.meant_life_end_weeks_.Wave_4a)) &
+                       (taf.meant_life_end_weeks_.Wave_4b == "No" | is.na(taf.meant_life_end_weeks_.Wave_4b)) &
+                       (taf.meant_life_end_weeks_.Wave_5a == "No" | is.na(taf.meant_life_end_weeks_.Wave_5a)) &
+                       (taf.meant_life_end_weeks_.Wave_6b == "No" | is.na(taf.meant_life_end_weeks_.Wave_6b)) &
+                       (taf.meant_life_end_weeks_.Wave_7a == "No" | is.na(taf.meant_life_end_weeks_.Wave_7a)) &
+                       (taf.meant_life_end_weeks_.Wave_8b == "No" | is.na(taf.meant_life_end_weeks_.Wave_8b)) &
+                       (taf.meant_life_end_weeks_.Wave_9a == "No" | is.na(taf.meant_life_end_weeks_.Wave_9a)) &
+                       (taf.meant_life_end_weeks_.Wave_10b == "No" | is.na(taf.meant_life_end_weeks_.Wave_10b)) &
+                       (taf.meant_life_end_weeks_.Wave_11a == "No" | is.na(taf.meant_life_end_weeks_.Wave_11a)) &
+                       (taf.meant_life_end_weeks_.Wave_12b == "No" | is.na(taf.meant_life_end_weeks_.Wave_12b)) ~ 0
+                    
+           ))
+                    
+   
+#Check
+dat %>%
+  freq(TWO_WEEKS_PANDEMIC_selfharm)
+
+
+```
+## Baseline self-harm ideation - NEVER experienced before pandemic
+
+taf.meant_life_end_weeks_.Wavebaseline = In the last two weeks, have you deliberately harmed yourself, whether or not you meant to end your life? (at baseline)
+taf.meant_end_life_pandemic_.Wavebaseline = Before the pandemic, had you deliberately harmed yourself, whether or not you meant to end your life?
+```{r}
+
+##At baseline indiciated NEVER experiencing it OR indicated experiencing it but NOT before the pandemic
+dat <- dat %>%
+  mutate(baseline_selfharm =
+           case_when(
+                    taf.meant_end_life_pandemic_.Wavebaseline == "No" ~ 0     
+                  
+           )
+    
+  )
+
+
+#Check 
+dat %>%
+  freq(baseline_selfharm)
+
+
+```
+
+#Baseline self-harm  - NEW experience DURING pandemic
+
+```{r}
+
+##At baseline indicated NEW experience
+
+dat <- dat %>%
+  mutate(BASELINE_PANDEMIC_selfharm =
+           case_when(
+             
+              taf.meant_life_end_weeks_.Wavebaseline ==  "Yes" & #Self harmed during past two weeks
+                taf.meant_end_life_pandemic_.Wavebaseline == "No" ~ 1 #BUT had not self harmed BEFORE the pandemic, so FIRST experience is DURING the pandemic
+              )
+  )
+    
+
+#Check 
+dat %>%
+  freq(BASELINE_PANDEMIC_selfharm)
+
+
+```
+
+#Combined - self-harm: NEW BASELINE experience OR NEW FOLLOW UP experience 
+taf.meant_end_life_pandemic_.Wavebaseline = Before the pandemic, had you deliberately harmed yourself, whether or not you meant to end your life? 
+
+NB: This question is shown to everyone, so I don't need to use the same logic as with the other baseline questions (i.e., there is no question that just asks: "Have you deliberately harmed yourself, whether or not you meant to end your life?) 
+```{r}
+#Then, of those who had never experienced it before the pandemic, who had a NEW experience
+dat <- dat %>%
+  mutate(NEW_selfharm_pandemic =
+           case_when(
+            
+             BASELINE_PANDEMIC_selfharm == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
+             
+             baseline_selfharm == 0 &  #before pandemic, have never experienced it
+                     TWO_WEEKS_PANDEMIC_selfharm == 1 ~ 1,#FIRST experience DURING pandemic (answered yes to 2 week question during pandemic)
+                     
+                     baseline_selfharm == 0 &  
+                     TWO_WEEKS_PANDEMIC_selfharm == 0 ~ 0 #Baseline never experienced, and NO to EVER experiencing at ANY phase
+                     
+           )
+    
+    
+  )
+
+#Check
+dat %>%
+  freq(NEW_selfharm_pandemic)
+
+
+```
+
+
+#EXPOSURE / covariates [ALL AT BASELINE OR BEFORE REPORT OF OUTCOME]
+  •	age
+  •	gender
+  • Current symptoms
+  •	Ethnicity 
+  •	Education 
+  • Comorbidity
+  • BMI at baseline
+  • Key worker status at baseline
+  • Defined as vulnerable person according to Goverment 
+  • Pre-existing physical health condition
+  • Positive covid test at baseline (or somewhere down the line - needs to be BEFORE symptom)
+
+  
+  o	Sensitivity analysis; Other mental health diagnosis pre-pandemic, i.e., not ED
+    	Count
+    	Group (Dep, Anx, Dep+Anx, Psychotic, ADHD, ASD, PTSD)
+    
+  o	Sensitivity analysis: Sex
+
+
+#Age
+
+NB: RAMP and NBR can use the variable "age_category" as age was assessed only once, at COVID baseline. For GLAD and EDGI, age has been assessed twice: once at GLAD/EDGI sign up, and once at COVID baseline (COPING questionnaire baseline). For the purposes of the regression analyses, I will be using 'age at assessment' i.e., age at COVID baseline (I have worked this out for GLAD and EDGI from their DOBs and their end dates for completing the COPING baseline demographics questions = age_category_COPING)
+```{r}
+
+#Collapse age category to of 16-18 and 19-25 to 16-25 (small categories otherwise)
+
+dat <- dat %>%
+  mutate(age_category_COVID_baseline = 
+           case_when(
+                     
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                     age_category == "16-18" ~ "16-25"),
+             
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                     age_category == "19-25" ~ "16-25"),
+             
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "26-35" ~ "26-35"),
+             
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "36-45" ~ "36-45"),
+             
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "46-55" ~ "46-55"),
+             
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "56-65" ~ "56-65"),
+             
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "66-70" ~ "66-70"),
+             
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "71-75" ~ "71-75"),
+             
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "76-80" ~ "76-80"),
+             
+            (( cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "81-85" ~ "81-85"),
+            
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "86-90" ~ "86-90"),
+            
+             ((cohort_name == "coping_nbr" |
+               cohort_name == "ramp") &
+                      age_category == "91-100" ~ "91-100"),
+             
+             ((cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                     age_category_COPING == "16-18" ~ "16-25"),
+             
+             ((cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                     age_category_COPING == "19-25" ~ "16-25"),
+              
+             ((cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "26-35" ~ "26-35"),
+              
+            (( cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "36-45" ~ "36-45"),
+             
+            (( cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "46-55" ~ "46-55"),
+             
+             ((cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "56-65" ~ "56-65"),
+              
+             ((cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "66-70" ~ "66-70"),
+              
+             ((cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "71-75" ~ "71-75"),
+             
+            ((cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "76-80" ~ "76-80"),
+             
+            ((cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "81-85" ~ "81-85"),
+            
+            (( cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "86-90" ~ "86-90"),
+            
+            (( cohort_name == "coping_glad" |
+               cohort_name == "coping_edgi") &
+                      age_category_COPING == "91-100" ~ "91-100")
+                     
+                     
+         )
+         )
+
+
+dat %>%
+  freq(age_category_COVID_baseline)
+
+```
+
+#Gender
+```{r}
+
+dat %>%
+  freq(gender_unc) 
+
+#Recode 
+dat <- dat %>%
+  mutate(gender_cleaned = 
+           case_when(gender_unc == "Male" ~ "Male",
+                     gender_unc == "Female" ~ "Female",
+                     
+                     gender_unc == "Non-binary" ~ "Minoritised gender",
+                      gender_unc == "Prefer to self-define" ~ "Minoritised gender"
+            )
+         )
+
+
+```
+
+
+
+#Sex (male = 0, female = 1)
+```{r}
+
+#Recode to binary sex
+dat <- dat %>%
+  mutate(sex_binary_numeric = 
+           case_when(sex == "0" |
+                       sex == "Male" ~ 0,
+                     
+                     sex == "1" |
+                       sex == "Female" ~ 1,
+                     
+                     #NB: RAMP does not have sex, but does have whether someone is transgender
+                    
+                     #Non-transgender male
+                      cohort_name == "ramp" &
+                       gender_unc == "Male" &
+                       transgender == "No" ~ 0,
+                     
+                     #Transgender male, assigned female at birth
+                     cohort_name == "ramp" &
+                       gender_unc == "Male" &
+                       transgender == "Yes" ~ 1,
+                     
+                     #Non-transgender female
+                      cohort_name == "ramp" &
+                       gender_unc == "Female" &
+                       transgender == "No" ~ 1,
+                     
+                     
+                      #Transgender female, assigned male at birth
+                     cohort_name == "ramp" &
+                       gender_unc == "Female" &
+                       transgender == "Yes" ~ 0
+                     
+                     
+            )
+         )
+
+dat %>%
+  freq(sex_binary_numeric)
+
+```
+#Ethnicity
+```{r}
+
+dat %>%
+  freq(ethnicity)
+
+#Recode to binary
+dat <- dat %>%
+  mutate(ethnicity_binary = 
+           case_when(ethnicity == "White" ~ "White",
+                     ethnicity == "Mixed or multiple ethnic origins" ~ "Racially minoritised",
+                      ethnicity == "Asian or Asian British" ~ "Racially minoritised",
+                      ethnicity == "Black or Black British" ~ "Racially minoritised",
+                      ethnicity == "Arab" ~ "Racially minoritised",
+                     ethnicity == "Other" ~ "Racially minoritised",
+                      ethnicity == "Other ethnic group" ~ "Racially minoritised"
+            )
+         )
+
+
+#Check
+dat %>%
+  freq(ethnicity_binary)
+
+```
+
+
+##FOR NOW - SAVE THE VARIABLES NEEDED FOR THE ABSTRACT
+```{r}
+test_dat <- dat %>%
+  select(ID,
+         gender_cleaned,
+         age_category_COVID_baseline,
+         sex_binary_numeric,
+         ethnicity_binary,
+         NEW_selfharm_pandemic,
+         NEW_selfharm_ideation_pandemic,
+         NEW_binge_eating_pandemic,
+         NEW_low_weight_pandemic,
+         NEW_passive_suicidal_ideation_pandemic
+         
+      )
+```
+
+
+#Save final dataset (interim analysis)
+##Save dataset
+```{r}
+saveRDS(object = test_dat,
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/test_dat", date, ".rds"))
+
+```
+
+
+
+#Education
+```{r}
+
+dat %>%
+  freq(highest_education) #Is this definitely prepandemic?
+
+```
+
+
+#Sensitivity analysis; Other mental health diagnosis pre-pandemic, i.e., not ED
+    1. Count
+    2. Group (Dep, Anx, Dep+Anx, Psychotic, ADHD, ASD, PTSD)
+```{r}
+
+
+
+
+```
+
+
+

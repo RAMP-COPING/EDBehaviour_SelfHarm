@@ -1,3 +1,10 @@
+---
+title: "age_at_COVID_assessment"
+author: "Helena Davies"
+date: "12/05/2021"
+output: html_document
+---
+
 #CREATING AGE variable (age_unc)
 ##NBR
 ###age from birthday
@@ -16,7 +23,9 @@ if(NBR == TRUE) {
   
   
   #Calculate dem.age(remove NAs as it throws an error)
-  ages <- eeptools::age_calc(na.omit(nbr.dem.raw.id$Birthdate), enddate = Sys.Date(), units = "years")
+  ages <- eeptools::age_calc(na.omit(nbr.dem.raw.id$Birthdate),
+                             enddate = as.Date(endDate),
+                             units = "years")
   
   #Create dem.agecolumn
   nbr.dem.raw.id$age_unc<- NA
@@ -24,7 +33,7 @@ if(NBR == TRUE) {
   #Populate with values (excluding NAs)
   nbr.dem.raw.id$age_unc[!is.na(nbr.dem.raw.id$Birthdate)] <- ages
   
-  #Round age down
+  #Round age 
   nbr.dem.raw.id$age_unc <- floor(nbr.dem.raw.id$age_unc)
   
   #Visualise

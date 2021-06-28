@@ -170,7 +170,7 @@ if(GLAD == TRUE){
 }
 
 ##GLAD + COPING, recoding
-#For some disorders, participants are asked both in GLAD and COPING whether or not they have a mental heatlh diagnosis. The code below captures anyone who endorsed a mental health disorder in at least one of these questions.
+#For some disorders, participants are asked both in GLAD and COPING whether or not they have a mental health diagnosis. The code below captures anyone who endorsed a mental health disorder in at least one of these questions.
 
 #Depression
 if(GLAD == TRUE){
@@ -334,7 +334,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
- 
+
 #Autism spectrum disorder
 if(GLAD == TRUE){
   
@@ -361,7 +361,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
-  
+
 #Attention deficit hyperactivity disorder
 if(GLAD == TRUE){
   
@@ -388,7 +388,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
- 
+
 #Attention deficit hyperactivity disorder
 if(GLAD == TRUE){
   
@@ -766,7 +766,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
- 
+
 #Bulimia nervosa
 if(GLAD == TRUE){
   
@@ -793,7 +793,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
-   
+
 #Binge-eating disorder
 if(GLAD == TRUE){
   
@@ -820,7 +820,7 @@ if(GLAD == TRUE){
          cumul = F)
   
 }
-   
+
 
 ## EDGI
 if(EDGI == TRUE) {
@@ -856,7 +856,7 @@ if(EDGI == TRUE) {
       mhd.none_of_the_above_eating_disorder_unc = mhd.none,
       mhd.dont_know_eating_disorder_unc = mhd.dont_know,
       mhd.prefer_not_to_answer_eating_disorder_unc = mhd.prefer_not_to_answer,
-      mhd.suspected_eating_disorder_diagnosed = an.1.diagnosed_suspected_eating_disorder
+      mhd.suspected_eating_disorder_diagnosed = mhd.suspected_eating_disorder_diagnosed
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1074,38 +1074,38 @@ if(RAMP == TRUE) {
       ID = `Login ID`, # ID
       cohort_name, # Sample
       #startDate_baseline = startDate,
-      mhd.depression = mhq.depression,
-      mhd.pregnancy_depression = mhq.pregnancy_depression,
-      mhd.premenstrual_dysphoric_disorder_pmdd = mhq.premenstrual_dysphoric_disorder_pmdd,
-      mhd.mania_hypomania_bipolar_or_manicdepression = mhq.mania_hypomania_bipolar_or_manicdepression,
-      mhd.anxiety_nerves_or_generalised_anxiety_disorder = mhq.anxiety_nerves_or_generalised_anxiety_disorder,
-      mhd.social_anxiety_or_social_phobia = mhq.social_anxiety_or_social_phobia,
-      mhd.specific_phobia_e.g._phobia_of_flying = mhq.specific_phobia_e.g._phobia_of_flying,
-      mhd.agoraphobia = mhq.agoraphobia,
-      mhd.panic_disorder = mhq.panic_disorder,
-      mhd.panic_attacks = mhq.panic_attacks,
-      mhd.posttraumatic_stress_disorder_ptsd = mhq.posttraumatic_stress_disorder_ptsd,
-      mhd.obsessivecompulsive_disorder_ocd= mhq.obsessivecompulsive_disorder_ocd,
-      mhd.body_dysmorphic_disorder_bdd = mhq.body_dysmorphic_disorder_bdd,
-      mhd.obsessive_compulsive_related_disorders = mhq.skin_picking_obsessive_compulsive,
-      mhd.anorexia_nervosa = mhq.anorexia_nervosa,
-      mhd.atypical_anorexia_nervosa = mhq.atypical_anorexia_nervosa,
-      mhd.bulimia_nervosa = mhq.bulimia_nervosa,
-      mhd.bingeeating_disorder= mhq.psychological_overeating_or_bingeeating_disorder,
-      mhd.schizophrenia = mhq.schizophrenia,
-      mhd.schizoaffective_disorder = mhq.schizoaffective_disorder,
-      mhd.type_psychosis_psychotic_illness = mhq.psychosis_type_psychotic_illness,
-      mhd.personality_disorder = mhq.personality_disorder,
-      mhd.autism_aspergers_or_autistic_spectrum_disorder = mhq.autism_aspergers_or_autistic_spectrum_disorder,
-      mhd.attention_deficit_hyperactivity_disorder = mhq.attention_deficit_hyperactivity_disorder,
-      mhd.personality_disorder_diagnosed = mhq.personality_disorder_diagnosed,
-      mhd.none_of_the_above = mhq.none_of_these,
-      mhd.dont_know = mhq.dont_know,
-      mhd.prefer_not_to_answer = mhq.prefer_not_to_answer,
-      mhd.none_of_the_above.1 = mhq.none_of_these.1,
-      mhd.dont_know.1 = mhq.dont_know.1,
-      mhd.prefer_not_to_answer.1 = mhq.prefer_not_to_answer.1,
-      mhd.other_please_tell_us_more.1 = mhq.other_please_tell_us_more
+      mhd.depression = mhd.depression,
+      mhd.pregnancy_depression = mhd.pregnancy_depression,
+      mhd.premenstrual_dysphoric_disorder_pmdd = mhd.premenstrual_dysphoric_disorder_pmdd,
+      mhd.mania_hypomania_bipolar_or_manicdepression = mhd.mania_hypomania_bipolar_or_manicdepression,
+      mhd.anxiety_nerves_or_generalised_anxiety_disorder = mhd.anxiety_nerves_or_generalised_anxiety_disorder,
+      mhd.social_anxiety_or_social_phobia = mhd.social_anxiety_or_social_phobia,
+      mhd.specific_phobia_e.g._phobia_of_flying = mhd.specific_phobia_e.g._phobia_of_flying,
+      mhd.agoraphobia = mhd.agoraphobia,
+      mhd.panic_disorder = mhd.panic_disorder,
+      mhd.panic_attacks = mhd.panic_attacks,
+      mhd.posttraumatic_stress_disorder_ptsd = mhd.posttraumatic_stress_disorder_ptsd,
+      mhd.obsessivecompulsive_disorder_ocd= mhd.obsessivecompulsive_disorder_ocd,
+      mhd.body_dysmorphic_disorder_bdd = mhd.body_dysmorphic_disorder_bdd,
+      mhd.obsessive_compulsive_related_disorders = mhd.skin_picking_obsessive_compulsive,
+      mhd.anorexia_nervosa = mhd.anorexia_nervosa,
+      mhd.atypical_anorexia_nervosa = mhd.atypical_anorexia_nervosa,
+      mhd.bulimia_nervosa = mhd.bulimia_nervosa,
+      mhd.bingeeating_disorder= mhd.psychological_overeating_or_bingeeating_disorder,
+      mhd.schizophrenia = mhd.schizophrenia,
+      mhd.schizoaffective_disorder = mhd.schizoaffective_disorder,
+      mhd.type_psychosis_psychotic_illness = mhd.psychosis_type_psychotic_illness,
+      mhd.personality_disorder = mhd.personality_disorder,
+      mhd.autism_aspergers_or_autistic_spectrum_disorder = mhd.autism_aspergers_or_autistic_spectrum_disorder,
+      mhd.attention_deficit_hyperactivity_disorder = mhd.attention_deficit_hyperactivity_disorder,
+      mhd.personality_disorder_diagnosed = mhd.personality_disorder_diagnosed,
+      mhd.none_of_the_above = mhd.none_of_these,
+      mhd.dont_know = mhd.dont_know,
+      mhd.prefer_not_to_answer = mhd.prefer_not_to_answer,
+      mhd.none_of_the_above.1 = mhd.none_of_these.1,
+      mhd.dont_know.1 = mhd.dont_know.1,
+      mhd.prefer_not_to_answer.1 = mhd.prefer_not_to_answer.1,
+      mhd.other_please_tell_us_more.1 = mhd.other_please_tell_us_more
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -1457,7 +1457,7 @@ if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE) {
 if(EDGI == TRUE | NBR == TRUE | GLAD == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
-      eating_disorders_numeric =
+      eating_disorders_diagnosed_numeric =
         case_when(
           mhd.anorexia_nervosa_numeric == "1" ~ 1,
           mhd.atypical_anorexia_nervosa_numeric == "1" ~ 1,
@@ -1472,6 +1472,7 @@ if(EDGI == TRUE | NBR == TRUE | GLAD == TRUE) {
           mhd.rumination_disorder_numeric == "1" ~ 1,
           mhd.feeding_eating_disorder_numeric == "1" ~ 1,
           mhd.other_eating_disorder_numeric == "1" ~ 1,
+        
           (mhd.anorexia_nervosa_numeric == "0" &
              mhd.atypical_anorexia_nervosa_numeric == "0" &
              mhd.atypical_anorexia_nervosa_numeric == "0" &
@@ -1490,15 +1491,15 @@ if(EDGI == TRUE | NBR == TRUE | GLAD == TRUE) {
     )
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
-      eating_disorders =
-        recode_factor(eating_disorders_numeric,
+      eating_disorders_diagnosed =
+        recode_factor(eating_disorders_diagnosed_numeric,
                       "0" = "No eating disorder",
                       "1" = "Eating disorder",
                       missing = NA_character_
         )
     )
   mhd.raw.id %>%
-    freq(eating_disorders,
+    freq(eating_disorders_diagnosed,
          cumul = F)
 }
 
@@ -1507,7 +1508,7 @@ if(EDGI == TRUE | NBR == TRUE | GLAD == TRUE) {
 if(RAMP == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
-      eating_disorders_numeric =
+      eating_disorders_diagnosed_numeric =
         case_when(
           mhd.anorexia_nervosa_numeric == "1" ~ 1,
           mhd.atypical_anorexia_nervosa_numeric == "1" ~ 1,
@@ -1521,15 +1522,15 @@ if(RAMP == TRUE) {
     )
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
-      eating_disorders =
-        recode_factor(eating_disorders_numeric,
+      eating_disorders_diagnosed =
+        recode_factor(eating_disorders_diagnosed_numeric,
                       "0" = "No eating disorder",
                       "1" = "Eating disorder",
                       missing = NA_character_
         )
     )
   mhd.raw.id %>%
-    freq(eating_disorders,
+    freq(eating_disorders_diagnosed,
          cumul = F)
 }
 
@@ -1698,7 +1699,7 @@ if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE | RAMP == TRUE) {
 #1. Paranoid                        
 #2. Schizoid                      
 #3. Schizotypal                      
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
       personality_cluster_a_numeric =
@@ -1731,7 +1732,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 }
 
 
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id %>%
     select(
       personality_cluster_a,
@@ -1748,7 +1749,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 #6. Histrionic                        
 #7. Narcissistic                      
 
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
       personality_cluster_b_numeric =
@@ -1781,7 +1782,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 }
 
 #Check personality_cluster_b
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id %>%
     select(
       personality_cluster_b,
@@ -1796,7 +1797,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 #8. Avoidant/anxious                
 #9. Dependent                        
 #10. Obsessive-compulsive
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id <- mhd.raw.id %>%
     mutate(
       personality_cluster_c_numeric =
@@ -1830,7 +1831,7 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
 
 
 #Check personality_cluster_c
-if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
+if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE | EDGI == TRUE) {
   mhd.raw.id %>%
     select(
       personality_cluster_c,
@@ -1838,5 +1839,34 @@ if(GLAD == TRUE | NBR == TRUE | RAMP == TRUE) {
       mhd.personality_disorder_diagnosed,
       mhd.personality_disorder_diagnosed_numeric
     )
+  
+  
+  if(GLAD == TRUE | EDGI == TRUE | NBR == TRUE | RAMP == TRUE){
+    mhd.raw.id <- mhd.raw.id %>%
+      mutate(
+        PERSONALITY_DISORDER_NUMERIC =
+          case_when(
+            mhd.personality_disorder_numeric == 1 |
+              personality_cluster_c_numeric == 1 |
+              personality_cluster_b_numeric == 1|
+              personality_cluster_a_numeric == 1 ~ 1,
+            
+            mhd.personality_disorder_numeric == 0 &
+              personality_cluster_c_numeric == 0 &
+              personality_cluster_b_numeric == 0 &
+              personality_cluster_a_numeric == 0 ~ 0
+          )
+      )
+    mhd.raw.id <- mhd.raw.id %>%
+      mutate(
+        PERSONALITY_DISORDER_FACTOR =
+          recode_factor(
+            PERSONALITY_DISORDER_NUMERIC,
+            `0` = "No personality disorder",
+            `1` = "Personality disorder"
+          )
+      )
+    mhd.raw.id %>%
+      freq(PERSONALITY_DISORDER_FACTOR)
+  }
 }
-

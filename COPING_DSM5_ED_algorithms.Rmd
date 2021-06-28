@@ -58,6 +58,8 @@ colnames(dat.an.glad.coping)
 
 nrow(dat.an.glad.coping)
 
+
+
 ```
 
 ### Select variables: GLAD COPING AN

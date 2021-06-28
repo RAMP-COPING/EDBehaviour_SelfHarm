@@ -1,7 +1,7 @@
 ---
-title: "Merging_EDBeh_SelfHarm"
+title: "Merging data"
 author: "Helena Davies"
-date: "27/01/2021"
+date: "06/05/2021"
 output: html_document
 ---
 
@@ -32,17 +32,18 @@ library(skimr)
 
 # Import baseline data
 ```{r export data}
-glad_baseline <- readRDS(file = "../data_cleaned/baseline_glad.rds")
+glad_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_glad2021-06-08.rds")
 dim(glad_baseline)
 
-edgi_baseline <- readRDS(file = "../data_cleaned/baseline_edgi.rds")
+edgi_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_edgi2021-06-08.rds")
 dim(edgi_baseline)
 
-nbr_baseline <- readRDS(file = "../data_cleaned/baseline_nbr.rds")
+nbr_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_nbr2021-06-08.rds")
 dim(nbr_baseline)
 
-ramp_baseline <- readRDS(file = "../data_cleaned/baseline_ramp.rds")
+ramp_baseline <- readRDS(file = "../data_cleaned/NEW_baseline_ramp2021-06-08.rds")
 dim(ramp_baseline)
+
 
 ```
 ##Make list of edeq baseline columns only in RAMP
@@ -113,27 +114,14 @@ glad_baseline[edeq_baseline_columnNames] <- NA
 edgi_baseline[edeq_baseline_columnNames] <- NA
 ```
                                                           
- [3] "sex"       - not in ramp                                                            
- [4] "gender_unc"                                                            
- [5] "uk_location"                                                           
- [6] "current_country"                                                       
- [7] "age_category_numeric"    - called "age_unc" in ramp                                              
- [8] "age_category"                                                          
- [9] "ethnicity"                                                             
-[10] "highest_education_prepan_numeric"    - not in ramp, nbr                                   
-[11] "highest_education_prepan"           - not in ramp, nbr                                     
-[12] "highest_education_numeric"                                             
-[13] "highest_education"                                                     
-[14] "employment_prior_covid"                                                
-[15] "employment_prior_covid_numeric"                                        
-[16] "employment_change"                                                     
-[17] "employment_change_numeric" 
-
 ##Need same columns across all datasets in order to merge
 ```{r}
 #sex & age_category_numeric not in RAMP
 ramp_baseline$sex <- NA
 ramp_baseline$age_category_numeric <- NA
+ramp_baseline$mhd.suspected_eating_disorder_diagnosed_numeric <- NA
+nbr_baseline$transgender <- NA
+ramp_baseline$employ.taking_unpaid_leave <- NA
 
 #age called "age_unc" in RAMP
   ramp_baseline <- ramp_baseline %>% 
@@ -147,6 +135,10 @@ ramp_baseline$highest_education_prepan <- NA
 ramp_baseline$highest_education_prepan_numeric <- NA
 nbr_baseline$highest_education_prepan <- NA
 nbr_baseline$highest_education_prepan_numeric <- NA
+
+#age category in COPING
+nbr_baseline$age_category_COPING <- NA
+ramp_baseline$age_category_COPING <- NA
 ```
 
 ##Merge all baseline data
@@ -162,212 +154,272 @@ dat <- bind_rows(
 
 ##check col names
 colnames(dat)
+nrow(dat)
+```
+
+##For now, set: age_category, age_category_numeric and sex to NA as these are in the ED grouping dataset
+```{r}
+
+dat$age_category <-NULL
+
+dat$age_category_numeric <- NULL
+
+dat$sex <- NULL
 ```
 
 
 #Import follow up data
 ```{r}
-edeq_coping <- readRDS(file = "../data_cleaned/edeq_coping.rds")
-dim(edeq_coping)
 
-edeq_ramp <- readRDS(file = "../data_cleaned/edeq_ramp.rds")
-dim(edeq_ramp)
-
-taf_ramp <- readRDS(file = "../data_cleaned/taf_ramp.rds")
+taf_ramp <- readRDS(file = "../data_cleaned/NEW_taf_ramp.rds")
 dim(taf_ramp)
 
-taf_coping <- readRDS(file = "../data_cleaned/taf_coping.rds")
+taf_coping <- readRDS(file = "../data_cleaned/NEW_taf_coping.rds")
 dim(taf_coping)
 
-edeq_coping_screener <- readRDS(file = "../data_cleaned/edeq_screener_coping.rds")
+edeq_coping_screener <- readRDS(file = "../data_cleaned/NEW_edeq_screener_coping.rds")
 dim(edeq_coping_screener)
 
 
-edeq_ramp_screener <- readRDS(file = "../data_cleaned/edeq_screener_ramp.rds")
+edeq_ramp_screener <- readRDS(file = "../data_cleaned/NEW_edeq_screener_ramp.rds")
 dim(edeq_ramp_screener)
 
+
+virus_ramp <- readRDS(file = "../data_cleaned/virus_ramp_followup.rds")
+dim(virus_ramp)
+  
+virus_coping <- readRDS(file = "../data_cleaned/virus_coping_followup.rds")
+dim(virus_coping)
+
+loss_ramp <- readRDS(file = "../data_cleaned/loss_ramp_followup.rds")
+dim(loss_ramp)
+
+loss_coping <- readRDS(file = "../data_cleaned/loss_coping_followup.rds")
+dim(loss_coping)
+
+dem_coping_followup <- readRDS(file = "../data_cleaned/dem_followup_ramp.rds")
+dim(dem_coping_followup) #Named wrong in preprocessing script! have corrected and need to re-run
+
+dem_ramp_followup <- readRDS(file = "../data_cleaned/dem_followup_coping.rds")
+dim(dem_ramp_followup)#Named wrong in preprocessing script! have corrected and need to re-run
+
 ```
-##Create empty wave 1s in COPING to merge with RAMP 
+##Create empty wave 1a and 1bs in COPING to merge with RAMP 
 
 ```{r}
-edeq_coping$`edeq.deliberately_limit_amount_influence_.Wave 1` <- NULL 
-edeq_coping$`edeq.calories_made_body_shape_.Wave 1` <- NULL 
-edeq_coping$`edeq.weight_influenced_person_.Wave 1` <- NULL 
-edeq_coping$`edeq.dissatisfied_shape_weight_.Wave 1` <- NULL 
-edeq_coping$`edeq.actively_been_monitoring_your_shape_or_weight_numeric_.Wave 1` <- NULL 
-edeq_coping$`edeq.regard_lost_control_eaten_numeric_.Wave 1` <- NULL 
-edeq_coping$`edeq.eating_behaviours_distressed_concerns_.Wave 1` <- NULL 
-edeq_coping$`edeq.sick_means_made_shape_numeric_.Wave 1` <- NULL 
-edeq_coping$`edeq.diuretics_laxatives_means_shape_numeric_.Wave 1` <- NULL 
-edeq_coping$`edeq.compulsive_driven_burn_calories_numeric_.Wave 1` <- NULL 
-edeq_coping$`edeq.nibbled_picked_snacks_grazed_.Wave 1` <- NULL 
-edeq_coping$`edeq.felt_anxious_blue_bored_.Wave 1` <- NULL 
-edeq_coping$`edeq.felt_anxious_blue_bored.1_.Wave 1` <- NULL 
-
+edeq_coping_screener$ed_scid5.regular_episodes_eating_binges_.Wave_1a <- NULL 
+edeq_coping_screener$ed_scid5.regular_episodes_eating_binges_.Wave_1b <- NULL 
+edeq_coping_screener$ed_scid5.weigh_weighed_past_month_.Wave_1a <- NULL 
+edeq_coping_screener$ed_scid5.weigh_weighed_past_month_.Wave_1b <- NULL 
 
 ```
 
-#Bind coping and ramp's edeq and taf (separately)
+#Bind coping and ramp's edeq and taf TOGETHER
 ```{r}
-
-##*****NEED TO CHANGE TO FACTOR 
 
 #bind all edeq data
-edeq1 <- bind_rows(
-  edeq_ramp,
-  edeq_coping
-  
-)
-
-edeq2 <- bind_rows(
-  edeq_ramp_screener,
-  edeq_coping_screener)
-
-
-edeq <- merge(edeq1,
-                  edeq2,
-                  by = "ID")
+EDEQ <- bind_rows(edeq_ramp_screener,
+                 edeq_coping_screener)
 
 
 #check col names edeq
-colnames(edeq)
+colnames(EDEQ)
 
 #check no of participants edeq
-nrow(edeq)
+nrow(EDEQ)
 
 #bind all taf data
-taf <- bind_rows(taf_ramp,
+TAF <- bind_rows(taf_ramp,
                  taf_coping)
 
 #check col names taf
-colnames(taf)
+colnames(TAF)
 
 #check no of participants
-nrow(taf)
+nrow(TAF)
 
+
+##Merge TAF and EDEQ
+taf_edeq <- plyr::join(TAF,
+             EDEQ,
+             type="left")
+  
+
+#check col names 
+colnames(taf_edeq)
+
+#check no of participants
+nrow(taf_edeq)
 
 ```
-
-
+#Bind virus data together
 ```{r}
-#drop NA column names
-
-edeq$edeq.calories_made_body_shape_NA <-  NULL
-edeq$edeq.calories_made_body_shape_NA<-  NULL
-edeq$edeq.weight_influenced_person_NA<-  NULL
-edeq$edeq.dissatisfied_shape_weight_NA<-  NULL
-edeq$edeq.actively_been_monitoring_your_shape_or_weight_numeric_NA <-  NULL
-edeq$edeq.regard_lost_control_eaten_numeric_NA <-  NULL
-edeq$edeq.sick_means_made_shape_numeric_NA <-  NULL
-edeq$edeq.compulsive_driven_burn_calories_numeric_NA <-  NULL
-edeq$edeq.diuretics_laxatives_means_shape_numeric_NA  <-  NULL
-edeq$edeq.nibbled_picked_snacks_grazed_NA <-  NULL
-edeq$edeq.felt_anxious_blue_bored_NA <-  NULL
-edeq$edeq.felt_anxious_blue_bored.1_NA <-  NULL
+VIRUS <- bind_rows(virus_ramp,
+                 virus_coping)
 
 
-#Check names
-colnames(edeq)
+#check col names edeq
+colnames(VIRUS)
+
+#check no of participants edeq
+nrow(VIRUS)
+
 
 ```
 
-
-#Bind edeq with baseline
-```{r}
-edeq$cohort_name <- NULL
-edeq$startDate_waves <- NULL
-
-nrow(edeq)
-
-
-dat.edeq <- merge(dat,
-                  edeq,
-                  by = "ID")
-
-```
-
-
-##Exclude participants who are missing for EVERY edeq screener variable at every wave
+#Bind loss data together
 ```{r}
 
-test <- dat.edeq %>%
-  filter(
-    !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 2`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 3`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 4`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 5`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 6`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 7`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_.Wave 8`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 2`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 3`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 4`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 5`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 6`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 7`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_.Wave 8`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 2`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 3`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 4`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 5`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 6`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 7`) |
-      !is.na(`ed_scid5.regular_episodes_eating_binges_numeric_.Wave 8`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 2`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 3`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 4`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 5`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 6`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 7`) |
-      !is.na(`ed_scid5.weigh_weighed_past_month_numeric_.Wave 8`) 
-  )
+LOSS <- bind_rows(loss_ramp,
+                 loss_coping)
 
-nrow(test)   
+
+#check col names 
+colnames(LOSS)
+
+#check no of participants
+nrow(LOSS)
+
+```
+#Bind DEM follow up data together
+```{r}
+
+DEM_FOLLOWUP <- bind_rows(dem_ramp_followup,
+                 dem_coping_followup)
+
+
+#check col names 
+colnames(DEM_FOLLOWUP)
+
+#check no of participants
+nrow(DEM_FOLLOWUP)
+
 ```
 
-#Remove duplicate IDs EDEQ COPING
+
+#Bind edeq_taf with baseline data
+```{r}
+
+data.merged <-  merge(dat,
+                  taf_edeq,
+                 by="ID")
+
+
+#check col names 
+colnames(data.merged)
+
+#check no of participants
+nrow(data.merged)
+
+```
+
+#Bind VIRUS data with merged baseline data
+```{r}
+
+##Merge TAF and EDEQ
+data.merged2 <- plyr::join(data.merged,
+             VIRUS,
+             type="left")
+  
+
+#check col names 
+colnames(data.merged2)
+
+#check no of participants
+nrow(data.merged2)
+
+
+```
+
+#Bind LOSS data with merged baseline data
+```{r}
+
+##Merge TAF and EDEQ
+data.merged3 <- plyr::join(data.merged2,
+             LOSS,
+             type="left")
+  
+
+#check col names 
+colnames(data.merged3)
+
+#check no of participants
+nrow(data.merged3)
+
+
+```
+
+
+#Bind DEM FOLLOW UP data with merged baseline data
+```{r}
+
+##Merge TAF and EDEQ
+data.merged4 <- plyr::join(data.merged3,
+             DEM_FOLLOWUP,
+             type="left")
+  
+
+#check col names 
+colnames(data.merged4)
+
+#check no of participants
+nrow(data.merged4)
+
+
+```
+
+### Read in ED group data
+```{r}
+
+##COPING (GLAD, EDGI, NBR) and RAMP
+baseline_ED_groups_data <- readRDS(file = "../data_cleaned/baseline_groups2021-05-06.rds")
+
+# Inspect dimensions
+dim(baseline_ED_groups_data)
+# Inspect colnames
+colnames(baseline_ED_groups_data)
+
+nrow(baseline_ED_groups_data)
+
+
+```
+
+#Merge merged data with grouping ED data
+```{r}
+
+data.merged.with.ED.groups <- merge(data.merged4,
+                                    baseline_ED_groups_data,
+                                    by = "ID")
+
+dim(data.merged.with.ED.groups)
+
+```
+
+#Remove duplicate IDs 
 ```{r}
 
 ##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
-dat.edeq  <- dat.edeq  %>%
+data.final  <- data.merged.with.ED.groups  %>%
   filter(., !duplicated(ID)) 
 
 ##Check number of rows
-nrow(dat.edeq)
-
-
+nrow(data.final)
 
 ```
 
-#Skim edeq + baseline data
-```{r Skim edeq + baseline data}
-#look at the data
-skimr::skim(dat.edeq)
-```
-
-#Save edeq +baseline
-```{r Save edeq + baseline rds file}
-saveRDS(object = dat.edeq, file = "../data_cleaned/dat.edeq.rds")
-
-```
-
-#Bind taf with baseline
-```{r}
-dat.taf <- merge(dat,
-                  taf,
-                  by = "ID")
-
-```
-
-#Skim taf + baseline data
+#Skim final data
 ```{r Skim taf + baseline data}
 #look at the data
-skimr::skim(dat.taf)
+skimr::skim(data.final)
 ```
 
-#Save taf+baseline
-```{r Save taf + baseline rds file}
-saveRDS(object = dat.taf, file = "../data_cleaned/dat.taf.rds")
+#Save final dataset
+##Save dataset
+```{r}
+saveRDS(object = data.final,
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/data.final.with.ED.groups", date, ".rds"))
 
 ```
+
+
 
