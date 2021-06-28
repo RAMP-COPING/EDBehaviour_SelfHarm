@@ -46,7 +46,7 @@ source("./functions.R")
 
 # Read in data
 ```{r}
-dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-05-20.rds")
+dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-05-12.rds")
 dim(dat)
 colnames(dat)
 
@@ -58,13 +58,6 @@ dat <- dat %>%
     cohort_name = cohort_name.x
     )
 
-#Drop one dup transgender columns
-dat$transgender.y <- NULL
-
-dat <- dat %>% 
-  rename(
-    transgender = transgender.x
-    )
 ```
 
 
@@ -144,8 +137,6 @@ dat <- dat %>%
 
 dat %>%
   freq(NEW_binge_eating_pandemic)
-
-
 ```
 
 
@@ -208,6 +199,7 @@ dat <- dat %>%
 
 dat %>%
   freq(NEW_low_weight_pandemic)
+
 
 ```
 
@@ -373,9 +365,6 @@ dat <- dat %>%
   mutate(baseline_passive_suicidal_ideation =
            case_when(
                     taf.worth_living_life_people_.Wavebaseline == "No" ~ 0, #Never experienced it
-                    
-                    taf.worth_living_life_people_.Wavebaseline == "Yes, once" |
-                   taf.worth_living_life_people_.Wavebaseline == "Yes, more than once" ~ 1
                )
     
   )
@@ -423,13 +412,13 @@ dat <- dat %>%
   mutate(NEW_passive_suicidal_ideation_pandemic =
            case_when
          
-          (
-            baseline_passive_suicidal_ideation == 0 & #At baseline, have never experienced it
+         (baseline_passive_suicidal_ideation == 0 & #At baseline, have never experienced it
              (TWO_WEEKS_PANDEMIC_passive_suicidal_ideation == 1 | #FIRST experience DURING pandemic (answered yes to 2 week question during pandemic)
                 EVER_PANDEMIC_passive_suicidal_ideation == 1 ) ~ 1, #FIRST experience DURING pandemic (answered yes to EVER question during pandemic)
            
-             BASELINE_PANDEMIC_passive_suicidal_ideation == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
+              BASELINE_PANDEMIC_passive_suicidal_ideation == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
 
+             
           baseline_passive_suicidal_ideation == 0 &
              EVER_PANDEMIC_passive_suicidal_ideation == 0 ~ 0, #Baseline never experienced, and NO to EVER experiencing at ANY phase
            )
@@ -440,7 +429,10 @@ dat <- dat %>%
 dat %>%
   freq(NEW_passive_suicidal_ideation_pandemic)
 
+
 ```
+
+
 
 
 #ANY self-harm ideation during the COVID-19 pandemic
@@ -601,9 +593,6 @@ dat <- dat %>%
   mutate(baseline_selfharm_ideation =
            case_when(
                     taf.have_you_contemplated_harming_yourself_.Wavebaseline == "No" ~ 0, #Never experienced it
-                    
-                    taf.have_you_contemplated_harming_yourself_.Wavebaseline == "Yes, once" |
-                     taf.have_you_contemplated_harming_yourself_.Wavebaseline ==  "Yes, more than once" ~ 1
                      
                   
            )
@@ -751,8 +740,7 @@ taf.meant_end_life_pandemic_.Wavebaseline = Before the pandemic, had you deliber
 dat <- dat %>%
   mutate(baseline_selfharm =
            case_when(
-                    taf.meant_end_life_pandemic_.Wavebaseline == "No" ~ 0 ,
-                    taf.meant_end_life_pandemic_.Wavebaseline == "Yes" ~ 1
+                    taf.meant_end_life_pandemic_.Wavebaseline == "No" ~ 0     
                   
            )
     
@@ -823,6 +811,7 @@ dat %>%
 #EXPOSURE / covariates [ALL AT BASELINE OR BEFORE REPORT OF OUTCOME]
   •	age
   •	gender
+  • Current symptoms
   •	Ethnicity 
   •	Education 
   • Comorbidity
@@ -845,59 +834,59 @@ dat %>%
 NB: RAMP and NBR can use the variable "age_category" as age was assessed only once, at COVID baseline. For GLAD and EDGI, age has been assessed twice: once at GLAD/EDGI sign up, and once at COVID baseline (COPING questionnaire baseline). For the purposes of the regression analyses, I will be using 'age at assessment' i.e., age at COVID baseline (I have worked this out for GLAD and EDGI from their DOBs and their end dates for completing the COPING baseline demographics questions = age_category_COPING)
 ```{r}
 
-#Collapse age category to of 16-18 and 19-25 to 16-25, and over 75 to 75+(small categories otherwise)
+#Collapse age category to of 16-18 and 19-25 to 16-25 (small categories otherwise)
 
 dat <- dat %>%
   mutate(age_category_COVID_baseline = 
            case_when(
                      
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
                      age_category == "16-18" ~ "16-25"),
              
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
                      age_category == "19-25" ~ "16-25"),
              
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
                       age_category == "26-35" ~ "26-35"),
              
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
                       age_category == "36-45" ~ "36-45"),
              
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
                       age_category == "46-55" ~ "46-55"),
              
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
                       age_category == "56-65" ~ "56-65"),
              
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
                       age_category == "66-70" ~ "66-70"),
              
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
                       age_category == "71-75" ~ "71-75"),
              
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
-                      age_category == "76-80" ~ "75+"),
+                      age_category == "76-80" ~ "76-80"),
              
-            (( cohort_name == "nbr" |
+            (( cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
-                      age_category == "81-85" ~ "75+"),
+                      age_category == "81-85" ~ "81-85"),
             
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
-                      age_category == "86-90" ~ "75+"),
+                      age_category == "86-90" ~ "86-90"),
             
-             ((cohort_name == "nbr" |
+             ((cohort_name == "coping_nbr" |
                cohort_name == "ramp") &
-                      age_category == "91-100" ~ "75+"),
+                      age_category == "91-100" ~ "91-100"),
              
              ((cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
@@ -933,19 +922,19 @@ dat <- dat %>%
              
             ((cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
-                      age_category_COPING == "76-80" ~ "75+"),
+                      age_category_COPING == "76-80" ~ "76-80"),
              
             ((cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
-                      age_category_COPING == "81-85" ~ "75+"),
+                      age_category_COPING == "81-85" ~ "81-85"),
             
             (( cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
-                      age_category_COPING == "86-90" ~ "75+"),
+                      age_category_COPING == "86-90" ~ "86-90"),
             
             (( cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
-                      age_category_COPING == "91-100" ~ "75+")
+                      age_category_COPING == "91-100" ~ "91-100")
                      
                      
          )
@@ -957,14 +946,16 @@ dat %>%
 
 ```
 
-#Gender - recode!
+#Gender
 ```{r}
+
+dat %>%
+  freq(gender_unc) 
 
 #Recode 
 dat <- dat %>%
   mutate(gender_cleaned = 
-           case_when(transgender == "Yes" ~ "Minoritised gender",
-             gender_unc == "Male" ~ "Male",
+           case_when(gender_unc == "Male" ~ "Male",
                      gender_unc == "Female" ~ "Female",
                      
                      gender_unc == "Non-binary" ~ "Minoritised gender",
@@ -972,9 +963,6 @@ dat <- dat %>%
             )
          )
 
-#Check
-dat %>%
-  freq(gender_cleaned)
 
 ```
 
@@ -1049,114 +1037,8 @@ dat %>%
 
 ```
 
-#Education
-#This is from baseline COPING and RAMP data (i.e., not GLAD or EDGI signups, which is "highest_education_prepan")
-```{r}
 
-dat %>%
-  freq(highest_education) 
-
-```
-
-#Comorbidities
-```{r}
-
-#Recode to one variable **Need to think about this as this will hierarchically categorise!
-dat <- dat %>%
-  mutate(comorbidities = 
-           case_when(depression_and_anxiety_numeric == 1 ~ "Depression and anxiety",
-                     bipolar_and_schizophrenia_numeric == 1 ~ "Bipolar and schizophrenia",
-                     depressive_disorders_numeric == 1 ~ "Depressive disorder",
-                     anxiety_disorders_numeric == 1 ~ "Anxiety disorder",
-                     eating_disorders_diagnosed_numeric == 1 ~ "Diagnosed eating disorder",
-                     mhd.suspected_eating_disorder_diagnosed_numeric == 1 ~ "Suspected eating disorder",
-                     obsessive_compulsive_disorders_numeric == 1 ~ "Obsessive compulsive disorder", #INCLUDES BDD
-                     psychotic_disorders_numeric == 1 ~ "Psychotic disorder",
-                     autism_spectrum_disorder_numeric == 1 ~ "Autism spectrum disorder",
-                     PERSONALITY_DISORDER_NUMERIC == 1 ~ "Personality disorder",
-                     agoraphobia_panic_disorder_numeric == 1 ~ "Agoraphobia/panic disorder",
-                     mhd.attention_deficit_hyperactivity_disorder_numeric == 1 ~ "ADHD",
-                     mhd.posttraumatic_stress_disorder_ptsd_numeric == 1 ~ "PTSD",
-                     control_numeric == 1 ~ "No comorbidities"
-                
-         )
-  )
-
-dat %>%
-  freq(comorbidities) 
-
-#Count of comorbidities
-dat$comorbidities_count_raw <- rowSums(dat[ ,
-                                 c("depressive_disorders_numeric",
-                                   "anxiety_disorders_numeric",
-                                 #  "eating_disorders_numeric",
-                                   "obsessive_compulsive_disorders_numeric",
-                                 "mhd.suspected_eating_disorder_diagnosed_numeric",
-                                   "psychotic_disorders_numeric",
-                                   "autism_spectrum_disorder_numeric",
-                                   "PERSONALITY_DISORDER_NUMERIC",
-                                   "agoraphobia_panic_disorder_numeric",
-                                   "mhd.attention_deficit_hyperactivity_disorder_numeric",
-                                   "mhd.posttraumatic_stress_disorder_ptsd_numeric")],
-                                  na.rm = TRUE)
-
-#Only controls should be 0. Need to collapse higher categories into one (5+)
-dat <- dat %>%
-  mutate(comorbidities_count = 
-           case_when(control_numeric == 1 ~ "0",
-                    comorbidities_count_raw == 1 ~ "1",
-                     comorbidities_count_raw == 2 ~ "2",
-                     comorbidities_count_raw == 3 ~ "3",
-                     comorbidities_count_raw == 4 ~ "4",
-                     comorbidities_count_raw == 5 ~ "5+",
-                     comorbidities_count_raw == 6 ~ "5+",
-                     comorbidities_count_raw == 7 ~ "5+",
-                     comorbidities_count_raw == 8 ~ "5+",
-                     comorbidities_count_raw == 9 ~ "5+",
-                    comorbidities_count_raw == 10 ~ "5+"
-                    
-                
-         )
-  )
-
-dat %>%
-  freq(comorbidities_count)  
-
-```
-#Covert numeric control to factor
-```{r}
-
-dat <- dat %>% 
-  mutate(control_factor =
-           case_when(control_numeric == 1 ~ "Control",
-                     control_numeric == 0 ~ "Not a control"
-             
-           ))
-  
-#Check
-dat %>%
-  freq(control_factor)
-```
-
-
-
-
-#Key worker status at baseline
-```{r}
-
-dat %>%
-  freq(key_worker)
-```
-
-#Member of vulnerable group
-```{r}
-dat %>%
-  freq(dem2.member_vulnerable_group)
-
-```
-
-
-##FOR NOW - SAVE THE VARIABLES NEEDED FOR INTERIM ANALYSIS
+##FOR NOW - SAVE THE VARIABLES NEEDED FOR THE ABSTRACT
 ```{r}
 test_dat <- dat %>%
   select(ID,
@@ -1164,23 +1046,11 @@ test_dat <- dat %>%
          age_category_COVID_baseline,
          sex_binary_numeric,
          ethnicity_binary,
-         highest_education,
-         comorbidities,
-         comorbidities_count,
          NEW_selfharm_pandemic,
          NEW_selfharm_ideation_pandemic,
          NEW_binge_eating_pandemic,
          NEW_low_weight_pandemic,
-         NEW_passive_suicidal_ideation_pandemic,
-         lifetime_low_weight_baseline_numeric,
-         lifetime_binge_eating_baseline_numeric,
-         baseline_passive_suicidal_ideation,
-         baseline_selfharm_ideation,
-         baseline_selfharm,
-         control_numeric,
-         key_worker,
-         control_factor,
-         vulnerable_group_member =dem2.member_vulnerable_group
+         NEW_passive_suicidal_ideation_pandemic
          
       )
 ```
@@ -1190,14 +1060,19 @@ test_dat <- dat %>%
 ##Save dataset
 ```{r}
 saveRDS(object = test_dat,
-       file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/test_dat", date, ".rds"))
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/test_dat", date, ".rds"))
 
 ```
 
 
 
+#Education
+```{r}
 
+dat %>%
+  freq(highest_education) #Is this definitely prepandemic?
 
+```
 
 
 #Sensitivity analysis; Other mental health diagnosis pre-pandemic, i.e., not ED

@@ -1,7 +1,7 @@
 ---
-title: "7.Descr_Plots"
+title: "7.Descr_Plots2"
 author: "Helena Davies"
-date: "19/05/2021"
+date: "24/05/2021"
 output: html_document
 ---
 ```{r Setup, include=FALSE}
@@ -38,10 +38,27 @@ source("./functions.R")
 
 # Read in data
 ```{r}
-dat <- readRDS(file = "../data_cleaned/test_dat2021-05-19.rds")
+dat <- readRDS(file = "../data_cleaned/test_dat2021-05-24.rds")
 dim(dat)
 colnames(dat)
 ```
+#DESCRIPTIVES
+ANOVA: two assumptions were tested: normality, using the Shapiro Wilks Test and visual inspection of histograms, and homoscedasticity, using the Levene’s test. If all assumptions were met, we used ANOVA to determine if differences between groups were significant. If significant (p < 0.05), we performed Tukey’s multiple comparison tests to determine which mean/s differed significantly from the rest. If either both assumptions or only the normality assumption were violated, we performed the non-parametric equivalent of ANOVA: Kruskal-Wallis one-way ANOVA. If significant, Dunn’s post-hoc tests were carried out with bh-adjusted levels of significance. If only homoscedasticity was violated, we performed Welch's unequal variances t-test. If significant, pairwise t-tests between all groups were calculated, with bh-adjusted levels of significance. 
+
+#Generate mode function
+```{r}
+
+mode_func <- function(x, na.rm = FALSE) {
+  if(na.rm){
+    x = x[!is.na(x)]
+  }
+
+  ux <- unique(x)
+  return(ux[which.max(tabulate(match(x, ux)))])
+}
+
+```
+
 ######### BINGE EATING ###########
 
 #Create one variable for experience of binge eating
@@ -67,6 +84,65 @@ dat %>%
 
 ```
 
+CONTINUOUS VARIABLES:
+  • BMI at baseline
+  • Comorbidity count
+  
+CATEGORICAL VARIABLES:
+  •	age
+  •	gender
+  •	Ethnicity 
+  •	Education 
+  • Control status (removing people with EDs)
+  • BMI at baseline
+  • Pre-existing physical health condition
+  • Disability
+  • Key worker status at baseline
+  • Defined as vulnerable person according to Goverment 
+  • Positive covid test at baseline (or somewhere down the line - needs to be BEFORE symptom)
+  • Change in employment status
+  • Living situation
+  • Pandemic worry
+ 
+#CONTINIOUS - BINGE EATING
+# Means + SDs of continuous variables for each group: 1) NEW experience, 2) No new experience
+```{r}
+
+#BMI AT BASELINE
+#COMORBIDITY COUMT
+
+
+```
+
+
+#CATEGORICAL - BINGE EATING
+#Education
+```{r}
+
+#Change to A-Levels or higher
+dat <- dat %>%
+  mutate(higher_than_alevels =
+           case_when(highest_education == "No formal qualifications" |
+                      highest_education == "GCSE/CSE" |
+                        highest_education == "NVQ" ~ 0,
+                     
+                     highest_education == "A-levels" |
+                      highest_education == "University/Other professional qualifications" ~ 1
+          ))
+
+
+#NEW experience binge eating
+dat %>%
+  filter(experience_binge_eating == "New pandemic experience of binge eating") %>%
+  freq(higher_than_alevels)
+
+
+#NO NEW experience binge eating
+dat %>%
+  filter(experience_binge_eating == "No previous or pandemic experience of binge eating") %>%
+  freq(higher_than_alevels)
+
+```
 
 #Binge eating: Bar plot of GENDER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
 ```{r}
@@ -95,7 +171,7 @@ gender_experience_plot_BE <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Gender', y = 'Percentage binge eating', fill = 'Experience')
 
 gender_experience_plot_BE
 
@@ -129,7 +205,7 @@ ethnicity_experience_plot_BE <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Ethnicity', y = 'Percentage binge eating', fill = 'Experience')
 
 ethnicity_experience_plot_BE
 
@@ -187,7 +263,7 @@ education_experience_plot_BE <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+  labs(x = 'Highest education', y = 'Percentage binge eating', fill = 'Experience') +
  #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
   theme(axis.text.x = element_text(angle = 45)) +
   theme(axis.text.x = element_text(vjust=0.6)) 
@@ -229,7 +305,7 @@ comorbid_count_experience_plot_BE <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Number of comorbidities', y = 'Percentage binge eating', fill = 'Experience')
 
 comorbid_count_experience_plot_BE
 
@@ -277,7 +353,7 @@ control_experience_plot_BE <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Control status', y = 'Percentage binge eating', fill = 'Experience')
 
 control_experience_plot_BE
 
@@ -288,7 +364,6 @@ control_experience_plot_BE
 
 
 #Binge eating: Bar plot of COMORBIDITY TYPE and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
-**SORT THIS!
 ```{r}
 
 #Remove NAs
@@ -319,7 +394,7 @@ comorbid_experience_plot_BE <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'comorbidities', y = 'Percentage', fill = 'Experience')
+  labs(x = 'comorbidities', y = 'Percentage binge eating', fill = 'Experience')
 
 comorbid_experience_plot_BE
 
@@ -353,7 +428,7 @@ age_experience_plot_BE <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Age', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Age', y = 'Percentage binge eating', fill = 'Experience')
 
 age_experience_plot_BE
 
@@ -387,12 +462,54 @@ key_worker_experience_plot_BE <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Key worker', y = 'Percentage binge eating', fill = 'Experience')
 
 key_worker_experience_plot_BE
 
 ```
+#binge eating: Bar plot of VULNERABLE STATUS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
 
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_binge_eating))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(vulnerable_group_member))
+
+dat_no_nas <- dat_no_nas %>%
+  mutate(vulnerable_group_member_renamed =
+           case_when(
+           vulnerable_group_member == "Not I am not a member of a vulnerable group" ~ "No",
+           vulnerable_group_member == "I am not a member of a vulnerable group" ~ "Yes",
+         )
+  )
+
+
+dat %>%
+  freq(vulnerable_group_member)
+#Plot 
+vul_mem_experience_plot_BE <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = vulnerable_group_member_renamed,
+       y = (stat(count)),
+       fill = experience_binge_eating,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Vulnerable group member', y = 'Percentage self-harm', fill = 'Experience')
+
+vul_mem_experience_plot_BE
+
+```
 ######### LOW WEIGHT ###########
 
 #Create one variable for experience of low weight
@@ -445,7 +562,7 @@ gender_experience_plot_LW <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Gender', y = 'Percentage low weight', fill = 'Experience')
 
 gender_experience_plot_LW
 
@@ -479,7 +596,7 @@ ethnicity_experience_plot_LW <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Ethnicity', y = 'Percentage low weight', fill = 'Experience')
 
 ethnicity_experience_plot_LW
 
@@ -514,7 +631,7 @@ education_experience_plot_LW <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+  labs(x = 'Highest education', y = 'Percentage low weight', fill = 'Experience') +
  #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
   theme(axis.text.x = element_text(angle = 45)) +
   theme(axis.text.x = element_text(vjust=0.6)) 
@@ -551,7 +668,7 @@ age_experience_plot_LW <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Age', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Age', y = 'Percentage low weight', fill = 'Experience')
 
 age_experience_plot_LW
 
@@ -591,7 +708,7 @@ comorbid_count_experience_plot_LW <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Number of comorbidities', y = 'Percentage low weight', fill = 'Experience')
 
 comorbid_count_experience_plot_LW
 
@@ -639,7 +756,7 @@ control_experience_plot_LW <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Control status', y = 'Percentage low weight', fill = 'Experience')
 
 control_experience_plot_LW
 
@@ -672,26 +789,71 @@ key_worker_experience_plot_LW <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Key worker', y = 'Percentage low weight', fill = 'Experience')
 
 key_worker_experience_plot_LW
 
 ```
+#low weight: Bar plot of VULNERABLE STATUS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
 
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_low_weight))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(vulnerable_group_member))
+
+dat_no_nas <- dat_no_nas %>%
+  mutate(vulnerable_group_member_renamed =
+           case_when(
+           vulnerable_group_member == "Not I am not a member of a vulnerable group" ~ "No",
+           vulnerable_group_member == "I am not a member of a vulnerable group" ~ "Yes",
+         )
+  )
+
+
+dat %>%
+  freq(vulnerable_group_member)
+#Plot 
+vul_mem_experience_plot_LW <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = vulnerable_group_member_renamed,
+       y = (stat(count)),
+       fill = experience_low_weight,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Vulnerable group member', y = 'Percentage self-harm', fill = 'Experience')
+
+vul_mem_experience_plot_LW
+
+```
 ######### PASSIVE SUICIDAL IDEATION ###########
 
 #Create one variable for experience of suicidal ideation
 ```{r}
+
 dat <- dat %>%
   mutate(experience_passive_suicidal_ideation = 
            case_when(
-             baseline_passive_suicidal_ideation == 1 ~ "Previous experience of passive suicidal ideation",
+             
+             PREPANDEMIC_passive_suicidal_ideation == 1 ~ "Retro prepan experience of passive suicidal ideation",
+             
+             PREPANDEMIC_passive_suicidal_ideation == 0 &
+              passive_suicidal_ideation_PANDEMIC == 0 ~ "No previous or pandemic passive suicidal ideation",
                      
-                     baseline_passive_suicidal_ideation == 0 &
-                       NEW_passive_suicidal_ideation_pandemic == 0 ~ "No previous or pandemic experience of passive suicidal ideation",
+                     PREPANDEMIC_passive_suicidal_ideation == 0 &
+                       passive_suicidal_ideation_PANDEMIC == 1 ~ "New pandemic experience of passive suicidal ideation",
                      
-                      baseline_passive_suicidal_ideation == 0 &
-                     NEW_passive_suicidal_ideation_pandemic == 1 ~ "New pandemic experience of passive suicidal ideation"
                     
            )
     
@@ -731,7 +893,7 @@ gender_experience_plot_PSI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Gender', y = 'Percentage passive suicidal ideation', fill = 'Experience')
 
 gender_experience_plot_PSI
 
@@ -765,7 +927,7 @@ ethnicity_experience_plot_PSI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Ethnicity', y = 'Percentage passive suicidal ideation', fill = 'Experience')
 
 ethnicity_experience_plot_PSI
 
@@ -800,7 +962,7 @@ education_experience_plot_PSI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+  labs(x = 'Highest education', y = 'Percentage passive suicidal ideation', fill = 'Experience') +
  #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
   theme(axis.text.x = element_text(angle = 45)) +
   theme(axis.text.x = element_text(vjust=0.6)) 
@@ -837,7 +999,7 @@ age_experience_plot_PSI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
- labs(x = 'Age', y = 'Percentage', fill = 'Experience')+
+ labs(x = 'Age', y = 'Percentage passive suicidal ideation', fill = 'Experience')+
   theme(axis.text.x = element_text(angle = 45)) +
   theme(axis.text.x = element_text(vjust=0.6)) 
 
@@ -872,7 +1034,7 @@ comorbid_count_experience_plot_PSI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Number of comorbidities', y = 'Percentage passive suicidal ideation', fill = 'Experience')
 
 comorbid_count_experience_plot_PSI
 
@@ -914,7 +1076,7 @@ control_experience_plot_PSI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Control status', y = 'Percentage passive suicidal ideation', fill = 'Experience')
 
 control_experience_plot_PSI
 
@@ -948,25 +1110,70 @@ key_worker_experience_plot_PSI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Key worker', y = 'Percentage passive suicidal ideation', fill = 'Experience')
 
 key_worker_experience_plot_PSI
 
 ```
-######### SELF-HARM IDEATION ###########
+#Passive suicidal ideation: Bar plot of VULNERABLE STATUS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
 
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_passive_suicidal_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(vulnerable_group_member))
+
+dat_no_nas <- dat_no_nas %>%
+  mutate(vulnerable_group_member_renamed =
+           case_when(
+           vulnerable_group_member == "Not I am not a member of a vulnerable group" ~ "No",
+           vulnerable_group_member == "I am not a member of a vulnerable group" ~ "Yes",
+         )
+  )
+
+
+dat %>%
+  freq(vulnerable_group_member)
+#Plot 
+vul_mem_experience_plot_PSI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = vulnerable_group_member_renamed,
+       y = (stat(count)),
+       fill = experience_passive_suicidal_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Vulnerable group member', y = 'Percentage self-harm', fill = 'Experience')
+
+vul_mem_experience_plot_PSI
+
+```
+
+######### SELF-HARM IDEATION ###########
 #Create one variable for experience of self-harm ideation
 ```{r}
 dat <- dat %>%
   mutate(experience_selfharm_ideation = 
            case_when(
-             baseline_selfharm_ideation  == 1 ~ "Previous experience of self-harm ideation",
+             
+             PREPANDEMIC_selfharm_ideation == 1 ~ "Retro prepan experience of self-harm ideation",
+             
+             PREPANDEMIC_selfharm_ideation == 0 &
+              selfharm_ideation_PANDEMIC == 0 ~ "No previous or pandemic self-harm ideation",
                      
-                     baseline_selfharm_ideation  == 0 &
-                       NEW_selfharm_ideation_pandemic == 0 ~ "No previous or pandemic experience of self-harm ideation",
+                     PREPANDEMIC_selfharm_ideation == 0 &
+                       selfharm_ideation_PANDEMIC == 1 ~ "New pandemic experience of self-harm ideation",
                      
-                      baseline_selfharm_ideation  == 0 &
-                     NEW_selfharm_ideation_pandemic == 1 ~ "New pandemic experience of self-harm ideation"
                     
            )
     
@@ -977,7 +1184,6 @@ dat %>%
   freq(experience_selfharm_ideation) # People who are NA did not fill out any follow up questionnaires
 
 ```
-
 
 #self-harm ideation: Bar plot of GENDER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
 ```{r}
@@ -1006,7 +1212,7 @@ gender_experience_plot_SHI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Gender', y = 'Percentage self-harm ideation', fill = 'Experience')
 
 gender_experience_plot_SHI
 
@@ -1040,7 +1246,7 @@ ethnicity_experience_plot_SHI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Ethnicity', y = 'Percentage self-harm ideation', fill = 'Experience')
 
 ethnicity_experience_plot_SHI
 
@@ -1075,7 +1281,7 @@ education_experience_plot_SHI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+  labs(x = 'Highest education', y = 'Percentage self-harm ideation', fill = 'Experience') +
  #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
   theme(axis.text.x = element_text(angle = 45)) +
   theme(axis.text.x = element_text(vjust=0.6)) 
@@ -1112,7 +1318,7 @@ age_experience_plot_SHI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
- labs(x = 'Age', y = 'Percentage', fill = 'Experience')+
+ labs(x = 'Age', y = 'Percentage self-harm ideation', fill = 'Experience')+
   theme(axis.text.x = element_text(angle = 45)) +
   theme(axis.text.x = element_text(vjust=0.6)) 
 
@@ -1147,7 +1353,7 @@ comorbid_count_experience_plot_SHI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Number of comorbidities', y = 'Percentage self-harm ideation', fill = 'Experience')
 
 comorbid_count_experience_plot_SHI
 
@@ -1190,7 +1396,7 @@ control_experience_plot_SHI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Control status', y = 'Percentage self-harm ideation', fill = 'Experience')
 
 control_experience_plot_SHI
 
@@ -1223,26 +1429,69 @@ key_worker_experience_plot_SHI <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Key worker', y = 'Percentage self-harm ideation', fill = 'Experience')
 
 key_worker_experience_plot_SHI
 
 ```
+#Self-harm ideation: Bar plot of VULNERABLE STATUS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
 
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm_ideation))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(vulnerable_group_member))
+
+dat_no_nas <- dat_no_nas %>%
+  mutate(vulnerable_group_member_renamed =
+           case_when(
+           vulnerable_group_member == "Not I am not a member of a vulnerable group" ~ "No",
+           vulnerable_group_member == "I am not a member of a vulnerable group" ~ "Yes",
+         )
+  )
+
+
+dat %>%
+  freq(vulnerable_group_member)
+#Plot 
+vul_mem_experience_plot_SHI <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = vulnerable_group_member_renamed,
+       y = (stat(count)),
+       fill = experience_selfharm_ideation,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Vulnerable group member', y = 'Percentage self-harm', fill = 'Experience')
+
+vul_mem_experience_plot_SHI
+
+```
 ######### SELF-HARM ###########
-
 #Create one variable for experience of self-harm 
 ```{r}
 dat <- dat %>%
   mutate(experience_selfharm = 
            case_when(
-             baseline_selfharm == 1 ~ "Previous experience of self-harm",
+             
+             PREPANDEMIC_selfharm == 1 ~ "Retro prepan experience of self-harm",
+             
+             PREPANDEMIC_selfharm == 0 &
+              selfharm_PANDEMIC == 0 ~ "No previous or pandemic self-harm",
                      
-                     baseline_selfharm  == 0 &
-                       NEW_selfharm_pandemic == 0 ~ "No previous or pandemic experience of self-harm",
+                     PREPANDEMIC_selfharm == 0 &
+                       selfharm_PANDEMIC == 1 ~ "New pandemic experience of self-harm",
                      
-                      baseline_selfharm  == 0 &
-                     NEW_selfharm_pandemic == 1 ~ "New pandemic experience of self-harm"
                     
            )
     
@@ -1253,7 +1502,6 @@ dat %>%
   freq(experience_selfharm) # People who are NA did not fill out any follow up questionnaires
 
 ```
-
 
 #Self-harm: Bar plot of GENDER and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
 ```{r}
@@ -1282,7 +1530,7 @@ gender_experience_plot_SH <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Gender', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Gender', y = 'Percentage self-harm', fill = 'Experience')
 
 gender_experience_plot_SH
 
@@ -1316,7 +1564,7 @@ ethnicity_experience_plot_SH <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Ethnicity', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Ethnicity', y = 'Percentage self-harm', fill = 'Experience')
 
 ethnicity_experience_plot_SH
 
@@ -1351,7 +1599,7 @@ education_experience_plot_SH <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Highest education', y = 'Percentage', fill = 'Experience') +
+  labs(x = 'Highest education', y = 'Percentage self-harm', fill = 'Experience') +
  #scale_x_discrete(guide = guide_axis(n.dodge=5)) +
   theme(axis.text.x = element_text(angle = 45)) +
   theme(axis.text.x = element_text(vjust=0.6)) 
@@ -1388,7 +1636,7 @@ age_experience_plot_SH <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
- labs(x = 'Age', y = 'Percentage', fill = 'Experience')+
+ labs(x = 'Age', y = 'Percentage self-harm', fill = 'Experience')+
   theme(axis.text.x = element_text(angle = 45)) +
   theme(axis.text.x = element_text(vjust=0.6)) 
 
@@ -1423,7 +1671,7 @@ comorbid_count_experience_plot_SH <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Number of comorbidities', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Number of comorbidities', y = 'Percentage self-harm', fill = 'Experience')
 
 comorbid_count_experience_plot_SH
 
@@ -1466,7 +1714,7 @@ control_experience_plot_SH <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Control status', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Control status', y = 'Percentage self-harm', fill = 'Experience')
 
 control_experience_plot_SH
 
@@ -1500,8 +1748,52 @@ key_worker_experience_plot_SH <- dat_no_nas %>%
   geom_text(stat = 'count',
             position = "fill") +
   theme_light() + 
-  labs(x = 'Key worker', y = 'Percentage', fill = 'Experience')
+  labs(x = 'Key worker', y = 'Percentage self-harm', fill = 'Experience')
 
 key_worker_experience_plot_SH
+
+```
+
+#Self-harm: Bar plot of VULNERABLE STATUS and 1) previous experience, 2) no previous experience and none during pandemic, 3) no previous experience but experience during pandemic
+```{r}
+
+#Remove NAs
+dat_no_nas1 <- dat %>%
+  filter(!is.na(experience_selfharm))
+
+dat_no_nas <- dat_no_nas1 %>%
+  filter(!is.na(vulnerable_group_member))
+
+dat_no_nas <- dat_no_nas %>%
+  mutate(vulnerable_group_member_renamed =
+           case_when(
+           vulnerable_group_member == "Not I am not a member of a vulnerable group" ~ "No",
+           vulnerable_group_member == "I am not a member of a vulnerable group" ~ "Yes",
+         )
+  )
+
+
+dat %>%
+  freq(vulnerable_group_member)
+#Plot 
+vul_mem_experience_plot_SH <- dat_no_nas %>% 
+    ggplot(
+     aes(
+       x = vulnerable_group_member_renamed,
+       y = (stat(count)),
+       fill = experience_selfharm,
+       label = (stat(count))
+      )
+     ) +
+   geom_bar(
+     stat = "count",
+     position = "fill"
+     ) +
+  geom_text(stat = 'count',
+            position = "fill") +
+  theme_light() + 
+  labs(x = 'Vulnerable group member', y = 'Percentage self-harm', fill = 'Experience')
+
+vul_mem_experience_plot_SH
 
 ```

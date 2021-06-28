@@ -62,7 +62,10 @@ dat.an.glad.coping.id <- dat.an.glad.coping %>% #new dataset with ID
   select(
          ID = externalDataReference,# ID
          cohort_name, # Sample
-         an.1.lowest_weight_weigh_weighed
+         an.1.lowest_weight_weigh_weighed,
+         an.1.how_old_were_you_then.txt,
+         an.1.anorexia_nervosa_low_weight,
+         an.1.anorexia_nervosa_low_weight.1
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -83,8 +86,6 @@ dim(dat.an.glad.coping.id)
 colnames(dat.an.glad.coping.id)
 #Differences
 dim(dat.an.glad.coping)[1]-dim(dat.an.glad.coping.id)[1]
-
-
 ```
 
 
@@ -262,10 +263,10 @@ exclude_cols_dem <- c("ID",
 dat.an.scr.glad.id <- dat.an.scr.glad %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   distinct(externalDataReference, .keep_all = TRUE) %>% 
-  #add_column(cohort_name = "coping_nbr", .before = "be.experience_regular_episodes_binge") %>% #create new column 
+  add_column(cohort_name = "coping_glad", .before = "an.weigh_weighed_people_thought") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-        # cohort_name, # Sample
+        cohort_name, # Sample
        an.weigh_weighed_people_thought
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
@@ -312,10 +313,10 @@ exclude_cols_dem <- c("ID",
 dat.an.scr.nbr.id <- dat.an.scr.nbr %>% #new dataset with ID
   drop_na(subjectid) %>% # Drop NAs
   distinct(subjectid, .keep_all = TRUE) %>% 
-  #add_column(cohort_name = "coping_nbr", .before = "be.experience_regular_episodes_binge") %>% #create new column 
+  add_column(cohort_name = "coping_nbr", .before = "an.weigh_weighed_people_thought") %>% #create new column 
   select(
          ID = subjectid,# ID
-        # cohort_name, # Sample
+         cohort_name, # Sample
        an.weigh_weighed_people_thought
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
@@ -354,7 +355,7 @@ length(unique(matched_IDS_1$ID))
 ```{r}
 
 dfs.list <- list(
- dat.an.glad.coping.id,
+ #dat.an.glad.coping.id,
   dat.be.glad.id,
  dat.an.scr.glad.id
  
@@ -377,7 +378,7 @@ colnames(dat.ed.GLAD)
 ```{r}
 
 dfs.list <- list(
- dat.an.nbr.coping.id,
+# dat.an.nbr.coping.id,
   dat.be.nbr.id,
  dat.an.scr.nbr.id
  
@@ -393,6 +394,7 @@ nrow(dat.ed.NBR)
 
 #Check columns
 colnames(dat.ed.NBR)
+
 ```
 
 ##Merge data - GLAD + NBR
@@ -401,6 +403,7 @@ colnames(dat.ed.NBR)
 dat.ed <- rbind(dat.ed.NBR,
                    dat.ed.GLAD
                 )
+
 
 ##colnames 
 colnames(dat.ed)
@@ -435,12 +438,12 @@ dat.ed %>%
 dat.ed <- dat.ed %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when(
-            an.1.lowest_weight_weigh_weighed == "Yes" ~ 1, #low weight due to ED
+            an.weigh_weighed_people_thought == "Yes" ~ 1, #low weight 
              
-            an.weigh_weighed_people_thought == "No" ~ 0, #Never been at low weight
+            an.weigh_weighed_people_thought == "No" ~ 0 #Never been at low weight
             
-            an.weigh_weighed_people_thought == "Yes" &
-            an.1.lowest_weight_weigh_weighed == "No" ~ 0 #Been at low weight but not due to ED
+           # an.weigh_weighed_people_thought == "Yes" &
+           # an.1.lowest_weight_weigh_weighed == "No" ~ 0 #Been at low weight but not due to ED
             
              
            )
@@ -450,6 +453,7 @@ dat.ed <- dat.ed %>%
 #Check
 dat.ed %>%
   freq(lifetime_low_weight_baseline_numeric)
+
 ```
 
 ## RAMP - MHD 
@@ -671,8 +675,7 @@ be.edgi.raw.id.filtered %>%
   freq(lifetime_binge_eating_baseline_numeric)
 ```
 
-#EDGI -  Lifetime low weight due to ED at baseline
-**Need to confirm this due to ED
+#EDGI -  Lifetime low weight 
 ```{r}
 
 edgi.mhd.raw.id.filtered <- edgi.mhd.raw.id.filtered %>%
