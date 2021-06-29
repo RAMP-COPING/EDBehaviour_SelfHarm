@@ -5960,29 +5960,29 @@ nrow(ramp.followupb.virus.id)
 ```{r Export follow up data}
 if(COPING == TRUE) {
 
-saveRDS(object = dat.raw.taf.coping, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/TAF_coping", date, ".rds"))
+saveRDS(object = dat.raw.taf.coping, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/TAF_coping", date, ".rds"))
   
-  saveRDS(object = edeq.coping.followupb.screener.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/EDEQ_screener_coping", date, ".rds"))
+  saveRDS(object = edeq.coping.followupb.screener.raw.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/EDEQ_screener_coping", date, ".rds"))
   
-  saveRDS(object = dat.raw.dem.coping.followup, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/DEM_followup_coping", date, ".rds"))
+  saveRDS(object = dat.raw.dem.coping.followup, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/DEM_followup_coping", date, ".rds"))
   
-  saveRDS(object = coping.loss.followupb.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/LOSS_coping_followup", date, ".rds"))
+  saveRDS(object = coping.loss.followupb.raw.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/LOSS_coping_followup", date, ".rds"))
   
-   saveRDS(object = coping.followupb.virus.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/VIRUS_coping_followup", date, ".rds"))
+   saveRDS(object = coping.followupb.virus.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/VIRUS_coping_followup", date, ".rds"))
 
 }
 
 if(RAMP == TRUE) {
 
-  saveRDS(object = dat.raw.taf.ramp, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/TAF_ramp", date, ".rds"))
+  saveRDS(object = dat.raw.taf.ramp, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/TAF_ramp", date, ".rds"))
   
-  saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/EDEQ_screener_ramp", date, ".rds"))
+  saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/EDEQ_screener_ramp", date, ".rds"))
   
-   saveRDS(object = dat.raw.dem.ramp.followup, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/DEM_followup_ramp", date, ".rds"))
+   saveRDS(object = dat.raw.dem.ramp.followup, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/DEM_followup_ramp", date, ".rds"))
 
-   saveRDS(object = ramp.loss.followupb.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/LOSS_ramp_followup", date, ".rds"))
+   saveRDS(object = ramp.loss.followupb.raw.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/LOSS_ramp_followup", date, ".rds"))
    
-    saveRDS(object = ramp.followupb.virus.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/VIRUS_ramp_followup", date, ".rds"))
+    saveRDS(object = ramp.followupb.virus.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/VIRUS_ramp_followup", date, ".rds"))
    
 }
 
@@ -7229,17 +7229,17 @@ dat.raw.ramp <- dat.raw.ramp %>%
 # Export baseline data
 ```{r export data}
 if(GLAD == TRUE) {
-saveRDS(object = dat.raw.glad, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/BASELINE_glad", date, ".rds"))
+saveRDS(object = dat.raw.glad, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_glad", date, ".rds"))
 }
 if(EDGI == TRUE) {
-saveRDS(object = dat.raw.edgi, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/BASELINE_edgi", date, ".rds"))
+saveRDS(object = dat.raw.edgi, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_edgi", date, ".rds"))
   
 }
 if(RAMP == TRUE) {
-  saveRDS(object = dat.raw.ramp, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/BASELINE_ramp", date, ".rds"))
+  saveRDS(object = dat.raw.ramp, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_ramp", date, ".rds"))
 }
 if(NBR == TRUE) {
-  saveRDS(object = dat.raw.nbr, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/BASELINE_nbr", date, ".rds"))
+  saveRDS(object = dat.raw.nbr, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_nbr", date, ".rds"))
 }
 ```
 
