@@ -633,6 +633,6 @@ colnames(baseline_ED_groups)
 Save dataset
 ```{r Save final dataset ED baseline groupings}
 saveRDS(object = baseline_ED_groups,
-        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/ED_BASELINE_groups", date, ".rds"))
+        file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/ED_BASELINE_groups", date, ".rds"))
 
 ```

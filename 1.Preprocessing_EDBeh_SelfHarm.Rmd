@@ -38,9 +38,9 @@ Specify cohort
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = FALSE
+RAMP = TRUE
 NBR = FALSE
-COPING = TRUE
+COPING = FALSE
 ```
 
 
@@ -1193,6 +1193,11 @@ colnames(ramp.dem.raw)
 Select variables
 ```{r Select variables RAMP demographics}
 if(RAMP == TRUE){
+  exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_baseline",
+                  "endDate")
+  
 ramp.dem.raw.id <- ramp.dem.raw %>% #new dataset with ID
   drop_na(`Login ID`) %>% # Drop NAs
   distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
