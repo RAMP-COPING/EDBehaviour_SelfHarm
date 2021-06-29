@@ -4,6 +4,10 @@ if(!require(tidyverse)){
   install.packages("tidyverse")
   library(tidyverse)
 }
+if(!require(stringi)){
+  install.packages("strini")
+  library(stringi)
+}
 
 if(!require(knitr)){
   install.packages("knitr")
