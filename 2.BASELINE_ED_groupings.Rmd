@@ -5,7 +5,15 @@ date: "06/05/2021"
 output: html_document
 ---
 
-This script identifies whether people have experienced low weight or binge eating at baseline, and their age and sex at baseline.
+This script identifies whether people have experienced lifetime low weight or lifetime binge eating at baseline.
+
+Due to differences in the available variables, the way in which I have assessed lifetime binge eating and lifetime low weight differ across the datasets. 
+
+EDGI = Selected those who filled in EDGI sign-up before after 23rd Jan (i.e., up to 3 months before COPING), then looked at their answers in the EDGI sign-up as to whether they have endorsed low weight (AN screener) or binge eating (BN/BED screener). I have chosen this date as it is 3 months before the start of the pandemic. We are going to assume that if someone at this point does NOT endorse binge eating or low weight, then we can assume that if they experience it during the pandemic, then it is for the first time. This is because the EDGI participants do NOT get asked the AN, BE, AAN or ICB modules at COPING baseline as they have already been asked in EDGI. It is however likely that we capture some false positives of 'new experiences' if someone experienced it AFTER filling out the EDGI signup but BEFORE filling out the COPING baseline).
+
+RAMP = Looked at self-reported diagnoses at RAMP baseline. Endorsement of AN diagnosis is equivalent to low weight; endorsement of BN or BED is equivalent to binge eating.
+
+GLAD & NBR = Looked at self-reported endorsement of low weight (AN screener) and binge eating (BED/BN screener) at COPING baseline.
 
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -19,78 +27,24 @@ Delete everything in your global environment
 remove(list = ls())
 ```
 
-#### Call in library script
-
-```{r source files}
+Call in library script
+```{r Souce library}
 source("./libraries.R")
 ```
 
-#### Call in functions script
-
-```{r source files}
+Call in functions script
+```{r Source functions}
 source("./functions.R")
 ```
 
-#Retrieve the recent date
+Retrieve the recent date
 ```{r Recent date}
 date = Sys.Date()
 date
 ```
 
-### Read in ED data: AN GLAD COPING
-```{r}
-dat.an.glad.coping <- readRDS(file = "../data_raw/diagnostics/an_coping_glad.rds")
-
-# Inspect dimensions
-dim(dat.an.glad.coping)
-# Inspect colnames
-colnames(dat.an.glad.coping)
-nrow(dat.an.glad.coping)
-
-```
-
-### Select variables: GLAD COPING AN
-```{r glad select variables}
-
-exclude_cols_dem <- c("ID",
-                  "cohort_name")
-
-dat.an.glad.coping.id <- dat.an.glad.coping %>% #new dataset with ID
-  drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% 
-  add_column(cohort_name = "coping_glad", .before = "an.1.lowest_weight_weigh_weighed") %>% #create new column 
-  select(
-         ID = externalDataReference,# ID
-         cohort_name, # Sample
-         an.1.lowest_weight_weigh_weighed,
-         an.1.how_old_were_you_then.txt,
-         an.1.anorexia_nervosa_low_weight,
-         an.1.anorexia_nervosa_low_weight.1
-         ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
-  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
-# Inspect dimensions
-dim(dat.an.glad.coping.id)
-# Inspect colnames
-colnames(dat.an.glad.coping.id)
-#Differences
-dim(dat.an.glad.coping)[1]-dim(dat.an.glad.coping.id)[1]
-```
-
-
-### Read in ED data: GLAD COPING BE
-```{r}
+Read in ED data: GLAD COPING BE
+```{r Read in data GLAD COPING BE}
 dat.be.glad <- readRDS(file = "../data_raw/diagnostics/be_coping_glad.rds")
 
 # Inspect dimensions
@@ -102,9 +56,8 @@ nrow(dat.be.glad)
 
 ```
 
-
-### Select variables: GLAD COPING BE
-```{r glad select variables}
+Select variables: GLAD COPING BE
+```{r Select variables GLAD COPING BE}
 
 exclude_cols_dem <- c("ID",
                   "cohort_name")
@@ -141,60 +94,8 @@ dim(dat.be.glad)[1]-dim(dat.be.glad.id )[1]
 
 ```
 
-
-### Read in AN data: AN NBR COPING
-```{r}
-dat.an.nbr.coping <- readRDS(file = "../data_raw/diagnostics/an_coping_nbr.rds")
-
-# Inspect dimensions
-dim(dat.an.nbr.coping)
-# Inspect colnames
-colnames(dat.an.nbr.coping)
-
-nrow(dat.an.nbr.coping)
-
-```
-
-### Select variables: NBR COPING AN
-```{r glad select variables}
-
-exclude_cols_dem <- c("ID",
-                  "cohort_name")
-
-dat.an.nbr.coping.id <- dat.an.nbr.coping %>% #new dataset with ID
-  drop_na(subjectid) %>% # Drop NAs
-  distinct(subjectid, .keep_all = TRUE) %>% 
-  add_column(cohort_name = "coping_nbr", .before = "an.1.lowest_weight_weigh_weighed") %>% #create new column 
-  select(
-         ID = subjectid,# ID
-         cohort_name, # Sample
-         an.1.lowest_weight_weigh_weighed
-         ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
-  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-  mutate_if(is.numeric, ~na_if(., -99)) %>%
-  mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
-# Inspect dimensions
-dim(dat.an.nbr.coping.id)
-# Inspect colnames
-colnames(dat.an.nbr.coping.id)
-#Differences
-dim(dat.an.nbr.coping)[1]-dim(dat.an.nbr.coping.id)[1]
-
-
-```
-
-### Read in ED data: GLAD COPING BE
-```{r}
+Read in ED data: NBR COPING BE
+```{r Read in data NBR COPING BE}
 dat.be.nbr <- readRDS(file = "../data_raw/diagnostics/be_coping_nbr.rds")
 
 # Inspect dimensions
@@ -206,8 +107,8 @@ nrow(dat.be.nbr)
 
 ```
 
-### Select variables: NBR COPING BE
-```{r glad select variables}
+Select variables: NBR COPING BE
+```{r Select variables NBR COPING BE}
 
 exclude_cols_dem <- c("ID",
                   "cohort_name")
@@ -242,8 +143,9 @@ colnames(dat.be.nbr.id )
 dim(dat.be.nbr)[1]-dim(dat.be.nbr.id )[1]
 
 ```
-### Read in ED data: GLAD AN SCREENER
-```{r}
+
+Read in ED data: GLAD AN SCREENER
+```{r Read in data GLAD AN screener}
 dat.an.scr.glad <- readRDS(file = "../data_raw/glad/an_scr_coping_glad.rds")
 
 # Inspect dimensions
@@ -254,8 +156,9 @@ colnames(dat.an.scr.glad)
 nrow(dat.an.scr.glad)
 
 ```
-### Select variables: GLAD COPING AN SCREENER
-```{r glad select variables}
+
+Select variables: GLAD COPING AN SCREENER
+```{r Select variables GLAD COPING AN SCREENER}
 
 exclude_cols_dem <- c("ID",
                   "cohort_name")
@@ -291,9 +194,8 @@ dim(dat.an.scr.glad)[1]-dim(dat.an.scr.glad.id )[1]
 
 ```
 
-
-### Read in ED data: NBR AN SCREENER
-```{r}
+Read in ED data: NBR AN SCREENER
+```{r Read in data NBR AN SCREENER}
 dat.an.scr.nbr <- readRDS(file = "../data_raw/nbr/an_scr_coping_nbr.rds")
 
 # Inspect dimensions
@@ -304,8 +206,9 @@ colnames(dat.an.scr.nbr)
 nrow(dat.an.scr.nbr)
 
 ```
-### Select variables: GLAD COPING AN SCREENER
-```{r glad select variables}
+
+Select variables: NBR AN SCREENER
+```{r Select variables NBR AN SCREENER}
 
 exclude_cols_dem <- c("ID",
                   "cohort_name")
@@ -341,80 +244,65 @@ dim(dat.an.scr.nbr)[1]-dim(dat.an.scr.nbr.id)[1]
 
 ```
 
-##Check IDs match (these now match; previously the dat.icb.glad.ed IDs did NOT match with the other datasets. This questionnaire has now been re-exported and IDs now match)
-```{r}
-#AN data and BE data
-matched_IDS_1 <- dat.an.glad.coping.id[dat.an.glad.coping.id$ID %in% dat.be.glad.id$ID,]
-
-length(unique(matched_IDS_1$ID))
-
-
-```
-
-##Merge data - GLAD
-```{r}
-
+# Merge data
+## GLAD
+```{r Merge GLAD data}
 dfs.list <- list(
- #dat.an.glad.coping.id,
   dat.be.glad.id,
  dat.an.scr.glad.id
- 
- )
+)
 
-#Merge
+# Merge
 dat.ed.GLAD <- plyr::join_all(dfs.list,
                                       by = c("ID"))
 
-
-#Check rows
+# Check rows
 nrow(dat.ed.GLAD)
 
-#Check columns
+# Check columns
 colnames(dat.ed.GLAD)
 
 ```
 
-##Merge data - NBR
-```{r}
-
+# Merge data
+## NBR
+```{r Merge NBR data}
 dfs.list <- list(
-# dat.an.nbr.coping.id,
   dat.be.nbr.id,
  dat.an.scr.nbr.id
  
  )
 
-#Merge
+# Merge
 dat.ed.NBR <- plyr::join_all(dfs.list,
                                       by = c("ID"))
 
-
-#Check rows
+# Check rows
 nrow(dat.ed.NBR)
 
-#Check columns
+# Check columns
 colnames(dat.ed.NBR)
-
 ```
 
-##Merge data - GLAD + NBR
-```{r}
-##Merge by rbind - both datasets have same columns
+# Merge data 
+# GLAD + NBR
+```{r Merge data GLAD & NBR}
+# Merge by rbind - both datasets have same columns
 dat.ed <- rbind(dat.ed.NBR,
                    dat.ed.GLAD
                 )
 
 
-##colnames 
+# Check colnames 
 colnames(dat.ed)
 
-##number of people
+# Check number of people
 nrow(dat.ed)
 ```
 
-# GLAD + NBR: Lifetime binge eating at baseline
-```{r}
-
+# GLAD & NBR
+## Lifetime binge eating at baseline
+```{r Lifetime binge eating at baseline GLAD & NBR}
 dat.ed <- dat.ed %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
@@ -426,47 +314,40 @@ dat.ed <- dat.ed %>%
     
   )
 
-
-#Check
+# Check
 dat.ed %>%
   freq(lifetime_binge_eating_baseline_numeric)
 ```
 
-# GLAD + NBR: Lifetime low weight due to ED at baseline
-```{r}
+## Lifetime low weight at baseline
+```{r Lifetime low weight at baseline GLAD & NBR}
 
 dat.ed <- dat.ed %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when(
-            an.weigh_weighed_people_thought == "Yes" ~ 1, #low weight 
-             
-            an.weigh_weighed_people_thought == "No" ~ 0 #Never been at low weight
+            an.weigh_weighed_people_thought == "Yes" ~ 1, # Low weight 
+            an.weigh_weighed_people_thought == "No" ~ 0 # Never been at low weight
             
-           # an.weigh_weighed_people_thought == "Yes" &
-           # an.1.lowest_weight_weigh_weighed == "No" ~ 0 #Been at low weight but not due to ED
-            
-             
            )
     
   )
 
-#Check
+# Check
 dat.ed %>%
   freq(lifetime_low_weight_baseline_numeric)
 
 ```
 
-## RAMP - MHD 
-##Import RAMP MHD self-report data
-```{r}
+# Import RAMP MHD self-report data
+```{r Read in data RAMP MHD self-report}
 ramp.mhd.raw <- readRDS(file = "../data_raw/ramp/health_mhq_ramp.rds")
   dim(ramp.mhd.raw)
   colnames(ramp.mhd.raw)
 ```
 
-# Select columns from RAMP self-report data
+Select columns from RAMP self-report data
 NB: This is the only ED data RAMP has (i.e., no sx-level info other than the EDEQ)
-```{r}
+```{r Select columns RAMP MHD self-report}
   
 exclude_cols <- c("cohort_name",
                     "ID")
@@ -500,37 +381,36 @@ ramp.mhd.raw.id <- ramp.mhd.raw %>%
   dim(ramp.mhd.raw.id)
   # Inspect colnames
   colnames(ramp.mhd.raw.id)
-  #Differences
+  # Differences
   dim(ramp.mhd.raw)[1]-dim(ramp.mhd.raw.id)[1]
 ```
 
-# RAMP - Lifetime binge eating at baseline/before the pandemic
-```{r}
+# RAMP - Lifetime binge eating at baseline
+```{r Lifetime binge eating at baseline RAMP}
 
 ramp.mhd.raw.id <- ramp.mhd.raw.id %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
              mhd.psychological_overeating_or_bingeeating_disorder == "Psychological overeating or binge-eating disorder" |
-               mhd.bulimia_nervosa == "Bulimia nervosa" ~ 1, #If indicated that they have had either, than they have previously experienced binge eating
+               mhd.bulimia_nervosa == "Bulimia nervosa" ~ 1, # If indicated that they have had either, than they have previously experienced binge eating
              
             is.na(mhd.psychological_overeating_or_bingeeating_disorder) &
-            is.na(mhd.bulimia_nervosa) ~ NA_real_, #If missing for both, then we can't know whether they have experienced binge eating
+            is.na(mhd.bulimia_nervosa) ~ NA_real_, # If missing for both, then we can't know whether they have experienced binge eating
              
               mhd.psychological_overeating_or_bingeeating_disorder == "Not Psychological overeating or binge-eating disorder" |
-               mhd.bulimia_nervosa == "Not Bulimia nervosa" ~ 0 #If they have indicated that they have NOT had either, then they have not experienced binge eating
+               mhd.bulimia_nervosa == "Not Bulimia nervosa" ~ 0 # If they have indicated that they have NOT had either, then we can assume they have not experienced binge eating
            
            )
     
   )
 
-
-#Check
+# Check
 ramp.mhd.raw.id %>%
   freq(lifetime_binge_eating_baseline_numeric)
 ```
 
-# RAMP-  Lifetime low weight due to ED at baseline
-```{r}
+# RAMP -  Lifetime low weight baseline
+```{r Lifetime low weight baseline RAMP}
 
 ramp.mhd.raw.id <- ramp.mhd.raw.id %>%
   mutate(lifetime_low_weight_baseline_numeric =
@@ -543,24 +423,24 @@ ramp.mhd.raw.id <- ramp.mhd.raw.id %>%
     
   )
 
-
-#Check
+# Check
 ramp.mhd.raw.id %>%
   freq(lifetime_low_weight_baseline_numeric)
 
 ```
 
 # EDGI = ED100K AFTER 23RD JAN
+Reminder: I have chosen this date as it is 3 months before the start of the pandemic. We are going to assume that if someone at this point does NOT endorse binge eating or low weight, then we can assume that if they experience it during the pandemic, then it is for the first time (it is however likely that we capture some false positives of 'new experiences' if someone experienced it after filling out the EDGI signup but before filling out the COPING baseline). This is because the EDGI participants do NOT get asked the AN, BE, AAN or ICB modules at COPING baseline as they have already been asked in EDGI. 
 
 ## Import EDGI MHD data
-```{r}
- edgi.mhd.raw <- readRDS(file = "../data_raw/edgi/mhd_edgi.rds")
-  dim(edgi.mhd.raw)
-  colnames(edgi.mhd.raw)
+```{r Read in data EDGI MHD}
+edgi.mhd.raw <- readRDS(file = "../data_raw/edgi/mhd_edgi.rds")
+dim(edgi.mhd.raw)
+colnames(edgi.mhd.raw)
 ```
 
-## Select columns EDGI mhd data
-```{r}
+Select columns EDGI mhd data
+```{r Select columns EDGI mhd data}
 edgi.mhd.raw.id <- edgi.mhd.raw %>%
     drop_na(externalDataReference) %>% # Drop NAs
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
@@ -594,14 +474,14 @@ edgi.mhd.raw.id <- edgi.mhd.raw %>%
 ```
 
 ## Import EDGI BE data
-```{r}
+```{r Read in EDGI BE data}
 be.edgi.raw <- readRDS(file = "../data_raw/edgi/be_edgi.rds")
 dim(be.edgi.raw)
 colnames(be.edgi.raw)
 ```
 
-## Select columns EDGI BE data
-```{r}
+Select columns EDGI BE data
+```{r Select columns EDGI BE data}
 be.edgi.raw.id <- be.edgi.raw  %>%
     drop_na(externalDataReference) %>% # Drop NAs
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
@@ -633,10 +513,9 @@ be.edgi.raw.id <- be.edgi.raw  %>%
   dim(be.edgi.raw)[1]-dim(be.edgi.raw.id)[1]
 ```
 
-#Filter by people who have filled out EDGI AFTER 23rd Jan (i.e., 3 months before start of lockdown - 23rd March)
-```{r}
-
-#EDGI BE  - Filter by people who completed baseline survey after 23rd Jan
+Filter by people who have filled out EDGI AFTER 23rd Jan (i.e., 3 months before start of lockdown - 23rd March)
+```{r Filter EDGI data by 23rd Jan}
+# EDGI BE  - Filter by people who completed baseline survey after 23rd Jan
 be.edgi.raw.id$endDate <- as.Date(be.edgi.raw.id$endDate)
 
 be.edgi.raw.id.filtered <- be.edgi.raw.id %>%
@@ -644,20 +523,17 @@ be.edgi.raw.id.filtered <- be.edgi.raw.id %>%
 
 nrow(be.edgi.raw.id.filtered)
 
-#MHD EDGI  - Filter by people who completed baseline survey after 23rd Jan
+# MHD EDGI  - Filter by people who completed baseline survey after 23rd Jan
 edgi.mhd.raw.id$endDate <- as.Date(edgi.mhd.raw.id$endDate)
 
 edgi.mhd.raw.id.filtered <- edgi.mhd.raw.id %>%
   filter(endDate > as.Date("2021-01-23"))
 
 nrow(edgi.mhd.raw.id.filtered)
-
-
 ```
 
 # EDGI - Lifetime binge eating at baseline
-```{r}
-
+```{r Lifetime binge eating baseline EDGI}
 be.edgi.raw.id.filtered <- be.edgi.raw.id.filtered %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
@@ -666,18 +542,15 @@ be.edgi.raw.id.filtered <- be.edgi.raw.id.filtered %>%
               is.na(be.short_period_ate_regard) ~ NA_real_
            
            )
-    
   )
 
-
-#Check
+# Check
 be.edgi.raw.id.filtered %>%
   freq(lifetime_binge_eating_baseline_numeric)
 ```
 
-#EDGI -  Lifetime low weight 
-```{r}
-
+# EDGI -  Lifetime low weight at baseline
+```{r Lifetime low weight baseline EDGI}
 edgi.mhd.raw.id.filtered <- edgi.mhd.raw.id.filtered %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when( 
@@ -687,645 +560,86 @@ edgi.mhd.raw.id.filtered <- edgi.mhd.raw.id.filtered %>%
              
              is.na(mhd.people_thought_weigh_weighed) ~ NA_real_
            )
-    
   )
 
-#Check
+# Check
 edgi.mhd.raw.id.filtered %>%
   freq(lifetime_low_weight_baseline_numeric)
 ```
 
-##Age at baseline
-```{r}
-nbr_dem_baseline <- readRDS(file = "../data_raw/nbr/demographics_coping_nbr.rds")
-dim(nbr_dem_baseline)
-colnames(nbr_dem_baseline)
-
-glad_dem <- readRDS(file = "../data_raw/glad/dem_glad.rds")
-dim(glad_dem)
-colnames(glad_dem)
-```
-
-###NBR - Age when answered questionnaire
-```{r}
-
-nbr_dem_baseline$birthday_year_numeric <- nbr_dem_baseline$demographics.year + 1900
-  
-#create dob as date format
-nbr_dem_baseline$Birthdate <- as.Date(paste(nbr_dem_baseline$birthday_year_numeric,
-                                            nbr_dem_baseline$demographics.month,
-                                            nbr_dem_baseline$demographics.day,
-                                            sep = "-"))
-  
-head(nbr_dem_baseline$Birthdate)
-
-
-#Calculate dem.age (remove NAs as it throws an error)
-ages <- eeptools::age_calc(na.omit(nbr_dem_baseline$Birthdate),
-                           enddate = as.Date(nbr_dem_baseline$endDate),
-                           units = "years")
-
-#Create dem.agecolumn
-nbr_dem_baseline$age_unc <- NA
-
-#Populate with values (excluding NAs)
-nbr_dem_baseline$age_unc[!is.na(nbr_dem_baseline$Birthdate)] <- ages
-
-#Round age down
-nbr_dem_baseline$age_unc <- floor(nbr_dem_baseline$age_unc)
-
-#Visualise
-head(nbr_dem_baseline$age_unc)
-head(nbr_dem_baseline$Birthdate)
-```
-
-##NBR - Clean age at baseline
-```{r}
-#Define age limits
-  age_upper_limit = 117
-  age_lower_limit = 16 #you have to be 16 to take part
-  
-  #Identify number of outliers
-  length(
-    which(
-      nbr_dem_baseline$age_unc > age_upper_limit |
-        nbr_dem_baseline$age_unc < age_lower_limit
-    )
-  )
-  
-  #Remove weight outliers
-  nbr_dem_baseline <- nbr_dem_baseline %>%
-    mutate(
-      age_at_baseline =
-        if_else(
-          age_unc > age_upper_limit |
-            age_unc < age_lower_limit,
-          true = NA_real_,
-          false = age_unc,
-          missing = NA_real_
-        )
-    )
-  
-  ##Check
-  nbr_dem_baseline %>%
-    freq(age_at_baseline)
-  
-```
-## NBR- Categorise age into groups
-
-```{r}
-
-  # Create categorical age groups per 10 years
-  nbr_dem_baseline <- nbr_dem_baseline %>%
-    mutate(
-      age_category_numeric =
-        case_when(
-          age_at_baseline >= 16 & age_at_baseline <= 18 ~ 1,
-          age_at_baseline >= 19 & age_at_baseline <= 25 ~ 2,
-          age_at_baseline >= 26 & age_at_baseline <= 35 ~ 3,
-          age_at_baseline >= 36 & age_at_baseline <= 45 ~ 4,
-          age_at_baseline >= 46 & age_at_baseline <= 55 ~ 5,
-          age_at_baseline >= 56 & age_at_baseline <= 65 ~ 6,
-          age_at_baseline >= 66 & age_at_baseline <= 70 ~ 7,
-          age_at_baseline >= 71 & age_at_baseline <= 75 ~ 8,
-          age_at_baseline >= 76 & age_at_baseline <= 80 ~ 9,
-          age_at_baseline >= 81 & age_at_baseline <= 85 ~ 10,
-          age_at_baseline >= 86 & age_at_baseline <= 90 ~ 11,
-          age_at_baseline >= 91 & age_at_baseline <= 100 ~ 12,
-          age_at_baseline >= 101 & age_at_baseline <= 120 ~ 13 # oldest person in the world is 117 years
-        )
-    )
-  
-  nbr_dem_baseline <- nbr_dem_baseline %>%
-    mutate(
-      age_category =
-        recode_factor(
-          age_category_numeric,
-          "1" = "16-18",
-          "2" = "19-25",
-          "3" = "26-35",
-          "4" = "36-45",
-          "5" = "46-55",
-          "6" = "56-65",
-          "7" = "66-70",
-          "8" = "71-75",
-          "9" = "76-80",
-          "10" = "81-85",
-          "11" = "86-90",
-          "12" = "91-100",
-          "13" = "100+"
-        )
-    )
-  nbr_dem_baseline %>%
-    freq(age_category)
-
-```
-
-#GLAD - Age when answered questionnaire
-```{r}
-
-glad_dem$birthday_year_numeric <- glad_dem$dem.year + 1900
-  
-#create dob as date format
-glad_dem$Birthdate <- as.Date(paste(glad_dem$birthday_year_numeric,
-                                            glad_dem$dem.month,
-                                            glad_dem$dem.day,
-                                            sep = "-"))
-  
-head(glad_dem$Birthdate)
-
-##Merge so that Birthdate is in same dataset as endDate of COPING questionnaire (i.e., to get age at COPING survey completion)
-glad_dem_to_merge <- glad_dem %>%
-  select(externalDataReference,
-         Birthdate,
-         dem.select_questionnaire_items_medical,
-         dem.which_gender_do_you_identify_with
-         
-   )
-
-
-glad_merged <- merge(glad_dem_to_merge,
-                     dat.be.glad,
-                     by ="externalDataReference"
-  
-)
-
-colnames(glad_merged)
-nrow(glad_merged)
-
-#Calculate dem.age (remove NAs as it throws an error)
-ages <- eeptools::age_calc(na.omit(glad_merged$Birthdate),
-                           enddate = as.Date(glad_merged$endDate),
-                           units = "years")
-
-#Create dem.agecolumn
-glad_merged$age_unc <- NA
-
-#Populate with values (excluding NAs)
-glad_merged$age_unc[!is.na(glad_merged$Birthdate)] <- ages
-
-#Round age down
-glad_merged$age_unc <- floor(glad_merged$age_unc)
-
-#Visualise
-head(glad_merged$age_unc)
-head(glad_merged$Birthdate)
-```
-
-##GLAD - Clean age at baseline
-```{r}
-#Define age limits
-  age_upper_limit = 117
-  age_lower_limit = 16 #you have to be 16 to take part
-  
-  #Identify number of outliers
-  length(
-    which(
-      glad_merged$age_unc > age_upper_limit |
-        glad_merged$age_unc < age_lower_limit
-    )
-  )
-  
-  #Remove weight outliers
-  glad_merged <- glad_merged %>%
-    mutate(
-      age_at_baseline =
-        if_else(
-          age_unc > age_upper_limit |
-            age_unc < age_lower_limit,
-          true = NA_real_,
-          false = age_unc,
-          missing = NA_real_
-        )
-    )
-  
-  ##Check
-  glad_merged %>%
-    freq(age_at_baseline)
-  
-```
-
-#GLAD - Create categorical age groups per 10 years
-
-```{r}
-
-  glad_merged <- glad_merged %>%
-    mutate(
-      age_category_numeric =
-        case_when(
-          age_at_baseline >= 16 & age_at_baseline <= 18 ~ 1,
-          age_at_baseline >= 19 & age_at_baseline <= 25 ~ 2,
-          age_at_baseline >= 26 & age_at_baseline <= 35 ~ 3,
-          age_at_baseline >= 36 & age_at_baseline <= 45 ~ 4,
-          age_at_baseline >= 46 & age_at_baseline <= 55 ~ 5,
-          age_at_baseline >= 56 & age_at_baseline <= 65 ~ 6,
-          age_at_baseline >= 66 & age_at_baseline <= 70 ~ 7,
-          age_at_baseline >= 71 & age_at_baseline <= 75 ~ 8,
-          age_at_baseline >= 76 & age_at_baseline <= 80 ~ 9,
-          age_at_baseline >= 81 & age_at_baseline <= 85 ~ 10,
-          age_at_baseline >= 86 & age_at_baseline <= 90 ~ 11,
-          age_at_baseline >= 91 & age_at_baseline <= 100 ~ 12,
-          age_at_baseline >= 101 & age_at_baseline <= 120 ~ 13 # oldest person in the world is 117 years
-        )
-    )
-  
-  glad_merged <- glad_merged %>%
-    mutate(
-      age_category =
-        recode_factor(
-          age_category_numeric,
-          "1" = "16-18",
-          "2" = "19-25",
-          "3" = "26-35",
-          "4" = "36-45",
-          "5" = "46-55",
-          "6" = "56-65",
-          "7" = "66-70",
-          "8" = "71-75",
-          "9" = "76-80",
-          "10" = "81-85",
-          "11" = "86-90",
-          "12" = "91-100",
-          "13" = "100+"
-        )
-    )
-  glad_merged %>%
-    freq(age_category)
-
-```
-
-##RAMP - age at baseline
-```{r}
-
-dem_ramp <- readRDS(file = "../data_raw/ramp/dem_ramp.rds")
-colnames(dem_ramp)
-nrow(dem_ramp)
-
-```
-
-## Extract columns
-```{r}
-dem_ramp.id <- dem_ramp  %>%
-    drop_na(`Login ID`) %>% # Drop NAs
-    distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
-    select(
-      ID = `Login ID`, # ID
-      endDate,
-      cohort_name,
-      dem2.how_old_are_you,
-      dem2.which_gender_do_you_identify_with,
-      dem2.do_you_identify_as_transgender
-    ) %>%
-    add_numeric(., exclude = exclude_cols) %>%
-    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-    mutate_if(is.numeric, ~na_if(., -99)) %>%
-    mutate_if(is.numeric, ~na_if(., -77)) %>%
-    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-  # Inspect dimensions
-  dim(dem_ramp.id)
-  # Inspect colnames
-  colnames(dem_ramp.id)
-  #Differences
-  dim(dem_ramp)[1]-dim(dem_ramp.id)[1]
-```
-
-##Age at baseline - RAMP 
-```{r}
-
-freq(dem_ramp.id$dem2.how_old_are_you)
-
-```
-
-##Gender - RAMP
-```{r}
-
-freq(dem_ramp.id$dem2.which_gender_do_you_identify_with)
-
-```
-
-##EDGI - age & sex at baseline
-```{r}
-
-dem_edgi <- readRDS(file = "../data_raw/edgi/demographics_edgi.rds")
-colnames(dem_edgi)
-nrow(dem_edgi)
-
-```
-
-## Extract columns - EDGI
-```{r}
-dem_edgi.id <- dem_edgi  %>%
-    drop_na(externalDataReference) %>% # Drop NAs
-    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    # mutate(ID = as.numeric(ID)) %>%
-    add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
-    select(
-      ID = externalDataReference, # ID
-      endDate,
-      cohort_name,
-      dem.how_old_are_you_now.txt,
-      dem.select_questionnaire_items_medical,
-      demographics.what_gender_do_you_identify_with
-    ) %>%
-    add_numeric(., exclude = exclude_cols) %>%
-    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
-    mutate_if(is.numeric, ~na_if(., -99)) %>%
-    mutate_if(is.numeric, ~na_if(., -77)) %>%
-    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
-    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
-    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
-    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-  # Inspect dimensions
-  dim(dem_edgi.id)
-  # Inspect colnames
-  colnames(dem_edgi.id)
-  #Differences
-  dim(dem_edgi)[1]-dim(dem_edgi.id)[1]
-```
-
-##Age at baseline - EDGI
-```{r}
-
-freq(dem_edgi.id$dem.how_old_are_you_now.txt_numeric)
-
-```
-
-##EDGI - Clean age at baseline
-```{r}
-#Define age limits
-  age_upper_limit = 117
-  age_lower_limit = 16 #you have to be 16 to take part
-  
-  #Identify number of outliers
-  length(
-    which(
-      dem_edgi.id$dem.how_old_are_you_now.txt_numeric > age_upper_limit |
-        dem_edgi.id$dem.how_old_are_you_now.txt_numeric < age_lower_limit
-    )
-  )
-  
-  #Remove weight outliers
-  dem_edgi.id <- dem_edgi.id %>%
-    mutate(
-      age_at_baseline =
-        if_else(
-          dem.how_old_are_you_now.txt_numeric > age_upper_limit |
-            dem.how_old_are_you_now.txt_numeric < age_lower_limit,
-          true = NA_real_,
-          false = dem.how_old_are_you_now.txt_numeric,
-          missing = NA_real_
-        )
-    )
-  
-  ##Check
-  dem_edgi.id %>%
-    freq(age_at_baseline)
-  
-```
-
-#GLAD - Create categorical age groups per 10 years
-
-```{r}
-
-  dem_edgi.id <- dem_edgi.id %>%
-    mutate(
-      age_category_numeric =
-        case_when(
-          age_at_baseline >= 16 & age_at_baseline <= 18 ~ 1,
-          age_at_baseline >= 19 & age_at_baseline <= 25 ~ 2,
-          age_at_baseline >= 26 & age_at_baseline <= 35 ~ 3,
-          age_at_baseline >= 36 & age_at_baseline <= 45 ~ 4,
-          age_at_baseline >= 46 & age_at_baseline <= 55 ~ 5,
-          age_at_baseline >= 56 & age_at_baseline <= 65 ~ 6,
-          age_at_baseline >= 66 & age_at_baseline <= 70 ~ 7,
-          age_at_baseline >= 71 & age_at_baseline <= 75 ~ 8,
-          age_at_baseline >= 76 & age_at_baseline <= 80 ~ 9,
-          age_at_baseline >= 81 & age_at_baseline <= 85 ~ 10,
-          age_at_baseline >= 86 & age_at_baseline <= 90 ~ 11,
-          age_at_baseline >= 91 & age_at_baseline <= 100 ~ 12,
-          age_at_baseline >= 101 & age_at_baseline <= 120 ~ 13 # oldest person in the world is 117 years
-        )
-    )
-  
-  dem_edgi.id <- dem_edgi.id %>%
-    mutate(
-      age_category =
-        recode_factor(
-          age_category_numeric,
-          "1" = "16-18",
-          "2" = "19-25",
-          "3" = "26-35",
-          "4" = "36-45",
-          "5" = "46-55",
-          "6" = "56-65",
-          "7" = "66-70",
-          "8" = "71-75",
-          "9" = "76-80",
-          "10" = "81-85",
-          "11" = "86-90",
-          "12" = "91-100",
-          "13" = "100+"
-        )
-    )
-  dem_edgi.id %>%
-    freq(age_category)
-
-```
-
-##Sex - EDGI
-```{r}
-
-freq(dem_edgi.id$dem.select_questionnaire_items_medical)
-
-```
-
-
-##Select items from each questionnaire
-
-#EDGI !
-```{r}
-
-#Age and sex at baseline
-edgi.1 <- dem_edgi.id %>%
-  select(ID, 
-         sex = dem.select_questionnaire_items_medical,
-         age_category = dem.how_old_are_you_now.txt_numeric,
-         cohort_name,
-         gender = demographics.what_gender_do_you_identify_with
-         
-   )
-
-#Binge eating at baseline
-edgi.2 <- be.edgi.raw.id.filtered %>%
+# Select variables from each dataset to keep
+## RAMP
+```{r Select variables to keep RAMP}
+dat.baseline.groups.ramp <- ramp.mhd.raw.id %>%
   select(ID,
-         lifetime_binge_eating_baseline_numeric
-         )
-
-#Low weight at baseline
-edgi.3 <- edgi.mhd.raw.id.filtered %>%
-  select(ID,
-         lifetime_low_weight_baseline_numeric
-         )
-
-#List datasets
-dfs.list <- list(edgi.1,
-                 edgi.2,
-                 edgi.3
-  )
-
-#Merge
-dat.baseline.groups.edgi <- plyr::join_all(
-  dfs.list,
-  by = c("ID") 
-  )
-
+         lifetime_low_weight_baseline_numeric, # Low weight at baseline
+         lifetime_binge_eating_baseline_numeric # Binge eating at baseline
+         
+   )
 ```
-#GLAD & NBR !
-```{r}
 
-#Age and sex at baseline (GLAD)
-nbr.glad.1 <- glad_merged %>%
-  select(ID = externalDataReference,
-         #cohort_name, #only need cohort_name once!
-         sex = dem.select_questionnaire_items_medical,
-         age_category,
-         gender = dem.which_gender_do_you_identify_with
-         
-   )
-
-#Age and sex at baseline (NBR)
-nbr.glad.2 <- nbr_dem_baseline %>%
-  select(ID = subjectid,
-        # cohort_name, #only need cohort_name once!
-         sex = demographics.select_questionnaire_items_medical,
-         age_category,
-         gender = demographics.which_gender_do_you_identify_with
-         
-   )
-
-##Merge
-nbr.glad.3 <- rbind(nbr.glad.1,
-                    nbr.glad.2
-                
-)
-  
-
-
+## GLAD & NBR
+```{r Select variables to keep NBR & GLAD}
 #Binge eating & low weight at baseline (GLAD + NBR)
 nbr.glad.4 <- dat.ed %>%
   select(ID,
          cohort_name,
-         lifetime_binge_eating_baseline_numeric,
+         lifetime_binge_eating_baseline_numeric, # Binge eating at baseline
+         lifetime_low_weight_baseline_numeric # Low weight at baseline
+         )
+
+```
+
+## GLAD & NBR
+```{r Select variables to keep NBR & GLAD}
+#Binge eating & low weight at baseline (GLAD + NBR)
+nbr.glad.4 <- dat.ed %>%
+  select(ID,
+         cohort_name,
+         lifetime_binge_eating_baseline_numeric, # Binge eating at baseline
+         lifetime_low_weight_baseline_numeric # Low weight at baseline
+         )
+
+```
+
+## EDGI
+```{r Select variables to keep EDGI}
+# Binge eating at baseline
+edgi.1 <- be.edgi.raw.id.filtered %>%
+  select(ID,
+         lifetime_binge_eating_baseline_numeric
+         )
+
+# Low weight at baseline
+edgi.2 <- edgi.mhd.raw.id.filtered %>%
+  select(ID,
          lifetime_low_weight_baseline_numeric
          )
 
-
-#List datasets
-dfs.list <- list(nbr.glad.4,
-                 nbr.glad.3
-  )
-
-#Merge
-dat.baseline.groups.nbr.glad <- plyr::join_all(
-  dfs.list,
+# Merge
+dat.baseline.groups.edgi <- plyr::join_all(
+  edgi.1,
+  edgi.2,
   by = c("ID") 
   )
-
-colnames(dat.baseline.groups.nbr.glad)
-nrow(dat.baseline.groups.nbr.glad)
-```
- 
-#RAMP !
-```{r}
-
-#Age and sex at baseline (RAMP)
-ramp.1 <- dem_ramp.id %>%
-  select(ID,
-         cohort_name, #only need cohort_name once!
-         gender = dem2.which_gender_do_you_identify_with,
-         age_category = dem2.how_old_are_you,
-         transgender = dem2.do_you_identify_as_transgender
-         
-   )
-
-#Low weight + binge eating at baseline (RAMP)
-ramp.2 <- ramp.mhd.raw.id %>%
-  select(ID,
-         lifetime_low_weight_baseline_numeric,
-         lifetime_binge_eating_baseline_numeric
-         
-   )
-
-
-#List datasets
-dfs.list <- list(ramp.1,
-                 ramp.2
-  )
-
-#Merge
-dat.baseline.groups.ramp <- plyr::join_all(
-  dfs.list,
-  by = c("ID") 
-  )
-
-```
-  
-#Create 'transgender' column in EDGI, NBR and GLAD to merge with RAMP, and sex column in RAMP
-```{r}
-
-dat.baseline.groups.nbr.glad$transgender <- NA_real_
-dat.baseline.groups.edgi$transgender <- NA_real_
-dat.baseline.groups.ramp$sex <- NA_real_
-
 ```
 
-##MERGE ALL DATA
-```{r}
+# MERGE ALL DATA
+```{r Merge all data}
 baseline_ED_groups <- rbind(dat.baseline.groups.ramp,
       dat.baseline.groups.nbr.glad,
       dat.baseline.groups.edgi
 
 )
 
-#Check 
+# Check 
 nrow(baseline_ED_groups)
 colnames(baseline_ED_groups)
-
 ```
 
-
-##Save dataset
-```{r}
+Save dataset
+```{r Save final dataset ED baseline groupings}
 saveRDS(object = baseline_ED_groups,
-        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/baseline_groups", date, ".rds"))
+        file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/ED_BASELINE_groups", date, ".rds"))
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
