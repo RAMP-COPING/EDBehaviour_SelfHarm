@@ -13,7 +13,6 @@ knitr::opts_chunk$set(echo = TRUE,
                       cache=FALSE)
 ```
 
-
 Delete everything in your global environment
 ```{r Delete everything in your global environment}
 remove(list = ls())
@@ -44,7 +43,6 @@ NBR = FALSE
 COPING = FALSE
 ```
 
-
 # Demographics 
 ## GLAD 1
 ### Read in data
@@ -54,7 +52,6 @@ glad.coping.dem.raw <- readRDS(file = "../data_raw/glad/dem_coping_glad.rds")
 dim(glad.coping.dem.raw)
 colnames(glad.coping.dem.raw)
 }
-
 ```
 
 Select variables
@@ -125,7 +122,6 @@ colnames(glad.coping.dem.raw.id)
 #Differences
 dim(glad.coping.dem.raw)[1]-dim(glad.coping.dem.raw.id)[1]
 }
-
 ```
 
 Summarise GLAD COPING demographic
@@ -254,7 +250,6 @@ colnames(glad.coping.dem2.raw.id)
 #Differences
 dim(glad.coping.dem2.raw)[1]-dim(glad.coping.dem2.raw.id)[1]
 }
-
 ```
 
 Summarise GLAD COPING demographic 2
@@ -333,7 +328,6 @@ colnames(glad.dem3.raw.id)
 #Differences
 dim(glad.dem3.raw)[1]-dim(glad.dem3.raw.id)[1]
 }
-
 ```
 
 # Demographics 
@@ -415,7 +409,6 @@ colnames(edgi.coping.dem.raw.id)
 #Differences
 dim(edgi.coping.dem.raw)[1]-dim(edgi.coping.dem.raw.id)[1]
 }
-
 ```
 
 Summarise EDGI COPING demographics
@@ -544,7 +537,6 @@ colnames(edgi.coping.dem2.raw.id)
 #Differences
 dim(edgi.coping.dem2.raw)[1]-dim(edgi.coping.dem2.raw.id)[1]
 }
-
 ```
 
 Summarise EDGI COPING demographics 2
@@ -623,7 +615,6 @@ colnames(edgi.dem3.raw.id)
 #Differences
 dim(edgi.dem3.raw)[1]-dim(edgi.dem3.raw.id)[1]
 }
-
 ```
 
 # Demographics 
@@ -635,8 +626,8 @@ glad.coping.dem4.employ.raw <- readRDS(file = "../data_raw/glad/employ_coping_gl
 dim(glad.coping.dem4.employ.raw)
 colnames(glad.coping.dem4.employ.raw)
 }
-
 ```
+
 Select variables
 ```{r Select variables GLAD employment}
 if(GLAD == TRUE){
@@ -738,7 +729,6 @@ colnames(glad.coping.dem4.employ.raw.id)
 #Differences
 dim(glad.coping.dem4.employ.raw)[1]-dim(glad.coping.dem4.employ.raw.id)[1]
 }
-
 ```
 
 # Demographics 
@@ -854,7 +844,6 @@ colnames(edgi.coping.dem4.employ.raw.id)
 dim(edgi.coping.dem4.employ.raw)[1]-dim(edgi.coping.dem4.employ.raw.id)[1]
 
 }
-
 ```
 
 # Demographics 
@@ -866,7 +855,6 @@ nbr.dem.raw <- readRDS(file = "../data_raw/nbr/demographics_coping_nbr.rds")
 dim(nbr.dem.raw)
 colnames(nbr.dem.raw)
 }
-
 ```
 
 Select variables
@@ -942,7 +930,6 @@ colnames(nbr.dem.raw.id)
 #Differences
 dim(nbr.dem.raw)[1]-dim(nbr.dem.raw.id)[1]
 }
-
 ```
 
 # Demographics 
@@ -1060,10 +1047,9 @@ colnames(nbr.dem2.raw.id)
 #Differences
 dim(nbr.dem2.raw)[1]-dim(nbr.dem2.raw.id)[1]
 }
-
 ```
 
-Summarise 
+Summarise NBR demographics 2
 ```{r NBR demographics 2 summary, eval=FALSE, include=FALSE}
 if(NBR == TRUE) {
 summarytools::dfSummary(
@@ -1235,10 +1221,8 @@ ramp.dem.raw.id <- ramp.dem.raw %>% #new dataset with ID
          dem2.staying_live =  dem2.staying_live.2,
          dem2.staying_live.1 =  dem2.staying_live.3,
          dem2.prefer_not_to_say =  dem2.prefer_not_to_say.2,
-         
          dem2.living_situation_change_pandemic,
-
-        dem2.living_alone.1 = dem2.living_alone,
+         dem2.living_alone.1 = dem2.living_alone,
         dem2.living_with_partner_or_spouse.1 = dem2.living_with_partner_or_spouse,
         dem2.living_with_housemates.1 = dem2.living_with_housemates,
         dem2.age_children_living.2 = dem2.age_children_living,
@@ -1248,8 +1232,7 @@ ramp.dem.raw.id <- ramp.dem.raw %>% #new dataset with ID
         dem2.staying_live.2 = dem2.staying_live,
         dem2.staying_live.3 = dem2.staying_live.1,
         dem2.prefer_not_to_say.1 = dem2.prefer_not_to_say,
-
-         dem2.relationships_describe_question_place = dem2.describe_relationships_live_living, #Rename to be same as coping glad/edgi
+        dem2.relationships_describe_question_place = dem2.describe_relationships_live_living, #Rename to be same as coping glad/edgi
          dem2.household_living_place_answer, 
          dem2.include_living_areas_count = dem2.count_bathrooms_bedrooms_hallways,
          dem2.cats,
@@ -1343,7 +1326,7 @@ colnames(ramp.dem.employ.raw)
 }
 ```
 
-Select variables
+Select variables RAMP employment
 ```{r Select variables RAMP employment}
 if(RAMP == TRUE){
 exclude_cols_dem <- c("ID",
@@ -1449,8 +1432,8 @@ dim(ramp.dem.employ.raw)[1]-dim(ramp.dem.employ.raw.id)[1]
 ```
 
 # Pandemic worry at baseline
-
-## Read in data - pan worry baseline EDGI
+## EDGI
+### Read in data 
 ```{r Read in data EDGI baseline pandemic worry}
 if(EDGI == TRUE){
 edgi_pan_worry <- readRDS(file = "../data_raw/edgi/panworry_coping_edgi.rds")
@@ -1458,6 +1441,7 @@ dim(edgi_pan_worry)
 colnames(edgi_pan_worry)
 }
 ```
+
 
 Select variables EDGI baseline pandemic worry
 ```{r Select variables EDGI baseline pandemic worry}
@@ -1519,7 +1503,9 @@ dim(edgi_pan_worry)[1]-dim(edgi_pan_worry.id)[1]
 
 ```
 
-## Read in data - pandemic worry baseline GLAD
+# Pandemic worry at baseline
+## GLAD
+### Read in data 
 ```{r Read in data GLAD baseline pandemic worry}
 if(GLAD == TRUE){
 glad_pan_worry <- readRDS(file = "../data_raw/glad/panworry_coping_glad.rds")
@@ -1588,7 +1574,9 @@ dim(glad_pan_worry)[1]-dim(glad_pan_worry.id)[1]
 
 ```
 
-## Read in data - pandemic worry baseline NBR
+# Pandemic worry at baseline
+## NBR
+### Read in data 
 ```{r Read in data NBR baseline pandemic worry}
 if(NBR == TRUE){
 nbr_pan_worry <- readRDS(file = "../data_raw/nbr/panworry_coping_nbr.rds")
@@ -1657,7 +1645,9 @@ dim(nbr_pan_worry)[1]-dim(nbr_pan_worry.id)[1]
 
 ```
 
-## Read in data - pan worry baseline RAMP
+# Pandemic worry at baseline
+## RAMP
+### Read in data 
 ```{r Read in data RAMP baseline pandemic worry}
 if(RAMP == TRUE){
 ramp_pan_worry <- readRDS(file = "../data_raw/ramp/panworry_ramp.rds")
@@ -1727,7 +1717,7 @@ dim(ramp_pan_worry)[1]-dim(ramp_pan_worry.id)[1]
 ```
 
 # Read in EDEQ baseline data (although note that is only present in RAMP)
-## RAMP baseline
+## RAMP 
 ### Read in data
 ```{r Read in data RAMP EDEQ baseline}
 if(RAMP == TRUE){
@@ -1807,7 +1797,9 @@ dim(edeq.ramp.baseline.raw)[1]-dim(edeq.ramp.baseline.raw.id)[1]
 
 ```
 
-# Read in EDEQ screener data (COPING)
+# EDEQ screener follow up B
+## COPING
+### Read in data
 NB: The EDEQ screener is only available in follow up B across both RAMP and COPING.
 ```{r Read in data COPING follow up B EDEQ screener}
 if(COPING == TRUE){
@@ -1861,7 +1853,9 @@ dim(edeq.coping.followupb.screener.raw)[1]-dim(edeq.coping.followupb.screener.ra
 }
 ```
 
-# Read in EDEQ screener data (RAMP)
+# EDEQ screener follow up B
+## RAMP
+### Read in data
 ```{r Read in data RAMP follow up B EDEQ screener}
 if(RAMP == TRUE){
 edeq.ramp.followupb.screener.raw <- readRDS(file = "../data_raw/ramp/ed_scid5_ramp_followupb.rds")
@@ -1914,7 +1908,9 @@ dim(edeq.ramp.followupb.screener.raw)[1]-dim(edeq.ramp.followupb.screener.raw.id
 }
 ```
 
-# Read in data follow up B virus info (COPING)
+# Virus follow up B
+## COPING
+### Read in data
 ```{r Read in data COPING follow up B virus}
 if(COPING == TRUE){
 coping.followupb.virus <- readRDS(file = "../data_raw/coping/virus_coping_followupb.rds")
@@ -1966,7 +1962,9 @@ dim(coping.followupb.virus)[1]-dim(coping.followupb.virus.id)[1]
 }
 ```
 
-# Read in data follow up B virus info (RAMP)
+# Virus follow up B
+## RAMP
+### Read in data
 ```{r Read in data RAMP follow up B virus}
 if(RAMP == TRUE){
 ramp.followupb.virus <- readRDS(file = "../data_raw/ramp/virus_ramp_followupb.rds")
@@ -2326,7 +2324,7 @@ dim(taf.coping.followupa.raw.1)[1]-dim(taf.coping.followupa.raw.id.1)[1]
 ```
 
 # TAF - follow up A
-## COPING (subsequent waves)
+## COPING (subsequent phases)
 ### Read in data
 ```{r Read in data COPING follow up A TAF first subsequent phases}
 if(COPING == TRUE){
@@ -2574,12 +2572,10 @@ dim(taf.ramp.followupb.raw)[1]-dim(taf.ramp.followupb.raw.id)[1]
 ### Read in data 
 ```{r Read in data RAMP follow up A demographics}
 if(RAMP == TRUE) {
-  
-dem.ramp.followupa.raw <- readRDS(file = "../data_raw/ramp/dem_ramp_followupa.rds")
+  dem.ramp.followupa.raw <- readRDS(file = "../data_raw/ramp/dem_ramp_followupa.rds")
 dim(dem.ramp.followupa.raw)
 colnames(dem.ramp.followupa.raw)
 }
-  
 ```
 
 Select variables RAMP follow up A demographics
@@ -2745,7 +2741,7 @@ dim(dem.ramp.followupb.raw)[1]-dim(dem.ramp.followupb.raw.id)[1]
 }
 ```
 
-# Demographics follow up A
+# Demographics follow up A first two phases
 ## COPING
 ### Read in data 
 ```{r Read in data COPING follow up A demographics first two phases}
@@ -3026,7 +3022,6 @@ dim(coping.dem.followupb.raw)[1]-dim(coping.dem.followupb.raw.id)[1]
 ### Read in data
 ```{r Read in data GLAD losing someone due to COVID}
 if(GLAD == TRUE) {
-  
 glad.loss.baseline.raw <- readRDS(file = "../data_raw/glad/grief_coping_glad.rds")
 dim(glad.loss.baseline.raw)
 colnames(glad.loss.baseline.raw)
@@ -3079,12 +3074,10 @@ dim(glad.loss.baseline.raw.id)[1]-dim(glad.loss.baseline.raw)[1]
 ### Read in data
 ```{r Read in dat EDGI losing someone due to COVID}
 if(EDGI == TRUE) {
-  
 edgi.loss.baseline.raw <- readRDS(file = "../data_raw/edgi/grief_coping_edgi.rds")
 dim(edgi.loss.baseline.raw)
 colnames(edgi.loss.baseline.raw)
 }
-  
 ```
 
 Select variables
@@ -3132,12 +3125,10 @@ dim(edgi.loss.baseline.raw.id)[1]-dim(edgi.loss.baseline.raw)[1]
 ### Read in data
 ```{r Read in dat NBR losing someone due to COVID}
 if(NBR == TRUE) {
-  
 nbr.loss.baseline.raw<- readRDS(file = "../data_raw/nbr/grief_coping_nbr.rds")
 dim(nbr.loss.baseline.raw)
 colnames(nbr.loss.baseline.raw)
 }
-  
 ```
 
 Select variables NBR losing someone due to COVID
@@ -3185,12 +3176,10 @@ dim(nbr.loss.baseline.raw.id)[1]-dim(nbr.loss.baseline.raw)[1]
 ### Read in data
 ```{r Read in data RAMP losing someone due to COVID}
 if(RAMP == TRUE) {
-  
 ramp.loss.baseline.raw<- readRDS(file = "../data_raw/ramp/grief_ramp.rds")
 dim(ramp.loss.baseline.raw)
 colnames(ramp.loss.baseline.raw)
 }
-  
 ```
 
 Select variables RAMP losing someone due to COVID
@@ -3233,17 +3222,126 @@ dim(ramp.loss.baseline.raw.id)[1]-dim(ramp.loss.baseline.raw)[1]
 }
 ```
 
+# Losing someone due to COVID - follow up
+## COPING 
+### Read in data
+```{r Read in data losing someone due to COVID COPING follow up}
+if(COPING == TRUE) {
+  coping.loss.followupb.raw <- readRDS(file = "../data_raw/coping/grief_coping_followupb.rds")
+dim(coping.loss.followupb.raw)
+colnames(coping.loss.followupb.raw)
+}
+  
+```
+
+Select variables losing someone due to COVID COPING follow up
+```{r Select variables losing someone due to COVID COPING follow up}
+if(COPING == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+coping.loss.followupb.raw.id <- coping.loss.followupb.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         grief.due_past_month_lost,
+         grief.suffered_past_month_loss
+        
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+# Inspect dimensions
+dim(coping.loss.followupb.raw.id)
+# Inspect colnames
+colnames(coping.loss.followupb.raw.id)
+#Differences
+dim(coping.loss.followupb.raw.id)[1]-dim(coping.loss.followupb.raw)[1]
+}
+```
+
+# Losing someone due to COVID - follow up
+## RAMP 
+### Read in data
+```{r Read in data losing someone due to RAMP COPING follow up}
+if(RAMP == TRUE) {
+  
+ramp.loss.followupb.raw <- readRDS(file = "../data_raw/ramp/grief_ramp_followupb.rds")
+dim(ramp.loss.followupb.raw)
+colnames(ramp.loss.followupb.raw)
+}
+  
+```
+
+Select variables losing someone due to RAMP COPING follow up
+```{r Select variables losing someone due to RAMP COPING follow up}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         #endDate,
+         grief.due_past_month_lost = grief.due_past_month_covid,
+         grief.suffered_past_month_loss = grief.loss_suffered_past_month
+        
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+ #mutate_if(is.numeric, ~na_if(., -99)) %>%
+  #mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+ # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+# Inspect dimensions
+dim(ramp.loss.followupb.raw.id)
+# Inspect colnames
+colnames(ramp.loss.followupb.raw.id)
+#Differences
+dim(ramp.loss.followupb.raw.id)[1]-dim(ramp.loss.followupb.raw)[1]
+}
+```
+
 # Loneliness at baseline
 ## GLAD
 ### Read in data
 ```{r Read in data GLAD loneliness at baseline}
 if(GLAD == TRUE) {
-  
 glad.loneliness.baseline.raw <- readRDS(file = "../data_raw/glad/lone_coping_glad.rds")
 dim(glad.loneliness.baseline.raw)
 colnames(glad.loneliness.baseline.raw)
 }
-  
 ```
 
 Select variables GLAD loneliness at baseline
@@ -3296,7 +3394,6 @@ dim(glad.loneliness.baseline.raw)[1]-dim(glad.loneliness.baseline.raw.id)[1]
 ### Read in data
 ```{r Read in data EDGI loneliness at baseline}
 if(EDGI == TRUE) {
-  
 edgi.loneliness.baseline.raw <- readRDS(file = "../data_raw/edgi/lone_coping_edgi.rds")
 dim(edgi.loneliness.baseline.raw)
 colnames(edgi.loneliness.baseline.raw)
@@ -3354,8 +3451,7 @@ dim(edgi.loneliness.baseline.raw.id)[1]-dim(edgi.loneliness.baseline.raw.id)[1]
 ### Read in data
 ```{r Read in data RAMP loneliness at baseline}
 if(RAMP == TRUE) {
-  
-ramp.loneliness.baseline.raw <- readRDS(file = "../data_raw/ramp/lone_ramp.rds")
+  ramp.loneliness.baseline.raw <- readRDS(file = "../data_raw/ramp/lone_ramp.rds")
 dim(ramp.loneliness.baseline.raw)
 colnames(ramp.loneliness.baseline.raw)
 }
@@ -3464,117 +3560,6 @@ dim(nbr.loneliness.baseline.raw)[1]-dim(nbr.loneliness.baseline.raw.id)[1]
 }
 ```
 
-# Losing someone due to COVID - follow up
-## COPING 
-### Read in data
-```{r Read in data losing someone due to COVID COPING follow up}
-if(COPING == TRUE) {
-  
-coping.loss.followupb.raw <- readRDS(file = "../data_raw/coping/grief_coping_followupb.rds")
-dim(coping.loss.followupb.raw)
-colnames(coping.loss.followupb.raw)
-}
-  
-```
-
-Select variables losing someone due to COVID COPING follow up
-```{r Select variables losing someone due to COVID COPING follow up}
-if(COPING == TRUE){
-exclude_cols_dem <- c("ID",
-                  "cohort_name",
-                  "startDate_waves",
-                  "endDate")
-coping.loss.followupb.raw.id <- coping.loss.followupb.raw %>% #new dataset with ID
-  drop_na(externalDataReference) %>% # Drop NAs
-  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
-  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
-  select(
-         ID = externalDataReference, # ID
-         cohort_name, # Sample
-         startDate_waves = startDate,
-         #endDate,
-         grief.due_past_month_lost,
-         grief.suffered_past_month_loss
-        
-         ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
-  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
- #mutate_if(is.numeric, ~na_if(., -99)) %>%
-  #mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
- # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
- # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
- # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-# Inspect dimensions
-dim(coping.loss.followupb.raw.id)
-# Inspect colnames
-colnames(coping.loss.followupb.raw.id)
-#Differences
-dim(coping.loss.followupb.raw.id)[1]-dim(coping.loss.followupb.raw)[1]
-}
-```
-
-# Losing someone due to COVID - follow up
-## RAMP 
-### Read in data
-```{r Read in data losing someone due to RAMP COPING follow up}
-if(RAMP == TRUE) {
-  
-ramp.loss.followupb.raw <- readRDS(file = "../data_raw/ramp/grief_ramp_followupb.rds")
-dim(ramp.loss.followupb.raw)
-colnames(ramp.loss.followupb.raw)
-}
-  
-```
-
-Select variables losing someone due to RAMP COPING follow up
-```{r Select variables losing someone due to RAMP COPING follow up}
-if(RAMP == TRUE){
-exclude_cols_dem <- c("ID",
-                  "cohort_name",
-                  "startDate_waves",
-                  "endDate")
-ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw %>% #new dataset with ID
-  drop_na(externalDataReference) %>% # Drop NAs
-  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
-  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
-  select(
-         ID = externalDataReference, # ID
-         cohort_name, # Sample
-         startDate_waves = startDate,
-         #endDate,
-         grief.due_past_month_lost = grief.due_past_month_covid,
-         grief.suffered_past_month_loss = grief.loss_suffered_past_month
-        
-         ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
-  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
- #mutate_if(is.numeric, ~na_if(., -99)) %>%
-  #mutate_if(is.numeric, ~na_if(., -77)) %>%
-  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
- # mutate_if(is.factor, ~na_if(., "Don't know")) %>%
- # mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
- # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
-  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
- # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-# Inspect dimensions
-dim(ramp.loss.followupb.raw.id)
-# Inspect colnames
-colnames(ramp.loss.followupb.raw.id)
-#Differences
-dim(ramp.loss.followupb.raw.id)[1]-dim(ramp.loss.followupb.raw)[1]
-}
-```
 
 # CLEANING DEMOGRAPHICS 
 
