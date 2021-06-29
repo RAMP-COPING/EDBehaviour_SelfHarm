@@ -3579,7 +3579,6 @@ source("./ethnicity_ALLdatasets.R")
 ```
 
 1. AGE AT SIGN UP (i.e., EDGI and GLAD signup not COPING questionnaire)
-
 Source script for CREATING AGE variable in nbr (age_unc),cleaning it (in all datasets), and categorising it (nbr, edgi, glad - to match ramp)
 ```{r Age at sign-up source script}
 if(NBR == TRUE | EDGI == TRUE | GLAD == TRUE | RAMP == TRUE) {
@@ -3645,7 +3644,7 @@ if(RAMP == TRUE) {
 dat.raw.dem.ramp.followup <- rbind(dem.ramp.followupa.raw.id,
     dem.ramp.followupb.raw.id)
 
-#check column names
+# Check column names
 colnames(dat.raw.dem.ramp.followup)
 }
 ```
@@ -3653,19 +3652,16 @@ colnames(dat.raw.dem.ramp.followup)
 Checking for number of entries per phase
 ```{r Check number of entries per phase RAMP demographics}
 if(RAMP == TRUE) {
-
 dat.raw.dem.ramp.followup %>%
   group_by(wave_dem) %>%
   count()
-
 }
 ```
 
 Identify duplicate IDs in a single timepoint
 ```{r Identify duplicate IDs in a single timepoint RAMP demographics}
 if(RAMP == TRUE) {
-
-##Identify dup IDs in a single wave 
+# Identify dup IDs in a single wave 
 dat.raw.dem.ramp.followup %>%
    group_by(wave_dem, ID) %>%
    summarize(N = n()) %>%
@@ -3675,25 +3671,21 @@ dat.raw.dem.ramp.followup %>%
 
 
 FOR NOW - Want the LATER data entry from people who answered twice within a single phase 
-
 Later on - want to create variable with 'answered YES at least once' (i.e., include these entries)
-
 [want ID AND wave to be unique]
 ```{r Later date entry twice in single phase RAMP demographics}
 if(RAMP == TRUE) {
-
- ##FOLLOW UP A
-##confirm number of rows in current dataset 
+# Confirm number of rows in current dataset 
 nrow(dat.raw.dem.ramp.followup)
 
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND phase, keeping the LAST entry
 dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_dem,
                       fromLast = TRUE)
            )
 
-##confirm number of rows in dataset after filtering 
+# Confirm number of rows in dataset after filtering 
 nrow(dat.raw.dem.ramp.followup)
 }
 ```
@@ -4285,17 +4277,16 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
 Remove duplicate IDs RAMP demographics
 ```{r Remove duplicate IDs RAMP demographics}
 if(RAMP == TRUE) {
-##Check col names
+# Check col names
 colnames(dat.raw.dem.ramp.followup)
 
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 dat.raw.dem.ramp.followup  <- dat.raw.dem.ramp.followup %>%
   filter(., !duplicated(ID)) 
 
-##Check number of rows
+# Check number of rows
 nrow(dat.raw.dem.ramp.followup)
 }
-
 ```
 
 # TIMEPOINTS / PHASES - TAF RAMP
@@ -4304,7 +4295,6 @@ Create phase columns in follow up data - RAMP
 ```{r Identify phase datas RAMP TAF}
 if (RAMP ==TRUE) {
 source("./timepoints_RAMP.R")
-
 }
 ```
 
@@ -4314,7 +4304,7 @@ if(RAMP == TRUE) {
 dat.raw.taf.ramp <- rbind(taf.ramp.followupa.raw.id,
     taf.ramp.followupb.raw.id)
 
-#check column names
+# Check column names
 colnames(dat.raw.taf.ramp)
 }
 ```
@@ -4322,19 +4312,16 @@ colnames(dat.raw.taf.ramp)
 Check for number of entries per wave
 ```{r Check number of entries per wave RAMP TAF}
 if(RAMP == TRUE) {
-
 dat.raw.taf.ramp %>%
   group_by(wave_taf) %>%
   count()
-
 }
 ```
 
 Identify duplicate IDs in a single timepoint
 ```{r Identify duplicate IDs in a single timepoint RAMP TAF}
 if(RAMP == TRUE) {
-
-##Identify dup IDs in a single wave 
+# Identify dup IDs in a single wave 
 dat.raw.taf.ramp %>%
    group_by(wave_taf, ID) %>%
    summarize(N = n()) %>%
@@ -4348,18 +4335,17 @@ Later on - want to create variable with 'answered YES at least once'
 ```{r Later data entry RAMP TAF}
 if(RAMP == TRUE) {
 
- ##FOLLOW UP A
-##confirm number of rows in current dataset 
+# Confirm number of rows in current dataset 
 nrow(dat.raw.taf.ramp)
 
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 dat.raw.taf.ramp <- dat.raw.taf.ramp %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_taf,
                       fromLast = TRUE)
            )
 
-##confirm number of rows in dataset after filtering 
+# Confirm number of rows in dataset after filtering 
 nrow(dat.raw.taf.ramp)
 }
 ```
@@ -4479,17 +4465,16 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
 Remove duplicate IDs TAF RAMP
 ```{r Remove duplicate IDs TAF RAMP}
 if(RAMP == TRUE) {
-##Check col names
+# Check col names
 colnames(dat.raw.taf.ramp)
 
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 dat.raw.taf.ramp  <- dat.raw.taf.ramp %>%
   filter(., !duplicated(ID)) 
 
-##Check number of rows
+# Check number of rows
 nrow(dat.raw.taf.ramp)
 }
-
 ```
 
 # TIMEPOINTS / PHASES - TAF RAMP - EDEQ SCREENER RAMP
@@ -4500,19 +4485,16 @@ nrow(dat.raw.taf.ramp)
 Check number of entries per wave
 ```{r Check number of entries per wave RAMP EDEQ screener}
 if(RAMP == TRUE) {
-
 edeq.ramp.followupb.screener.raw.id %>%
   group_by(wave_edeq) %>%
   count()
-
 }
 ```
 
 Idenfity duplicate IDs in a single wave
 ```{r Idenfity duplicate IDs in a single wave RAMP EDEQ screener}
 if(RAMP == TRUE) {
-
-##Identify dup IDs in a single wave
+# Identify dup IDs in a single wave
 edeq.ramp.followupb.screener.raw.id %>%
    group_by(wave_edeq, ID) %>%
    summarize(N = n()) %>%
@@ -4525,18 +4507,17 @@ Want the LATER data entry from people who answered twice within a single wave (a
 ```{r Later date entry RAMP EDEQ screener}
 if(RAMP == TRUE) {
 
- ##FOLLOW UP B EDEQ SCREENER
-##confirm number of rows in current dataset (= 26411)
+# Confirm number of rows in current dataset (= 26411)
 nrow(edeq.ramp.followupb.screener.raw.id)
 
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_edeq,
                       fromLast = TRUE)
            )
 
-##confirm number of rows in dataset after filtering (should be 26411 - 41)
+# Confirm number of rows in dataset after filtering (should be 26411 - 41)
 nrow(edeq.ramp.followupb.screener.raw.id)
 }
 ```
@@ -4603,14 +4584,14 @@ edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id  %>%
 Remove duplicate IDs EDEQ RAMP screener
 ```{r Remove duplicate IDs RAMP EDEQ screener}
 if(RAMP == TRUE) {
-##Check col names
+# Check col names
 colnames(edeq.ramp.followupb.screener.raw.id)
 
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 edeq.ramp.followupb.screener.raw.id  <- edeq.ramp.followupb.screener.raw.id  %>%
   filter(., !duplicated(ID)) 
 
-##Check number of rows
+# Check number of rows
 nrow(edeq.ramp.followupb.screener.raw.id)
 }
 
@@ -4641,16 +4622,15 @@ Later on - want to create variable with 'answered YES at least once'
 [want ID AND wave to be unique]
 ```{r Later date entry loss of loved one due to COVID RAMP}
 if(RAMP == TRUE) {
- ##FOLLOW UP A
-##confirm number of rows in current dataset 
+# Confirm number of rows in current dataset 
 nrow(ramp.loss.followupb.raw.id)
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw.id %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_loss,
                       fromLast = TRUE)
            )
-##confirm number of rows in dataset after filtering 
+# Confirm number of rows in dataset after filtering 
 nrow(ramp.loss.followupb.raw.id)
 }
 ```
@@ -4681,7 +4661,7 @@ ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw.id %>%
          `grief.due_past_month_lost_.Wave_4b`,
          `grief.due_past_month_lost_.Wave_6b`,
          `grief.due_past_month_lost_.Wave_8b`,
-       #  `grief.due_past_month_lost_.Wave_10b`,
+        #  `grief.due_past_month_lost_.Wave_10b`,
         # `grief.due_past_month_lost_.Wave_12b`,
          
          `grief.suffered_past_month_loss_.Wave_1b`,
@@ -4701,12 +4681,12 @@ ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw.id %>%
 Remove duplicate IDs loss of loved one due to COVID RAMP
 ```{r Remove duplicate IDs loss of loved one due to COVID RAMP}
 if(RAMP == TRUE) {
-##Check col names
+# Check col names
 colnames(ramp.loss.followupb.raw.id)
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 ramp.loss.followupb.raw.id  <- ramp.loss.followupb.raw.id %>%
   filter(., !duplicated(ID)) 
-##Check number of rows
+# Check number of rows
 nrow(ramp.loss.followupb.raw.id)
 }
 ```
@@ -4727,7 +4707,7 @@ if(COPING == TRUE) {
 dat.raw.dem.coping.followup <- rbind(coping.dem.followupb.raw.id,
     coping.dem.followupa.raw.id)
 
-#check column names
+# Check column names
 colnames(dat.raw.dem.coping.followup)
 }
 ```
@@ -4735,7 +4715,6 @@ colnames(dat.raw.dem.coping.followup)
 Check for number of entries per wave
 ```{r Check for number of entries per wave COPING follow up demographics}
 if(COPING == TRUE) {
-
 dat.raw.dem.coping.followup %>%
   group_by(wave_dem) %>%
   count()
@@ -4747,7 +4726,7 @@ Identify duplicate IDs in a single timepoint
 ```{r Identify duplicate IDs in a single timepoint COPING follow up demographics}
 if(COPING == TRUE) {
 
-##Identify dup IDs in a single wave 
+# Identify dup IDs in a single wave 
 dat.raw.dem.coping.followup %>%
    group_by(wave_dem, ID) %>%
    summarize(N = n()) %>%
@@ -4760,19 +4739,17 @@ Later on - want to create variable with 'answered YES at least once'
 [want ID AND wave to be unique]
 ```{r Later entry COPING follow up demographics}
 if(COPING == TRUE) {
-
- ##FOLLOW UP A
-##confirm number of rows in current dataset 
+# Confirm number of rows in current dataset 
 nrow(dat.raw.dem.coping.followup)
 
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_dem,
                       fromLast = TRUE)
            )
 
-##confirm number of rows in dataset after filtering 
+# Confirm number of rows in dataset after filtering 
 nrow(dat.raw.dem.coping.followup)
 }
 ```
@@ -5364,14 +5341,14 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
 Remove duplicate IDs COPING follow up demographics
 ```{r Remove duplicate IDs COPING follow up demographics}
 if(COPING == TRUE) {
-##Check col names
+# Check col names
 colnames(dat.raw.dem.coping.followup)
 
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 dat.raw.dem.coping.followup  <- dat.raw.dem.coping.followup %>%
   filter(., !duplicated(ID)) 
 
-##Check number of rows
+# Check number of rows
 nrow(dat.raw.dem.coping.followup)
 }
 
@@ -5383,9 +5360,7 @@ Create a phase columns in follow up data
 ```{r Identify phases COPING follow up TAF}
 if (COPING ==TRUE) {
 source("./timepoints_COPING.R")
-
 }
-
 ```
 
 Join TAF COPING follow ups 
@@ -5394,11 +5369,10 @@ if(COPING == TRUE) {
 dat.raw.taf.coping <- rbind(taf.coping.followupa.raw.id,
     taf.coping.followupb.raw.id)
 
-
-##Check col names
+# Check col names
 colnames(dat.raw.taf.coping)
 
-##Check number of rows
+# Check number of rows
 nrow(dat.raw.taf.coping)
 
 }
@@ -5407,7 +5381,6 @@ nrow(dat.raw.taf.coping)
 Check for number of entries per wave
 ```{r Check for number of entries per wave COPING follow up TAF}
 if(COPING == TRUE) {
-
 dat.raw.taf.coping %>%
   group_by(wave_taf) %>%
   count()
@@ -5419,7 +5392,7 @@ Identify duplicate IDs in a single wave
 ```{r Identify duplicate IDs in a single wave COPING follow up TAF}
 if(COPING == TRUE) {
 
-##Identify dup IDs in a single wave
+# Identify dup IDs in a single wave
 dat.raw.taf.coping %>%
    group_by(wave_taf, ID) %>%
    summarize(N = n()) %>%
@@ -5432,18 +5405,17 @@ Want the LATER data entry from people who answered twice within a single wave (f
 ```{r Later entry COPING follow up TAF}
 if(COPING == TRUE) {
 
- ##FOLLOW UP B EDEQ SCREENER
-##confirm number of rows in current dataset
+# Confirm number of rows in current dataset
 nrow(dat.raw.taf.coping)
 
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 dat.raw.taf.coping <- dat.raw.taf.coping %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_taf,
                       fromLast = TRUE)
            )
 
-##confirm number of rows in dataset after filtering 
+# Confirm number of rows in dataset after filtering 
 nrow(dat.raw.taf.coping)
 }
 ```
@@ -5462,10 +5434,7 @@ dat.raw.taf.coping.wide <- dat.raw.taf.coping %>%
                               taf.felt_weeks_past.1,
                               taf.meant_life_end_weeks))
 
-  
 }
-
-
 ```
 
 Select variables for dataset TAF COPING
@@ -5565,14 +5534,14 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
 Remove duplicate IDs TAF COPING
 ```{r Remove duplicate IDs TAF COPING}
 if(COPING == TRUE) {
-##Check col names
+# Check col names
 colnames(dat.raw.taf.coping)
 
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 dat.raw.taf.coping  <- dat.raw.taf.coping  %>%
   filter(., !duplicated(ID)) 
 
-##Check number of rows
+# Check number of rows
 nrow(dat.raw.taf.coping)
 }
 
@@ -5610,16 +5579,15 @@ Later on - want to create variable with 'answered YES at least once'
 [want ID AND wave to be unique]
 ```{r Late entry loss of a loved one due to COVID COPING}
 if(COPING == TRUE) {
- ##FOLLOW UP B
-##confirm number of rows in current dataset 
+# Confirm number of rows in current dataset 
 nrow(coping.loss.followupb.raw.id)
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_loss,
                       fromLast = TRUE)
            )
-##confirm number of rows in dataset after filtering 
+# Confirm number of rows in dataset after filtering 
 nrow(coping.loss.followupb.raw.id)
 }
 ```
@@ -5696,7 +5664,7 @@ Idenfity duplicate IDs in a single phase COPING EDEQ screener
 ```{r Idenfity duplicate IDs in a single phase COPING EDEQ screener }
 if(COPING == TRUE) {
 
-##Identify dup IDs in a single wave
+# Identify dup IDs in a single wave
 edeq.coping.followupb.screener.raw.id %>%
    group_by(wave_edeq, ID) %>%
    summarize(N = n()) %>%
@@ -5709,18 +5677,17 @@ Want the LATER data entry from people who answered twice within a single wave (f
 ```{r Later date entry COPING EDEQ screener }
 if(COPING == TRUE) {
 
- ##FOLLOW UP B EDEQ SCREENER
-##confirm number of rows in current dataset
+# Confirm number of rows in current dataset
 nrow(edeq.coping.followupb.screener.raw.id)
 
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_edeq,
                       fromLast = TRUE)
            )
 
-##confirm number of rows in dataset after filtering (84728 - 206)
+# Confirm number of rows in dataset after filtering (84728 - 206)
 nrow(edeq.coping.followupb.screener.raw.id)
 }
 ```
@@ -5788,39 +5755,37 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  
 Remove duplicate IDs EDEQ COPING screener
 ```{r Remove duplicate IDs EDEQ COPING screener}
 if(COPING == TRUE) {
-##Check col names
+# Check col names
 colnames(edeq.coping.followupb.screener.raw.id)
 
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 edeq.coping.followupb.screener.raw.id  <- edeq.coping.followupb.screener.raw.id  %>%
   filter(., !duplicated(ID)) 
 
-##Check number of rows
+# Check number of rows
 nrow(edeq.coping.followupb.screener.raw.id)
 }
 
 ```
 
 
-##VIRUS INFO 
+# VIRUS INFO 
 
-#Want the LATER data entry from people who answered twice within a single wave 
+# Want the LATER data entry from people who answered twice within a single wave 
 [want ID AND wave to be unique]
 ```{r}
 if(COPING == TRUE) {
-
- ##FOLLOW UP B virus
-##confirm number of rows in current dataset
+# Confirm number of rows in current dataset
 nrow(coping.followupb.virus.id)
 
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 coping.followupb.virus.id <- coping.followupb.virus.id %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_virus,
                       fromLast = TRUE)
            )
 
-##confirm number of rows in dataset after filtering
+# Confirm number of rows in dataset after filtering
 nrow(coping.followupb.virus.id)
 }
 ```
@@ -5888,14 +5853,14 @@ coping.followupb.virus.id <- coping.followupb.virus.id  %>%
 ##8. Remove duplicate IDs EDEQ COPING
 ```{r}
 if(COPING == TRUE) {
-##Check col names
+# Check col names
 colnames(coping.followupb.virus.id)
 
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 coping.followupb.virus.id  <- coping.followupb.virus.id  %>%
   filter(., !duplicated(ID)) 
 
-##Check number of rows
+# Check number of rows
 nrow(coping.followupb.virus.id)
 }
 
@@ -5905,16 +5870,15 @@ nrow(coping.followupb.virus.id)
 [want ID AND wave to be unique]
 ```{r Last entry Virus info COPING}
 if(COPING == TRUE) {
- ##FOLLOW UP B virus
-##confirm number of rows in current dataset
+# Confirm number of rows in current dataset
 nrow(coping.followupb.virus.id)
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 coping.followupb.virus.id <- coping.followupb.virus.id %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_virus,
                       fromLast = TRUE)
            )
-##confirm number of rows in dataset after filtering
+# Coonfirm number of rows in dataset after filtering
 nrow(coping.followupb.virus.id)
 }
 ```
@@ -5978,12 +5942,12 @@ coping.followupb.virus.id <- coping.followupb.virus.id  %>%
 Remove duplicate IDs COPING VIRUS
 ```{r}
 if(COPING == TRUE) {
-##Check col names
+# Check col names
 colnames(coping.followupb.virus.id)
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 coping.followupb.virus.id  <- coping.followupb.virus.id  %>%
   filter(., !duplicated(ID)) 
-##Check number of rows
+# Check number of rows
 nrow(coping.followupb.virus.id)
 }
 ```
@@ -5992,16 +5956,15 @@ nrow(coping.followupb.virus.id)
 [want ID AND wave to be unique]
 ```{r  Last entry Virus info RAMP}
 if(RAMP == TRUE) {
- ##FOLLOW UP B virus
-##confirm number of rows in current dataset
+# Confirm number of rows in current dataset
 nrow(ramp.followupb.virus.id)
-#Filter out duplicated IDs AND wave, keeping the LAST entry
+# Filter out duplicated IDs AND wave, keeping the LAST entry
 ramp.followupb.virus.id <- ramp.followupb.virus.id %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_virus,
                       fromLast = TRUE)
            )
-##confirm number of rows in dataset after filtering
+# Confirm number of rows in dataset after filtering
 nrow(ramp.followupb.virus.id)
 }
 ```
@@ -6067,12 +6030,12 @@ ramp.followupb.virus.id <- ramp.followupb.virus.id  %>%
 Remove duplicate IDs RAMP VIRUS
 ```{r}
 if(RAMP == TRUE) {
-##Check col names
+# Check col names
 colnames(ramp.followupb.virus.id)
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 ramp.followupb.virus.id  <- ramp.followupb.virus.id  %>%
   filter(., !duplicated(ID)) 
-##Check number of rows
+# Check number of rows
 nrow(ramp.followupb.virus.id)
 }
 ```
@@ -6080,14 +6043,14 @@ nrow(ramp.followupb.virus.id)
 Remove duplicate IDs RAMP VIRUS
 ```{r Remove dup IDs RAMP VIRUS}
 if(RAMP == TRUE) {
-##Check col names
+# Check col names
 colnames(ramp.followupb.virus.id)
 
-##Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
 ramp.followupb.virus.id  <- ramp.followupb.virus.id  %>%
   filter(., !duplicated(ID)) 
 
-##Check number of rows
+# Check number of rows
 nrow(ramp.followupb.virus.id)
 }
 
@@ -6227,7 +6190,7 @@ edgi.4 <- taf.edgi.coping.baseline.raw.id %>%
   taf.pandemic_felt.1_.Wavebaseline,
   taf.meant_end_life_pandemic_.Wavebaseline)
 
-edgi.5 <- mhd.raw.id %>% #3251
+edgi.5 <- mhd.raw.id %>% 
   select(ID,
          cohort_name,
          control,
@@ -6387,7 +6350,6 @@ length(unique(x$ID))
 x <- edgi.5[edgi.5$ID %in% edgi.1$ID,]
 length(unique(x$ID))
 }
-# NB: No EDEQ baseline (only in ramp)
 ```
 
 EDGI data frame list
@@ -6414,7 +6376,7 @@ dat.raw.edgi <- plyr::join_all(
   dfs.list,
   by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
   )
-#look at the data
+# Look at the data
 colnames(dat.raw.edgi)
 }
 ```
@@ -6425,10 +6387,10 @@ if(EDGI == TRUE) {
 dat.raw.edgi$ID.dup <- duplicated(dat.raw.edgi$ID)
 summary(as.factor(dat.raw.edgi$ID.dup))
 select(dat.raw.edgi)
- #Check for duplicate names of columns
+ # Check for duplicate names of columns
 names_freq <- as.data.frame(table(names(dat.raw.edgi)))
 names_freq[names_freq$Freq > 1, ]
-##Filter out duplicate column names
+# Filter out duplicate column names
  dat.dup <- dat.raw.edgi %>%
   filter(ID.dup == TRUE)
 dat.raw.edgi <- dat.raw.edgi %>%
@@ -6441,7 +6403,7 @@ GLAD data frame list
 ```{r GLAD data frame list}
 if(GLAD == TRUE) {
   
-  #Temporary solution - Drop one dup cohort name columns
+  # Temporary solution - Drop one dup cohort name columns
 glad.coping.dem.raw.id$cohort_name.y <- NULL
 glad.coping.dem.raw.id <- glad.coping.dem.raw.id %>% 
   rename(
@@ -6597,7 +6559,6 @@ glad.6 <- glad.coping.dem2.raw.id %>%
          dem2.staying_live.2,
          dem2.staying_live.3,
          dem2.prefer_not_to_say.1,
-         
          dem2.member_vulnerable_group,
          dem2.solid_organ_transplant_recipient,
          dem2.lung_cancer_radical_radiotherapy,
@@ -6681,7 +6642,7 @@ glad.9 <- glad.loss.baseline.raw.id %>%
          grief.covid_lost_due_close,
          grief.suffered_past_month_loss)
   
-##See if IDs match with glad.3
+# See if IDs match with glad.3
 x <- glad.3[glad.3$ID %in% glad.1$ID,]
 length(unique(x$ID))
 x <- glad.3[glad.3$ID %in% glad.2$ID,]
@@ -6717,7 +6678,7 @@ dat.raw.glad <- plyr::join_all(
   dfs.list,
   by = c("ID", "cohort_name")
   )
-#look at the data
+# Look at the data
 colnames(dat.raw.glad)
 }
 ```
@@ -6728,10 +6689,10 @@ if(GLAD == TRUE) {
   dat.raw.glad$ID.dup <- duplicated(dat.raw.glad$ID)
 summary(as.factor(dat.raw.glad$ID.dup))
 select(dat.raw.glad)
-#Check for duplicate names of columns
+# Check for duplicate names of columns
 names_freq <- as.data.frame(table(names(dat.raw.glad)))
 names_freq[names_freq$Freq > 1, ]
-##Filter out duplicate column names
+# Filter out duplicate column names
  #dat.dup <- dat.raw.glad %>%
  # filter(ID.dup == TRUE)
 #dat.raw.glad <- dat.raw.glad %>%
@@ -7015,7 +6976,7 @@ dat.raw.nbr <- plyr::join_all(
   dfs.list,
   by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
   )
-#look at the data
+# Look at the data
 colnames(dat.raw.nbr)
 }
 ```
@@ -7026,10 +6987,10 @@ if(NBR == TRUE) {
 dat.raw.nbr$ID.dup <- duplicated(dat.raw.nbr$ID)
 summary(as.factor(dat.raw.nbr$ID.dup))
 select(dat.raw.nbr)
- #Check for duplicate names of columns
+ # Check for duplicate names of columns
 names_freq <- as.data.frame(table(names(dat.raw.nbr)))
 names_freq[names_freq$Freq > 1, ]
-##Filter out duplicate column names
+# Filter out duplicate column names
  dat.dup <- dat.raw.nbr %>%
   filter(ID.dup == TRUE)
 dat.raw.nbr <- dat.raw.nbr %>%
@@ -7041,8 +7002,7 @@ colnames(dat.raw.nbr)
 RAMP variable list
 ```{r RAMP variable list}
 if(RAMP == TRUE) {
-  
- 
+
   ramp.1 <- ramp.dem.raw.id %>%
     select(ID,
            cohort_name,
@@ -7267,9 +7227,7 @@ ramp.7 <- ramp_pan_worry.id %>%
          panworry.the_governments_response_to_the_pandemic,      
          panworry.separation_from_family_members,         
          panworry.standing_impact_global_recession,
-         
          panworry.other_,
-         
          panworry.impact_on_your_employment_status_numeric,                                    
          panworry.employment_status_household_key_numeric,              
          panworry.impact_on_your_education_or_exams_numeric,            
@@ -7311,7 +7269,7 @@ ramp.9 <- ramp.loss.baseline.raw.id %>%
          grief.covid_lost_due_close,
          grief.suffered_past_month_loss)
   
-#Check ramp.4 has same IDs as other datasets
+# Check ramp.4 has same IDs as other datasets
 x <- ramp.4[ramp.4$ID %in% ramp.1$ID,]
 length(unique(x$ID))
 x <- ramp.4[ramp.4$ID %in% ramp.2$ID,]
@@ -7336,7 +7294,6 @@ dfs.list <- list(
   ramp.7,
   ramp.8,
   ramp.9
-  
 )
 }
 ```
@@ -7348,7 +7305,7 @@ dat.raw.ramp <- plyr::join_all(
   dfs.list,
   by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
   )
-#look at the data
+# Look at the data
 colnames(dat.raw.ramp)
 }
 ```
@@ -7358,10 +7315,10 @@ Get rid of duplicates in RAMP
 if(RAMP == TRUE) {
 dat.raw.ramp$ID.dup <- duplicated(dat.raw.ramp$ID)
 summary(as.factor(dat.raw.ramp$ID.dup))
- #Check for duplicate names of columns
+ # Check for duplicate names of columns
 names_freq <- as.data.frame(table(names(dat.raw.ramp)))
 names_freq[names_freq$Freq > 1, ]
-##Filter out duplicate column names
+# Filter out duplicate column names
  dat.dup <- dat.raw.ramp %>%
   filter(ID.dup == TRUE)
 dat.raw.ramp <- dat.raw.ramp %>%
@@ -7386,1333 +7343,6 @@ if(NBR == TRUE) {
 }
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-----
-```{r EDGI select variables}
-if(EDGI == TRUE) {
-  
-    
-  #Drop one dup cohort name columns
-edgi.coping.dem.raw.id$cohort_name.y <- NULL
-
-edgi.coping.dem.raw.id <- edgi.coping.dem.raw.id %>% 
-  rename(
-    cohort_name = cohort_name.x
-    )
-
-edgi.1 <- edgi.coping.dem.raw.id %>% 
-  select(ID,
-  cohort_name,
-  gender_unc,
-  sex,
-  uk_location,
-  current_country,
-  age_category_COPING)
-  
-edgi.2 <- edgi.dem3.raw.id %>% 
-  select(ID,
-  cohort_name,
-  age_category_numeric,
-  age_category,
-  highest_education_prepan_numeric,
-  highest_education_prepan,
-  ethnicity, 
-  transgender)
-  
-edgi.3 <- edgi.coping.dem4.employ.raw.id %>% 
-  select(ID,
-  cohort_name,
-  highest_education_numeric,
-  highest_education,
-  employment_prior_covid_numeric,
-  employment_prior_covid,
-  employment_change_numeric,
-  employment_change,
-  key_worker,
-  key_worker_numeric,
-  employ.fulltime_employed,
-  employ.parttime_employed,
-  employ.unemployed,
-  employ.zerohours_contract,
-  employ.stayathome_parent_or_carer,
-  employ.selfemployed,
-  employ.contract_or_freelance_work,
-  employ.small_business_owner,
-  employ.receiving_state_income,
-  employ.retired,
-  employ.student_gcse_or_a_level,
-  employ.student_university,
-  employ.my_employment_status_has_not_changed,
-  employ.became_unemployed,
-  employ.reduction_in_hours,
-  employ.reduction_in_salary,
-  employ.benefits_increased,
-  employ.benefits_decreased,
-  employ.change_in_duties_or_responsibilities,
-  employ.became_employed,
-  employ.increased_hours,
-  employ.increased_salary,
-  employ.furloughed_or_paid_leave_government_funded,
-  employ.furloughed_or_paid_leave_company_funded,
-  employ.paid_leave_furloughed,
-  employ.taking_unpaid_leave,
-  employ.other,
-  employ.other_text.txt,
-  employ.no_impact,
-  employ.cancelled_exams,
-  employ.change_in_format_of_exams,
-  employ.automatic_pass,
-  employ.change_in_deadlines,
-  employ.change_in_lesson_delivery,
-  employ.past_performance_grade_decided,
-  employ.cancelled_classes,
-  employ.cannot_complete_degree,
-  employ.impact_on_studies_still_unknown,
-  employ.other.1,
-  employ.other_text.txt.1,
-  employ.losing_job_due_risk,
-  employ.increased_due_job_pandemic)
-  
-edgi.4 <- taf.edgi.coping.baseline.raw.id %>% 
-  select(ID,
-  cohort_name,
-  taf.worth_living_life_people_.Wavebaseline,
-  taf.felt_weeks_past_.Wavebaseline,
-  taf.have_you_contemplated_harming_yourself_.Wavebaseline,
-  taf.felt_weeks_past.1_.Wavebaseline,
-  taf.meant_life_end_weeks_.Wavebaseline,
-   taf.pandemic_felt_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
-
-
-edgi.5 <- mhd.raw.id %>% #3251
-  select(ID,
-         cohort_name,
-         control,
-         control_numeric,
-         depressive_disorders_numeric,
-         anxiety_disorders_numeric,
-         eating_disorders_diagnosed_numeric,
-         obsessive_compulsive_disorders_numeric,
-         psychotic_disorders_numeric,
-         PERSONALITY_DISORDER_NUMERIC,
-         agoraphobia_panic_disorder_numeric,
-         depression_and_anxiety_numeric,
-         bipolar_and_schizophrenia_numeric,
-         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
-         mhd.posttraumatic_stress_disorder_ptsd_numeric, 
-         autism_spectrum_disorder_numeric,
-         mhd.attention_deficit_hyperactivity_disorder_numeric,
-         mhd.personality_disorder_numeric,
-         mhd.suspected_eating_disorder_diagnosed_numeric,
-         mhd.body_dysmorphic_disorder_bdd_numeric,
-         mhd.anorexia_nervosa_numeric,
-          mhd.atypical_anorexia_nervosa_numeric,
-          mhd.bulimia_nervosa_numeric, 
-          mhd.atypical_bulimia_nervosa_numeric,  
-          mhd.bingeeating_disorder_numeric, 
-          mhd.atypical_bingeeating_disorder_numeric, 
-          mhd.purging_disorder_numeric, 
-          mhd.night_eating_syndrome_numeric,  
-          mhd.pica_numeric, 
-          mhd.avoidantrestrictive_food_intake_disorder_numeric,
-          mhd.rumination_disorder_numeric, 
-          mhd.feeding_eating_disorder_numeric, 
-          mhd.other_eating_disorder_numeric)
-
-
-edgi.6 <- taf.edgi.coping.baseline.raw.id %>% 
-  select(ID,
-  cohort_name,
-  taf.pandemic_felt_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
-
-
-edgi.7 <- edgi.coping.dem2.raw.id %>%
-  select(ID,
-         cohort_name,
-         
-         dem2.living_with_partner_or_spouse,
-         dem2.living_alone,
-         dem2.living_with_partner_or_spouse,
-         dem2.living_with_housemates,
-         dem2.age_children_living,
-         dem2.age_children_living.1,
-         dem2.living_with_other_members_of_my_family,
-         dem2.spouse_partner_members_living,
-         dem2.staying_live,
-         dem2.staying_live.1,
-         dem2.prefer_not_to_say,
-         dem2.living_situation_change_pandemic,
-         dem2.living_alone.1,
-         dem2.living_with_partner_or_spouse.1,
-         dem2.living_with_housemates.1,
-         dem2.age_children_living.2,
-         dem2.age_children_living.3,
-         dem2.living_with_other_members_of_my_family.1,
-         dem2.spouse_partner_members_living.1,
-         dem2.staying_live.2,
-         dem2.staying_live.3,
-         dem2.prefer_not_to_say.1,
-         
-         
-         dem2.member_vulnerable_group,
-         dem2.solid_organ_transplant_recipient,
-         dem2.lung_cancer_radical_radiotherapy,
-         dem2.bone_marrow_blood_leukaemia,
-         dem2.immunotherapy_cancer_continuing_antibody,
-         dem2.parp_inhibitors_affect_immune,
-         dem2.stem_cell_transplants_bone,
-         dem2.severe_copd_cystic_fibrosis,
-         dem2.inborn_errors_rare_diseases,
-         dem2.taking_medicine_that_weakens_your_immune_system,
-         dem2.condition_infections_makes,
-         dem2.congenital_pregnant_acquired_significant,
-         dem2.pregnant,
-         dem2.over_70_years_old,
-         dem2.prefer_not_to_say.2,
-         dem2.unsure)
-  
-edgi.8 <- edgi_pan_worry.id %>%
-  select(ID,
-         cohort_name,
-         panworry.impact_on_your_employment_status,                                    
-         panworry.employment_status_household_key,              
-         panworry.impact_on_your_education_or_exams,            
-         panworry.exams_impact_education_children,              
-         panworry.financial_impact,                           
-         panworry.contracting_the_virus,                       
-         panworry.people_you_know_contracting_the_virus,       
-         panworry.people_you_dont_know_contracting_the_virus,   
-         panworry.impact_mental_health_wellbeing,               
-         panworry.impact_mental_health_childrens,               
-         panworry.impact_relatives_mental_health,           
-         panworry.being_socially_isolated,                    
-         panworry.people_you_know_being_socially_isolated,      
-         panworry.shortage_of_essential_supplies,                
-         panworry.shortage_of_medication_or_access_to_healthcare,
-         panworry.healthcare_people_essential_supplies,          
-         panworry.information_virus_government_accuracy,         
-         panworry.the_governments_response_to_the_pandemic,      
-         panworry.separation_from_family_members,         
-         panworry.standing_impact_global_recession,
-         panworry.other_,
-         
-         panworry.impact_on_your_employment_status_numeric,                                    
-         panworry.employment_status_household_key_numeric,              
-         panworry.impact_on_your_education_or_exams_numeric,            
-         panworry.exams_impact_education_children_numeric,              
-         panworry.financial_impact_numeric,                           
-         panworry.contracting_the_virus_numeric,                       
-         panworry.people_you_know_contracting_the_virus_numeric,       
-         panworry.people_you_dont_know_contracting_the_virus_numeric,   
-         panworry.impact_mental_health_wellbeing_numeric,               
-         panworry.impact_mental_health_childrens_numeric,               
-         panworry.impact_relatives_mental_health_numeric,           
-         panworry.being_socially_isolated_numeric,                    
-         panworry.people_you_know_being_socially_isolated_numeric,      
-         panworry.shortage_of_essential_supplies_numeric,                
-         panworry.shortage_of_medication_or_access_to_healthcare_numeric,
-         panworry.healthcare_people_essential_supplies_numeric,          
-         panworry.information_virus_government_accuracy_numeric,         
-         panworry.the_governments_response_to_the_pandemic_numeric,      
-         panworry.separation_from_family_members_numeric,         
-         panworry.standing_impact_global_recession_numeric,
-         panworry.other__numeric)
-  
-
-##See if IDs match with edgi.5
-x <- edgi.5[edgi.5$ID %in% edgi.4$ID,]
-
-length(unique(x$ID))
-
-x <- edgi.5[edgi.5$ID %in% edgi.3$ID,]
-
-length(unique(x$ID))
-
-x <- edgi.5[edgi.5$ID %in% edgi.2$ID,]
-
-length(unique(x$ID))
-
-x <- edgi.5[edgi.5$ID %in% edgi.1$ID,]
-
-length(unique(x$ID))
-
-}
-
-#no edeq baseline (only in ramp)
-```
-
-##EDGI data frame list
-```{r EDGI data frame list}
-if(EDGI == TRUE) {
-dfs.list <- list(
-  edgi.1,
-  edgi.2,
-  edgi.3,
-  edgi.4,
-  edgi.5,
-  edgi.7,
-  edgi.8
-)
-}
-
-```
-
-##Join all EDGI
-```{r Join all EDGI questionnaires}
-if(EDGI == TRUE) {
-dat.raw.edgi <- plyr::join_all(
-  dfs.list,
-  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
-  )
-
-#look at the data
-colnames(dat.raw.edgi)
-}
-
-```
-
-#Get rid of duplicates in EDGI
-```{r Check duplicates}
-if(EDGI == TRUE) {
-dat.raw.edgi$ID.dup <- duplicated(dat.raw.edgi$ID)
-
-summary(as.factor(dat.raw.edgi$ID.dup))
-
-select(dat.raw.edgi)
-
- #Check for duplicate names of columns
-names_freq <- as.data.frame(table(names(dat.raw.edgi)))
-names_freq[names_freq$Freq > 1, ]
-
-##Filter out duplicate column names
- dat.dup <- dat.raw.edgi %>%
-  filter(ID.dup == TRUE)
-
-dat.raw.edgi <- dat.raw.edgi %>%
-  filter(ID.dup == FALSE)
-
-colnames(dat.raw.edgi)
-
-}
-
-```
-
-##GLAD data frame list
-```{r GLAD data frame list}
-if(GLAD == TRUE) {
-
-  
-  #Drop one dup cohort name columns
-glad.coping.dem.raw.id$cohort_name.y <- NULL
-
-glad.coping.dem.raw.id <- glad.coping.dem.raw.id %>% 
-  rename(
-    cohort_name = cohort_name.x
-    )
-
-glad.1 <-  glad.coping.dem.raw.id %>%
-     select(ID,
-            cohort_name,
-            sex,
-            gender_unc,
-            uk_location,
-            current_country,
-            age_category_COPING
-            )
-
-
-glad.coping.dem.raw.id$cohort_name.x
-   
-glad.2 <- glad.dem3.raw.id %>%
-  select(ID,
-         cohort_name,
-         age_category_numeric,
-         age_category,
-         ethnicity,
-         highest_education_prepan_numeric,
-         highest_education_prepan,
-         transgender)
-
-glad.3 <- glad.coping.dem4.employ.raw.id %>% 
-  select(ID,
-         cohort_name,
-         highest_education_numeric,
-         highest_education,
-         employment_prior_covid,
-         employment_prior_covid_numeric,
-         employment_change,
-         employment_change_numeric,
-         key_worker,
-         key_worker_numeric,
-         
-         employ.fulltime_employed,
-  employ.parttime_employed,
-  employ.unemployed,
-  employ.zerohours_contract,
-  employ.stayathome_parent_or_carer,
-  employ.selfemployed,
-  employ.contract_or_freelance_work,
-  employ.small_business_owner,
-  employ.receiving_state_income,
-  employ.retired,
-  employ.student_gcse_or_a_level,
-  employ.student_university,
-  employ.my_employment_status_has_not_changed,
-  employ.became_unemployed,
-  employ.reduction_in_hours,
-  employ.reduction_in_salary,
-  employ.benefits_increased,
-  employ.benefits_decreased,
-  employ.change_in_duties_or_responsibilities,
-  employ.became_employed,
-  employ.increased_hours,
-  employ.increased_salary,
-  employ.furloughed_or_paid_leave_government_funded,
-  employ.furloughed_or_paid_leave_company_funded,
-  employ.paid_leave_furloughed,
-  employ.taking_unpaid_leave,
-  employ.other,
-  employ.other_text.txt,
-  employ.no_impact,
-  employ.cancelled_exams,
-  employ.change_in_format_of_exams,
-  employ.automatic_pass,
-  employ.change_in_deadlines,
-  employ.change_in_lesson_delivery,
-  employ.past_performance_grade_decided,
-  employ.cancelled_classes,
-  employ.cannot_complete_degree,
-  employ.impact_on_studies_still_unknown,
-  employ.other.1,
-  employ.other_text.txt.1,
-  employ.losing_job_due_risk,
-  employ.increased_due_job_pandemic)
-
-glad.4 <- taf.glad.coping.baseline.raw.id%>%
-  select(ID,
-  cohort_name,
-  taf.worth_living_life_people_.Wavebaseline,
-  taf.felt_weeks_past_.Wavebaseline,
-  taf.have_you_contemplated_harming_yourself_.Wavebaseline,
-  taf.felt_weeks_past.1_.Wavebaseline,
-  taf.meant_life_end_weeks_.Wavebaseline,
-   taf.pandemic_felt_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
-
-glad.5 <- mhd.raw.id %>%
-  select(ID,
-         cohort_name,
-         control,
-         control_numeric,
-         depressive_disorders_numeric,
-         anxiety_disorders_numeric,
-         eating_disorders_diagnosed_numeric,
-         obsessive_compulsive_disorders_numeric,
-         psychotic_disorders_numeric,
-         PERSONALITY_DISORDER_NUMERIC,
-         agoraphobia_panic_disorder_numeric,
-         depression_and_anxiety_numeric,
-         bipolar_and_schizophrenia_numeric,
-         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
-        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
-        autism_spectrum_disorder_numeric,
-        mhd.attention_deficit_hyperactivity_disorder_numeric,
-        mhd.personality_disorder_numeric,
-        mhd.suspected_eating_disorder_diagnosed_numeric,
-        mhd.body_dysmorphic_disorder_bdd_numeric,
-        mhd.anorexia_nervosa_numeric,
-          mhd.atypical_anorexia_nervosa_numeric,
-          mhd.bulimia_nervosa_numeric, 
-          mhd.atypical_bulimia_nervosa_numeric,  
-          mhd.bingeeating_disorder_numeric, 
-          mhd.atypical_bingeeating_disorder_numeric, 
-          mhd.purging_disorder_numeric, 
-          mhd.night_eating_syndrome_numeric,  
-          mhd.pica_numeric, 
-          mhd.avoidantrestrictive_food_intake_disorder_numeric,
-          mhd.rumination_disorder_numeric, 
-          mhd.feeding_eating_disorder_numeric, 
-          mhd.other_eating_disorder_numeric)
-
-glad.6 <- glad.coping.dem2.raw.id %>%
-  select(ID,
-         cohort_name,
-         
-         dem2.living_with_partner_or_spouse,
-         dem2.living_alone,
-         dem2.living_with_partner_or_spouse,
-         dem2.living_with_housemates,
-         dem2.age_children_living,
-         dem2.age_children_living.1,
-         dem2.living_with_other_members_of_my_family,
-         dem2.spouse_partner_members_living,
-         dem2.staying_live,
-         dem2.staying_live.1,
-         dem2.prefer_not_to_say,
-         dem2.living_situation_change_pandemic,
-         dem2.living_alone.1,
-         dem2.living_with_partner_or_spouse.1,
-         dem2.living_with_housemates.1,
-         dem2.age_children_living.2,
-         dem2.age_children_living.3,
-         dem2.living_with_other_members_of_my_family.1,
-         dem2.spouse_partner_members_living.1,
-         dem2.staying_live.2,
-         dem2.staying_live.3,
-         dem2.prefer_not_to_say.1,
-         
-         dem2.member_vulnerable_group,
-         dem2.solid_organ_transplant_recipient,
-         dem2.lung_cancer_radical_radiotherapy,
-         dem2.bone_marrow_blood_leukaemia,
-         dem2.immunotherapy_cancer_continuing_antibody,
-         dem2.parp_inhibitors_affect_immune,
-         dem2.stem_cell_transplants_bone,
-         dem2.severe_copd_cystic_fibrosis,
-         dem2.inborn_errors_rare_diseases,
-         dem2.taking_medicine_that_weakens_your_immune_system,
-         dem2.condition_infections_makes,
-         dem2.congenital_pregnant_acquired_significant,
-         dem2.pregnant,
-         dem2.over_70_years_old,
-         dem2.prefer_not_to_say.2,
-         dem2.unsure)
-  
-glad.7 <- glad_pan_worry.id %>%
-  select(ID,
-         cohort_name,
-         panworry.impact_on_your_employment_status,                                    
-         panworry.employment_status_household_key,              
-         panworry.impact_on_your_education_or_exams,            
-         panworry.exams_impact_education_children,              
-         panworry.financial_impact,                           
-         panworry.contracting_the_virus,                       
-         panworry.people_you_know_contracting_the_virus,       
-         panworry.people_you_dont_know_contracting_the_virus,   
-         panworry.impact_mental_health_wellbeing,               
-         panworry.impact_mental_health_childrens,               
-         panworry.impact_relatives_mental_health,           
-         panworry.being_socially_isolated,                    
-         panworry.people_you_know_being_socially_isolated,      
-         panworry.shortage_of_essential_supplies,                
-         panworry.shortage_of_medication_or_access_to_healthcare,
-         panworry.healthcare_people_essential_supplies,          
-         panworry.information_virus_government_accuracy,         
-         panworry.the_governments_response_to_the_pandemic,      
-         panworry.separation_from_family_members,         
-         panworry.standing_impact_global_recession,
-         panworry.other_,
-         
-         panworry.impact_on_your_employment_status_numeric,                                    
-         panworry.employment_status_household_key_numeric,              
-         panworry.impact_on_your_education_or_exams_numeric,            
-         panworry.exams_impact_education_children_numeric,              
-         panworry.financial_impact_numeric,                           
-         panworry.contracting_the_virus_numeric,                       
-         panworry.people_you_know_contracting_the_virus_numeric,       
-         panworry.people_you_dont_know_contracting_the_virus_numeric,   
-         panworry.impact_mental_health_wellbeing_numeric,               
-         panworry.impact_mental_health_childrens_numeric,               
-         panworry.impact_relatives_mental_health_numeric,           
-         panworry.being_socially_isolated_numeric,                    
-         panworry.people_you_know_being_socially_isolated_numeric,      
-         panworry.shortage_of_essential_supplies_numeric,                
-         panworry.shortage_of_medication_or_access_to_healthcare_numeric,
-         panworry.healthcare_people_essential_supplies_numeric,          
-         panworry.information_virus_government_accuracy_numeric,         
-         panworry.the_governments_response_to_the_pandemic_numeric,      
-         panworry.separation_from_family_members_numeric,         
-         panworry.standing_impact_global_recession_numeric,
-         panworry.other__numeric)
-
-
-##See if IDs match with glad.3
-x <- glad.3[glad.3$ID %in% glad.1$ID,]
-
-length(unique(x$ID))
-
-x <- glad.3[glad.3$ID %in% glad.2$ID,]
-
-length(unique(x$ID))
-
-x <- glad.3[glad.3$ID %in% glad.4$ID,]
-
-length(unique(x$ID))
-
-x <- glad.3[glad.3$ID %in% glad.5$ID,]
-
-length(unique(x$ID))
-
-}
-```
-
-##GLAD data frame list
-```{r GLAD data frame list}
-if(GLAD == TRUE) {
-dfs.list <- list(
-  glad.1,
-  glad.2,
-  glad.3,
-  glad.4,
-  glad.5,
-  glad.6,
-  glad.7
-  )
-}
-
-```
-
-
-##Join all GLAD
-```{r Join all GLAD questionnaires}
-if(GLAD == TRUE) {
-dat.raw.glad <- plyr::join_all(
-  dfs.list,
-  by = c("ID", "cohort_name")
-  )
-#look at the data
-colnames(dat.raw.glad)
-}
-
-```
-
-#Get rid of duplicates in GLAD
-```{r Check duplicates}
-if(GLAD == TRUE) {
-dat.raw.glad$ID.dup <- duplicated(dat.raw.glad$ID)
-
-summary(as.factor(dat.raw.glad$ID.dup))
-
-select(dat.raw.glad)
-
-#Check for duplicate names of columns
-names_freq <- as.data.frame(table(names(dat.raw.glad)))
-names_freq[names_freq$Freq > 1, ]
-
-##Filter out duplicate column names
- #dat.dup <- dat.raw.glad %>%
- # filter(ID.dup == TRUE)
-
-#dat.raw.glad <- dat.raw.glad %>%
-#  filter(ID.dup == FALSE)
-
-colnames(dat.raw.glad)
-}
-
-```
-
-##NBR selected variables
-```{r NBR selected variables}
-if(NBR == TRUE) {
-
-  nbr.1 <- nbr.dem.employ.raw.id %>%
-    select(ID,
-           cohort_name,
-           highest_education_numeric,
-           highest_education,
-           employment_change_numeric,
-           employment_change,
-           employment_prior_covid,
-           employment_prior_covid_numeric,
-           key_worker,
-           key_worker_numeric,
-           
-           employ.fulltime_employed,
-  employ.parttime_employed,
-  employ.unemployed,
-  employ.zerohours_contract,
-  employ.stayathome_parent_or_carer,
-  employ.selfemployed,
-  employ.contract_or_freelance_work,
-  employ.small_business_owner,
-  employ.receiving_state_income,
-  employ.retired,
-  employ.student_gcse_or_a_level,
-  employ.student_university,
-  employ.my_employment_status_has_not_changed,
-  employ.became_unemployed,
-  employ.reduction_in_hours,
-  employ.reduction_in_salary,
-  employ.benefits_increased,
-  employ.benefits_decreased,
-  employ.change_in_duties_or_responsibilities,
-  employ.became_employed,
-  employ.increased_hours,
-  employ.increased_salary,
-  employ.furloughed_or_paid_leave_government_funded,
-  employ.furloughed_or_paid_leave_company_funded,
-  employ.paid_leave_furloughed,
-  employ.taking_unpaid_leave,
-  employ.other,
-  employ.other_text.txt,
-  employ.no_impact,
-  employ.cancelled_exams,
-  employ.change_in_format_of_exams,
-  employ.automatic_pass,
-  employ.change_in_deadlines,
-  employ.change_in_lesson_delivery,
-  employ.past_performance_grade_decided,
-  employ.cancelled_classes,
-  employ.cannot_complete_degree,
-  employ.impact_on_studies_still_unknown,
-  employ.other.1,
-  employ.other_text.txt.1,
-  employ.losing_job_due_risk,
-  employ.increased_due_job_pandemic,)
-  
-nbr.2 <- nbr.dem.raw.id.complete %>%
-  select(ID,
-         cohort_name,
-         sex,
-         gender_unc,
-         ethnicity,
-         current_country,
-         uk_location)
-
-
-  nbr.3 <- nbr.dem.raw.id %>%
-    select(ID,
-           cohort_name,
-           age_category,
-           age_category_numeric)
-
-nbr.4 <- taf.nbr.baseline.raw.id %>%
-  select(ID,
-  cohort_name,
-  taf.worth_living_life_people_.Wavebaseline,
-  taf.felt_weeks_past_.Wavebaseline,
-  taf.have_you_contemplated_harming_yourself_.Wavebaseline,
-  taf.felt_weeks_past.1_.Wavebaseline,
-  taf.meant_life_end_weeks_.Wavebaseline,
-  taf.pandemic_felt_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
-
-
-nbr.5 <- mhd.raw.id %>% 
-  select(ID,
-         cohort_name,
-         control,
-         control_numeric,
-         depressive_disorders_numeric,
-         anxiety_disorders_numeric,
-         eating_disorders_diagnosed_numeric,
-         obsessive_compulsive_disorders_numeric,
-         psychotic_disorders_numeric,
-         PERSONALITY_DISORDER_NUMERIC,
-         agoraphobia_panic_disorder_numeric,
-         depression_and_anxiety_numeric,
-         bipolar_and_schizophrenia_numeric,
-         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
-        mhd.posttraumatic_stress_disorder_ptsd_numeric, 
-        autism_spectrum_disorder_numeric,
-        mhd.attention_deficit_hyperactivity_disorder_numeric,
-        mhd.personality_disorder_numeric,
-        mhd.suspected_eating_disorder_diagnosed_numeric,
-        mhd.body_dysmorphic_disorder_bdd_numeric,
-        mhd.anorexia_nervosa_numeric,
-          mhd.atypical_anorexia_nervosa_numeric,
-          mhd.bulimia_nervosa_numeric, 
-          mhd.atypical_bulimia_nervosa_numeric,  
-          mhd.bingeeating_disorder_numeric, 
-          mhd.atypical_bingeeating_disorder_numeric, 
-          mhd.purging_disorder_numeric, 
-          mhd.night_eating_syndrome_numeric,  
-          mhd.pica_numeric, 
-          mhd.avoidantrestrictive_food_intake_disorder_numeric,
-          mhd.rumination_disorder_numeric, 
-          mhd.feeding_eating_disorder_numeric, 
-          mhd.other_eating_disorder_numeric)
-
-
-nbr.6 <- nbr.dem2.raw.id %>%
-  select(ID,
-         cohort_name,
-         
-         dem2.living_with_partner_or_spouse,
-         dem2.living_alone,
-         dem2.living_with_partner_or_spouse,
-         dem2.living_with_housemates,
-         dem2.age_children_living,
-         dem2.age_children_living.1,
-         dem2.living_with_other_members_of_my_family,
-         dem2.spouse_partner_members_living = dem2.spouse_members_partner_living, #Renamed to be same as edgi/glad
-         dem2.staying_live,
-         dem2.staying_live.1,
-         dem2.prefer_not_to_say,
-         dem2.living_situation_change_pandemic,
-         dem2.living_alone.1,
-         dem2.living_with_partner_or_spouse.1,
-         dem2.living_with_housemates.1,
-         dem2.age_children_living.2,
-         dem2.age_children_living.3,
-         dem2.living_with_other_members_of_my_family.1,
-         dem2.spouse_partner_members_living.1 = dem2.spouse_members_partner_living.1, #Renamed to be same as edgi/glad
-         dem2.staying_live.2,
-         dem2.staying_live.3,
-         dem2.prefer_not_to_say.1,
-         
-         dem2.member_vulnerable_group,
-         dem2.solid_organ_transplant_recipient,
-         dem2.lung_cancer_radical_radiotherapy,
-         dem2.bone_marrow_blood_leukaemia,
-         dem2.immunotherapy_cancer_continuing_antibody,
-         dem2.parp_inhibitors_affect_immune,
-         dem2.stem_cell_transplants_bone,
-         dem2.severe_copd_cystic_fibrosis,
-         dem2.inborn_errors_rare_diseases,
-         dem2.taking_medicine_that_weakens_your_immune_system,
-         dem2.condition_infections_makes,
-         dem2.congenital_pregnant_acquired_significant,
-         dem2.pregnant,
-         dem2.over_70_years_old,
-         dem2.prefer_not_to_say.2,
-         dem2.unsure)
-
-
-nbr.7 <- nbr_pan_worry.id %>%
-  select(ID,
-         cohort_name,
-         panworry.impact_on_your_employment_status,                                    
-         panworry.employment_status_household_key,              
-         panworry.impact_on_your_education_or_exams,            
-         panworry.exams_impact_education_children,              
-         panworry.financial_impact,                           
-         panworry.contracting_the_virus,                       
-         panworry.people_you_know_contracting_the_virus,       
-         panworry.people_you_dont_know_contracting_the_virus,   
-         panworry.impact_mental_health_wellbeing,               
-         panworry.impact_mental_health_childrens,               
-         panworry.impact_relatives_mental_health,           
-         panworry.being_socially_isolated,                    
-         panworry.people_you_know_being_socially_isolated,      
-         panworry.shortage_of_essential_supplies,                
-         panworry.shortage_of_medication_or_access_to_healthcare,
-         panworry.healthcare_people_essential_supplies,          
-         panworry.information_virus_government_accuracy,         
-         panworry.the_governments_response_to_the_pandemic,      
-         panworry.separation_from_family_members,         
-         panworry.standing_impact_global_recession,
-         
-         panworry.other_,
-         
-         panworry.impact_on_your_employment_status_numeric,                                    
-         panworry.employment_status_household_key_numeric,              
-         panworry.impact_on_your_education_or_exams_numeric,            
-         panworry.exams_impact_education_children_numeric,              
-         panworry.financial_impact_numeric,                           
-         panworry.contracting_the_virus_numeric,                       
-         panworry.people_you_know_contracting_the_virus_numeric,       
-         panworry.people_you_dont_know_contracting_the_virus_numeric,   
-         panworry.impact_mental_health_wellbeing_numeric,               
-         panworry.impact_mental_health_childrens_numeric,               
-         panworry.impact_relatives_mental_health_numeric,           
-         panworry.being_socially_isolated_numeric,                    
-         panworry.people_you_know_being_socially_isolated_numeric,      
-         panworry.shortage_of_essential_supplies_numeric,                
-         panworry.shortage_of_medication_or_access_to_healthcare_numeric,
-         panworry.healthcare_people_essential_supplies_numeric,          
-         panworry.information_virus_government_accuracy_numeric,         
-         panworry.the_governments_response_to_the_pandemic_numeric,      
-         panworry.separation_from_family_members_numeric,         
-         panworry.standing_impact_global_recession_numeric,
-         panworry.other__numeric)
-
-#Check nbr mhd data IDs
-x <- nbr.5[nbr.5$ID %in% nbr.1$ID,]
-
-length(unique(x$ID))
-
-x <- nbr.5[nbr.5$ID %in% nbr.2$ID,]
-
-length(unique(x$ID))
-
-x <- nbr.5[nbr.5$ID %in% nbr.3$ID,]
-
-length(unique(x$ID))
-
-x <- nbr.5[nbr.5$ID %in% nbr.4$ID,]
-
-length(unique(x$ID))
-
-nrow(nbr.5)
-nrow(nbr.4)
-nrow(nbr.3)
-nrow(nbr.2)
-nrow(nbr.1)
-}
-
-#NO HIGHEST EDUCATION PREPAN
-#no edeq baseline (only in ramp)
-```
-
-##NBR  data frame list
-```{r NBR data frame list}
-if(NBR == TRUE) {
-dfs.list <- list(
-  nbr.1,
-  nbr.2,
-  nbr.3,
-  nbr.4,
-  nbr.5,
-  nbr.6,
-  nbr.7
-)
-}
-
-```
-
-##Join all NBR 
-```{r Join all NBR questionnaires}
-if(NBR == TRUE) {
-dat.raw.nbr <- plyr::join_all(
-  dfs.list,
-  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
-  )
-
-#look at the data
-colnames(dat.raw.nbr)
-}
-```
-
-#Get rid of duplicates in NBR
-```{r Check duplicates}
-if(NBR == TRUE) {
-dat.raw.nbr$ID.dup <- duplicated(dat.raw.nbr$ID)
-
-summary(as.factor(dat.raw.nbr$ID.dup))
-
-select(dat.raw.nbr)
-
- #Check for duplicate names of columns
-names_freq <- as.data.frame(table(names(dat.raw.nbr)))
-names_freq[names_freq$Freq > 1, ]
-
-##Filter out duplicate column names
- dat.dup <- dat.raw.nbr %>%
-  filter(ID.dup == TRUE)
-
-dat.raw.nbr <- dat.raw.nbr %>%
-  filter(ID.dup == FALSE)
-
-colnames(dat.raw.nbr)
-}
-
-```
-
-##RAMP variable list
-```{r RAMP variable list}
-if(RAMP == TRUE) {
-
-  
- 
-  ramp.1 <- ramp.dem.raw.id %>%
-    select(ID,
-           cohort_name,
-           gender_unc,
-           ethnicity,
-           age_unc,
-           dem2.member_vulnerable_group,
-           dem2.solid_organ_transplant_recipient,
-           dem2.lung_cancer_radical_radiotherapy,
-           dem2.bone_marrow_blood_leukaemia,
-           dem2.immunotherapy_cancer_continuing_antibody,
-           dem2.parp_inhibitors_affect_immune,
-           dem2.stem_cell_transplants_bone,
-           dem2.severe_copd_cystic_fibrosis, #= dem2.cystic_fibrosis_severe_asthma,
-           dem2.inborn_errors_rare_diseases, # = dem2.inborn_errors_metabolism_infections,
-           dem2.taking_medicine_that_weakens_your_immune_system,
-           dem2.congenital_pregnant_acquired_significant, # = dem2.condition_infections_makes,
-           dem2.pregnant,
-           dem2.over_70_years_old,
-           dem2.prefer_not_to_say.2, # = dem2.prefer_not_to_say.1,
-           dem2.unsure,
-           transgender,
-           
-         dem2.living_with_partner_or_spouse,
-         dem2.living_alone,
-         dem2.living_with_partner_or_spouse,
-         dem2.living_with_housemates,
-         dem2.age_children_living,
-         dem2.age_children_living.1,
-         dem2.living_with_other_members_of_my_family,
-         dem2.spouse_partner_members_living,
-         dem2.staying_live,
-         dem2.staying_live.1,
-         dem2.prefer_not_to_say,
-
-         dem2.living_situation_change_pandemic,
-
-
-         dem2.living_alone.1,
-         dem2.living_with_partner_or_spouse.1,
-         dem2.living_with_housemates.1,
-         dem2.age_children_living.2,
-         dem2.age_children_living.3,
-         dem2.living_with_other_members_of_my_family.1,
-         dem2.spouse_partner_members_living.1,
-         dem2.staying_live.2,
-         dem2.staying_live.3,
-         dem2.prefer_not_to_say.1)
-
-  ramp.2 <- ramp.dem.employ.raw.id %>%
-    select(ID,
-           cohort_name,
-           highest_education,
-           highest_education_numeric,
-           employment_prior_covid,
-           employment_prior_covid_numeric,
-           employment_change,
-           employment_change_numeric,
-           key_worker,
-           key_worker_numeric,
-           
-           employ.fulltime_employed,
-  employ.parttime_employed,
-  employ.unemployed,
-  employ.zerohours_contract,
-  employ.stayathome_parent_or_carer,
-  employ.selfemployed,
-  employ.contract_or_freelance_work,
-  employ.small_business_owner,
-  employ.receiving_state_income,
-  employ.retired,
-  employ.student_gcse_or_a_level,
-  employ.student_university,
-  employ.my_employment_status_has_not_changed,
-  employ.became_unemployed,
-  employ.reduction_in_hours,
-  employ.reduction_in_salary,
-  employ.benefits_increased,
-  employ.benefits_decreased,
-  employ.change_in_duties_or_responsibilities,
-  employ.became_employed,
-  employ.increased_hours,
-  employ.increased_salary,
-  employ.furloughed_or_paid_leave_government_funded,
-  employ.furloughed_or_paid_leave_company_funded,
-  employ.paid_leave_furloughed,
-  employ.taking_unpaid_leave,
-  employ.other,
-  employ.other_text.txt,
-  employ.no_impact,
-  employ.cancelled_exams,
-  employ.change_in_format_of_exams,
-  employ.automatic_pass,
-  employ.change_in_deadlines,
-  employ.change_in_lesson_delivery,
-  employ.past_performance_grade_decided,
-  employ.cancelled_classes,
-  employ.cannot_complete_degree,
-  employ.impact_on_studies_still_unknown,
-  employ.other.1,
-  employ.other_text.txt.1,
-  employ.losing_job_due_risk,
-  employ.increased_due_job_pandemic)
-   
-  ramp.3 <- edeq.ramp.baseline.raw.id %>% 
-  select(ID,
-  cohort_name,
-  edeq.deliberately_limit_amount_influence.1_.Wavebaseline,
-edeq.calories_made_body_shape.1_.Wavebaseline,
-edeq.weight_influenced_person.1_.Wavebaseline,
-edeq.dissatisfied_shape_weight.1_.Wavebaseline,
-edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline,
-edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline,
-edeq.felt_anxious_blue_bored.2_.Wavebaseline,
-edeq.felt_anxious_blue_bored.3_.Wavebaseline,
-edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline,
-edeq.regard_lost_control_eaten.1_.Wavebaseline,
-edeq.sick_means_made_shape.1_.Wavebaseline,
-edeq.diuretics_laxatives_means_shape.1_.Wavebaseline,
-edeq.compulsive_driven_burn_calories.1_.Wavebaseline,
-  
-  edeq.deliberately_limit_amount_influence.1_.Wavebaseline_numeric,
-edeq.calories_made_body_shape.1_.Wavebaseline_numeric,
-edeq.weight_influenced_person.1_.Wavebaseline_numeric,
-edeq.dissatisfied_shape_weight.1_.Wavebaseline_numeric,
-edeq.eating_behaviours_concerns_distressed.1_.Wavebaseline_numeric,
-edeq.nibbled_picked_snacks_grazed.1_.Wavebaseline_numeric,
-edeq.felt_anxious_blue_bored.2_.Wavebaseline_numeric,
-edeq.felt_anxious_blue_bored.3_.Wavebaseline_numeric,
-edeq.actively_been_monitoring_your_shape_or_weight_.1_.Wavebaseline_numeric,
-edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric,
-edeq.sick_means_made_shape.1_.Wavebaseline_numeric,
-edeq.diuretics_laxatives_means_shape.1_.Wavebaseline_numeric,
-edeq.compulsive_driven_burn_calories.1_.Wavebaseline_numeric,
-
- edeq.deliberately_limit_amount_influence_.Wavebaseline,
-         edeq.calories_made_body_shape_.Wavebaseline ,
-         edeq.weight_influenced_person_.Wavebaseline,
-         edeq.dissatisfied_shape_weight_.Wavebaseline ,
-         edeq.nibbled_picked_snacks_grazed_.Wavebaseline ,
-         edeq.felt_anxious_blue_bored_.Wavebaseline ,
-         edeq.felt_anxious_blue_bored.1_.Wavebaseline ,
-         edeq.eating_behaviours_concerns_distressed_.Wavebaseline,
-         edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline,
-         edeq.regard_lost_control_eaten_.Wavebaseline,
-         edeq.sick_means_made_shape_.Wavebaseline,
-         edeq.diuretics_laxatives_means_shape_.Wavebaseline,
-         edeq.compulsive_driven_burn_calories_.Wavebaseline,
-  
-   edeq.deliberately_limit_amount_influence_.Wavebaseline_numeric,
-         edeq.calories_made_body_shape_.Wavebaseline_numeric,
-         edeq.weight_influenced_person_.Wavebaseline_numeric,
-         edeq.dissatisfied_shape_weight_.Wavebaseline_numeric ,
-         edeq.nibbled_picked_snacks_grazed_.Wavebaseline_numeric ,
-         edeq.felt_anxious_blue_bored_.Wavebaseline_numeric ,
-         edeq.felt_anxious_blue_bored.1_.Wavebaseline_numeric ,
-         edeq.eating_behaviours_concerns_distressed_.Wavebaseline_numeric ,
-         edeq.actively_been_monitoring_your_shape_or_weight_.Wavebaseline_numeric,
-         edeq.regard_lost_control_eaten_.Wavebaseline_numeric,
-         edeq.sick_means_made_shape_.Wavebaseline_numeric,
-         edeq.diuretics_laxatives_means_shape_.Wavebaseline_numeric ,
-         edeq.compulsive_driven_burn_calories_.Wavebaseline_numeric 
-  )
-
-  ramp.4 <- mhd.raw.id %>% 
-  select(ID,
-         cohort_name,
-         control,
-         control_numeric,
-         depressive_disorders_numeric,
-         anxiety_disorders_numeric,
-         eating_disorders_diagnosed_numeric,
-         obsessive_compulsive_disorders_numeric,
-         psychotic_disorders_numeric,
-         PERSONALITY_DISORDER_NUMERIC,
-         agoraphobia_panic_disorder_numeric,
-         depression_and_anxiety_numeric,
-         bipolar_and_schizophrenia_numeric,
-         mhd.mania_hypomania_bipolar_or_manicdepression_numeric,
-         mhd.posttraumatic_stress_disorder_ptsd_numeric, 
-         autism_spectrum_disorder_numeric,
-         mhd.attention_deficit_hyperactivity_disorder_numeric,
-         mhd.personality_disorder_numeric,
-         mhd.body_dysmorphic_disorder_bdd_numeric,
-         mhd.anorexia_nervosa_numeric,
-         mhd.atypical_anorexia_nervosa_numeric,
-         mhd.bulimia_nervosa_numeric,
-         mhd.bingeeating_disorder_numeric)
-
-
-ramp.5 <- taf.ramp.baseline.raw.id  %>% 
-  select(ID,
-         cohort_name,
-         taf.worth_living_life_people_.Wavebaseline,
-  taf.felt_weeks_past_.Wavebaseline,
-  taf.have_you_contemplated_harming_yourself_.Wavebaseline,
-  taf.felt_weeks_past.1_.Wavebaseline,
-  taf.meant_life_end_weeks_.Wavebaseline)
-
-
-ramp.6 <- taf.ramp.baseline.raw.id %>% #for retro prepan
-  select(ID,
-  cohort_name,
-  taf.pandemic_felt_.Wavebaseline,
-  taf.pandemic_felt.1_.Wavebaseline,
-  taf.meant_end_life_pandemic_.Wavebaseline)
-
-ramp.7 <- ramp_pan_worry.id %>%
-  select(ID,
-         cohort_name,
-         panworry.impact_on_your_employment_status,                                    
-         panworry.employment_status_household_key,              
-         panworry.impact_on_your_education_or_exams,            
-         panworry.exams_impact_education_children,              
-         panworry.financial_impact,                           
-         panworry.contracting_the_virus,                       
-         panworry.people_you_know_contracting_the_virus,       
-         panworry.people_you_dont_know_contracting_the_virus,   
-         panworry.impact_mental_health_wellbeing,               
-         panworry.impact_mental_health_childrens,               
-         panworry.impact_relatives_mental_health,           
-         panworry.being_socially_isolated,                    
-         panworry.people_you_know_being_socially_isolated,      
-         panworry.shortage_of_essential_supplies,                
-         panworry.shortage_of_medication_or_access_to_healthcare,
-         panworry.healthcare_people_essential_supplies,          
-         panworry.information_virus_government_accuracy,         
-         panworry.the_governments_response_to_the_pandemic,      
-         panworry.separation_from_family_members,         
-         panworry.standing_impact_global_recession,
-         
-         panworry.other_,
-         
-         panworry.impact_on_your_employment_status_numeric,                                    
-         panworry.employment_status_household_key_numeric,              
-         panworry.impact_on_your_education_or_exams_numeric,            
-         panworry.exams_impact_education_children_numeric,              
-         panworry.financial_impact_numeric,                           
-         panworry.contracting_the_virus_numeric,                       
-         panworry.people_you_know_contracting_the_virus_numeric,       
-         panworry.people_you_dont_know_contracting_the_virus_numeric,   
-         panworry.impact_mental_health_wellbeing_numeric,               
-         panworry.impact_mental_health_childrens_numeric,               
-         panworry.impact_relatives_mental_health_numeric,           
-         panworry.being_socially_isolated_numeric,                    
-         panworry.people_you_know_being_socially_isolated_numeric,      
-         panworry.shortage_of_essential_supplies_numeric,                
-         panworry.shortage_of_medication_or_access_to_healthcare_numeric,
-         panworry.healthcare_people_essential_supplies_numeric,          
-         panworry.information_virus_government_accuracy_numeric,         
-         panworry.the_governments_response_to_the_pandemic_numeric,      
-         panworry.separation_from_family_members_numeric,         
-         panworry.standing_impact_global_recession_numeric,
-         panworry.other__numeric)
-
-#Check ramp.4 has same IDs as other datasets
-x <- ramp.4[ramp.4$ID %in% ramp.1$ID,]
-
-length(unique(x$ID))
-
-x <- ramp.4[ramp.4$ID %in% ramp.2$ID,]
-
-length(unique(x$ID))
-
-x <- ramp.4[ramp.4$ID %in% ramp.3$ID,]
-
-length(unique(x$ID))
-
-x <- ramp.4[ramp.4$ID %in% ramp.5$ID,]
-
-length(unique(x$ID))    
-
-
-}
-
-#NO SEX
-#no highest education pre-pandemic
-```
-
-##RAMP  data frame list
-```{r RAMP data frame list}
-if(RAMP == TRUE) {
-dfs.list <- list(
-  ramp.1,
-  ramp.2,
-  ramp.3,
-  ramp.4,
-  ramp.5,
-  ramp.6,
-  ramp.7
-  
-)
-}
-```
-
-##Join all RAMP
-```{r Join all RAMP questionnaires}
-if(RAMP == TRUE) {
-dat.raw.ramp <- plyr::join_all(
-  dfs.list,
-  by = c("ID", "cohort_name") # Alternatively you can join by several columns EDGI -> "Age", "Sex", "Birthyear"
-  )
-
-#look at the data
-colnames(dat.raw.ramp)
-}
-
-```
-
-#Get rid of duplicates in RAMP
-```{r Check duplicates}
-if(RAMP == TRUE) {
-dat.raw.ramp$ID.dup <- duplicated(dat.raw.ramp$ID)
-
-summary(as.factor(dat.raw.ramp$ID.dup))
-
- #Check for duplicate names of columns
-names_freq <- as.data.frame(table(names(dat.raw.ramp)))
-names_freq[names_freq$Freq > 1, ]
-
-##Filter out duplicate column names
- dat.dup <- dat.raw.ramp %>%
-  filter(ID.dup == TRUE)
-
-dat.raw.ramp <- dat.raw.ramp %>%
-  filter(ID.dup == FALSE)
-
-}
-```
-
-# Export baseline data
-```{r export data}
-if(GLAD == TRUE) {
-saveRDS(object = dat.raw.glad, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/NEW_baseline_glad", date, ".rds"))
-}
-
-if(EDGI == TRUE) {
-saveRDS(object = dat.raw.edgi, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/NEW_baseline_edgi", date, ".rds"))
-  
-}
-if(RAMP == TRUE) {
-  saveRDS(object = dat.raw.ramp, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/NEW_baseline_ramp", date, ".rds"))
-}
-
-
-if(NBR == TRUE) {
-  saveRDS(object = dat.raw.nbr, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/NEW_baseline_nbr", date, ".rds"))
-}
-
-
-```
-
-# Export all follow up data
-```{r Export follow up data}
-if(COPING == TRUE) {
-
-saveRDS(object = dat.raw.taf.coping, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/TAF_coping", date, ".rds"))
-  
-  saveRDS(object = edeq.coping.followupb.screener.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/EDEQ_screener_coping", date, ".rds"))
-  
-  saveRDS(object = dat.raw.dem.coping.followup, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/DEM_followup_coping", date, ".rds"))
-  
-  saveRDS(object = coping.loss.followupb.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/LOSS_coping_followup", date, ".rds"))
-
-}
-
-if(RAMP == TRUE) {
-
-  saveRDS(object = dat.raw.taf.ramp, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/TAF_ramp", date, ".rds"))
-  
-  saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/EDEQ_screener_ramp", date, ".rds"))
-  
-   saveRDS(object = dat.raw.dem.ramp.followup, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/DEM_followup_ramp", date, ".rds"))
-
-   saveRDS(object = ramp.loss.followupb.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/LOSS_ramp_followup", date, ".rds"))
-
-}
-
-```
 
 
 
