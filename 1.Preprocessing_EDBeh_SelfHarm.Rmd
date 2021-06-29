@@ -36,12 +36,13 @@ source("./functions.R")
 
 Specify cohort
 ```{r Specify cohort}
-GLAD = TRUE
+GLAD = FALSE
 EDGI = FALSE
 RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
+
 
 # Demographics 
 ## GLAD 1
@@ -697,6 +698,7 @@ glad.coping.dem4.employ.raw.id <- glad.coping.dem4.employ.raw %>% #new dataset w
          employ.other.1,
          employ.other_text.txt.1,
          employ.complete_home_work,
+         employ.cannot_complete_degree,
          employ.are_you_currently_working_from_home,
          employ.attend_work_encouraged_work,
          employ.government_work_key_workers.txt,
@@ -810,6 +812,7 @@ edgi.coping.dem4.employ.raw.id <- edgi.coping.dem4.employ.raw %>% #new dataset w
          employ.impact_on_studies_still_unknown,
          employ.other.1,
          employ.other_text.txt.1,
+         employ.cannot_complete_degree,
          employ.complete_home_work,
          employ.are_you_currently_working_from_home,
          employ.attend_work_encouraged_work,
@@ -1140,6 +1143,7 @@ nbr.dem.employ.raw.id <- nbr.dem.employ.raw%>% #new dataset with ID
          employ.other.1,
          employ.other_text.txt.1,
          employ.complete_home_work,
+         employ.cannot_complete_degree,
          employ.are_you_currently_working_from_home,
          employ.attend_work_encouraged_work,
          employ.government_work_key_workers.txt,
@@ -1189,11 +1193,6 @@ colnames(ramp.dem.raw)
 Select variables
 ```{r Select variables RAMP demographics}
 if(RAMP == TRUE){
-exclude_cols_dem <- c("ID",
-                  "cohort_name",
-                  "startDate",
-                  "endDate")
-
 ramp.dem.raw.id <- ramp.dem.raw %>% #new dataset with ID
   drop_na(`Login ID`) %>% # Drop NAs
   distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
@@ -1210,29 +1209,31 @@ ramp.dem.raw.id <- ramp.dem.raw %>% #new dataset with ID
          pregnant_binary = dem2.are_you_pregnant, 
          #dem2.what_is_your_current_maritalrelationship_status #Not in COPING 
             
-         #Need to rename all to same as GLAD/EDGI/NBR - named wrong way round in RAMP
-         dem2.living_alone =  dem2.living_alone.1,
-         dem2.living_with_partner_or_spouse =  dem2.living_with_partner_or_spouse.1,
-         dem2.living_with_housemates =  dem2.living_with_housemates.1,
-         dem2.age_children_living =  dem2.age_children_living.1,
-         dem2.age_children_living.1 =  dem2.living_children_under_the_age_of_18.1,
-         dem2.living_with_other_members_of_my_family =  dem2.living_with_other_members_of_my_family.1,
-         dem2.spouse_partner_members_living =  dem2.spouse_partner_members_living.1,
-         dem2.staying_live =  dem2.staying_live.2,
-         dem2.staying_live.1 =  dem2.staying_live.3,
-         dem2.prefer_not_to_say =  dem2.prefer_not_to_say.2,
+         #Need to rename all to same as GLAD/EDGI/NBR
          dem2.living_situation_change_pandemic,
-         dem2.living_alone.1 = dem2.living_alone,
-        dem2.living_with_partner_or_spouse.1 = dem2.living_with_partner_or_spouse,
-        dem2.living_with_housemates.1 = dem2.living_with_housemates,
-        dem2.age_children_living.2 = dem2.age_children_living,
-        dem2.age_children_living.3 = dem2.living_children_under_the_age_of_18,
-        dem2.living_with_other_members_of_my_family.1 = dem2.living_with_other_members_of_my_family,
-        dem2.spouse_partner_members_living.1 = dem2.spouse_partner_members_living,
-        dem2.staying_live.2 = dem2.staying_live,
-        dem2.staying_live.3 = dem2.staying_live.1,
-        dem2.prefer_not_to_say.1 = dem2.prefer_not_to_say,
-        dem2.relationships_describe_question_place = dem2.describe_relationships_live_living, #Rename to be same as coping glad/edgi
+         dem2.living_alone.1,
+         dem2.living_with_partner_or_spouse.1,             
+         dem2.living_with_housemates.1,
+         dem2.age_children_living.2,                      
+         dem2.age_children_living.3 = dem2.living_children_under_the_age_of_18,
+         dem2.living_with_other_members_of_my_family.1,  
+          dem2.spouse_partner_members_living.1 = dem2.spouse_members_partner_living.1,
+         dem2.staying_live.2,                               
+         dem2.staying_live.3,
+         dem2.prefer_not_to_say.1,
+         
+         dem2.living_alone,
+         dem2.living_with_partner_or_spouse,
+         dem2.living_with_housemates,
+         dem2.age_children_living,
+         dem2.age_children_living.1 = dem2.living_children_under_the_age_of_18.1,
+         dem2.living_with_other_members_of_my_family,        
+         dem2.spouse_partner_members_living = dem2.spouse_members_partner_living,
+         dem2.staying_live,                                 
+         dem2.staying_live.1, 
+         dem2.prefer_not_to_say,
+        
+          dem2.relationships_describe_question_place = dem2.describe_relationships_live_living, #Rename to be same as coping glad/edgi
          dem2.household_living_place_answer, 
          dem2.include_living_areas_count = dem2.count_bathrooms_bedrooms_hallways,
          dem2.cats,
@@ -1304,7 +1305,6 @@ ramp.dem.raw.id <- ramp.dem.raw %>% #new dataset with ID
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
-
 # Inspect dimensions
 dim(ramp.dem.raw.id)
 # Inspect colnames
@@ -1312,7 +1312,6 @@ colnames(ramp.dem.raw.id)
 #Differences
 dim(ramp.dem.raw)[1]-dim(ramp.dem.raw.id)[1]
 }
-
 ```
 
 # Demographics 
@@ -1392,6 +1391,7 @@ ramp.dem.employ.raw.id <- ramp.dem.employ.raw %>% #new dataset with ID
          employ.change_in_lesson_delivery,
          employ.past_performance_grade_decided,
          employ.cancelled_classes,
+          employ.cannot_complete_degree,
          employ.impact_on_studies_still_unknown,
          employ.other.1,
          employ.other_text.txt.1,
@@ -1405,8 +1405,8 @@ ramp.dem.employ.raw.id <- ramp.dem.employ.raw %>% #new dataset with ID
         # employ.type_role.1 = employ.role_type.1,
         # employ.does_your_job_include_caring_for_others,
         # employ.is_your_job_public_facing_,
-        # employ.losing_job_due_risk = employ.scale_line_losing_click,
-        # employ.increased_due_job_pandemic
+         employ.losing_job_due_risk = employ.scale_line_losing_click,
+        employ.increased_due_job_pandemic
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -2715,9 +2715,8 @@ dem.ramp.followupb.raw.id <- dem.ramp.followupb.raw %>% #new dataset with ID
          dem.furloughed_or_paid_leave_government_funded,
          dem.furloughed_or_paid_leave_company_funded,
          dem.paid_leave_furloughed,
-         dem.paid_leave_returned_work,
-         dem.retired,
-        
+         dem.paid_leave_returned_work =dem.paid_leave_returned_furlough,
+         dem.retired
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -2779,12 +2778,12 @@ coping.dem.followupa.raw.id.1 <- coping.dem.followupa.raw %>% #new dataset with 
          dem.physical_health,
          dem.health_of_a_relative,
          dem.household_employment_status_key,
-         dem.children__dependants_returning_to_school__other_education,
+         dem.children__dependants_returning_to_school__other_education = dem.school_children_dependants_returning,
          dem.living_alone,
          dem.living_with_partner_or_spouse,
          dem.living_with_housemates,
-         dem.age_children_living,
-         dem.age_children_living.1,
+         dem.age_children_living = dem.age_living_children,
+         dem.age_children_living.1 = dem.age_living_children.1,
          dem.living_with_other_members_of_my_family,
          dem.spouse_partner_members_living,
          dem.staying_live,
@@ -2804,7 +2803,7 @@ coping.dem.followupa.raw.id.1 <- coping.dem.followupa.raw %>% #new dataset with 
          dem.furloughed_or_paid_leave_company_funded,
          dem.paid_leave_furloughed,
          dem.paid_leave_returned_work,
-         dem.retired,
+         dem.retired
         
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
@@ -2867,7 +2866,7 @@ coping.dem.followupa.ongoing.raw.id <- coping.dem.followupa.ongoing.raw %>% #new
          dem.physical_health,
          dem.health_of_a_relative,
          dem.household_employment_status_key,
-         dem.children__dependants_returning_to_school__other_education,
+         dem.children__dependants_returning_to_school__other_education= dem.school_children_dependants_returning,
          dem.living_alone,
          dem.living_with_partner_or_spouse,
          dem.living_with_housemates,
@@ -2957,7 +2956,7 @@ coping.dem.followupb.raw.id <- coping.dem.followupb.raw %>% #new dataset with ID
   #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
   add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
   select(
-         ID = externalDataReference, # ID
+        ID = externalDataReference, # ID
          cohort_name, # Sample
          startDate_waves = startDate,
          #endDate,
@@ -2967,7 +2966,7 @@ coping.dem.followupb.raw.id <- coping.dem.followupb.raw %>% #new dataset with ID
          dem.physical_health,
          dem.health_of_a_relative,
          dem.household_employment_status_key,
-         dem.children__dependants_returning_to_school__other_education,
+         dem.children__dependants_returning_to_school__other_education = dem.school_children_dependants_returning,
          dem.living_alone,
          dem.living_with_partner_or_spouse,
          dem.living_with_housemates,
@@ -2991,9 +2990,8 @@ coping.dem.followupb.raw.id <- coping.dem.followupb.raw %>% #new dataset with ID
          dem.furloughed_or_paid_leave_government_funded,
          dem.furloughed_or_paid_leave_company_funded,
          dem.paid_leave_furloughed,
-         dem.paid_leave_returned_work,
-         dem.retired,
-        
+         dem.paid_leave_returned_work = dem.paid_leave_returned_furlough,
+         dem.retired
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -5650,7 +5648,6 @@ nrow(coping.loss.followupb.raw.id)
 ```
 
 # TIMEPOINTS / PHASES - COPING EDEQ SCREENER 
-
 ```{r Check number of entries per phase COPING EDEQ screener}
 if(COPING == TRUE) {
 edeq.coping.followupb.screener.raw.id %>%
@@ -5768,111 +5765,14 @@ nrow(edeq.coping.followupb.screener.raw.id)
 
 ```
 
-
-# VIRUS INFO 
-
-# Want the LATER data entry from people who answered twice within a single wave 
-[want ID AND wave to be unique]
-```{r}
-if(COPING == TRUE) {
-# Confirm number of rows in current dataset
-nrow(coping.followupb.virus.id)
-
-# Filter out duplicated IDs AND wave, keeping the LAST entry
-coping.followupb.virus.id <- coping.followupb.virus.id %>% 
-    group_by(ID) %>% 
-    filter(!duplicated(wave_virus,
-                      fromLast = TRUE)
-           )
-
-# Confirm number of rows in dataset after filtering
-nrow(coping.followupb.virus.id)
-}
-```
-
-## 6. Change follow up COPING VIRUS to long format 
-```{r TAF COPING long format}
-if(COPING == TRUE) {
-coping.followupb.virus.id <- coping.followupb.virus.id %>%
-  group_by(wave_virus) %>%
-  mutate(row = row_number()) %>%
-  tidyr::pivot_wider(id_cols = ID,
-    names_from = wave_virus,
-                     values_from = c(virus.back_positive_antibodies_covid,
-                     virus.back_positive_antibodies_covid_numeric,
-                     virus.past_surveys_include_reported,
-                     virus.past_surveys_include_reported_numeric))
-  
-}
-
-```
-
-
-##7. Select variables for dataset EDEQ RAMP screener
-```{r}
-if(COPING == TRUE) {
-coping.followupb.virus.id <- coping.followupb.virus.id  %>%
-  select(ID,
-         `virus.back_positive_antibodies_covid_.Wave_2b` ,    
-         `virus.back_positive_antibodies_covid_.Wave_3b` ,       
-         `virus.back_positive_antibodies_covid_.Wave_4b`,
-         `virus.back_positive_antibodies_covid_.Wave_6b`,
-         `virus.back_positive_antibodies_covid_.Wave_8b`,
-         `virus.back_positive_antibodies_covid_.Wave_10b`,
-         `virus.back_positive_antibodies_covid_.Wave_12b`,
-
-         `virus.back_positive_antibodies_covid_numeric_.Wave_2b` ,    
-         `virus.back_positive_antibodies_covid_numeric_.Wave_3b` ,       
-         `virus.back_positive_antibodies_covid_numeric_.Wave_4b`,
-         `virus.back_positive_antibodies_covid_numeric_.Wave_6b`,
-         `virus.back_positive_antibodies_covid_numeric_.Wave_8b`,
-         `virus.back_positive_antibodies_covid_numeric_.Wave_10b`,
-         `virus.back_positive_antibodies_covid_numeric_.Wave_12b`,
-         
-         `virus.past_surveys_include_reported_.Wave_2b` ,    
-         `virus.past_surveys_include_reported_.Wave_3b` ,       
-         `virus.past_surveys_include_reported_.Wave_4b`,
-         `virus.past_surveys_include_reported_.Wave_6b`,
-         `virus.past_surveys_include_reported_.Wave_8b`,
-         `virus.past_surveys_include_reported_.Wave_10b`,
-         `virus.past_surveys_include_reported_.Wave_12b`,
-         
-         `virus.past_surveys_include_reported_numeric_.Wave_2b` ,    
-         `virus.past_surveys_include_reported_numeric_.Wave_3b` ,       
-         `virus.past_surveys_include_reported_numeric_.Wave_4b`,
-         `virus.past_surveys_include_reported_numeric_.Wave_6b`,
-         `virus.past_surveys_include_reported_numeric_.Wave_8b`,
-         `virus.past_surveys_include_reported_numeric_.Wave_10b`,
-         `virus.past_surveys_include_reported_numeric_.Wave_12b`
-
-         
-        )
-}
-```
-
-##8. Remove duplicate IDs EDEQ COPING
-```{r}
-if(COPING == TRUE) {
-# Check col names
-colnames(coping.followupb.virus.id)
-
-# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
-coping.followupb.virus.id  <- coping.followupb.virus.id  %>%
-  filter(., !duplicated(ID)) 
-
-# Check number of rows
-nrow(coping.followupb.virus.id)
-}
-
-```
-
 # TIMEPOINTS / PHASES - Virus info COPING
 [want ID AND wave to be unique]
 ```{r Last entry Virus info COPING}
 if(COPING == TRUE) {
 # Confirm number of rows in current dataset
 nrow(coping.followupb.virus.id)
-# Filter out duplicated IDs AND wave, keeping the LAST entry
+
+  # Filter out duplicated IDs AND wave, keeping the LAST entry
 coping.followupb.virus.id <- coping.followupb.virus.id %>% 
     group_by(ID) %>% 
     filter(!duplicated(wave_virus,
@@ -5882,7 +5782,6 @@ coping.followupb.virus.id <- coping.followupb.virus.id %>%
 nrow(coping.followupb.virus.id)
 }
 ```
-
 Change follow up COPING VIRUS to wide format 
 ```{r Virus info COPING wide format}
 if(COPING == TRUE) {
@@ -5911,6 +5810,7 @@ coping.followupb.virus.id <- coping.followupb.virus.id  %>%
          `virus.back_positive_antibodies_covid_.Wave_8b`,
          `virus.back_positive_antibodies_covid_.Wave_10b`,
          `virus.back_positive_antibodies_covid_.Wave_12b`,
+         
          `virus.back_positive_antibodies_covid_numeric_.Wave_2b` ,    
          `virus.back_positive_antibodies_covid_numeric_.Wave_3b` ,       
          `virus.back_positive_antibodies_covid_numeric_.Wave_4b`,
@@ -6067,8 +5967,9 @@ saveRDS(object = dat.raw.taf.coping, file = paste0("/Users/helenadavies/King's C
   saveRDS(object = dat.raw.dem.coping.followup, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/DEM_followup_coping", date, ".rds"))
   
   saveRDS(object = coping.loss.followupb.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/LOSS_coping_followup", date, ".rds"))
+  
+   saveRDS(object = coping.followupb.virus.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/VIRUS_coping_followup", date, ".rds"))
 
-  saveRDS(object = coping.followupb.virus.id, file = "../data_cleaned/virus_coping_followup.rds")
 }
 
 if(RAMP == TRUE) {
@@ -6081,8 +5982,8 @@ if(RAMP == TRUE) {
 
    saveRDS(object = ramp.loss.followupb.raw.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/LOSS_ramp_followup", date, ".rds"))
    
-   saveRDS(object = ramp.followupb.virus.id, file = "../data_cleaned/virus_ramp_followup.rds")
-
+    saveRDS(object = ramp.followupb.virus.id, file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/VIRUS_ramp_followup", date, ".rds"))
+   
 }
 
 ```
@@ -7025,8 +6926,7 @@ if(RAMP == TRUE) {
            dem2.prefer_not_to_say.2, # = dem2.prefer_not_to_say.1,
            dem2.unsure,
            transgender,
-           
-            dem2.living_with_partner_or_spouse,
+           dem2.living_with_partner_or_spouse,
          dem2.living_alone,
          dem2.living_with_partner_or_spouse,
          dem2.living_with_housemates,
@@ -7066,7 +6966,7 @@ if(RAMP == TRUE) {
            employ.fulltime_employed,
   employ.parttime_employed,
   employ.unemployed,
-  employ.zerohours_contract,
+employ.zerohours_contract,
   employ.stayathome_parent_or_carer,
   employ.selfemployed,
   employ.contract_or_freelance_work,

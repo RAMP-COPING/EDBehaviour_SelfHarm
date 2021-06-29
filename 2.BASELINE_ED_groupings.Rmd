@@ -487,7 +487,7 @@ be.edgi.raw.id <- be.edgi.raw  %>%
     distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
     #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
     # mutate(ID = as.numeric(ID)) %>%
-    #add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
+    add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
       endDate,
@@ -568,10 +568,12 @@ edgi.mhd.raw.id.filtered %>%
 ```
 
 # Select variables from each dataset to keep
+
 ## RAMP
 ```{r Select variables to keep RAMP}
 dat.baseline.groups.ramp <- ramp.mhd.raw.id %>%
   select(ID,
+         cohort_name,
          lifetime_low_weight_baseline_numeric, # Low weight at baseline
          lifetime_binge_eating_baseline_numeric # Binge eating at baseline
          
@@ -581,19 +583,7 @@ dat.baseline.groups.ramp <- ramp.mhd.raw.id %>%
 ## GLAD & NBR
 ```{r Select variables to keep NBR & GLAD}
 #Binge eating & low weight at baseline (GLAD + NBR)
-nbr.glad.4 <- dat.ed %>%
-  select(ID,
-         cohort_name,
-         lifetime_binge_eating_baseline_numeric, # Binge eating at baseline
-         lifetime_low_weight_baseline_numeric # Low weight at baseline
-         )
-
-```
-
-## GLAD & NBR
-```{r Select variables to keep NBR & GLAD}
-#Binge eating & low weight at baseline (GLAD + NBR)
-nbr.glad.4 <- dat.ed %>%
+dat.baseline.groups.nbr.glad <- dat.ed %>%
   select(ID,
          cohort_name,
          lifetime_binge_eating_baseline_numeric, # Binge eating at baseline
@@ -613,13 +603,16 @@ edgi.1 <- be.edgi.raw.id.filtered %>%
 # Low weight at baseline
 edgi.2 <- edgi.mhd.raw.id.filtered %>%
   select(ID,
+         cohort_name,
          lifetime_low_weight_baseline_numeric
          )
 
+dfs.list <- list(edgi.1,
+             edgi.2)
+
 # Merge
 dat.baseline.groups.edgi <- plyr::join_all(
-  edgi.1,
-  edgi.2,
+  dfs.list,
   by = c("ID") 
   )
 ```
