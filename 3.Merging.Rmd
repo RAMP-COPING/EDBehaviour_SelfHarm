@@ -290,12 +290,30 @@ follow_up_data <- plyr::join_all(
 colnames(follow_up_data)
 nrow(follow_up_data)
 ```
+*Temporary solution - need to go back and edit / re-run preprocessing script
+Cohort names do not match across datasets. Need to re-name before merging.
+```{r Temporary solution, renaming cohort names before merging}
 
-Merge follow up data with baseline data
+follow_up_data <- follow_up_data %>%
+  mutate(cohort_name =
+           case_when(
+             cohort_name == "coping_glad" ~ "coping_glad",
+             is.na(cohort_name)  ~ "coping_edgi",
+             cohort_name == "coping_nbr" ~ "nbr",
+             cohort_name == "ramp" ~ "ramp"
+           ))
+
+```
+
+
+
+Merge follow up data with baseline data +++ HERE!
 ```{r Merge follow up data with baseline data}
-data.final <- left_join(
-  baseline_data,
-  follow_up_data,
+dfs.list <- list(baseline_data,
+                 follow_up_data)
+
+data.final <- plyr::join_all(
+  dfs.list,
   by = c("ID",
          "cohort_name")
   )
@@ -303,6 +321,7 @@ data.final <- left_join(
 # Check
 colnames(data.final)
 nrow(data.final)
+
 ```
 
 Remove duplicate IDs 
