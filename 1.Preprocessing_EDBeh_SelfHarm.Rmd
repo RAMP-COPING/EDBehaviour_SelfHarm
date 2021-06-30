@@ -5,6 +5,12 @@ date: "21/04/2021"
 output: html_document
 ---
 
+ORDER OF SCRIPTS
+1. Pre-processing
+2. Baseline ED groupings
+3. Merging
+4. Deriving variables
+
 # Set up 
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
