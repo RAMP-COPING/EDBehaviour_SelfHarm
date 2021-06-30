@@ -5,14 +5,9 @@ date: "24/05/2021"
 output: html_document
 ---
 
-ORDER OF SCRIPTS
-1. Pre-processing
-2. Baseline ED groupings
-3. Merging
-4. Deriving variables
+This script derives variables reading for regression analyses.
 
-
-
+# Set up
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       comment=NA,
@@ -25,54 +20,31 @@ Delete everything in your global environment
 remove(list = ls())
 ```
 
-#### Call in library script
-
-```{r source files}
+Call in library script
+```{r Source libary}
 source("./libraries.R")
 ```
 
-
-#Retrieve the recent date
+Retrieve the recent date
 ```{r Recent date}
 date = Sys.Date()
 date
 ```
 
-#### R functions
-
-```{r call in function library functions}
-# source all functions in the function folder
+Call in R functions script
+```{r Source functions}
 source("./functions.R")
 ```
 
 # Read in data
-```{r}
-dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-06-08.rds")
+## data.final is generated from the "3.Merging" script
+```{r Read in data}
+dat <- readRDS(file = "../data_cleaned/dat.final2021-06-30.rds")
+
+# Check
 dim(dat)
-#colnames(dat)
-
-#Drop one dup cohort name columns
-dat$cohort_name.y <- NULL
-
-dat <- dat %>% 
-  rename(
-    cohort_name = cohort_name.x
-    )
-
-#Drop one dup transgender columns
-dat$transgender.y <- NULL
-
-dat <- dat %>% 
-  rename(
-    transgender = transgender.x
-    )
-
-
-dat %>%
-  freq(cohort_name)
-
+colnames(dat)
 ```
-
 
 OUTCOMES
 
@@ -85,15 +57,17 @@ OUTCOMES
     o	self-harm ideation during the COVID-19 pandemic: binary (1,0)
     o	self-harm during the COVID-19 pandemic: binary (1,0)
 
+•	Frequency of all the above behaviors:
+
 o	Cumulative score; 
     	scores of 3 indicate someone has experienced all of the above during the pandemic
     	scores of 2 indicate someone has experienced two of the above during the pandemic
     	scores of 1 indicate someone has experienced one of the above during the pandemic
     	scores of 0 indicate someone has experienced none of the above during the pandemic
 
-
-##ANY Binge eating during the COVID-19 pandemic
-```{r}
+# Outcome = Binge eating
+## Derive ANY Binge eating during the COVID-19 pandemic
+```{r Derive any binge eating during the pandemic}
 
 dat <- dat %>%
   mutate(pandemic_binge_eating =
@@ -104,7 +78,7 @@ dat <- dat %>%
                        ed_scid5.regular_episodes_eating_binges_.Wave_6b == "Yes" |
                        ed_scid5.regular_episodes_eating_binges_.Wave_8b == "Yes" |
                        ed_scid5.regular_episodes_eating_binges_.Wave_10b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_12b == "Yes" ~ 1,
+                       ed_scid5.regular_episodes_eating_binges_.Wave_12b == "Yes" ~ 1, # Answered yes at least once to the binge eating screener
                      
                        is.na(ed_scid5.regular_episodes_eating_binges_.Wave_1b) &
                        is.na(ed_scid5.regular_episodes_eating_binges_.Wave_2b) &
@@ -113,7 +87,7 @@ dat <- dat %>%
                        is.na(ed_scid5.regular_episodes_eating_binges_.Wave_6b) &
                        is.na(ed_scid5.regular_episodes_eating_binges_.Wave_8b) &
                        is.na(ed_scid5.regular_episodes_eating_binges_.Wave_10b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b) ~ NA_real_,
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b) ~ NA_real_, # Captures anyone who did not answer any of the binge eating screeners at any phase
                      
                       (ed_scid5.regular_episodes_eating_binges_.Wave_1b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_1b)) &
                        (ed_scid5.regular_episodes_eating_binges_.Wave_2b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_2b)) &
@@ -122,40 +96,36 @@ dat <- dat %>%
                        (ed_scid5.regular_episodes_eating_binges_.Wave_6b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_6b)) &
                        (ed_scid5.regular_episodes_eating_binges_.Wave_8b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_8b)) &
                        (ed_scid5.regular_episodes_eating_binges_.Wave_10b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_10b)) &
-                       (ed_scid5.regular_episodes_eating_binges_.Wave_12b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b)) ~ 0
+                       (ed_scid5.regular_episodes_eating_binges_.Wave_12b == "No" | is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b)) ~ 0 # Captures anyone who has at least one "No" and never said "Yes" (e.g., might be NA for all other phases)
                     
            ))
 
-#Check
+# Check
 dat %>%
   freq(pandemic_binge_eating)
 ```
 
-#NEW binge eating experience, i.e., those who at baseline indicated no lifetime experience of binge eating
-```{r}
+NEW binge eating experience, i.e., those who at baseline indicated no lifetime experience of binge eating
+```{r Derive NEW binge eating experience}
 
 dat <- dat %>%
   mutate(NEW_binge_eating_pandemic =
-           case_when(lifetime_binge_eating_baseline_numeric == 0 & #No lifetime binge eating at baseline, but occured at least once during the pandemic
+           case_when(lifetime_binge_eating_baseline_numeric == 0 & # No lifetime binge eating at baseline, but occured at least once during the pandemic
                      pandemic_binge_eating == 1 ~ 1,
                      
-                     lifetime_binge_eating_baseline_numeric == 0 &  #No lifetime binge eating at baseline, and no binge eating during the pandemic
+                     lifetime_binge_eating_baseline_numeric == 0 &  # No lifetime binge eating at baseline, and no binge eating during the pandemic
                      pandemic_binge_eating == 0 ~ 0
-                     
            )
-    
-    
   )
 
-
 dat %>%
-  freq(NEW_binge_eating_pandemic)
+  freq(NEW_binge_eating_pandemic) # NAs are because the sample is restricted to those who did NOT report binge eating at baseline
 
 ```
 
-
-##ANY Low weight during the COVID-19 pandemic
-```{r}
+# Outcome = Low weight
+## Derive ANY low weight during the COVID-19 pandemic
+```{r Derive ANY low weight during pandemic}
 
 dat <- dat %>%
   mutate(pandemic_low_weight =
@@ -166,7 +136,7 @@ dat <- dat %>%
                        ed_scid5.weigh_weighed_past_month_.Wave_6b == "Yes" |
                        ed_scid5.weigh_weighed_past_month_.Wave_8b == "Yes" |
                        ed_scid5.weigh_weighed_past_month_.Wave_10b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_12b == "Yes" ~ 1,
+                       ed_scid5.weigh_weighed_past_month_.Wave_12b == "Yes" ~ 1, # Answered yes at least once to the low weight screener
                      
                        is.na(ed_scid5.weigh_weighed_past_month_.Wave_1b) &
                        is.na(ed_scid5.weigh_weighed_past_month_.Wave_2b) &
@@ -175,7 +145,7 @@ dat <- dat %>%
                        is.na(ed_scid5.weigh_weighed_past_month_.Wave_6b) &
                        is.na(ed_scid5.weigh_weighed_past_month_.Wave_8b) &
                        is.na(ed_scid5.weigh_weighed_past_month_.Wave_10b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b) ~ NA_real_,
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b) ~ NA_real_, # Captures anyone who did not answer any of the low weight screeners at any phase
                      
                        (ed_scid5.weigh_weighed_past_month_.Wave_1b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_1b)) &
                        (ed_scid5.weigh_weighed_past_month_.Wave_2b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_2b)) &
@@ -184,7 +154,7 @@ dat <- dat %>%
                        (ed_scid5.weigh_weighed_past_month_.Wave_6b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_6b)) &
                        (ed_scid5.weigh_weighed_past_month_.Wave_8b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_8b)) &
                        (ed_scid5.weigh_weighed_past_month_.Wave_10b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_10b)) &
-                       (ed_scid5.weigh_weighed_past_month_.Wave_12b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b)) ~ 0
+                       (ed_scid5.weigh_weighed_past_month_.Wave_12b == "No" | is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b)) ~ 0 # Captures anyone who has at least one "No" and never said "Yes" (e.g., might be NA for all other phases)
                     
            ))
 
@@ -194,8 +164,8 @@ dat %>%
 
 ```
 
-#NEW low weight experience, i.e., those who at baseline indicated no lifetime experience of binge eating
-```{r}
+NEW low weight experience, i.e., those who at baseline indicated no lifetime experience of binge eating
+```{r Derive NEW low weight experience during pandemic}
 
 dat <- dat %>%
   mutate(NEW_low_weight_pandemic =
@@ -204,22 +174,19 @@ dat <- dat %>%
                      
                      lifetime_low_weight_baseline_numeric == 0 &  #No lifetime low weight at baseline, and no low weight during the pandemic
                      pandemic_low_weight == 0 ~ 0
-                     
-           )
-    
-    
+            )
   )
 
-
 dat %>%
-  freq(NEW_low_weight_pandemic)
-
+  freq(NEW_low_weight_pandemic) # NAs are because the sample is restricted to those who did NOT report low weight at baseline
 ```
 
-  
-#ANY passive suicidal ideation during COVID-19 pandemic
-```{r}
-#Experience during past two weeks 
+# Outcome = Passive suicidal ideation
+## Derive ANY passive suicidal ideation during the COVID-19 pandemic
+### Experience during past two weeks 
+In the follow ups, participants are asked: "Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?"
+```{r Passive suicdal ideation in the past two weeks}
+
 dat <- dat %>%
   mutate(TWO_WEEKS_PANDEMIC_passive_suicidal_ideation =
            case_when(
@@ -238,7 +205,7 @@ dat <- dat %>%
                        taf.felt_weeks_past_.Wave_9a == "Yes" |
                        taf.felt_weeks_past_.Wave_10b == "Yes" |
                        taf.felt_weeks_past_.Wave_11a == "Yes" |
-                       taf.felt_weeks_past_.Wave_12b == "Yes" ~ 1,
+                       taf.felt_weeks_past_.Wave_12b == "Yes" ~ 1, # Said 'Yes' at least once during the pandemic
                         
               
                        is.na(taf.felt_weeks_past_.Wave_1a) &
@@ -256,7 +223,7 @@ dat <- dat %>%
                        is.na(taf.felt_weeks_past_.Wave_9a) &
                        is.na(taf.felt_weeks_past_.Wave_10b) &
                        is.na(taf.felt_weeks_past_.Wave_11a) &
-                       is.na(taf.felt_weeks_past_.Wave_12b) ~ NA_real_,
+                       is.na(taf.felt_weeks_past_.Wave_12b) ~ NA_real_, # Captures anyone who did not answer any of the passive suicidal questions at any phase
                      
                       
                        (taf.felt_weeks_past_.Wave_1a == "No" | is.na(taf.felt_weeks_past_.Wave_1a)) &
@@ -274,16 +241,20 @@ dat <- dat %>%
                        (taf.felt_weeks_past_.Wave_9a == "No" | is.na(taf.felt_weeks_past_.Wave_9a)) &
                        (taf.felt_weeks_past_.Wave_10b == "No" | is.na(taf.felt_weeks_past_.Wave_10b)) &
                        (taf.felt_weeks_past_.Wave_11a == "No" | is.na(taf.felt_weeks_past_.Wave_11a)) &
-                       (taf.felt_weeks_past_.Wave_12b == "No" | is.na(taf.felt_weeks_past_.Wave_12b)) ~ 0
+                       (taf.felt_weeks_past_.Wave_12b == "No" | is.na(taf.felt_weeks_past_.Wave_12b)) ~ 0 # Captures anyone who has at least one "No" and never said "Yes" (e.g., might be NA for all other phases)
                     
            ))
 
-#Check
+# Check
 dat %>%
   freq(TWO_WEEKS_PANDEMIC_passive_suicidal_ideation)
+```
 
+### Experience ever
+In the follow ups, participants are also asked: "Many people have thoughts that life is not worth living. Have you felt that way". We need to capture both; people might endorse lifetime experience but not have felt that way in the past two weeks (either if they missed out on a follow up questionnaire so the gap between them was longer than two weeks, or because they've answered at a monthly follow-up [i.e., from August 2020 onwards])
+```{r Passive suicidal ideation ever}
 
-#Experience EVER
+# Experience EVER
 dat <- dat %>%
   mutate(EVER_PANDEMIC_passive_suicidal_ideation =
            case_when(
@@ -319,7 +290,7 @@ dat <- dat %>%
                        taf.worth_living_life_people_.Wave_9a == "Yes, more than once" |
                        taf.worth_living_life_people_.Wave_10b == "Yes, more than once" |
                        taf.worth_living_life_people_.Wave_11a == "Yes, more than once" |
-                       taf.worth_living_life_people_.Wave_12b == "Yes, more than once" ~ 1,
+                       taf.worth_living_life_people_.Wave_12b == "Yes, more than once" ~ 1, # Answered yes at least once
                         
               
                        is.na(taf.worth_living_life_people_.Wave_1a) &
@@ -337,7 +308,7 @@ dat <- dat %>%
                        is.na(taf.worth_living_life_people_.Wave_9a) &
                        is.na(taf.worth_living_life_people_.Wave_10b) &
                        is.na(taf.worth_living_life_people_.Wave_11a) &
-                       is.na(taf.worth_living_life_people_.Wave_12b) ~ NA_real_,
+                       is.na(taf.worth_living_life_people_.Wave_12b) ~ NA_real_, # Captures those missing at every phase
                      
                       
                        (taf.worth_living_life_people_.Wave_1a == "No" | is.na(taf.worth_living_life_people_.Wave_1a)) &
@@ -355,98 +326,81 @@ dat <- dat %>%
                        (taf.worth_living_life_people_.Wave_9a == "No" | is.na(taf.worth_living_life_people_.Wave_9a)) &
                        (taf.worth_living_life_people_.Wave_10b == "No" | is.na(taf.worth_living_life_people_.Wave_10b)) &
                        (taf.worth_living_life_people_.Wave_11a == "No" | is.na(taf.worth_living_life_people_.Wave_11a)) &
-                       (taf.worth_living_life_people_.Wave_12b == "No" | is.na(taf.worth_living_life_people_.Wave_12b)) ~ 0
+                       (taf.worth_living_life_people_.Wave_12b == "No" | is.na(taf.worth_living_life_people_.Wave_12b)) ~ 0 # Captures anyone who has at least one "No" and never said "Yes" (e.g., might be NA for all other phases)
                     
            ))
 
-#Check
+# Check
 dat %>%
   freq(EVER_PANDEMIC_passive_suicidal_ideation)
-
-
-
 ```
 
-## Baseline passive suicidal ideation - NEVER experienced
-taf.worth_living_life_people_.Wavebaseline = Many people have thoughts that life is not worth living. Have you felt that way?
-```{r}
-
-##At baseline indicated NEVER experiencing it 
+### Baseline passive suicidal ideation
+At baseline, participants are also asked whether they have experienced passive suicidal ideation in the past two weeks. This would count as experiencing it during the pandemic as all studies started during the pandemic.
+taf.felt_weeks_past_.Wavebaseline = Many people have thoughts that life is not worth living. Have you felt that way in the past two weeks?
+```{r Passive suicidal ideation baseline experience past two weeks}
 dat <- dat %>%
   mutate(baseline_passive_suicidal_ideation =
            case_when(
-                    taf.felt_weeks_past_.Wavebaseline == "No" ~ 0, #Never experienced it
-                    
-                   taf.felt_weeks_past_.Wavebaseline == "Yes" ~ 1
+                    taf.felt_weeks_past_.Wavebaseline == "No" ~ 0, # Not experienced in past two weeks
+                    taf.felt_weeks_past_.Wavebaseline == "Yes" ~ 1 # Experienced in past two weeks
                )
-    
   )
 
-
-#Check 
+# Check 
 dat %>%
   freq(baseline_passive_suicidal_ideation)
-
 ```
 
-#PREPANDEMIC passive suicidal ideation 
-taf.pandemic_felt_.Wavebaseline = Many people have thoughts that life is not worth living. Have you felt that way before the pandemic?
-```{r}
-
-##At baseline indicated NEW experience
-
+### PREPANDEMIC passive suicidal ideation 
+At baseline, participants are first asked: "Many people have thoughts that life is not worth living. Have you felt that way?" (taf.worth_living_thoughts_life_.Wavebaseline) Only those who say "Yes" are then asked "Had you felt that way before the pandemic?" (taf.pandemic_felt_.Wavebaseline). Therefore, we need to count those say "No" to the first question, AND those who say "Yes" to the first but "No" to the second as having no prepandemic experience.
+```{r Passive suicidal ideation baseline pre-pandemic experience}
 dat <- dat %>%
   mutate(PREPANDEMIC_passive_suicidal_ideation =
            case_when(
              
-                  taf.worth_living_life_people_.Wavebaseline == "No" ~ 0, #Never experienced it
+                  taf.worth_living_life_people_.Wavebaseline == "No" ~ 0, # Never experienced it (lifetime)
                   
-                    taf.pandemic_felt_.Wavebaseline == "No" ~ 0, # Have but Not experienced before pandemic
-                    taf.pandemic_felt_.Wavebaseline == "Yes" ~ 1 #Have experienced it before pandemic
- 
-                     
-                       )
+                    taf.pandemic_felt_.Wavebaseline == "No" ~ 0, # Have in their life but not before the pandemic
+                    taf.pandemic_felt_.Wavebaseline == "Yes" ~ 1 # Have in their life AND before the pandemic
+                  )
                       
            )
     
-
-#Check 
+# Check 
 dat %>%
   freq(PREPANDEMIC_passive_suicidal_ideation)
-
 ```
 
 
-
-#Combined - passive suicidal ideation: NEW BASELINE experience OR NEW FOLLOW UP experience 
-
-```{r}
-#Then, of those who had never experienced it before the pandemic, who had a NEW experience
+Combined - passive suicidal ideation: BASELINE experience OR FOLLOW UP experience (participants may have indicated experiencing it at baseline and/or at follow-up)
+```{r Combine pandemic and baseline experience into pandemic experience}
 dat <- dat %>%
   mutate(passive_suicidal_ideation_PANDEMIC =
            case_when(
-         
-       
-             (TWO_WEEKS_PANDEMIC_passive_suicidal_ideation == 1 | #experience DURING pandemic (answered yes to 2 week question during pandemic)
-                EVER_PANDEMIC_passive_suicidal_ideation == 1 ) ~ 1, #experience DURING pandemic (answered yes to EVER question during pandemic)
+             
+             (TWO_WEEKS_PANDEMIC_passive_suicidal_ideation == 1 | # Experience DURING pandemic (answered yes to 2 week question during pandemic) OR
+                EVER_PANDEMIC_passive_suicidal_ideation == 1 ) ~ 1, # Experience DURING pandemic (answered yes to EVER question during pandemic)
            
-             baseline_passive_suicidal_ideation == 1 ~ 1, #experience DURING pandemic (indicated at baseline)
+             baseline_passive_suicidal_ideation == 1 ~ 1, # Experience DURING pandemic (indicated at baseline)
 
           baseline_passive_suicidal_ideation == 0 |
-             EVER_PANDEMIC_passive_suicidal_ideation == 0 ~ 0, #Baseline never experienced, and/or NO to EVER experiencing at ANY phase (people who have endorsed it EVER during the pandemic will be captured above)
+             EVER_PANDEMIC_passive_suicidal_ideation == 0 ~ 0, # Baseline never experienced, and/or NO to EVER experiencing at ANY phase (people who have endorsed it EVER during the pandemic will be captured above, so this can be an OR rather than an AND, i.e., we will allow it if some people are NA for one)
            )
-    
   )
 
-#Check
+# Check
 dat %>%
   freq(passive_suicidal_ideation_PANDEMIC)
 
 ```
 
 
-#ANY self-harm ideation during the COVID-19 pandemic
-```{r}
+# Outcome = Self-harm ideation
+## Derive ANY self-harm ideation during the COVID-19 pandemic
+### Experience during past two weeks 
+In the follow ups, participants are asked: "Have you contemplated harming yourself?" [If "Yes"] then asked "Have you felt that way in the past two weeks?" (taf.felt_weeks_past.1_.Wave_1a etc)
+```{r Self-harm ideation ANY past two weeks pandemic}
 dat <- dat %>%
   mutate(TWO_WEEKS_PANDEMIC_selfharm_ideation =
            case_when(
@@ -465,7 +419,7 @@ dat <- dat %>%
                        taf.felt_weeks_past.1_.Wave_9a == "Yes" |
                        taf.felt_weeks_past.1_.Wave_10b == "Yes" |
                        taf.felt_weeks_past.1_.Wave_11a == "Yes" |
-                       taf.felt_weeks_past.1_.Wave_12b == "Yes" ~ 1,
+                       taf.felt_weeks_past.1_.Wave_12b == "Yes" ~ 1, # Said "Yes" at any point to the two week question
                         
               
                        is.na(taf.felt_weeks_past.1_.Wave_1a) &
@@ -483,7 +437,7 @@ dat <- dat %>%
                        is.na(taf.felt_weeks_past.1_.Wave_9a) &
                        is.na(taf.felt_weeks_past.1_.Wave_10b) &
                        is.na(taf.felt_weeks_past.1_.Wave_11a) &
-                       is.na(taf.felt_weeks_past.1_.Wave_12b) ~ NA_real_,
+                       is.na(taf.felt_weeks_past.1_.Wave_12b) ~ NA_real_, # NA for all waves (i.e., never answered the two week question during the pandemic)
                      
                       
                        (taf.felt_weeks_past.1_.Wave_1a == "No" | is.na(taf.felt_weeks_past.1_.Wave_1a)) &
@@ -501,20 +455,23 @@ dat <- dat %>%
                        (taf.felt_weeks_past.1_.Wave_9a == "No" | is.na(taf.felt_weeks_past.1_.Wave_9a)) &
                        (taf.felt_weeks_past.1_.Wave_10b == "No" | is.na(taf.felt_weeks_past.1_.Wave_10b)) &
                        (taf.felt_weeks_past.1_.Wave_11a == "No" | is.na(taf.felt_weeks_past.1_.Wave_11a)) &
-                       (taf.felt_weeks_past.1_.Wave_12b == "No" | is.na(taf.felt_weeks_past.1_.Wave_12b)) ~ 0
+                       (taf.felt_weeks_past.1_.Wave_12b == "No" | is.na(taf.felt_weeks_past.1_.Wave_12b)) ~ 0 # Said "No" at least once and did not say "Yes" once
                     
            ))
 
-#Check
+# Check
 dat %>%
   freq(TWO_WEEKS_PANDEMIC_selfharm_ideation)
+```
 
-
+### Experience ever
+In the follow ups, participants are also asked lifetime self-harm ideation: "Have you contemplated harming yourself?". We need to capture both; people might endorse lifetime experience but not have felt that way in the past two weeks (either if they missed out on a follow up questionnaire so the gap between them was longer than two weeks, or because they've answered at a monthly follow-up [i.e., from August 2020 onwards])
+```{r Self-harm ideation EVER pandemic}
 #Experience EVER
 dat <- dat %>%
   mutate(EVER_PANDEMIC_selfharm_ideation =
            case_when(
-                     taf.have_you_contemplated_harming_yourself_.Wave_1a == "Yes, once" |
+                       taf.have_you_contemplated_harming_yourself_.Wave_1a == "Yes, once" |
                        taf.have_you_contemplated_harming_yourself_.Wave_1b == "Yes, once" |
                        taf.have_you_contemplated_harming_yourself_.Wave_2a == "Yes, once" |
                        taf.have_you_contemplated_harming_yourself_.Wave_2b == "Yes, once" |
@@ -546,7 +503,7 @@ dat <- dat %>%
                        taf.have_you_contemplated_harming_yourself_.Wave_9a == "Yes, more than once" |
                        taf.have_you_contemplated_harming_yourself_.Wave_10b == "Yes, more than once" |
                        taf.have_you_contemplated_harming_yourself_.Wave_11a == "Yes, more than once" |
-                       taf.have_you_contemplated_harming_yourself_.Wave_12b == "Yes, more than once" ~ 1,
+                       taf.have_you_contemplated_harming_yourself_.Wave_12b == "Yes, more than once" ~ 1, # "Yes" at at least one phase
                         
               
                        is.na(taf.have_you_contemplated_harming_yourself_.Wave_1a) &
@@ -564,7 +521,7 @@ dat <- dat %>%
                        is.na(taf.have_you_contemplated_harming_yourself_.Wave_9a) &
                        is.na(taf.have_you_contemplated_harming_yourself_.Wave_10b) &
                        is.na(taf.have_you_contemplated_harming_yourself_.Wave_11a) &
-                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_12b) ~ NA_real_,
+                       is.na(taf.have_you_contemplated_harming_yourself_.Wave_12b) ~ NA_real_, # Missing at every phase
                      
                       
                        (taf.have_you_contemplated_harming_yourself_.Wave_1a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_1a)) &
@@ -582,103 +539,79 @@ dat <- dat %>%
                        (taf.have_you_contemplated_harming_yourself_.Wave_9a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_9a)) &
                        (taf.have_you_contemplated_harming_yourself_.Wave_10b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_10b)) &
                        (taf.have_you_contemplated_harming_yourself_.Wave_11a == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_11a)) &
-                       (taf.have_you_contemplated_harming_yourself_.Wave_12b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_12b)) ~ 0
+                       (taf.have_you_contemplated_harming_yourself_.Wave_12b == "No" | is.na(taf.have_you_contemplated_harming_yourself_.Wave_12b)) ~ 0 # "No" at least once and never said "Yes"
                     
            ))
 
 #Check
 dat %>%
   freq(EVER_PANDEMIC_selfharm_ideation)
-
 ```
 
-## Baseline self-harm ideation - NEVER experienced
+### Baseline self-harm ideation
+At baseline, participants are also asked whether they have experienced self-harm ideation in the past two weeks. This would count as experiencing it during the pandemic as all studies started during the pandemic.
 
-taf.pandemic_felt.1_.Wavebaseline = Have you contemplated harming yourself before the pandemic?
-taf.have_you_contemplated_harming_yourself_.Wavebaseline = Have you contemplated harming yourself ?
-```{r}
-
-##At baseline indiciated NEVER experiencing it OR indicated experiencing it but NOT before the pandemic
+taf.felt_weeks_past.1_.Wavebaseline = Have you contemplated harming yourself...in the past two weeks?
+```{r Self-harm ideation baseline experience past two weeks}
 dat <- dat %>%
   mutate(baseline_selfharm_ideation =
            case_when(
-                    taf.felt_weeks_past.1_.Wavebaseline == "No" ~ 0, #Never experienced it
-                    
-                    taf.felt_weeks_past.1_.Wavebaseline == "Yes" ~ 1
-                     
-                  
-           )
-    
+                    taf.felt_weeks_past.1_.Wavebaseline == "No" ~ 0, # Not experienced in the past two weeks
+                    taf.felt_weeks_past.1_.Wavebaseline == "Yes" ~ 1 # Experienced in the past two weeks
+             )
   )
 
-
-#Check 
+# Check 
 dat %>%
   freq(baseline_selfharm_ideation)
-
 ```
 
+### PREPANDEMIC self-harm ideation 
+At baseline, participants are first asked: "Have you contemplated harming yourself ?" (taf.have_you_contemplated_harming_yourself_.Wavebaseline) Only those who say "Yes" are then asked "Had you felt that way before the pandemic?" (taf.pandemic_felt.1_.Wavebaseline). Therefore, we need to count those say "No" to the first question, AND those who say "Yes" to the first but "No" to the second as having no prepandemic experience.
 
-#PREPANDEMIC self-harm ideation 
-```{r}
-
-##At baseline indicated NEW experience
-
+```{r Self-harm ideation prepandemic experience}
 dat <- dat %>%
   mutate(PREPANDEMIC_selfharm_ideation =
            case_when(
-                     taf.have_you_contemplated_harming_yourself_.Wavebaseline == "No" ~ 0, #Never experienced it
-          
-                    taf.pandemic_felt.1_.Wavebaseline == "No" ~ 0, # Have experienced it but not BEFORE pandemic
-                    taf.pandemic_felt.1_.Wavebaseline == "Yes" ~ 1 #Experienced before pandemic
-                    
+                     taf.have_you_contemplated_harming_yourself_.Wavebaseline == "No" ~ 0, # Never experienced it in their life
                      
-                       )
-                      
+                     taf.pandemic_felt.1_.Wavebaseline == "No" ~ 0, # Have experienced it in their life but not before the pandemic
+                     taf.pandemic_felt.1_.Wavebaseline == "Yes" ~ 1 # Have experienced it before in their life and during the pandemic
+                     )
            )
     
-
-#Check 
+# Check 
 dat %>%
   freq(PREPANDEMIC_selfharm_ideation)
 ```
 
-#Combined - self-harm ideation: NEW BASELINE experience OR NEW FOLLOW UP experience 
-
-```{r}
-#Then, of those who had never experienced it before the pandemic, who had a NEW experience
+Combined - self-harm ideation: BASELINE experience OR FOLLOW UP experience (participants may have indicated experiencing it at baseline and/or at follow-up)
+```{r Combined baseline self-harm ideation experience and/or follow up experience pandemic}
 dat <- dat %>%
   mutate(selfharm_ideation_PANDEMIC =
            case_when(
          
-             (TWO_WEEKS_PANDEMIC_selfharm_ideation == 1 | #Experience DURING pandemic (answered yes to 2 week question during pandemic)
-                EVER_PANDEMIC_selfharm_ideation == 1 ) ~ 1, #Experience DURING pandemic (answered yes to EVER question during pandemic)
+             (TWO_WEEKS_PANDEMIC_selfharm_ideation == 1 | # Experience DURING pandemic (answered yes to 2 week question during pandemic)
+                EVER_PANDEMIC_selfharm_ideation == 1 ) ~ 1, # Experience DURING pandemic (answered yes to EVER question during pandemic)
            
-              baseline_selfharm_ideation == 1 ~ 1, #Experience DURING pandemic (indicated at baseline)
-
+              baseline_selfharm_ideation == 1 ~ 1, # Experience DURING pandemic (indicated at baseline)
              
-          baseline_selfharm_ideation == 0 |
-             EVER_PANDEMIC_selfharm_ideation == 0 ~ 0 #Baseline never experienced, and/or NO to EVER experiencing at ANY phase (people who have endorsed it EVER during the pandemic will be captured above)
-          
-          
-          
-           )
+             baseline_selfharm_ideation == 0 |
+             EVER_PANDEMIC_selfharm_ideation == 0 ~ 0 # Baseline never experienced, and/or NO to EVER experiencing at ANY phase (people who have endorsed it EVER during the pandemic will be captured above, so this can be an OR rather than an AND, i.e., we will allow it if some people are NA for one)
+          )
     
   )
 
 #Check
 dat %>%
   freq(selfharm_ideation_PANDEMIC)
-
-
-
 ```
 
-#ANY self-harm during the COVID-19 pandemic
-
+# Outcome = Self-harm 
+## Derive ANY self-harm during the COVID-19 pandemic
+### Experience during past two weeks 
 NB: There is no 'ever' question for self-harm
-```{r}
-
+```{r Self-harm experience ANY past two weeks}
 dat <- dat %>%
 mutate(TWO_WEEKS_PANDEMIC_selfharm =
            case_when(
@@ -697,7 +630,7 @@ mutate(TWO_WEEKS_PANDEMIC_selfharm =
                        taf.meant_life_end_weeks_.Wave_9a == "Yes" |
                        taf.meant_life_end_weeks_.Wave_10b == "Yes" |
                        taf.meant_life_end_weeks_.Wave_11a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_12b == "Yes" ~ 1,
+                       taf.meant_life_end_weeks_.Wave_12b == "Yes" ~ 1, # "Yes" at least once
                         
               
                        is.na(taf.meant_life_end_weeks_.Wave_1a) &
@@ -715,7 +648,7 @@ mutate(TWO_WEEKS_PANDEMIC_selfharm =
                        is.na(taf.meant_life_end_weeks_.Wave_9a) &
                        is.na(taf.meant_life_end_weeks_.Wave_10b) &
                        is.na(taf.meant_life_end_weeks_.Wave_11a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_12b) ~ NA_real_,
+                       is.na(taf.meant_life_end_weeks_.Wave_12b) ~ NA_real_, # Missing at every phase
                      
                       
                        (taf.meant_life_end_weeks_.Wave_1a == "No" | is.na(taf.meant_life_end_weeks_.Wave_1a)) &
@@ -733,133 +666,103 @@ mutate(TWO_WEEKS_PANDEMIC_selfharm =
                        (taf.meant_life_end_weeks_.Wave_9a == "No" | is.na(taf.meant_life_end_weeks_.Wave_9a)) &
                        (taf.meant_life_end_weeks_.Wave_10b == "No" | is.na(taf.meant_life_end_weeks_.Wave_10b)) &
                        (taf.meant_life_end_weeks_.Wave_11a == "No" | is.na(taf.meant_life_end_weeks_.Wave_11a)) &
-                       (taf.meant_life_end_weeks_.Wave_12b == "No" | is.na(taf.meant_life_end_weeks_.Wave_12b)) ~ 0
+                       (taf.meant_life_end_weeks_.Wave_12b == "No" | is.na(taf.meant_life_end_weeks_.Wave_12b)) ~ 0 # Said "No" to at least one phase and never said "Yes"
                     
            ))
                     
    
-#Check
+# Check
 dat %>%
   freq(TWO_WEEKS_PANDEMIC_selfharm)
-
-
 ```
-## Baseline self-harm ideation - NEVER experienced before pandemic
+
+### Baseline self-harm 
+At baseline, participants are also asked whether they have experienced self-harm in the past two weeks. This would count as experiencing it during the pandemic as all studies started during the pandemic.
 
 taf.meant_life_end_weeks_.Wavebaseline = In the last two weeks, have you deliberately harmed yourself, whether or not you meant to end your life? (at baseline)
-taf.meant_end_life_pandemic_.Wavebaseline = Before the pandemic, had you deliberately harmed yourself, whether or not you meant to end your life?
-```{r}
-
-##At baseline indicated NEVER experiencing it 
-dat <- dat %>%
-  mutate(PREPANDEMIC_selfharm =
-           case_when(
-                    taf.meant_end_life_pandemic_.Wavebaseline == "No" ~ 0 ,
-                    taf.meant_end_life_pandemic_.Wavebaseline == "Yes" ~ 1
-                  
-           )
-    
-  )
-
-
-#Check 
-dat %>%
-  freq(PREPANDEMIC_selfharm)
-
-
-```
-
-#Baseline self-harm  - NEW experience DURING pandemic
-
-```{r}
-
-##At baseline indicated NEW experience
-
+```{r Baseline self-harm experience last two weeks}
 dat <- dat %>%
   mutate(baseline_pandemic_selfharm =
            case_when(
              
-              taf.meant_life_end_weeks_.Wavebaseline ==  "Yes" ~  1,
-              taf.meant_life_end_weeks_.Wavebaseline== "No" ~ 0) #Self harmed during past two weeks (at baseline)
+              taf.meant_life_end_weeks_.Wavebaseline ==  "Yes" ~  1, # Self harmed during past two weeks (at baseline)
+              taf.meant_life_end_weeks_.Wavebaseline == "No" ~ 0) # Not self harmed during past two weeks (at baseline)
                
               )
-  
-    
 
-#Check 
+# Check 
 dat %>%
   freq(baseline_pandemic_selfharm)
-
-
 ```
 
-#Combined - self-harm: NEW BASELINE experience OR NEW FOLLOW UP experience 
-taf.meant_end_life_pandemic_.Wavebaseline = Before the pandemic, had you deliberately harmed yourself, whether or not you meant to end your life? 
+### PREPANDEMIC self-harm 
+At baseline, participants are asked: "Before the pandemic, had you deliberately harmed yourself, whether or not you meant to end your life?" (taf.meant_end_life_pandemic_.Wavebaseline). Note again, there is no lifetime assessment of self-harm.
+```{r Prepandemic self-harm experience}
+dat <- dat %>%
+  mutate(PREPANDEMIC_selfharm =
+           case_when(
+                    taf.meant_life_end_weeks_.Wavebaseline == "No" ~ 0, # Not experienced self-harm before the pandemic
+                    taf.meant_life_end_weeks_.Wavebaseline == "Yes" ~ 1 # Experienced self-harm during the pandemic 
+            )
+  )
 
-NB: This question is shown to everyone, so I don't need to use the same logic as with the other baseline questions (i.e., there is no question that just asks: "Have you deliberately harmed yourself, whether or not you meant to end your life?) 
-```{r}
-#Then, of those who had never experienced it before the pandemic, who had a NEW experience
+# Check 
+dat %>%
+  freq(PREPANDEMIC_selfharm)
+```
+
+Combined - self-harm ideation: BASELINE experience OR FOLLOW UP experience (participants may have indicated experiencing it at baseline and/or at follow-up)
+
+NB: This question "Before the pandemic, had you deliberately harmed yourself, whether or not you meant to end your life?" is shown to everyone, so I don't need to use the same logic as with the other baseline questions (i.e., there is no screener question that asks about lifetime self-harm: "Have you deliberately harmed yourself, whether or not you meant to end your life?) 
+```{r Combined self-harm baseline and follow up experience}
 dat <- dat %>%
   mutate(selfharm_PANDEMIC =
            case_when(
-            
-             baseline_pandemic_selfharm == 1 ~ 1, #FIRST experience DURING pandemic (indicated at baseline)
+            baseline_pandemic_selfharm == 1 ~ 1, # Experience DURING pandemic (indicated at baseline)
              
-             TWO_WEEKS_PANDEMIC_selfharm == 1 ~ 1,#FIRST experience DURING pandemic (answered yes to 2 week question during pandemic)
+            TWO_WEEKS_PANDEMIC_selfharm == 1 ~ 1,# Experienced DURING pandemic (answered yes to 2 week question during pandemic)
                      
-                     baseline_pandemic_selfharm == 0 |  
-                     TWO_WEEKS_PANDEMIC_selfharm == 0 ~ 0 #Baseline never experienced, and NO to EVER experiencing at ANY phase
+            baseline_pandemic_selfharm == 0 |  
+            TWO_WEEKS_PANDEMIC_selfharm == 0 ~ 0 # Had not experienced at baseline (in the last two weeks) and had not indicated experiencing at any follow up phase. NB: Because there is no lifetime assessment of self-harm, there might be some people who joined the study later (e.g., in November 2020) and had self-harmed earlier in the pandemic (e.g., July) but we would not capture them.
                      
            )
-    
-    
   )
 
-#Check
+# Check
 dat %>%
   freq(selfharm_PANDEMIC)
-
-
 ```
 
 
-#EXPOSURE / covariates [ALL AT BASELINE OR BEFORE REPORT OF OUTCOME]
+# EXPOSURES / EXPLANATORY VARIABLES
+## NB: Need to think about whether we want all the exposures to have occured BEFORE the outcomes (as Moritz suggested)
 
 BASIC MODEL:
-  •	age
-  •	gender
-  •	Ethnicity 
-  •	Education 
+  •	Age
+  •	Gender
+  •	Racialised minority
+  •	Highest education level 
   •	Pre-pandemic experience (for self-harm only) 
-  
-MENTAL/PHYSICAL HEALTH MODEL:
-  • Control status (removing people with EDs for ED ones only)
-  • BMI at baseline
-  • Pre-existing physical health condition
-  • Disability
-    
-COVID MODEL - baseline/before symptom:
-  • Key worker status at baseline
+  •	Psychiatric disorder (*will do sensitivty analysis without EDs or disorders that include self-harm)
+  • Key worker status 
   • Defined as vulnerable person according to Government 
-  • Positive COVID test at baseline (or somewhere down the line - needs to be BEFORE symptom)
-  • Change in employment status
-  • Living situation
+  • Positive COVID test 
+  • Change in economic activity
+  • Change in living situation
+  • Loneliness
   • Pandemic worry
 
-  
   o	Sensitivity analysis; Other mental health diagnosis pre-pandemic, i.e., not ED
     	Count
     	Group (Dep, Anx, Dep+Anx, Psychotic, ADHD, ASD, PTSD)
     
   o	Sensitivity analysis: Sex
 
+### Age
+NB: RAMP and NBR can use the variable "age_category" as age was assessed only once, at COVID baseline. For GLAD and EDGI, age has been assessed twice: once at GLAD/EDGI sign up, and once at COVID baseline (COPING questionnaire baseline). For the purposes of the regression analyses, I will be using 'age at COVID assessment' i.e., age at COVID baseline (I have worked this out for GLAD and EDGI from their DOBs and their end dates for completing the COPING baseline demographics questions = age_category_COPING)
+```{r Age as exposure}
 
-#Age
-
-NB: RAMP and NBR can use the variable "age_category" as age was assessed only once, at COVID baseline. For GLAD and EDGI, age has been assessed twice: once at GLAD/EDGI sign up, and once at COVID baseline (COPING questionnaire baseline). For the purposes of the regression analyses, I will be using 'age at assessment' i.e., age at COVID baseline (I have worked this out for GLAD and EDGI from their DOBs and their end dates for completing the COPING baseline demographics questions = age_category_COPING)
-```{r}
-
-#Collapse age category to of 16-18 and 19-25 to 16-25, and over 75 to 75+(small categories otherwise)
+# Collapse age categories of 16-18 and 19-25 to 16-25, and over 71 to 71+ (very small categories otherwise)
 
 dat <- dat %>%
   mutate(age_category_COVID_baseline = 
@@ -895,23 +798,27 @@ dat <- dat %>%
              
              ((cohort_name == "nbr" |
                cohort_name == "ramp") &
-                      age_category == "71-75" ~ "71-75"),
+                      age_category == "71-75" ~ "71+"),
              
              ((cohort_name == "nbr" |
                cohort_name == "ramp") &
-                      age_category == "76-80" ~ "75+"),
+                      age_category == "76-80" ~ "71+"),
              
             (( cohort_name == "nbr" |
                cohort_name == "ramp") &
-                      age_category == "81-85" ~ "75+"),
+                      age_category == "81-85" ~ "71+"),
             
              ((cohort_name == "nbr" |
                cohort_name == "ramp") &
-                      age_category == "86-90" ~ "75+"),
+                      age_category == "86-90" ~ "71+"),
             
              ((cohort_name == "nbr" |
                cohort_name == "ramp") &
-                      age_category == "91-100" ~ "75+"),
+                      age_category == "91-100" ~ "71+"),
+            
+             ((cohort_name == "nbr" |
+               cohort_name == "ramp") &
+                      age_category == "100+" ~ "71+"),
              
              ((cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
@@ -943,71 +850,73 @@ dat <- dat %>%
               
              ((cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
-                      age_category_COPING == "71-75" ~ "71-75"),
+                      age_category_COPING == "71-75" ~ "71+"),
              
             ((cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
-                      age_category_COPING == "76-80" ~ "75+"),
+                      age_category_COPING == "76-80" ~ "71+"),
              
             ((cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
-                      age_category_COPING == "81-85" ~ "75+"),
+                      age_category_COPING == "81-85" ~ "71+"),
             
             (( cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
-                      age_category_COPING == "86-90" ~ "75+"),
+                      age_category_COPING == "86-90" ~ "71+"),
             
             (( cohort_name == "coping_glad" |
                cohort_name == "coping_edgi") &
-                      age_category_COPING == "91-100" ~ "75+")
-                     
-                     
-         )
-         )
-
-
-dat %>%
-  freq(age_category_COVID_baseline)
-
-```
-
-#Gender - recode!
-```{r}
-#Check frequencies
-dat %>%
-  freq(gender_unc)
-
-dat %>%
-  freq(transgender)
-
-dat %>% 
-  group_by(transgender) %>%
-  count(gender_unc)
-
-#Recode 
-dat <- dat %>%
-  mutate(gender_cleaned = 
-           case_when(transgender == "Yes" ~ "Minoritised gender",
-             gender_unc == "Male" ~ "Male",
-                     gender_unc == "Female" ~ "Female",
-                     
-                     gender_unc == "Non-binary" ~ "Minoritised gender",
-                      gender_unc == "Prefer to self-define" ~ "Minoritised gender"
+                      age_category_COPING == "91-100" ~ "71+")
             )
          )
 
-#Check
+# Check
 dat %>%
-  freq(gender_cleaned)
+  freq(age_category_COVID_baseline)
 
+# Re-order for regression analyses with largest age group as reference
+dat <- dat %>%
+  mutate(age_category_COVID_baseline = factor(age_category_COVID_baseline,
+                       levels = c("56-65",
+                                  "16-25",
+                                  "26-35",
+                                  "36-45",
+                                  "46-55",
+                                   "66-70",
+                                   "71+"
+                                  
+                         
+          )))
+
+# Check
+dat %>%
+  freq(age_category_COVID_baseline)
 ```
 
+### Gender
+```{r Gender as exposure variable}
+# Recode 
+dat <- dat %>%
+  mutate(gender_cleaned = 
+           case_when(transgender == "Yes" ~ "Minoritised gender",
+                     
+                     gender_unc == "Male" ~ "Male",
+                     gender_unc == "Female" ~ "Female",
+                     
+                     gender_unc == "Non-binary" ~ "Minoritised gender",
+                     gender_unc == "Prefer to self-define" ~ "Minoritised gender"
+            )
+         )
 
+# Check
+dat %>%
+  freq(gender_cleaned) # NAs are people who did not answer the gender question
+```
 
-#Sex (male = 0, female = 1)
-```{r}
+### Sex (male = 0, female = 1)
+```{r Sex as exposure variable}
 
-#Recode to binary sex
+# Recode to binary sex
 dat <- dat %>%
   mutate(sex_binary_numeric = 
            case_when(sex == "0" |
@@ -1016,141 +925,87 @@ dat <- dat %>%
                      sex == "1" |
                        sex == "Female" ~ 1,
                      
-                     #NB: RAMP does not have sex, but does have whether someone is transgender
+                     # NB: RAMP does not have sex, but does have whether someone is transgender
                     
-                     #Non-transgender male
+                     # Non-transgender male
                       cohort_name == "ramp" &
                        gender_unc == "Male" &
                        transgender == "No" ~ 0,
                      
-                     #Transgender male, assigned female at birth
+                     # Transgender male, assigned female at birth
                      cohort_name == "ramp" &
                        gender_unc == "Male" &
                        transgender == "Yes" ~ 1,
                      
-                     #Non-transgender female
+                     # Non-transgender female
                       cohort_name == "ramp" &
                        gender_unc == "Female" &
                        transgender == "No" ~ 1,
                      
-                     
-                      #Transgender female, assigned male at birth
+                     # Transgender female, assigned male at birth
                      cohort_name == "ramp" &
                        gender_unc == "Female" &
                        transgender == "Yes" ~ 0
-                     
                      
             )
          )
 
 dat %>%
   freq(sex_binary_numeric)
-
 ```
-#Ethnicity
-```{r}
 
-dat %>%
-  freq(ethnicity)
+### Race
+```{r Race as exposure variable}
 
-#Recode to binary
+# Recode to binary
 dat <- dat %>%
-  mutate(ethnicity_binary = 
-           case_when(ethnicity == "White" ~ "White",
-                     ethnicity == "Mixed or multiple ethnic origins" ~ "Racially minoritised",
+  mutate(race_binary = 
+           case_when(ethnicity == "Mixed or multiple ethnic origins" ~ "Racially minoritised",
                       ethnicity == "Asian or Asian British" ~ "Racially minoritised",
                       ethnicity == "Black or Black British" ~ "Racially minoritised",
                       ethnicity == "Arab" ~ "Racially minoritised",
-                     ethnicity == "Other" ~ "Racially minoritised",
-                      ethnicity == "Other ethnic group" ~ "Racially minoritised"
+                      ethnicity == "Other" ~ "Racially minoritised",
+                      ethnicity == "Other ethnic group" ~ "Racially minoritised",
+                     ethnicity == "White" ~ "White"
             )
          )
 
-
-#Check
+# Check
 dat %>%
-  freq(ethnicity_binary)
+  freq(race_binary)
 
-```
-
-#Education
-#This is from baseline COPING and RAMP data (i.e., not GLAD or EDGI signups, which is "highest_education_prepan")
-```{r}
-
-dat %>%
-  freq(highest_education) 
-
-```
-
-#Comorbidities
-```{r}
-
-#Recode to one variable **Need to think about this as this will hierarchically categorise!
+# Reorder so that 'White' is reference category
 dat <- dat %>%
-  mutate(comorbidities = 
-           case_when(depression_and_anxiety_numeric == 1 ~ "Depression and anxiety",
-                     psychotic_disorders_numeric == 1 ~"Psychotic disorder",
-                     bipolar_and_schizophrenia_numeric == 1 ~ "Bipolar and schizophrenia",
-                     depressive_disorders_numeric == 1 ~ "Depressive disorder",
-                     anxiety_disorders_numeric == 1 ~ "Anxiety disorder",
-                     eating_disorders_diagnosed_numeric == 1 ~ "Diagnosed eating disorder",
-                     mhd.suspected_eating_disorder_diagnosed_numeric == 1 ~ "Suspected eating disorder",
-                     obsessive_compulsive_disorders_numeric == 1 ~ "Obsessive compulsive disorder", #INCLUDES BDD
-                     psychotic_disorders_numeric == 1 ~ "Psychotic disorder",
-                     autism_spectrum_disorder_numeric == 1 ~ "Autism spectrum disorder",
-                     PERSONALITY_DISORDER_NUMERIC == 1 ~ "Personality disorder",
-                     agoraphobia_panic_disorder_numeric == 1 ~ "Agoraphobia/panic disorder",
-                     mhd.attention_deficit_hyperactivity_disorder_numeric == 1 ~ "ADHD",
-                     mhd.posttraumatic_stress_disorder_ptsd_numeric == 1 ~ "PTSD",
-                     control_numeric == 1 ~ "No comorbidities"
-                
-         )
-  )
-
+  mutate(race_binary = factor(race_binary,
+                       levels = c("White",
+                                  "Racially minoritised"
+                                  )))
 dat %>%
-  freq(comorbidities) 
-
-#Count of comorbidities
-dat$comorbidities_count_raw <- rowSums(dat[ ,
-                                 c("depressive_disorders_numeric",
-                                   "anxiety_disorders_numeric",
-                                 "eating_disorders_diagnosed_numeric",
-                                   "obsessive_compulsive_disorders_numeric",
-                                 "mhd.suspected_eating_disorder_diagnosed_numeric",
-                                   "psychotic_disorders_numeric",
-                                   "autism_spectrum_disorder_numeric",
-                                   "PERSONALITY_DISORDER_NUMERIC",
-                                   "agoraphobia_panic_disorder_numeric",
-                                   "mhd.attention_deficit_hyperactivity_disorder_numeric",
-                                   "mhd.posttraumatic_stress_disorder_ptsd_numeric")],
-                                  na.rm = TRUE)
-
-#Only controls should be 0. Need to collapse higher categories into one (5+)
-dat <- dat %>%
-  mutate(comorbidities_count = 
-           case_when(control_numeric == 1 ~ "0",
-                    comorbidities_count_raw == 1 ~ "1",
-                     comorbidities_count_raw == 2 ~ "2",
-                     comorbidities_count_raw == 3 ~ "3",
-                     comorbidities_count_raw == 4 ~ "4",
-                     comorbidities_count_raw == 5 ~ "5+",
-                     comorbidities_count_raw == 6 ~ "5+",
-                     comorbidities_count_raw == 7 ~ "5+",
-                     comorbidities_count_raw == 8 ~ "5+",
-                     comorbidities_count_raw == 9 ~ "5+",
-                    comorbidities_count_raw == 10 ~ "5+"
-                    
-                
-         )
-  )
-
-dat %>%
-  freq(comorbidities_count)  
-
+  freq(race_binary)
 ```
-#Covert numeric control to psych disorder factor
-```{r}
 
+### Education
+This is from baseline COPING and RAMP data (i.e., not GLAD or EDGI signups, which is "highest_education_prepan"). This is to get their most recent education data.
+```{r Education as exposure variable}
+# Convert to binary variable to reduce number of exposure variables and maximise likelihood of models running.
+dat <- dat %>%
+  mutate(A_Levels_higher =
+           case_when(highest_education == "No formal qualifications" ~ "No",
+                     highest_education == "GCSE/CSE" ~ "No",
+                     highest_education == "NVQ" ~ "No",
+                       highest_education == "A-levels" ~"Yes",
+                       highest_education == "University/Other professional qualifications" ~ "Yes"
+             
+           ))
+
+# Check
+dat %>%
+  freq(A_Levels_higher)
+```
+
+### Psychiatric disorder
+```{r Psychiatric disorder as exposure}
+# Covert numeric control (from the preprocessing script) to psych disorder factor
 dat <- dat %>% 
   mutate(psych_disorder_factor =
            case_when(control_numeric == 1 ~ "No psychiatric disorder",
@@ -1158,141 +1013,156 @@ dat <- dat %>%
              
            ))
   
-#Check
+# Check
 dat %>%
   freq(psych_disorder_factor)
 ```
 
-#Key worker status at baseline
-```{r}
-
+### Employed & key worker status
+I have separated out those who are a key worker (and thus employed), those who are not a key worker but are employed, those who are unemployed (and thus not a key worker), and those who are students,
+```{r Employed / key-worker status as exposure}
+dat <- dat %>%
+  mutate(employed_key =
+           case_when(key_worker == "Key worker" ~ "Yes, key", # Employed and key worker
+                     
+                     key_worker == "No key worker" & # Employed but not key worker
+                      employed == "Employed" ~ "Yes",
+                     
+                     employed == "Unemployed" ~ "No", # Unemployed (and therefore not key worker)
+                     
+                      employed == "Student" ~ "Student" # Student (and therefore not key worker)
+                     )
+           )
+# Check
 dat %>%
-  freq(key_worker)
+  freq(employed_key)
+
+# Re-order for regression analysis
+dat <- dat %>%
+  mutate(employed_key = factor(employed_key,
+                       levels = c("Yes",
+                                  "Yes, key",
+                                  "No",
+                                  "Student"
+                                  )))
+dat %>%
+  freq(employed_key)
 ```
 
-#Member of vulnerable group
-```{r}
-dat %>%
-  freq(dem2.member_vulnerable_group)
+### Member of vulnerable group
+```{r Member of vulnerable group exposure}
+# Recode / rename
+dat <- dat %>%
+  mutate(vulnerable_group_member =
+           case_when(dem2.member_vulnerable_group == "Not I am not a member of a vulnerable group" ~ "Yes",
+                     dem2.member_vulnerable_group == "I am not a member of a vulnerable group" ~ "No"
+             
+           ))
 
+# Check
+dat %>%
+  freq(vulnerable_group_member)
 ```
                            
-#Positive covid test
-**Will probably combine 'negative test' and 'not had a test'?
-**Why are first 4 waves empty?
-```{r}
+### Positive covid test
+NB: Have combined "Not had a test", "Negative test", and "Inconclusive test" as "Not positive", i.e., the only thing we count as positive is if someone has a taken a test and had a positive result. Everything else is "Not positive test" other than those who had not answered whether they had taken a test.
++++ Why are first 4 waves empty?
+```{r Positve COVID test result exposure}
 dat <- dat %>%
   mutate(covid_test =
            case_when(
-                      #Had at least one positive covid test
-                    (virus.back_positive_antibodies_covid_.Wave_1b == "Yes" |
-                      
+                      # Had at least one positive covid test
+                    virus.back_positive_antibodies_covid_.Wave_1b == "Yes" |
                     virus.back_positive_antibodies_covid_.Wave_2b == "Yes" |
-                      
                     virus.back_positive_antibodies_covid_.Wave_3b == "Yes" |
-                      
                     virus.back_positive_antibodies_covid_.Wave_4b == "Yes" |
-                      
                     virus.back_positive_antibodies_covid_.Wave_6b == "Yes" |
-                      
                     virus.back_positive_antibodies_covid_.Wave_8b == "Yes" |
-                      
                     virus.back_positive_antibodies_covid_.Wave_10b == "Yes" |
-                      
-                    virus.back_positive_antibodies_covid_.Wave_12b == "Yes" ~ "Positive test"),
+                    virus.back_positive_antibodies_covid_.Wave_12b == "Yes" ~ "Positive test",
                     
-                    #Not answered whether they'd taken a test
-                    (is.na(virus.past_surveys_include_reported_.Wave_1b) &
-                      
+                    # Not answered whether they'd taken a test
+                    is.na(virus.past_surveys_include_reported_.Wave_1b) &
                     is.na(virus.past_surveys_include_reported_.Wave_2b)  &
-                      
                     is.na(virus.past_surveys_include_reported_.Wave_3b)  &
-                      
                     is.na(virus.past_surveys_include_reported_.Wave_4b)  &
-                      
                     is.na(virus.past_surveys_include_reported_.Wave_6b)  &
-                      
                     is.na(virus.past_surveys_include_reported_.Wave_8b)  &
-                      
                     is.na(virus.past_surveys_include_reported_.Wave_10b)  &
-                      
-                    is.na(virus.past_surveys_include_reported_.Wave_12b) ~ "Missing whether taken test"),
+                    is.na(virus.past_surveys_include_reported_.Wave_12b) ~ "Missing whether taken test",
                    
                    
-                    #Not had a test
-                    (virus.past_surveys_include_reported_.Wave_1b == "No" |
-                   
+                    # Not had a test
+                     virus.past_surveys_include_reported_.Wave_1b == "No" |
                      virus.past_surveys_include_reported_.Wave_2b == "No" |
-                     
-                      virus.past_surveys_include_reported_.Wave_3b == "No" |
-                      
-                      virus.past_surveys_include_reported_.Wave_4b == "No" |
-             
-                      virus.past_surveys_include_reported_.Wave_6b == "No" |
-               
-                      virus.past_surveys_include_reported_.Wave_8b == "No" |
-                      
-                      virus.past_surveys_include_reported_.Wave_10b == "No" |
-                      
-                      virus.past_surveys_include_reported_.Wave_12b == "No"  ~ "Not had a test"),
+                     virus.past_surveys_include_reported_.Wave_3b == "No" |
+                     virus.past_surveys_include_reported_.Wave_4b == "No" |
+                     virus.past_surveys_include_reported_.Wave_6b == "No" |
+                     virus.past_surveys_include_reported_.Wave_8b == "No" |
+                     virus.past_surveys_include_reported_.Wave_10b == "No" |
+                     virus.past_surveys_include_reported_.Wave_12b == "No"  ~ "Not had a test",
+                    
+                    # Unsure/inconclusive test result 
+                     virus.back_positive_antibodies_covid_.Wave_1b == "Unsure/inconclusive" |
+                     virus.back_positive_antibodies_covid_.Wave_2b == "Unsure/inconclusive" |
+                     virus.back_positive_antibodies_covid_.Wave_3b == "Unsure/inconclusive" |
+                     virus.back_positive_antibodies_covid_.Wave_4b == "Unsure/inconclusive" |
+                     virus.back_positive_antibodies_covid_.Wave_6b == "Unsure/inconclusive" |
+                     virus.back_positive_antibodies_covid_.Wave_8b == "Unsure/inconclusive" |
+                     virus.back_positive_antibodies_covid_.Wave_10b == "Unsure/inconclusive" |
+                     virus.back_positive_antibodies_covid_.Wave_12b == "Unsure/inconclusive"  ~ "Inconclusive test",
      
-                     #Negative test result 
-                    (virus.back_positive_antibodies_covid_.Wave_1b == "No" |
-                   
+                     # Negative test result 
+                     virus.back_positive_antibodies_covid_.Wave_1b == "No" |
                      virus.back_positive_antibodies_covid_.Wave_2b == "No" |
-                     
-                      virus.back_positive_antibodies_covid_.Wave_3b == "No" |
-                      
-                      virus.back_positive_antibodies_covid_.Wave_4b == "No" |
-             
-                      virus.back_positive_antibodies_covid_.Wave_6b == "No" |
-               
-                      virus.back_positive_antibodies_covid_.Wave_8b == "No" |
-                      
-                      virus.back_positive_antibodies_covid_.Wave_10b == "No" |
-                      
-                      virus.back_positive_antibodies_covid_.Wave_12b == "No"  ~ "Negative test")
-     )
+                     virus.back_positive_antibodies_covid_.Wave_3b == "No" |
+                     virus.back_positive_antibodies_covid_.Wave_4b == "No" |
+                     virus.back_positive_antibodies_covid_.Wave_6b == "No" |
+                     virus.back_positive_antibodies_covid_.Wave_8b == "No" |
+                     virus.back_positive_antibodies_covid_.Wave_10b == "No" |
+                     virus.back_positive_antibodies_covid_.Wave_12b == "No"  ~ "Negative test"
+      )
 )
                    
-                      
+# Checl                      
 dat %>%
-  freq(covid_test) #Those who are NA are put 'unsure/inconclusive' as the result of their test
+  freq(covid_test) 
 
 
-##Create final variable for use in regression
+# Create final variable for use in regression
 dat <- dat %>%
-  mutate(covid_test_final =
+  mutate(positive_covid_test_final =
            case_when(covid_test == "Negative test" |
-                       covid_test == "Not had a test" ~ "No test or negative result",
+                     covid_test == "Not had a test" |
+                     covid_test == "Inconclusive test"  ~ "No",
                      
-                     covid_test == "Positive test" ~ "Positive result")
+                     covid_test == "Positive test" ~ "Yes")
   )
 
+# Check
 dat %>%
-  freq(covid_test_final) 
-
+  freq(positive_covid_test_final) 
 ```
 
 
-#Pandemic worry at baseline
-#Before working out total score - First need to work out if there were any 'not applicable' / missing
+### Pandemic worry at baseline 
+++NB: This needs work! Need to discuss how to score this; the below code was something I very quickly put toghether before my Centre talk. Participants are asked pandemic worry at follow up too, however I wonder if it would be best to just look at baseline as the exposure (as per Moritz's suggestion).
 
-```{r}
+Participants are asked how worried they are about different factors, e.g., mental health, or employment. Before working out total score - First need to work out if participants answered any of thse as 'not applicable' or if they did not answer (i.e., missing).
+```{r Pandemic worry as exposure, identifying not applicable or missing data}
 
-##Own Employment
+# Own Employment
 dat <- dat %>%
   mutate(not_applicable_or_missing_own_employment =
            case_when(panworry.impact_on_your_employment_status == "Not applicable" |
                        is.na(panworry.impact_on_your_employment_status) ~ 1
              
            ))
-
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_own_employment)
 
-##household employment
+# Household employment
 dat <- dat %>%
   mutate(not_applicable_or_missing_household_employment =
            case_when(panworry.employment_status_household_key == "Not applicable" |
@@ -1300,11 +1170,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_household_employment)
 
-##own education / exams
+# Own education / exams
 dat <- dat %>%
   mutate(not_applicable_or_missing_own_education_exams =
            case_when(panworry.impact_on_your_education_or_exams == "Not applicable" |
@@ -1312,11 +1182,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_own_education_exams)
 
-##children's exams
+# Children's exams
 dat <- dat %>%
   mutate(not_applicable_or_missing_childrens_education_exams =
            case_when(panworry.exams_impact_education_children == "Not applicable" |
@@ -1324,11 +1194,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_childrens_education_exams)
 
-##financial impact
+# Financial impact
 dat <- dat %>%
   mutate(not_applicable_or_missing_financial_impact =
            case_when(panworry.financial_impact == "Not applicable" |
@@ -1336,11 +1206,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_financial_impact)
 
-##Contracting virus
+# Contracting virus
 dat <- dat %>%
   mutate(not_applicable_or_missing_contracting_virus =
            case_when(panworry.contracting_the_virus == "Not applicable" |
@@ -1348,11 +1218,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_contracting_virus)
 
-##People you know contracting virus
+# People you know contracting virus
 dat <- dat %>%
   mutate(not_applicable_or_missing_people_know_contracting_virus =
            case_when(panworry.people_you_know_contracting_the_virus == "Not applicable" |
@@ -1360,12 +1230,12 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_people_know_contracting_virus)
 
 
-##People you don't know contracting virus
+# People you don't know contracting virus
 dat <- dat %>%
   mutate(not_applicable_or_missing_people_dont_know_contracting_virus =
            case_when(panworry.people_you_dont_know_contracting_the_virus == "Not applicable" |
@@ -1373,11 +1243,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_people_dont_know_contracting_virus)
 
-##mental health
+# Mental health
 dat <- dat %>%
   mutate(not_applicable_or_missing_impact_mental_health =
            case_when(panworry.impact_mental_health_wellbeing == "Not applicable" |
@@ -1385,11 +1255,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_impact_mental_health)
 
-##Childrens mental health
+# Children's mental health
 dat <- dat %>%
   mutate(not_applicable_or_missing_impact_childrens_mental_health =
            case_when(panworry.impact_mental_health_childrens == "Not applicable" |
@@ -1397,11 +1267,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_impact_childrens_mental_health)
 
-##Relative's mental health
+# Relative's mental health
 dat <- dat %>%
   mutate(not_applicable_or_missing_impact_relatives_mental_health =
            case_when(panworry.impact_relatives_mental_health == "Not applicable" |
@@ -1409,11 +1279,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_impact_relatives_mental_health)
 
-#Social isolation
+# Social isolation
 dat <- dat %>%
   mutate(not_applicable_or_missing_social_isolation =
            case_when(panworry.being_socially_isolated == "Not applicable" |
@@ -1421,12 +1291,12 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_social_isolation)
 
 
-#People you know social isolation
+# People you know social isolation
 dat <- dat %>%
   mutate(not_applicable_or_missing_people_know_social_isolation =
            case_when(panworry.people_you_know_being_socially_isolated == "Not applicable" |
@@ -1434,11 +1304,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_people_know_social_isolation)
 
-#Shortage of essentials
+# Shortage of essentials
 dat <- dat %>%
   mutate(not_applicable_or_missing_shortage_essentials =
            case_when(panworry.shortage_of_essential_supplies == "Not applicable" |
@@ -1446,11 +1316,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_shortage_essentials)
 
-#Shortage of medication / accesss to healthcare
+# Shortage of medication / accesss to healthcare
 dat <- dat %>%
   mutate(not_applicable_or_missing_shortage_medication_access_healthcare =
            case_when(panworry.shortage_of_medication_or_access_to_healthcare == "Not applicable" |
@@ -1458,11 +1328,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_shortage_medication_access_healthcare)
 
-#People healthcare/shortage essentials
+# People healthcare/shortage essentials
 dat <- dat %>%
   mutate(not_applicable_or_missing_healthcare_people_essentials =
            case_when(panworry.healthcare_people_essential_supplies == "Not applicable" |
@@ -1470,11 +1340,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_healthcare_people_essentials)
 
-#Government info accuracy
+# Government info accuracy
 dat <- dat %>%
   mutate(not_applicable_or_missing_gov_info_accurary =
            case_when(panworry.information_virus_government_accuracy == "Not applicable" |
@@ -1482,11 +1352,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_gov_info_accurary)
 
-#Government response to pandemic
+# Government response to pandemic
 dat <- dat %>%
   mutate(not_applicable_or_missing_gov_response_pandemic =
            case_when(panworry.the_governments_response_to_the_pandemic == "Not applicable" |
@@ -1494,11 +1364,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_gov_response_pandemic)
 
-#Separation from family members
+# Separation from family members
 dat <- dat %>%
   mutate(not_applicable_or_missing_separation_family =
            case_when(panworry.separation_from_family_members == "Not applicable" |
@@ -1506,11 +1376,11 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_separation_family)
 
-#Impact global recession
+# Impact global recession
 dat <- dat %>%
   mutate(not_applicable_or_missing_impact_global_recession =
            case_when(panworry.standing_impact_global_recession == "Not applicable" |
@@ -1518,12 +1388,12 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_impact_global_recession)
 
 
-#Other worry
+# Other worry
 dat <- dat %>%
   mutate(not_applicable_or_missing_other_worry =
            case_when(panworry.other_ == "Not applicable" |
@@ -1531,14 +1401,14 @@ dat <- dat %>%
              
            ))
 
-#Check 
+# Check 
 dat %>%
   freq(not_applicable_or_missing_other_worry)
 
 ```
 
-#Sum score of 'missingness/not applicable'
-```{r}
+Pandemic worry - Sum score of 'missingness/not applicable'
+```{r Pandemic worry as exposure, missingness score}
 
 dat$panworry_sumscore_missingness_not_applicable <- rowSums(dat[ ,
                                  c("not_applicable_or_missing_own_employment",
@@ -1564,132 +1434,100 @@ dat$panworry_sumscore_missingness_not_applicable <- rowSums(dat[ ,
                                    "not_applicable_or_missing_other_worry")],
                                   na.rm = TRUE)
 
-#Summary
-freq(dat$panworry_sumscore_missingness_not_applicable)    
+# Check
+dat %>%
+  freq(panworry_sumscore_missingness_not_applicable)    
 ```
 
-#Total number answered / applicable
-```{r}
+Work out the total number of questions about pandemic worry each participant answered 
+```{r Pandemic worry total number of questions answered}
 
 dat$panworry_total_applicable <- 21 - dat$panworry_sumscore_missingness_not_applicable
 
-#Summary
-freq(dat$panworry_total_applicable)    
+# Check
+dat %>%
+  freq(panworry_total_applicable)    
 ```
-#Total possible score 
-```{r}
+Highest possible score for each participant (i.e., multiply the number of questions they answered with the highest score they could possibly get on each question, i.e., 4)
+```{r Pandemic worry highest possible score}
 
-dat$panworry_total_possible_score <- dat$panworry_total_applicable * 4 #x 4 because the highest score for each question is '4' = Extremely worried
+dat$panworry_total_possible_score <- dat$panworry_total_applicable * 4 # The highest score for each question is '4' = Extremely worried
 
-#Summary
-freq(dat$panworry_total_possible_score)    
+# Check
+dat %>%
+  freq(panworry_total_possible_score)    
 ```
 
-#Actual scores 
+Actual scores 
+First need to create new variables in which '5' i.e., 'Not applicable' = 0, so that it is not included in final calculation of score.
+```{r Pandemic worry recode 'Not applicable' to 0}
 
-#First need to create new variables in which '5' i.e., 'Not applicable' = 0
-```{r}
-
-##Own Employment
+# Own Employment
 dat$panworry.impact_on_your_employment_status_numeric[dat$panworry.impact_on_your_employment_status_numeric == 5] <- 0
 
-
-##household employment
+# Household employment
 dat$panworry.employment_status_household_key_numeric[dat$panworry.employment_status_household_key_numeric == 5] <- 0
 
-##own education / exams
-
+# Own education / exams
 dat$panworry.impact_on_your_education_or_exams_numeric[dat$panworry.impact_on_your_education_or_exams_numeric == 5] <- 0
 
-
-##children's exams
-
+# Children's exams
 dat$panworry.exams_impact_education_children_numeric[dat$panworry.exams_impact_education_children_numeric == 5] <- 0
 
-
-##financial impact
-
+# Financial impact
 dat$panworry.financial_impact_numeric[dat$panworry.financial_impact_numeric == 5] <- 0
 
-
-##Contracting virus
+# Contracting virus
 dat$panworry.contracting_the_virus_numeric[dat$panworry.contracting_the_virus_numeric == 5] <- 0
 
-
-##People you know contracting virus
-
+# People you know contracting virus
 dat$panworry.people_you_know_contracting_the_virus_numeric[dat$panworry.people_you_know_contracting_the_virus_numeric == 5] <- 0
 
-
-##People you don't know contracting virus
+# People you don't know contracting virus
 dat$panworry.people_you_dont_know_contracting_the_virus_numeric[dat$panworry.people_you_dont_know_contracting_the_virus_numeric == 5] <- 0
 
-##mental health
-
+# Mental health
 dat$panworry.impact_mental_health_wellbeing_numeric[dat$panworry.impact_mental_health_wellbeing_numeric == 5] <- 0
 
-
-##Childrens mental health
-
+# Children's mental health
 dat$panworry.impact_mental_health_childrens_numeric[dat$panworry.impact_mental_health_childrens_numeric == 5] <- 0
 
-
-##Relative's mental health
-
+# Relative's mental health
 dat$panworry.impact_relatives_mental_health_numeric[dat$panworry.impact_relatives_mental_health_numeric == 5] <- 0
 
-
-#Social isolation
-
+# Social isolation
 dat$panworry.being_socially_isolated_numeric[dat$panworry.being_socially_isolated_numeric == 5] <- 0
 
-
-#People you know social isolation
-
+# People you know social isolation
 dat$panworry.people_you_know_being_socially_isolated_numeric[dat$panworry.people_you_know_being_socially_isolated_numeric == 5] <- 0
 
-
-#Shortage of essentials
-
+# Shortage of essentials
 dat$panworry.shortage_of_essential_supplies_numeric[dat$panworry.shortage_of_essential_supplies_numeric == 5] <- 0
 
-
-#Shortage of medication / accesss to healthcare
-
+# Shortage of medication / accesss to healthcare
 dat$panworry.shortage_of_medication_or_access_to_healthcare_numeric[dat$panworry.shortage_of_medication_or_access_to_healthcare_numeric == 5] <- 0
 
-
-#People healthcare/shortage essentials
-
+# People healthcare/shortage essentials
 dat$panworry.healthcare_people_essential_supplies_numeric[dat$panworry.healthcare_people_essential_supplies_numeric == 5] <- 0
 
-
-#Government info accuracy
-
+# Government info accuracy
 dat$panworry.information_virus_government_accuracy_numeric[dat$panworry.information_virus_government_accuracy_numeric == 5] <- 0
 
-#Government response to pandemic
+# Government response to pandemic
 dat$panworry.the_governments_response_to_the_pandemic_numeric[dat$panworry.the_governments_response_to_the_pandemic_numeric == 5] <- 0
 
-
-#Separation from family members
-
+# Separation from family members
 dat$panworry.separation_from_family_members_numeric[dat$panworry.separation_from_family_members_numeric == 5] <- 0
 
-
-#Impact global recession
-
+# Impact global recession
 dat$panworry.standing_impact_global_recession_numeric[dat$panworry.standing_impact_global_recession_numeric == 5] <- 0
 
-
-#Other worry
+# Other worry
 dat$panworry.other__numeric[dat$panworry.other__numeric == 5] <- 0
-
-
 ```
 
-#Sum score of answers
-```{r}
+Sum score of actual answers (e.g., score of 4 on a question = "Extremely worried")
+```{r Pandemic worry sum score actual answers}
 
 dat$panworry_total_raw_score <- rowSums(dat[ ,
                                  c("panworry.impact_on_your_employment_status_numeric",
@@ -1715,22 +1553,23 @@ dat$panworry_total_raw_score <- rowSums(dat[ ,
                                    "panworry.other__numeric")],
                                   na.rm = TRUE)
 
-#Summary
-freq(dat$panworry_total_raw_score)    
+# Check
+dat %>%
+  freq(panworry_total_raw_score)    
 ```
 
-#Answers as a percentage of possible scores
-```{r}
-
+Answers as a percentage of possible scores (i.e., divide their actual score by their highest possible score, as calculated by the number of questions that were applicable to them/they answered)
+```{r Pandemic worry answers as percentage}
 dat$panworry_total_score_percent <- (dat$panworry_total_raw_score/dat$panworry_total_possible_score)*100
 
-#Summary
-freq(dat$panworry_total_score_percent)  
-
+# Check 
+dat %>%
+  freq(panworry_total_score_percent)  
 ```
 
-#Answers as factors (1-20, 20-40, 40-50, 60-80, 80-100)
-```{r}
+Answers as factors (0-20, 20-40, 40-50, 60-80, 80-100)
+NB: I have included this as just another idea of grouping pandemic worry scores.
+```{r Pandemic worry answers as factors}
 
 dat <- dat %>%
   mutate(panworry_factor =
@@ -1744,38 +1583,18 @@ dat <- dat %>%
     
   )
 
+# Change to factor
+dat$panworry_factor <- as.factor(dat$panworry_factor)
+
 dat %>%
   freq(panworry_factor)
-
-dat$panworry_factor <- as.factor(dat$panworry_factor)
 ```
 
-#Answers as factors TEST (1-20, 20-40, 40-50, 60-80, 80-100)
-```{r}
+### Losing someone due to COVID-19 (grief)
 
-dat <- dat %>%
-  mutate(panworry_factor_TEST =
-           case_when(
-             panworry_total_score_percent >= 0 & panworry_total_score_percent <= 33 ~ "0-33",
-             panworry_total_score_percent > 33 & panworry_total_score_percent <= 66 ~ "34-66",
-             panworry_total_score_percent > 66 & panworry_total_score_percent <= 100 ~ "67-100",
-
-           )
-    
-  )
-
-dat %>%
-  freq(panworry_factor_TEST)
-
-dat$panworry_factor_TEST <- as.factor(dat$panworry_factor_TEST)
-
-```
-
-## Losing someone due to COVID-19 (grief)
-
-#Baseline losing someone
+Losing someone due to COVID as indicated at baseline
 grief.covid_lost_due_close = In the past month, have you lost someone close to you due to COVID-19?
-```{r}
+```{r Loss baseline}
 
 dat <- dat %>%
   mutate(lost_someone_baseline = 
@@ -1785,14 +1604,14 @@ dat <- dat %>%
              
            ))
  
-#Check
+# Check
 dat %>%
   freq(lost_someone_baseline)
 
 ```
 
-#Phases - Losing someone
-```{r}
+Follow up questionniares - Losing someone
+```{r Loss follow up}
 
 dat <- dat %>%
   mutate(lost_someone_phases = 
@@ -1803,7 +1622,7 @@ dat <- dat %>%
                        grief.due_past_month_lost_.Wave_6b  == "Yes" |
                        grief.due_past_month_lost_.Wave_8b  == "Yes" |
                        grief.due_past_month_lost_.Wave_10b  == "Yes" |
-                       grief.due_past_month_lost_.Wave_12b  == "Yes" ~ "Lost someone",
+                       grief.due_past_month_lost_.Wave_12b  == "Yes" ~ "Lost someone", # Indicated "Yes" at at least one phase
                      
                        is.na(grief.due_past_month_lost_.Wave_1b) &
                        is.na(grief.due_past_month_lost_.Wave_2b)  &
@@ -1812,7 +1631,7 @@ dat <- dat %>%
                        is.na(grief.due_past_month_lost_.Wave_6b)  &
                        is.na(grief.due_past_month_lost_.Wave_8b)  &
                        is.na(grief.due_past_month_lost_.Wave_10b)  &
-                       is.na(grief.due_past_month_lost_.Wave_12b)  ~ "Missing at every phase",
+                       is.na(grief.due_past_month_lost_.Wave_12b)  ~ "Missing at every phase", # Missing all loss data
                        
                        grief.due_past_month_lost_.Wave_1b  == "Prefer not to say" |
                        grief.due_past_month_lost_.Wave_2b  == "Prefer not to say" |
@@ -1821,7 +1640,7 @@ dat <- dat %>%
                        grief.due_past_month_lost_.Wave_6b  == "Prefer not to say" |
                        grief.due_past_month_lost_.Wave_8b  == "Prefer not to say" |
                        grief.due_past_month_lost_.Wave_10b  == "Prefer not to say" |
-                       grief.due_past_month_lost_.Wave_12b  == "Prefer not to say" ~ "PNTA at at least one phase",
+                       grief.due_past_month_lost_.Wave_12b  == "Prefer not to say" ~ "PNTA at at least one phase", # These people with have a mix of PNTA, No, and NA
                        
                        grief.due_past_month_lost_.Wave_1b  == "No" |
                        grief.due_past_month_lost_.Wave_2b  == "No" |
@@ -1830,23 +1649,18 @@ dat <- dat %>%
                        grief.due_past_month_lost_.Wave_6b  == "No" |
                        grief.due_past_month_lost_.Wave_8b  == "No" |
                        grief.due_past_month_lost_.Wave_10b  == "No" |
-                       grief.due_past_month_lost_.Wave_12b  == "No" ~ "Not lost someone"
-                     
-                     
-                       ))
+                       grief.due_past_month_lost_.Wave_12b  == "No" ~ "Not lost someone" # These people with have a mix of No and NA
+                     )
+         )
  
-
-
-
-#Check
+# Check
 dat %>%
   freq(lost_someone_phases)
 
 ```
 
-
-#Phases - Losing someone
-```{r}
+Combined phases & baseline - Losing someone
+```{r Loss combined phases & baseline }
 
 dat <- dat %>%
   mutate(loss_of_loved_one_final = 
@@ -1855,27 +1669,26 @@ dat <- dat %>%
                      
                      lost_someone_phases == "PNTA at at least one phase" |
                      lost_someone_baseline == "PNTA" ~ NA_character_, #Can't be sure that they have not lost someone as they have answered PNTA at least once
-                     
                      lost_someone_baseline == "Not lost someone" |
-                      lost_someone_phases == "Not lost someone" ~ "No"
+                    lost_someone_phases == "Not lost someone" ~ "No"
                       
              ))
  
-
-
-
-#Check
+# Check
 dat %>%
   freq(panworry_total_score_percent)
-
 ```
 
-## Loneliness at baseline
+### Loneliness at baseline
 
 Create numeric variable that demonstrates pre-pandemic loneliness score
-```{r}
+NB: Again, need to think about how we would like to calculate this. Rough version below (need to think about NAs...)
+```{r Pre-pandemic loneliness score}
 
-#Score of loneliness at baseline
+# Score of loneliness at baseline
+# All questions begin with: Over the past two weeks, how often have you felt that the following statements apply to you?
+
+# Felt that you lack companionship 
 dat <- dat %>%
   mutate(lack_companionship_numeric =
            case_when(
@@ -1885,7 +1698,7 @@ dat <- dat %>%
   )
   )
 
-
+# Felt left out
 dat <- dat %>%
   mutate(felt_left_out_numeric =
            case_when(
@@ -1895,6 +1708,7 @@ dat <- dat %>%
   )
 )
 
+# Felt isolated from others
 dat <- dat %>%
   mutate(felt_isolated_from_others_numeric =
            case_when(
@@ -1904,6 +1718,7 @@ dat <- dat %>%
   )
 )
 
+# Felt alone
 dat <- dat %>%
   mutate(felt_alone_numeric =
            case_when(
@@ -1912,9 +1727,10 @@ dat <- dat %>%
            lone.felt_alone == "Often" ~ 2
   )
 )
-            
+```
 
-#Count of comorbidities
+Calculate baseline loneliness score
+```{r Loneliness baseline score}
 dat$loneliness_prepan_count <- rowSums(dat[ ,
                                  c("felt_alone_numeric",
                                    "felt_isolated_from_others_numeric",
@@ -1925,13 +1741,14 @@ dat$loneliness_prepan_count <- rowSums(dat[ ,
 #Check
 dat %>%
   freq(loneliness_prepan_count)
-
 ```
 
 Create numeric variable that demonstrates pandemic loneliness score
-```{r}
+```{r Loneliness prepandemic score}
+# Score of loneliness pre-pandemic
+# All questions start with: Before the pandemic, how often have you felt that the following statements apply to you?
 
-#Score of loneliness at baseline
+# Felt that you lack companionship
 dat <- dat %>%
   mutate(lack_companionship_pandemic_numeric =
            case_when(
@@ -1941,7 +1758,7 @@ dat <- dat %>%
   )
   )
 
-
+# Felt left out
 dat <- dat %>%
   mutate(felt_left_out_pandemic_numeric =
            case_when(
@@ -1951,6 +1768,7 @@ dat <- dat %>%
   )
 )
 
+# Felt isolated from others
 dat <- dat %>%
   mutate(felt_isolated_from_others_pandemic_numeric =
            case_when(
@@ -1960,6 +1778,7 @@ dat <- dat %>%
   )
 )
 
+# Felt alone
 dat <- dat %>%
   mutate(felt_alone_pandemic_numeric =
            case_when(
@@ -1969,8 +1788,10 @@ dat <- dat %>%
   )
 )
             
+```
 
-#Count of comorbidities
+Calculate prepandemic loneliness score
+```{r Loneliness prepandemic score}
 dat$loneliness_pandemic_count <- rowSums(dat[ ,
                                  c("felt_alone_pandemic_numeric",
                                    "felt_isolated_from_others_pandemic_numeric",
@@ -1978,48 +1799,41 @@ dat$loneliness_pandemic_count <- rowSums(dat[ ,
                                    "lack_companionship_pandemic_numeric")],
                                   na.rm = TRUE)
 
-#Check
+# Check
 dat %>%
   freq(loneliness_pandemic_count)
-
 ```
 
-Final variable to demonstrate change in loneliness
-```{r}
-
+Calculate whether they have experienced an increase in loneliness during the pandemic or not 
+```{r Loneliness increased during pandemic}
 dat <- dat %>%
   mutate(increased_loneliness_during_pandemic =
            case_when(
-           loneliness_prepan_count < loneliness_pandemic_count ~ "Yes",
-         
-         loneliness_prepan_count >= loneliness_pandemic_count ~ "No",
-         
-          )
+           loneliness_prepan_count < loneliness_pandemic_count ~ "Yes", # These people have higher loneliness scores at baseline than retrospective prepandemic loneliness scores
+         loneliness_prepan_count >= loneliness_pandemic_count ~ "No", # These people have lower or the same loneliness scores at baseline than retrospective prepandemic loneliness scores
+         )
   )
 
-#Check
+# Check
 dat %>%
   freq(increased_loneliness_during_pandemic)
 ```
 
-#Change in main eco activity (work/education)
-Create baseline variable indicating if change
-```{r}
-
+### Change in main eco activity (work/education)
+Create baseline variable indicating if change in main eco activity
+```{r Change in main eco activity at baseline}
 dat <- dat %>%
   mutate(eco_activity_change_baseline =
            case_when(employ.my_employment_status_has_not_changed == "My employment status has not changed" ~ "No",
-                     
                      employ.my_employment_status_has_not_changed == "Not My employment status has not changed" ~ "Yes",
-                     
                      employ.no_impact == "Not No impact" ~ "Yes",
-                     
                      employ.no_impact == "No impact" ~ "No"
-                     
-             
-             
-           ))
+            ))
 
+```
+
+Create phases variable indicating if change in main eco activity
+```{r Change in main eco activity at phases}
 dat <- dat %>%
   mutate(eco_activity_change_phases =
            case_when(is.na(dem.nothing_has_changed_.Wave_1a) &
@@ -2056,7 +1870,6 @@ dat <- dat %>%
                        is.na(dem.employment_.Wave_11a)&
                        is.na(dem.employment_.Wave_12b) ~ "Missing at every phase",
                      
-                     
                        dem.employment_.Wave_1a == "Employment" |
                        dem.employment_.Wave_1b == "Employment" |
                        dem.employment_.Wave_2a == "Employment" |
@@ -2072,7 +1885,7 @@ dat <- dat %>%
                        dem.employment_.Wave_9a == "Employment" |
                        dem.employment_.Wave_10b == "Employment" |
                        dem.employment_.Wave_11a == "Employment" |
-                       dem.employment_.Wave_12b == "Employment" ~ "Yes",
+                       dem.employment_.Wave_12b == "Employment" ~ "Yes", # Said "Yes" they have experienced change in employment at least once
                      
                        dem.nothing_has_changed_.Wave_1a == "Nothing has changed" |
                        dem.nothing_has_changed_.Wave_1b == "Nothing has changed" |
@@ -2089,7 +1902,7 @@ dat <- dat %>%
                        dem.nothing_has_changed_.Wave_9a == "Nothing has changed" |
                        dem.nothing_has_changed_.Wave_10b == "Nothing has changed" |
                        dem.nothing_has_changed_.Wave_11a == "Nothing has changed" |
-                       dem.nothing_has_changed_.Wave_12b == "Nothing has changed" ~ "No",
+                       dem.nothing_has_changed_.Wave_12b == "Nothing has changed" ~ "No", # Not experienced change in any domain
                       
                       dem.employment_.Wave_1a == "Not Employment" |
                        dem.employment_.Wave_1b == "Not Employment" |
@@ -2106,7 +1919,7 @@ dat <- dat %>%
                        dem.employment_.Wave_9a == "Not Employment" |
                        dem.employment_.Wave_10b == "Not Employment" |
                        dem.employment_.Wave_11a == "Not Employment" |
-                       dem.employment_.Wave_12b == "Not Employment" ~ "No"
+                       dem.employment_.Wave_12b == "Not Employment" ~ "No" # Have experienced change but not in the employment domain
                      
                    ))
 
@@ -2114,8 +1927,9 @@ dat <- dat %>%
 dat %>%
   freq(eco_activity_change_phases)
 ```
-Recode to final variable - change in main eco activity
-```{r}
+
+Combine baseline & phases - change in main eco activity
+```{r Change in main eco activity combine baseline and phases}
 
 dat <- dat%>%
   mutate(main_economic_activity_change =
@@ -2131,12 +1945,12 @@ dat %>%
   freq(main_economic_activity_change)
 ```
 
-#Change in housing
-```{r}
+### Change in housing
+Calculate change in housing at baseline
+```{r Change in housing at baseline}
 dat <- dat %>%
   mutate(living_situation_baseline =
            case_when(dem2.living_situation_change_pandemic == "Yes" ~ "Yes",
-                     
                      dem2.living_situation_change_pandemic == "No" ~ "No"
                      
                 )
@@ -2144,8 +1958,10 @@ dat <- dat %>%
 
 dat %>%
   freq(living_situation_baseline)
+```
 
-
+Calculate change in housing during phases
+```{r Change in housing phases}
 dat <- dat %>%
   mutate(living_situation_change_phases =
            case_when(is.na(dem.nothing_has_changed_.Wave_1a) &
@@ -2198,7 +2014,7 @@ dat <- dat %>%
                        dem.living_situation_.Wave_9a == "Living situation" |
                        dem.living_situation_.Wave_10b == "Living situation" |
                        dem.living_situation_.Wave_11a == "Living situation" |
-                       dem.living_situation_.Wave_12b == "Living situation" ~ "Yes",
+                       dem.living_situation_.Wave_12b == "Living situation" ~ "Yes", # Said "Yes" they have experienced change in housing at least once
                      
                        dem.nothing_has_changed_.Wave_1a == "Nothing has changed" |
                        dem.nothing_has_changed_.Wave_1b == "Nothing has changed" |
@@ -2215,7 +2031,7 @@ dat <- dat %>%
                        dem.nothing_has_changed_.Wave_9a == "Nothing has changed" |
                        dem.nothing_has_changed_.Wave_10b == "Nothing has changed" |
                        dem.nothing_has_changed_.Wave_11a == "Nothing has changed" |
-                       dem.nothing_has_changed_.Wave_12b == "Nothing has changed" ~ "No",
+                       dem.nothing_has_changed_.Wave_12b == "Nothing has changed" ~ "No", # Nothing has changed in any domain
                       
                      dem.living_situation_.Wave_1a == "Not Living situation" |
                        dem.living_situation_.Wave_1b == "Not Living situation" |
@@ -2232,7 +2048,7 @@ dat <- dat %>%
                        dem.living_situation_.Wave_9a == "Not Living situation" |
                        dem.living_situation_.Wave_10b == "Not Living situation" |
                        dem.living_situation_.Wave_11a == "Not Living situation" |
-                       dem.living_situation_.Wave_12b == "Not Living situation" ~ "Yes",
+                       dem.living_situation_.Wave_12b == "Not Living situation" ~ "Yes", # Something has changed but not their living situation
                      
                    ))
 
@@ -2240,110 +2056,63 @@ dat <- dat %>%
 dat %>%
   freq(living_situation_change_phases)
 ```
-Recode to final variable - change in living situation
-```{r}
 
-
+Change in housing combine baseline and phases
+```{r Change in housing combine baseline and phases}
 dat <- dat%>%
   mutate(living_situation_change =
            case_when(living_situation_change_phases == "Yes" |
-                    living_situation_change_phases == "Yes" ~ "Yes",
-               
-                living_situation_baseline == "No" |
-                 living_situation_baseline == "No" ~ "No")
+                    living_situation_baseline == "Yes" ~ "Yes",
+                    
+                    living_situation_change_phases == "No" |
+                      living_situation_baseline == "No" ~ "No"
+                    )
 )
 
-#Check
+# Check
 dat %>%
-  freq(living_situation_change) ##Next time - check who is missing?
-
+  freq(living_situation_change) 
 ```
-
-#Employed + key worker
-```{r}
-
-dat <- dat %>%
-  mutate(employed_key =
-           case_when(key_worker == "Key worker" ~ "Yes, key",
-                     
-                     key_worker == "No key worker" &
-                      employed == "Employed" ~ "Yes",
-                     
-                     employed == "Unemployed" ~ "No",
-                     
-                      employed == "Student" ~ "Student"
-                     )
-           )
-
-
-#Check
-dat %>%
-  freq(employed_key)
-```
-
-
-##FOR NOW - SAVE THE VARIABLES NEEDED FOR INTERIM ANALYSIS
-```{r}
+# Saving dataset
+## FOR NOW - select & save variables needed for interim analysis
+```{r Select final variables ready for regression analyses}
 test_dat <- dat %>%
   select(ID,
-         gender_cleaned,
-         age_category_COVID_baseline,
-         sex_binary_numeric,
-         ethnicity_binary,
-         highest_education,
-         comorbidities,
-         comorbidities_count,
-         selfharm_PANDEMIC,
-         selfharm_ideation_PANDEMIC,
-         passive_suicidal_ideation_PANDEMIC,
+         cohort_name,
          NEW_binge_eating_pandemic,
          NEW_low_weight_pandemic,
          PREPANDEMIC_passive_suicidal_ideation,
+         passive_suicidal_ideation_PANDEMIC,
          PREPANDEMIC_selfharm_ideation,
+         selfharm_ideation_PANDEMIC,
          PREPANDEMIC_selfharm,
-         lifetime_low_weight_baseline_numeric,
-         lifetime_binge_eating_baseline_numeric,
-       #  baseline_passive_suicidal_ideation,
-       #  baseline_selfharm_ideation,
-       #  baseline_selfharm,
-         control_numeric,
-         key_worker,
+         selfharm_PANDEMIC,
+         age_category_COVID_baseline,
+         gender_cleaned,
+         sex_binary_numeric,
+         race_binary,
+         A_Levels_higher,
          psych_disorder_factor,
-         vulnerable_group_member =dem2.member_vulnerable_group,
-         panworry_total_score_percent, #NB *Don't have this info for NBR or RAMP yet
-         covid_test_final,
-      
-       loss_of_loved_one_final,
-       panworry_factor_TEST, #waiting on data!
-       increased_loneliness_during_pandemic,
-       main_economic_activity_change,
-       living_situation_change, 
-       employed_key
-         
+         employed_key,
+         vulnerable_group_member,
+         positive_covid_test_final,
+         panworry_total_score_percent,
+         panworry_factor,
+         loss_of_loved_one_final,
+         increased_loneliness_during_pandemic,
+         main_economic_activity_change,
+         living_situation_change
       )
 ```
 
-
-#Save final dataset (interim analysis)
-##Save dataset
+Save final dataset (interim analysis)
+Save dataset
 ```{r}
 saveRDS(object = test_dat,
-       file = paste0("/Users/helenadavies/King's College London/MT-Translational Neuropsychiatric Genomics - Helena_Davies_PhD - Helena_Davies_PhD/EDBeh_SelfHarm/data_cleaned/test_dat", date, ".rds"))
+       file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/test_dat", date, ".rds"))
 
 ```
 
-
-
-
-#Sensitivity analysis; Other mental health diagnosis pre-pandemic, i.e., not ED
-    1. Count
-    2. Group (Dep, Anx, Dep+Anx, Psychotic, ADHD, ASD, PTSD)
-```{r}
-
-
-
-
-```
 
 
 
