@@ -5,7 +5,7 @@ date: "24/05/2021"
 output: html_document
 ---
 
-This script derives variables reading for regression analyses.
+This script derives variables ready for regression analyses.
 
 # Set up
 ```{r Setup, include=FALSE}
@@ -504,8 +504,7 @@ dat <- dat %>%
                        taf.have_you_contemplated_harming_yourself_.Wave_10b == "Yes, more than once" |
                        taf.have_you_contemplated_harming_yourself_.Wave_11a == "Yes, more than once" |
                        taf.have_you_contemplated_harming_yourself_.Wave_12b == "Yes, more than once" ~ 1, # "Yes" at at least one phase
-                        
-              
+                       
                        is.na(taf.have_you_contemplated_harming_yourself_.Wave_1a) &
                        is.na(taf.have_you_contemplated_harming_yourself_.Wave_1b) &
                        is.na(taf.have_you_contemplated_harming_yourself_.Wave_2a) &
@@ -732,6 +731,211 @@ dat <- dat %>%
 dat %>%
   freq(selfharm_PANDEMIC)
 ```
+# Identify at which phase they experienced the outcome
+Exposure must come before the outcome. Need to identify at which wave participants experienced each outcome, to ensure that their experience of the exposure happened BEFORE the outcome.
+
+Binge eating
+```{r Identify phase at which outcome first experienced - binge eating}
+
+dat <- dat %>%
+  mutate(outcome_phase_binge_eating =
+           case_when(ed_scid5.regular_episodes_eating_binges_.Wave_1b == "Yes" ~ "1b",
+                       ed_scid5.regular_episodes_eating_binges_.Wave_2b == "Yes" ~ "2b",
+                       ed_scid5.regular_episodes_eating_binges_.Wave_3b == "Yes" ~ "3b",
+                       ed_scid5.regular_episodes_eating_binges_.Wave_4b == "Yes" ~ "4b",
+                       ed_scid5.regular_episodes_eating_binges_.Wave_6b == "Yes" ~ "6b",
+                       ed_scid5.regular_episodes_eating_binges_.Wave_8b == "Yes" ~ "8b",
+                       ed_scid5.regular_episodes_eating_binges_.Wave_10b == "Yes" ~ "10b",
+                       ed_scid5.regular_episodes_eating_binges_.Wave_12b == "Yes" ~ "12b"
+           )
+  )
+```
+
+Low weight
+```{r Identify phase at which outcome first experienced - low weight}
+
+dat <- dat %>%
+  mutate(outcome_phase_low_weight =
+           case_when(ed_scid5.weigh_weighed_past_month_.Wave_1b == "Yes" ~ "1b",
+                       ed_scid5.weigh_weighed_past_month_.Wave_2b == "Yes" ~ "2b",
+                       ed_scid5.weigh_weighed_past_month_.Wave_3b == "Yes" ~ "3b",
+                       ed_scid5.weigh_weighed_past_month_.Wave_4b == "Yes" ~ "4b",
+                       ed_scid5.weigh_weighed_past_month_.Wave_6b == "Yes" ~ "6b",
+                       ed_scid5.weigh_weighed_past_month_.Wave_8b == "Yes" ~ "8b",
+                       ed_scid5.weigh_weighed_past_month_.Wave_10b == "Yes" ~ "10b",
+                       ed_scid5.weigh_weighed_past_month_.Wave_12b == "Yes" ~ "12b"
+           )
+  )
+```
+
+Passive suicidal ideation
+```{r Identify phase at which outcome first experienced - passive suicidal ideation}
+
+dat <- dat %>%
+  mutate(outcome_phase_passive_suicidal_ideation =
+           case_when(taf.felt_weeks_past_.Wave_1a == "Yes" |
+                      taf.worth_living_life_people_.Wave_1a == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_1a == "Yes, more than once" ~ "1a",
+                       
+                     
+                       taf.felt_weeks_past_.Wave_1b == "Yes" |
+                      taf.worth_living_life_people_.Wave_1b == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_1b == "Yes, more than once" ~ "1b", 
+                     
+                     taf.felt_weeks_past_.Wave_2b == "Yes" |
+                      taf.worth_living_life_people_.Wave_2b == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_2b == "Yes, more than once" ~ "2b",
+                      
+                     taf.felt_weeks_past_.Wave_3a == "Yes" |
+                      taf.worth_living_life_people_.Wave_3a == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_3a == "Yes, more than once" ~ "3a",
+                     
+                     taf.felt_weeks_past_.Wave_3b == "Yes" |
+                      taf.worth_living_life_people_.Wave_3b == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_3b == "Yes, more than once" ~ "3b",
+                     
+                     taf.felt_weeks_past_.Wave_4a == "Yes" |
+                      taf.worth_living_life_people_.Wave_4a == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_4a == "Yes, more than once" ~ "4a",
+                     
+                     taf.felt_weeks_past_.Wave_4b == "Yes" |
+                      taf.worth_living_life_people_.Wave_4b == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_4b == "Yes, more than once" ~ "4b",
+                     
+                     taf.felt_weeks_past_.Wave_5a == "Yes" |
+                      taf.worth_living_life_people_.Wave_5a == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_5a == "Yes, more than once" ~ "5a",
+                     
+                     taf.felt_weeks_past_.Wave_6b == "Yes" |
+                      taf.worth_living_life_people_.Wave_6b == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_6b == "Yes, more than once" ~ "6b",
+                     
+                     taf.felt_weeks_past_.Wave_7a == "Yes" |
+                      taf.worth_living_life_people_.Wave_7a == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_7a == "Yes, more than once" ~ "7a",
+                     
+                     taf.felt_weeks_past_.Wave_8b == "Yes" |
+                      taf.worth_living_life_people_.Wave_8b == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_8b == "Yes, more than once" ~ "8b",
+                     
+                     taf.felt_weeks_past_.Wave_9a == "Yes" |
+                      taf.worth_living_life_people_.Wave_9a == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_9a == "Yes, more than once" ~ "9a",
+                     
+                     taf.felt_weeks_past_.Wave_10b == "Yes" |
+                      taf.worth_living_life_people_.Wave_10b == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_10b == "Yes, more than once" ~ "10b",
+                   
+                     
+                     taf.felt_weeks_past_.Wave_11a == "Yes" |
+                      taf.worth_living_life_people_.Wave_11a == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_11a == "Yes, more than once" ~ "11a",
+                     
+                     taf.felt_weeks_past_.Wave_12b == "Yes" |
+                      taf.worth_living_life_people_.Wave_12b == "Yes, once" | 
+                      taf.worth_living_life_people_.Wave_12b == "Yes, more than once" ~ "12b"
+                     )
+         )
+
+```
+
+Self-harm ideation
+```{r Identify phase at which outcome first experienced - self-harm ideation}
+
+dat <- dat %>%
+  mutate(outcome_phase_selfharm_ideation =
+           case_when(taf.felt_weeks_past.1_.Wave_1a == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_1a == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_1a == "Yes, more than once" ~ "1a", 
+
+                     taf.felt_weeks_past.1_.Wave_1b == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_1b == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_1b == "Yes, more than once" ~ "1b",
+                     
+                     taf.felt_weeks_past.1_.Wave_2a == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_2a == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_2a == "Yes, more than once" ~ "2a",
+                     
+                     taf.felt_weeks_past.1_.Wave_2b == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_2b == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_2b == "Yes, more than once" ~ "2b",
+                     
+                     taf.felt_weeks_past.1_.Wave_3a == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_3a == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_3a == "Yes, more than once" ~ "3a",
+                     
+                     taf.felt_weeks_past.1_.Wave_3b == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_3b == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_3b == "Yes, more than once" ~ "3b",
+                     
+                     taf.felt_weeks_past.1_.Wave_4a == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_4a == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_4a == "Yes, more than once" ~ "4a",
+                     
+                     taf.felt_weeks_past.1_.Wave_4b == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_4b == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_4b == "Yes, more than once" ~ "4b",
+                     
+                     taf.felt_weeks_past.1_.Wave_5a == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_5a == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_5a == "Yes, more than once" ~ "5a",
+                     
+                     taf.felt_weeks_past.1_.Wave_6b == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_6b == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_6b == "Yes, more than once" ~ "6b",
+                     
+                     taf.felt_weeks_past.1_.Wave_7a == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_7a == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_7a == "Yes, more than once" ~ "7a",
+                     
+                     taf.felt_weeks_past.1_.Wave_8b == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_8b == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_8b == "Yes, more than once" ~ "8b",
+                     
+                     taf.felt_weeks_past.1_.Wave_9a == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_9a == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_9a == "Yes, more than once" ~ "9a",
+                     
+                     taf.felt_weeks_past.1_.Wave_10b == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_10b == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_10b == "Yes, more than once" ~ "10b",
+                     
+                     taf.felt_weeks_past.1_.Wave_11a == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_11a == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_11a == "Yes, more than once" ~ "11a",
+                     
+                     taf.felt_weeks_past.1_.Wave_12b == "Yes" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_12b == "Yes, once" |
+                      taf.have_you_contemplated_harming_yourself_.Wave_12b == "Yes, more than once" ~ "12b"
+           )
+  )
+```
+
+Self-harm 
+```{r Identify phase at which outcome first experienced - self-harm}
+
+dat <- dat %>%
+  mutate(outcome_phase_selfharm =
+           case_when( taf.meant_life_end_weeks_.Wave_1a == "Yes" ~ "1a",
+                       taf.meant_life_end_weeks_.Wave_1b == "Yes" ~ "1b",
+                       taf.meant_life_end_weeks_.Wave_2a == "Yes" ~ "2a",
+                       taf.meant_life_end_weeks_.Wave_2b == "Yes" ~ "2b",
+                       taf.meant_life_end_weeks_.Wave_3a == "Yes" ~ "3a",
+                       taf.meant_life_end_weeks_.Wave_3b == "Yes" ~ "3b",
+                       taf.meant_life_end_weeks_.Wave_4a == "Yes" ~ "4a",
+                       taf.meant_life_end_weeks_.Wave_4b == "Yes" ~ "4b",
+                       taf.meant_life_end_weeks_.Wave_5a == "Yes" ~ "5a",
+                       taf.meant_life_end_weeks_.Wave_6b == "Yes" ~ "6b",
+                       taf.meant_life_end_weeks_.Wave_7a == "Yes" ~ "7a",
+                       taf.meant_life_end_weeks_.Wave_8b == "Yes" ~ "8b",
+                       taf.meant_life_end_weeks_.Wave_9a == "Yes" ~ "9a",
+                       taf.meant_life_end_weeks_.Wave_10b == "Yes" ~ "10b",
+                       taf.meant_life_end_weeks_.Wave_11a == "Yes" ~ "11a",
+                       taf.meant_life_end_weeks_.Wave_12b == "Yes" ~ "12b"
+           )
+  )
+```
+
 
 
 # EXPOSURES / EXPLANATORY VARIABLES
