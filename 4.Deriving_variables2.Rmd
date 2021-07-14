@@ -749,6 +749,10 @@ dat <- dat %>%
                        ed_scid5.regular_episodes_eating_binges_.Wave_12b == "Yes" ~ "12b"
            )
   )
+
+# Check
+dat %>%
+  freq(outcome_phase_binge_eating)
 ```
 
 Low weight
@@ -766,6 +770,10 @@ dat <- dat %>%
                        ed_scid5.weigh_weighed_past_month_.Wave_12b == "Yes" ~ "12b"
            )
   )
+
+# Check
+dat %>%
+  freq(outcome_phase_low_weight)
 ```
 
 Passive suicidal ideation
@@ -836,6 +844,10 @@ dat <- dat %>%
                       taf.worth_living_life_people_.Wave_12b == "Yes, more than once" ~ "12b"
                      )
          )
+
+# Check
+dat %>%
+  freq(outcome_phase_passive_suicidal_ideation)
 
 ```
 
@@ -909,6 +921,10 @@ dat <- dat %>%
                       taf.have_you_contemplated_harming_yourself_.Wave_12b == "Yes, more than once" ~ "12b"
            )
   )
+
+# Check
+dat %>%
+  freq(outcome_phase_selfharm_ideation)
 ```
 
 Self-harm 
@@ -934,12 +950,15 @@ dat <- dat %>%
                        taf.meant_life_end_weeks_.Wave_12b == "Yes" ~ "12b"
            )
   )
+
+# Check
+dat %>%
+  freq(outcome_phase_selfharm)
 ```
 
 
-
 # EXPOSURES / EXPLANATORY VARIABLES
-## NB: Need to think about whether we want all the exposures to have occured BEFORE the outcomes (as Moritz suggested)
+NB: For exposures assessed at baseline, I should include one model which includes 'baseline' new experiences of outcome, and another without (i.e., one with co-occuring exposure and outcome, the other with all outcomes occurring after exposure).
 
 BASIC MODEL:
   •	Age
@@ -1104,8 +1123,8 @@ dat <- dat %>%
   mutate(gender_cleaned = 
            case_when(transgender == "Yes" ~ "Minoritised gender",
                      
-                     gender_unc == "Male" ~ "Male",
-                     gender_unc == "Female" ~ "Female",
+                     gender_unc == "Male" ~ "Man",
+                     gender_unc == "Female" ~ "Woman",
                      
                      gender_unc == "Non-binary" ~ "Minoritised gender",
                      gender_unc == "Prefer to self-define" ~ "Minoritised gender"
@@ -1208,6 +1227,7 @@ dat %>%
 ```
 
 ### Psychiatric disorder
+This is from EDGI and GLAD sign-up data, as well as data from COPING and RAMP baseline. 
 ```{r Psychiatric disorder as exposure}
 # Covert numeric control (from the preprocessing script) to psych disorder factor
 dat <- dat %>% 
@@ -1223,7 +1243,7 @@ dat %>%
 ```
 
 ### Employed & key worker status
-I have separated out those who are a key worker (and thus employed), those who are not a key worker but are employed, those who are unemployed (and thus not a key worker), and those who are students,
+I have separated out those who are a key worker (and thus employed), those who are not a key worker but are employed, those who are unemployed (and thus not a key worker), and those who are students. This is from baseline COPING and RAMP data.
 ```{r Employed / key-worker status as exposure}
 dat <- dat %>%
   mutate(employed_key =
@@ -1254,6 +1274,7 @@ dat %>%
 ```
 
 ### Member of vulnerable group
+This is baseline COPING and RAMP data (this is not asked at follow ups).
 ```{r Member of vulnerable group exposure}
 # Recode / rename
 dat <- dat %>%
@@ -1269,21 +1290,150 @@ dat %>%
 ```
                            
 ### Positive covid test
+
+Need to ensure COVID test occurred BEFORE exposures - create new variable for COVID test that only counts positive tests as ones that occurred BEFORE each exposure
+```{r Positve COVID test result exposure BEFORE outcome}
+
+# Phase 1b
+dat <- dat %>%
+  mutate(positive_covid_test_BE_1b =
+           case_when(virus.back_positive_antibodies_covid_.Wave_1b == "Yes" & # Positive COVID test at phase 1b
+                       
+                       (is.na(outcome_phase_binge_eating) |
+                       outcome_phase_binge_eating == "2b" |
+                       outcome_phase_binge_eating == "3b" |
+                       outcome_phase_binge_eating == "4b" |
+                       outcome_phase_binge_eating == "6b" |
+                       outcome_phase_binge_eating == "8b" |
+                       outcome_phase_binge_eating == "10b" |
+                       outcome_phase_binge_eating == "12b") ~ "Yes") # Not experienced binge eating before phase 1b
+  )
+      
+# Check
+dat %>%
+  freq(positive_covid_test_BE_1b)
+
+# Phase 2b
+dat <- dat %>%
+  mutate(positive_covid_test_BE_2b =
+           case_when(virus.back_positive_antibodies_covid_.Wave_2b == "Yes" & # Positive COVID test at phase 2b
+                       
+                       (is.na(outcome_phase_binge_eating) |
+                       outcome_phase_binge_eating == "3b" |
+                       outcome_phase_binge_eating == "4b" |
+                       outcome_phase_binge_eating == "6b" |
+                       outcome_phase_binge_eating == "8b" |
+                       outcome_phase_binge_eating == "10b" |
+                       outcome_phase_binge_eating == "12b") ~ "Yes") # Not experienced binge eating before phase 2b
+  )
+      
+# Check
+dat %>%
+  freq(positive_covid_test_BE_2b)
+
+# Phase 3b
+dat <- dat %>%
+  mutate(positive_covid_test_BE_3b =
+           case_when(virus.back_positive_antibodies_covid_.Wave_3b == "Yes" & # Positive COVID test at phase 3b
+                       
+                       (is.na(outcome_phase_binge_eating) |
+                       outcome_phase_binge_eating == "4b" |
+                       outcome_phase_binge_eating == "6b" |
+                       outcome_phase_binge_eating == "8b" |
+                       outcome_phase_binge_eating == "10b" |
+                       outcome_phase_binge_eating == "12b") ~ "Yes") # Not experienced binge eating before phase 3b
+  )
+      
+# Check
+dat %>%
+  freq(positive_covid_test_BE_3b)
+
+# Phase 4b
+dat <- dat %>%
+  mutate(positive_covid_test_BE_4b =
+           case_when(virus.back_positive_antibodies_covid_.Wave_4b == "Yes" & # Positive COVID test at phase 4b
+                       
+                       (is.na(outcome_phase_binge_eating) |
+                       outcome_phase_binge_eating == "6b" |
+                       outcome_phase_binge_eating == "8b" |
+                       outcome_phase_binge_eating == "10b" |
+                       outcome_phase_binge_eating == "12b") ~ "Yes") # Not experienced binge eating before phase 4b
+  )
+      
+# Check
+dat %>%
+  freq(positive_covid_test_BE_4b)
+
+# Phase 6b
+dat <- dat %>%
+  mutate(positive_covid_test_BE_6b =
+           case_when(virus.back_positive_antibodies_covid_.Wave_6b == "Yes" & # Positive COVID test at phase 6b
+                       
+                       (is.na(outcome_phase_binge_eating) |
+                       outcome_phase_binge_eating == "8b" |
+                       outcome_phase_binge_eating == "10b" |
+                       outcome_phase_binge_eating == "12b") ~ "Yes") # Not experienced binge eating before phase 6b
+  )
+      
+# Check
+dat %>%
+  freq(positive_covid_test_BE_6b)
+
+# Phase 8b
+dat <- dat %>%
+  mutate(positive_covid_test_BE_8b =
+           case_when(virus.back_positive_antibodies_covid_.Wave_8b == "Yes" & # Positive COVID test at phase 8b
+                       
+                       (is.na(outcome_phase_binge_eating) |
+                       outcome_phase_binge_eating == "10b" |
+                       outcome_phase_binge_eating == "12b") ~ "Yes") # Not experienced binge eating before phase 8b
+  )
+      
+# Check
+dat %>%
+  freq(positive_covid_test_BE_8b)
+
+# Phase 10b
+dat <- dat %>%
+  mutate(positive_covid_test_BE_10b =
+           case_when(virus.back_positive_antibodies_covid_.Wave_10b == "Yes" & # Positive COVID test at phase 10b
+                       
+                       (is.na(outcome_phase_binge_eating) |
+                       outcome_phase_binge_eating == "12b") ~ "Yes") # Not experienced binge eating before phase 10b
+  )
+      
+# Check
+dat %>%
+  freq(positive_covid_test_BE_10b)
+
+# Phase 12b
+dat <- dat %>%
+  mutate(positive_covid_test_BE_12b =
+           case_when(virus.back_positive_antibodies_covid_.Wave_12b == "Yes" & # Positive COVID test at phase 12b
+                     
+                       is.na(outcome_phase_binge_eating) ~ "Yes"))# Not experienced binge eating during COPING
+  
+      
+# Check
+dat %>%
+  freq(positive_covid_test_BE_12b)
+```
+
 NB: Have combined "Not had a test", "Negative test", and "Inconclusive test" as "Not positive", i.e., the only thing we count as positive is if someone has a taken a test and had a positive result. Everything else is "Not positive test" other than those who had not answered whether they had taken a test.
 +++ Why are first 4 waves empty?
-```{r Positve COVID test result exposure}
+```{r Positve COVID test result exposure BE}
 dat <- dat %>%
-  mutate(covid_test =
+  mutate(positive_covid_test_before_BE =
            case_when(
                       # Had at least one positive covid test
-                    virus.back_positive_antibodies_covid_.Wave_1b == "Yes" |
-                    virus.back_positive_antibodies_covid_.Wave_2b == "Yes" |
-                    virus.back_positive_antibodies_covid_.Wave_3b == "Yes" |
-                    virus.back_positive_antibodies_covid_.Wave_4b == "Yes" |
-                    virus.back_positive_antibodies_covid_.Wave_6b == "Yes" |
-                    virus.back_positive_antibodies_covid_.Wave_8b == "Yes" |
-                    virus.back_positive_antibodies_covid_.Wave_10b == "Yes" |
-                    virus.back_positive_antibodies_covid_.Wave_12b == "Yes" ~ "Positive test",
+                    positive_covid_test_BE_1b == "Yes" |
+                    positive_covid_test_BE_2b == "Yes" |
+                    positive_covid_test_BE_3b == "Yes" |
+                    positive_covid_test_BE_4b == "Yes" |
+                    positive_covid_test_BE_6b == "Yes" |
+                    positive_covid_test_BE_8b == "Yes" |
+                    positive_covid_test_BE_10b == "Yes" |
+                    positive_covid_test_BE_12b == "Yes" ~ "Positive test before BE",
                     
                     # Not answered whether they'd taken a test
                     is.na(virus.past_surveys_include_reported_.Wave_1b) &
@@ -1330,23 +1480,25 @@ dat <- dat %>%
                    
 # Checl                      
 dat %>%
-  freq(covid_test) 
+  freq(positive_covid_test_before_BE) 
 
 
-# Create final variable for use in regression
+# Create final variable of positive covid test before BE outcome
 dat <- dat %>%
-  mutate(positive_covid_test_final =
-           case_when(covid_test == "Negative test" |
-                     covid_test == "Not had a test" |
-                     covid_test == "Inconclusive test"  ~ "No",
+  mutate(positive_covid_test_before_BE_final =
+           case_when(positive_covid_test_before_BE == "Negative test" |
+                     positive_covid_test_before_BE == "Not had a test" |
+                     positive_covid_test_before_BE == "Inconclusive test"  ~ "No",
                      
-                     covid_test == "Positive test" ~ "Yes")
+                     positive_covid_test_before_BE == "Positive test before BE" ~ "Yes")
   )
 
 # Check
 dat %>%
-  freq(positive_covid_test_final) 
+  freq(positive_covid_test_before_BE_final) 
 ```
+
+
 
 
 ### Pandemic worry at baseline 
