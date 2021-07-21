@@ -739,7 +739,16 @@ Binge eating
 
 dat <- dat %>%
   mutate(outcome_phase_binge_eating =
-           case_when(ed_scid5.regular_episodes_eating_binges_.Wave_1b == "Yes" ~ "1b",
+           case_when( is.na(ed_scid5.regular_episodes_eating_binges_.Wave_1b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_2b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_3b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_4b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_6b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_8b) &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_10b)  &
+                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b) ~ "Not answered", # Then, everyone who is NA will have answered "No" at least once, even if they are missing for all other phases. The only people we can not assume an answer for (i.e., has experienced or has not experienced) is those who never answered the question throughout the whole time period
+                      
+                       ed_scid5.regular_episodes_eating_binges_.Wave_1b == "Yes" ~ "1b",
                        ed_scid5.regular_episodes_eating_binges_.Wave_2b == "Yes" ~ "2b",
                        ed_scid5.regular_episodes_eating_binges_.Wave_3b == "Yes" ~ "3b",
                        ed_scid5.regular_episodes_eating_binges_.Wave_4b == "Yes" ~ "4b",
@@ -760,7 +769,16 @@ Low weight
 
 dat <- dat %>%
   mutate(outcome_phase_low_weight =
-           case_when(ed_scid5.weigh_weighed_past_month_.Wave_1b == "Yes" ~ "1b",
+           case_when(is.na(ed_scid5.weigh_weighed_past_month_.Wave_1b ) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_2b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_3b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_4b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_6b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_8b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_10b) &
+                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b) ~ "Not answered",
+             
+                       ed_scid5.weigh_weighed_past_month_.Wave_1b == "Yes" ~ "1b",
                        ed_scid5.weigh_weighed_past_month_.Wave_2b == "Yes" ~ "2b",
                        ed_scid5.weigh_weighed_past_month_.Wave_3b == "Yes" ~ "3b",
                        ed_scid5.weigh_weighed_past_month_.Wave_4b == "Yes" ~ "4b",
@@ -781,12 +799,57 @@ Passive suicidal ideation
 
 dat <- dat %>%
   mutate(outcome_phase_passive_suicidal_ideation =
-           case_when(taf.felt_weeks_past_.Wave_1a == "Yes" |
+           case_when(is.na(taf.felt_weeks_past_.Wave_1a) &
+                      is.na(taf.worth_living_life_people_.Wave_1a) &
+                      is.na(taf.worth_living_life_people_.Wave_1a) &
+                      is.na(taf.felt_weeks_past_.Wave_1b) &
+                      is.na(taf.worth_living_life_people_.Wave_1b) &
+                      is.na(taf.worth_living_life_people_.Wave_1b) &
+                      is.na(taf.felt_weeks_past_.Wave_2b) &
+                      is.na(taf.worth_living_life_people_.Wave_2b) &
+                      is.na(taf.worth_living_life_people_.Wave_2b) &
+                      is.na(taf.felt_weeks_past_.Wave_3a) &
+                      is.na(taf.worth_living_life_people_.Wave_3a) &
+                      is.na(taf.worth_living_life_people_.Wave_3a) &
+                      is.na(taf.felt_weeks_past_.Wave_3b) &
+                      is.na(taf.worth_living_life_people_.Wave_3b) &
+                      is.na(taf.worth_living_life_people_.Wave_3b) &
+                      is.na(taf.felt_weeks_past_.Wave_4a) &
+                      is.na(taf.worth_living_life_people_.Wave_4a) &
+                      is.na(taf.worth_living_life_people_.Wave_4a) &
+                      is.na(taf.felt_weeks_past_.Wave_4b) &
+                      is.na(taf.worth_living_life_people_.Wave_4b) &
+                      is.na(taf.worth_living_life_people_.Wave_4b) &
+                      is.na(taf.felt_weeks_past_.Wave_5a) &
+                      is.na(taf.worth_living_life_people_.Wave_5a) &
+                      is.na(taf.worth_living_life_people_.Wave_5a) &
+                      is.na(taf.felt_weeks_past_.Wave_6b) &
+                      is.na(taf.worth_living_life_people_.Wave_6b) & 
+                      is.na(taf.worth_living_life_people_.Wave_6b) &
+                      is.na(taf.felt_weeks_past_.Wave_7a) &
+                      is.na(taf.worth_living_life_people_.Wave_7a) &
+                      is.na(taf.worth_living_life_people_.Wave_7a) &
+                      is.na(taf.felt_weeks_past_.Wave_8b) &
+                      is.na(taf.worth_living_life_people_.Wave_8b) &
+                      is.na(taf.worth_living_life_people_.Wave_8b) &
+                      is.na(taf.felt_weeks_past_.Wave_9a) &
+                      is.na(taf.worth_living_life_people_.Wave_9a) &
+                      is.na(taf.worth_living_life_people_.Wave_9a) &
+                      is.na(taf.felt_weeks_past_.Wave_10b) &
+                      is.na(taf.worth_living_life_people_.Wave_10b) &
+                      is.na(taf.worth_living_life_people_.Wave_10b) &
+                      is.na(taf.felt_weeks_past_.Wave_11a) &
+                      is.na(taf.worth_living_life_people_.Wave_11a) & 
+                      is.na(taf.worth_living_life_people_.Wave_11a) &
+                      is.na(taf.felt_weeks_past_.Wave_12b) &
+                      is.na(taf.worth_living_life_people_.Wave_12b) &
+                      is.na(taf.worth_living_life_people_.Wave_12b) ~ "Not answered",
+                     
+                      taf.felt_weeks_past_.Wave_1a == "Yes" |
                       taf.worth_living_life_people_.Wave_1a == "Yes, once" | 
                       taf.worth_living_life_people_.Wave_1a == "Yes, more than once" ~ "1a",
                        
-                     
-                       taf.felt_weeks_past_.Wave_1b == "Yes" |
+                      taf.felt_weeks_past_.Wave_1b == "Yes" |
                       taf.worth_living_life_people_.Wave_1b == "Yes, once" | 
                       taf.worth_living_life_people_.Wave_1b == "Yes, more than once" ~ "1b", 
                      
@@ -834,7 +897,6 @@ dat <- dat %>%
                       taf.worth_living_life_people_.Wave_10b == "Yes, once" | 
                       taf.worth_living_life_people_.Wave_10b == "Yes, more than once" ~ "10b",
                    
-                     
                      taf.felt_weeks_past_.Wave_11a == "Yes" |
                       taf.worth_living_life_people_.Wave_11a == "Yes, once" | 
                       taf.worth_living_life_people_.Wave_11a == "Yes, more than once" ~ "11a",
@@ -844,6 +906,7 @@ dat <- dat %>%
                       taf.worth_living_life_people_.Wave_12b == "Yes, more than once" ~ "12b"
                      )
          )
+  
 
 # Check
 dat %>%
@@ -1290,9 +1353,43 @@ dat %>%
 ```
                            
 ### Positive covid test
-Need to ensure COVID test occurred BEFORE outcomes - create new variable for COVID test that only counts positive tests as ones that occurred BEFORE each outcome
+Need to ensure COVID test occurred BEFORE outcomes - create new variable for COVID test that only counts positive tests as ones that occurred BEFORE each outcome. Will exclude anyone from the analysis if they experienced outcome before exposure, EVEN if it went: outcome → exposure → outcome. Should look at whether their FIRST experience of outcome came before (or at the same time of) their FIRST experience of exposure
 
 Will also include co-occurring symptoms, but as a sensitivity analysis will get rid to further assess causal hypothesis.
+
+# Identify at which phase they first experienced the exposure
+Exposure must come before the outcome. Need to identify at which wave participants first experienced each exposure (as well as first experience of each outcome), to ensure that their first experience of the exposure happened BEFORE their first experience of the outcome.
+
+```{r First experience of exposure - positive COVID test}
+dat <- dat %>%
+  mutate(exposure_phase_positive_covid_test =
+           case_when(  is.na(virus.back_positive_antibodies_covid_.Wave_1b )   &
+                       is.na(virus.back_positive_antibodies_covid_.Wave_2b ) &
+                       is.na(virus.back_positive_antibodies_covid_.Wave_3b ) &
+                       is.na(virus.back_positive_antibodies_covid_.Wave_4b ) &
+                       is.na(virus.back_positive_antibodies_covid_.Wave_6b ) &
+                       is.na(virus.back_positive_antibodies_covid_.Wave_8b ) &
+                       is.na(virus.back_positive_antibodies_covid_.Wave_10b)   &
+                       is.na(virus.back_positive_antibodies_covid_.Wave_12b)  ~ "Not answered", # Then, everyone who is NA will have answered "No" at least once, even if they are missing for all other phases. The only people we can not assume an answer for (i.e., has experienced or has not experienced) is those who never answered the question throughout the whole time period
+                       
+                       virus.back_positive_antibodies_covid_.Wave_1b == "Yes" ~ "1b",
+                       virus.back_positive_antibodies_covid_.Wave_2b == "Yes" ~ "2b",
+                       virus.back_positive_antibodies_covid_.Wave_3b == "Yes" ~ "3b",
+                       virus.back_positive_antibodies_covid_.Wave_4b == "Yes" ~ "4b",
+                       virus.back_positive_antibodies_covid_.Wave_6b == "Yes" ~ "6b",
+                       virus.back_positive_antibodies_covid_.Wave_8b == "Yes" ~ "8b",
+                       virus.back_positive_antibodies_covid_.Wave_10b == "Yes" ~ "10b",
+                       virus.back_positive_antibodies_covid_.Wave_12b == "Yes" ~ "12b",
+                       
+                       
+                       
+           )
+  )
+
+# Check
+dat %>%
+  freq(exposure_phase_positive_covid_test)
+```
 
 Binge eating 
 ```{r Positve COVID test result exposure BEFORE outcome BE}
@@ -1300,17 +1397,18 @@ Binge eating
 # Phase 1b
 dat <- dat %>%
   mutate(positive_covid_test_BE_1b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_1b == "Yes" & # Positive COVID test at phase 1b
-                       
-                       (is.na(outcome_phase_binge_eating) |
-                       outcome_phase_binge_eating == "1b" |  # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "1b" & # First positive COVID test at phase 1b
+                      is.na(outcome_phase_binge_eating) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                        
+                        exposure_phase_positive_covid_test == "1b" & # First positive COVID test at phase 1b
+                      (outcome_phase_binge_eating == "1b" |  # Co-occurring outcome and exposure
                        outcome_phase_binge_eating == "2b" |
                        outcome_phase_binge_eating == "3b" |
                        outcome_phase_binge_eating == "4b" |
                        outcome_phase_binge_eating == "6b" |
                        outcome_phase_binge_eating == "8b" |
                        outcome_phase_binge_eating == "10b" |
-                       outcome_phase_binge_eating == "12b") ~ "Yes",  # Not experienced binge eating before phase 1b
+                       outcome_phase_binge_eating == "12b") ~ "Yes"  # Experienced outcome AFTER or at SAME TIME as exposure
                      )
   )
       
@@ -1321,19 +1419,20 @@ dat %>%
 # Phase 2b
 dat <- dat %>%
   mutate(positive_covid_test_BE_2b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_2b == "Yes" & # Positive COVID test at phase 2b
-                       
-                       (is.na(outcome_phase_binge_eating) |  
-                       outcome_phase_binge_eating == "2b" | # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "2b" &
+                     outcome_phase_binge_eating == "1b"  ~ "To drop", # First experience of binge eating occurred before first COVID test - need to drop
+                     
+                     exposure_phase_positive_covid_test == "2b" & # First positive COVID test at phase 2b
+                     is.na(outcome_phase_binge_eating) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                      
+                     exposure_phase_positive_covid_test == "2b" & # First positive COVID test at phase 2b
+                       (outcome_phase_binge_eating == "2b" | # Co-occurring outcome and exposure
                        outcome_phase_binge_eating == "3b" |
                        outcome_phase_binge_eating == "4b" |
                        outcome_phase_binge_eating == "6b" |
                        outcome_phase_binge_eating == "8b" |
                        outcome_phase_binge_eating == "10b" |
-                       outcome_phase_binge_eating == "12b") ~ "Yes", # Not experienced binge eating before phase 2b
-                        
-                     virus.back_positive_antibodies_covid_.Wave_2b == "Yes" &
-                     outcome_phase_binge_eating == "1b"  ~ "No" # Binge eating occurred before COVID test 
+                       outcome_phase_binge_eating == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
   )
 
@@ -1344,20 +1443,20 @@ dat %>%
 # Phase 3b
 dat <- dat %>%
   mutate(positive_covid_test_BE_3b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_3b == "Yes" & # Positive COVID test at phase 3b
-                       
-                       (is.na(outcome_phase_binge_eating) |
-                       outcome_phase_binge_eating == "3b" | # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "3b" &
+                     (outcome_phase_binge_eating == "1b" |
+                     outcome_phase_binge_eating == "2b")  ~ "To drop", # First experience of binge eating occurred before first COVID test - need to drop
+                      exposure_phase_positive_covid_test == "3b" & # First positive COVID test at phase 3b
+                     is.na(outcome_phase_binge_eating) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                      
+                     exposure_phase_positive_covid_test == "3b" & # First positive COVID test at phase 3b
+                       (outcome_phase_binge_eating == "3b" | # Co-occurring outcome and exposure
                        outcome_phase_binge_eating == "4b" |
                        outcome_phase_binge_eating == "6b" |
                        outcome_phase_binge_eating == "8b" |
                        outcome_phase_binge_eating == "10b" |
-                       outcome_phase_binge_eating == "12b") ~ "Yes", # Not experienced binge eating before phase 3b
-                    
-                     virus.back_positive_antibodies_covid_.Wave_3b == "Yes" &
-                     (outcome_phase_binge_eating == "1b" |
-                     outcome_phase_binge_eating == "2b")  ~ "No" # Binge eating occurred before COVID test 
-                     )
+                       outcome_phase_binge_eating == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
+                    )
   )
       
 # Check
@@ -1367,20 +1466,20 @@ dat %>%
 # Phase 4b
 dat <- dat %>%
   mutate(positive_covid_test_BE_4b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_4b == "Yes" & # Positive COVID test at phase 4b
-                       
-                       (is.na(outcome_phase_binge_eating) |
-                       outcome_phase_binge_eating == "4b" | # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "4b" &
+                     (outcome_phase_binge_eating == "1b" |
+                     outcome_phase_binge_eating == "2b" |
+                     outcome_phase_binge_eating == "3b")  ~ "To drop", # First experience of binge eating occurred before first COVID test - need to drop
+                     exposure_phase_positive_covid_test == "4b" & # First positive COVID test at phase 4b
+                     is.na(outcome_phase_binge_eating) ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                     exposure_phase_positive_covid_test == "4b" & # First positive COVID test at phase 4b
+                       (outcome_phase_binge_eating == "4b" | # Co-occurring outcome and exposure
                        outcome_phase_binge_eating == "6b" |
                        outcome_phase_binge_eating == "8b" |
                        outcome_phase_binge_eating == "10b" |
-                       outcome_phase_binge_eating == "12b") ~ "Yes", # Not experienced binge eating before phase 4b
-         
-                     virus.back_positive_antibodies_covid_.Wave_4b == "Yes" &
-                     (outcome_phase_binge_eating == "1b" |
-                     outcome_phase_binge_eating == "2b" |
-                     outcome_phase_binge_eating == "3b")  ~ "No" # Binge eating occurred before COVID test 
-                       )
+                       outcome_phase_binge_eating == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
+                     )
   )
       
 # Check
@@ -1390,19 +1489,19 @@ dat %>%
 # Phase 6b
 dat <- dat %>%
   mutate(positive_covid_test_BE_6b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_6b == "Yes" & # Positive COVID test at phase 6b
-                       
-                       (is.na(outcome_phase_binge_eating) |
-                          outcome_phase_binge_eating == "6b" | # Co-occurring outcome and exposure
-                       outcome_phase_binge_eating == "8b" |
-                       outcome_phase_binge_eating == "10b" |
-                       outcome_phase_binge_eating == "12b") ~ "Yes", # Not experienced binge eating before phase 6b
-         
-                       virus.back_positive_antibodies_covid_.Wave_6b == "Yes" &
+           case_when(exposure_phase_positive_covid_test == "6b" &
                      (outcome_phase_binge_eating == "1b" |
                      outcome_phase_binge_eating == "2b" |
                      outcome_phase_binge_eating == "3b" |
-                     outcome_phase_binge_eating == "4b")  ~ "No" # Binge eating occurred before COVID test 
+                     outcome_phase_binge_eating == "4b")  ~ "To drop", # First experience of binge eating occurred before first COVID test - need to drop 
+                     exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
+                    is.na(outcome_phase_binge_eating) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                    exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
+                    (outcome_phase_binge_eating == "6b" | # Co-occurring outcome and exposure
+                       outcome_phase_binge_eating == "8b" |
+                       outcome_phase_binge_eating == "10b" |
+                       outcome_phase_binge_eating == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
          )
       
@@ -1413,19 +1512,19 @@ dat %>%
 # Phase 8b
 dat <- dat %>%
   mutate(positive_covid_test_BE_8b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_8b == "Yes" & # Positive COVID test at phase 8b
-                       
-                       (is.na(outcome_phase_binge_eating) |
-                        outcome_phase_binge_eating == "8b" | # Co-occurring outcome and exposure
-                       outcome_phase_binge_eating == "10b" |
-                       outcome_phase_binge_eating == "12b") ~ "Yes",# Not experienced binge eating before phase 8b
-         
-                        virus.back_positive_antibodies_covid_.Wave_8b == "Yes" &
+           case_when(exposure_phase_positive_covid_test == "8b" &
                      (outcome_phase_binge_eating == "1b" |
                      outcome_phase_binge_eating == "2b" |
                      outcome_phase_binge_eating == "3b" |
                      outcome_phase_binge_eating == "4b" |
-                     outcome_phase_binge_eating == "6b")  ~ "No" # Binge eating occurred before COVID test 
+                     outcome_phase_binge_eating == "6b")  ~ "To drop", # First experience of binge eating occurred before first COVID test - need to drop 
+                     exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
+                     is.na(outcome_phase_binge_eating) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                    
+                      exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
+                      (outcome_phase_binge_eating == "8b" | # Co-occurring outcome and exposure
+                       outcome_phase_binge_eating == "10b" |
+                       outcome_phase_binge_eating == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
   )
       
@@ -1436,19 +1535,20 @@ dat %>%
 # Phase 10b
 dat <- dat %>%
   mutate(positive_covid_test_BE_10b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_10b == "Yes" & # Positive COVID test at phase 10b
-                       
-                       (is.na(outcome_phase_binge_eating) |
-                          outcome_phase_binge_eating == "10b" | # Co-occurring outcome and exposure
-                       outcome_phase_binge_eating == "12b") ~ "Yes", # Not experienced binge eating before phase 10b
-         
-                        virus.back_positive_antibodies_covid_.Wave_10b == "Yes" &
+           case_when(exposure_phase_positive_covid_test == "10b" &
                      (outcome_phase_binge_eating == "1b" |
                      outcome_phase_binge_eating == "2b" |
                      outcome_phase_binge_eating == "3b" |
                      outcome_phase_binge_eating == "4b" |
                      outcome_phase_binge_eating == "6b" |
-                     outcome_phase_binge_eating == "8b")  ~ "No" # Binge eating occurred before COVID test
+                     outcome_phase_binge_eating == "8b")  ~ "To drop", # First experience of binge eating occurred before first COVID test - need to drop 
+                     
+                     exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b
+                    is.na(outcome_phase_binge_eating) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                    
+                     exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b
+                      (outcome_phase_binge_eating == "10b" | # Co-occurring outcome and exposure
+                       outcome_phase_binge_eating == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
   )
       
@@ -1459,19 +1559,20 @@ dat %>%
 # Phase 12b
 dat <- dat %>%
   mutate(positive_covid_test_BE_12b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_12b == "Yes" & # Positive COVID test at phase 12b
-                     
-                       is.na(outcome_phase_binge_eating) | # Not experienced binge eating during COPING
-                       outcome_phase_binge_eating == "12b"~ "Yes", # Co-occurring outcome and exposure
-         
-                       virus.back_positive_antibodies_covid_.Wave_12b == "Yes" &
+           case_when(exposure_phase_positive_covid_test == "12b" &
                      (outcome_phase_binge_eating == "1b" |
                      outcome_phase_binge_eating == "2b" |
                      outcome_phase_binge_eating == "3b" |
                      outcome_phase_binge_eating == "4b" |
                      outcome_phase_binge_eating == "6b" |
                      outcome_phase_binge_eating == "8b" |
-                     outcome_phase_binge_eating == "10b")  ~ "No") # Binge eating occurred before COVID test 
+                     outcome_phase_binge_eating == "10b")  ~ "To drop", # First experience of binge eating occurred before first COVID test - need to drop 
+                     exposure_phase_positive_covid_test == "12b" & # First positive COVID test at phase 12b
+                    is.na(outcome_phase_binge_eating) ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
+                    
+                     exposure_phase_positive_covid_test == "12b" & # First positive COVID test at phase 12b
+                    outcome_phase_binge_eating == "12b" ~ "Yes" # Co-occurring outcome and exposure
+         ) 
   )
   
       
@@ -1484,13 +1585,27 @@ Positive COVID test BEFORE binge eating
 
 NB: Have combined "Not had a test", "Negative test", and "Inconclusive test" as "Not positive", i.e., the only thing we count as positive is if someone has a taken a test and had a positive result. Everything else is "Not positive test" other than those who had not answered whether they had taken a test.
 +++ Why are first 4 waves empty?
-+++ Need to double check about the people who had a positive COVID test AFTER binge eating - I've coded them as "not positive test before binge eating" is this right? or should they be NA?
-+++ Also, what if someone had binge eating, then positive test, then binge eating? Does it need to be the FIRST exposure needs to come before the FIRST outcome? --> the way i have written the code is that ANY experience of exposure BEFORE outcome is counted, event after you had ALSO experienced outcome BEFORE exposure. If I wanted to keep ONLY people who experience binge eating AFTER a positive COVID test, I would need to switch the order of the case_when around in the chunk above (i.e., "No" should trump "yes")
++++ Need to drop people who had a positive COVID test AFTER binge eating 
 ```{r Positve COVID test result exposure BE}
 dat <- dat %>%
   mutate(positive_covid_test_before_BE =
-           case_when(
-                      # Had at least one positive covid test BEFORE first instance of binge eating
+           case_when(# First positive test NOT before first experience of binge eating
+                    positive_covid_test_BE_1b == "To drop" |
+                    positive_covid_test_BE_2b == "To drop" |
+                    positive_covid_test_BE_3b == "To drop" |
+                    positive_covid_test_BE_4b == "To drop" |
+                    positive_covid_test_BE_6b == "To drop" |
+                    positive_covid_test_BE_8b == "To drop" |
+                    positive_covid_test_BE_10b == "To drop" |
+                    positive_covid_test_BE_12b == "To drop" ~ "Positive test after BE",
+                    
+                    # Not answered whether they'd taken a test
+                    exposure_phase_positive_covid_test == "Not answered" ~ "Missing whether taken test", # Need to be dropped
+                    
+                     # Not answered whether they'd experienced binge eating 
+                    outcome_phase_binge_eating == "Not answered" ~ "Missing whether experienced binge eating", # Need to be dropped
+                    
+                    # First positive test BEFORE first experience of binge eating
                     positive_covid_test_BE_1b == "Yes" |
                     positive_covid_test_BE_2b == "Yes" |
                     positive_covid_test_BE_3b == "Yes" |
@@ -1500,26 +1615,24 @@ dat <- dat %>%
                     positive_covid_test_BE_10b == "Yes" |
                     positive_covid_test_BE_12b == "Yes" ~ "Positive test before BE",
                     
-                    # Not answered whether they'd taken a test
-                    is.na(virus.past_surveys_include_reported_.Wave_1b) &
-                    is.na(virus.past_surveys_include_reported_.Wave_2b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_3b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_4b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_6b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_8b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_10b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_12b) ~ "Missing whether taken test",
-                    
-                    # Positive test but AFTER first instance of binge eating
-                    positive_covid_test_BE_1b == "No" |
-                    positive_covid_test_BE_2b == "No" |
-                    positive_covid_test_BE_3b == "No" |
-                    positive_covid_test_BE_4b == "No" |
-                    positive_covid_test_BE_6b == "No" |
-                    positive_covid_test_BE_8b == "No" |
-                    positive_covid_test_BE_10b == "No" |
-                    positive_covid_test_BE_12b == "No" ~ "Positive test after BE",
+                   # Experienced exposure but not outcome
+                    positive_covid_test_BE_1b == "No outcome" |
+                    positive_covid_test_BE_2b == "No outcome" |
+                    positive_covid_test_BE_3b == "No outcome" |
+                    positive_covid_test_BE_4b == "No outcome" |
+                    positive_covid_test_BE_6b == "No outcome" |
+                    positive_covid_test_BE_8b == "No outcome" |
+                    positive_covid_test_BE_10b == "No outcome" |
+                    positive_covid_test_BE_12b == "No outcome" ~ "Exposure but no outcome",
                    
+                   # Experienced outcome but not exposure
+                    is.na(exposure_phase_positive_covid_test) &
+                     !is.na(outcome_phase_binge_eating) ~ "Outcome but no exposure",
+                   
+                       # Experienced neither outcome nor exposure
+                    is.na(exposure_phase_positive_covid_test) &
+                     is.na(outcome_phase_binge_eating) ~ "Neither exposure nor outcome",
+                     
                     # Not had a test
                      virus.past_surveys_include_reported_.Wave_1b == "No" |
                      virus.past_surveys_include_reported_.Wave_2b == "No" |
@@ -1528,7 +1641,7 @@ dat <- dat %>%
                      virus.past_surveys_include_reported_.Wave_6b == "No" |
                      virus.past_surveys_include_reported_.Wave_8b == "No" |
                      virus.past_surveys_include_reported_.Wave_10b == "No" |
-                     virus.past_surveys_include_reported_.Wave_12b == "No"  ~ "Not had a test",
+                     virus.past_surveys_include_reported_.Wave_12b == "No"  ~ "Not had a test", # Will be grouped as 'Not positive' so order doesn't matter
                     
                     # Unsure/inconclusive test result 
                      virus.back_positive_antibodies_covid_.Wave_1b == "Unsure/inconclusive" |
@@ -1538,7 +1651,7 @@ dat <- dat %>%
                      virus.back_positive_antibodies_covid_.Wave_6b == "Unsure/inconclusive" |
                      virus.back_positive_antibodies_covid_.Wave_8b == "Unsure/inconclusive" |
                      virus.back_positive_antibodies_covid_.Wave_10b == "Unsure/inconclusive" |
-                     virus.back_positive_antibodies_covid_.Wave_12b == "Unsure/inconclusive"  ~ "Inconclusive test",
+                     virus.back_positive_antibodies_covid_.Wave_12b == "Unsure/inconclusive"  ~ "Inconclusive test", # Will be grouped as 'Not positive' so order doesn't matter
      
                      # Negative test result 
                      virus.back_positive_antibodies_covid_.Wave_1b == "No" |
@@ -1548,11 +1661,11 @@ dat <- dat %>%
                      virus.back_positive_antibodies_covid_.Wave_6b == "No" |
                      virus.back_positive_antibodies_covid_.Wave_8b == "No" |
                      virus.back_positive_antibodies_covid_.Wave_10b == "No" |
-                     virus.back_positive_antibodies_covid_.Wave_12b == "No"  ~ "Negative test"
+                     virus.back_positive_antibodies_covid_.Wave_12b == "No"  ~ "Negative test" # Will be grouped as 'Not positive' so order doesn't matter
       )
 )
                    
-# Checl                      
+# Check                      
 dat %>%
   freq(positive_covid_test_before_BE) 
 
@@ -1560,12 +1673,18 @@ dat %>%
 # Create final variable of positive COVID test before BE outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_BE_final =
-           case_when(positive_covid_test_before_BE == "Negative test" |
+           case_when(positive_covid_test_before_BE == "Positive test after BE" | # Need to drop people who first experienced outcome before first experience of exposure
+                     positive_covid_test_before_BE == "Missing whether taken test" | # Need to drop people who never answered whether they'd taken a COVID test
+                     positive_covid_test_before_BE == "Missing whether experienced binge eating" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced binge eating
+                     
+                     positive_covid_test_before_BE == "Negative test" |
                      positive_covid_test_before_BE == "Not had a test" |
                      positive_covid_test_before_BE == "Inconclusive test" |
-                     positive_covid_test_before_BE == "Positive test after BE"~ "No",
-                     
-                     positive_covid_test_before_BE == "Positive test before BE" ~ "Yes")
+                     positive_covid_test_before_BE == "Exposure but no outcome" |
+                     positive_covid_test_before_BE ==  "Outcome but no exposure" |
+                     positive_covid_test_before_BE ==  "Neither exposure nor outcome" ~ "No",
+                    
+                    positive_covid_test_before_BE == "Positive test before BE" ~ "Yes")
   )
 
 # Check
@@ -1579,10 +1698,11 @@ Low weight
 # Phase 1b
 dat <- dat %>%
   mutate(positive_covid_test_LW_1b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_1b == "Yes" & # Positive COVID test at phase 1b
-                       
-                       (is.na(outcome_phase_low_weight) |
-                       outcome_phase_low_weight == "1b" | # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "1b" & # First positive COVID test at phase 1b
+                     is.na(outcome_phase_low_weight) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                     exposure_phase_positive_covid_test == "1b" & # First positive COVID test at phase 1b
+                       (outcome_phase_low_weight == "1b" | # Co-occurring outcome and exposure
                        outcome_phase_low_weight == "2b" |
                        outcome_phase_low_weight == "3b" |
                        outcome_phase_low_weight == "4b" |
@@ -1599,19 +1719,20 @@ dat %>%
 # Phase 2b
 dat <- dat %>%
   mutate(positive_covid_test_LW_2b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_2b == "Yes" & # Positive COVID test at phase 2b
-                       
-                       (is.na(outcome_phase_low_weight) |
-                       outcome_phase_low_weight == "2b" | # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "2b" &
+                     outcome_phase_low_weight == "1b"  ~ "To drop", # First experience of low weight occurred before first COVID test - need to drop 
+                     
+                     exposure_phase_positive_covid_test == "2b" & # First positive COVID test at phase 2b
+                      is.na(outcome_phase_low_weight) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                     exposure_phase_positive_covid_test == "2b" & 
+                       (outcome_phase_low_weight == "2b" | # Co-occurring outcome and exposure
                        outcome_phase_low_weight == "3b" |
                        outcome_phase_low_weight == "4b" |
                        outcome_phase_low_weight == "6b" |
                        outcome_phase_low_weight == "8b" |
                        outcome_phase_low_weight == "10b" |
-                       outcome_phase_low_weight == "12b") ~ "Yes", # Not experienced low weight before phase 2b
-                     
-                     virus.back_positive_antibodies_covid_.Wave_2b == "Yes" &
-                     outcome_phase_low_weight == "1b"  ~ "No" # Low weight occurred before COVID test 
+                       outcome_phase_low_weight == "12b") ~ "Yes"  # Experienced outcome AFTER or at SAME TIME as exposure
                      )
   )
       
@@ -1622,20 +1743,21 @@ dat %>%
 # Phase 3b
 dat <- dat %>%
   mutate(positive_covid_test_LW_3b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_3b == "Yes" & # Positive COVID test at phase 3b
-                       
-                       (is.na(outcome_phase_low_weight) |
-                       outcome_phase_low_weight == "3b" | # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "3b" &
+                     (outcome_phase_low_weight == "1b"  |
+                     outcome_phase_low_weight == "2b")  ~ "To drop", # First experience of low weight occurred before first COVID test - need to drop 
+                  
+                      exposure_phase_positive_covid_test == "3b" & # First positive COVID test at phase 3b
+                       is.na(outcome_phase_low_weight) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                      exposure_phase_positive_covid_test == "3b" & # First positive COVID test at phase 3b
+                       (outcome_phase_low_weight == "3b" | # Co-occurring outcome and exposure
                        outcome_phase_low_weight == "4b" |
                        outcome_phase_low_weight == "6b" |
                        outcome_phase_low_weight == "8b" |
                        outcome_phase_low_weight == "10b" |
-                       outcome_phase_low_weight == "12b") ~ "Yes", # Not experienced low weight before phase 3b
-                     
-                     virus.back_positive_antibodies_covid_.Wave_3b == "Yes" &
-                     (outcome_phase_low_weight == "1b"  |
-                     outcome_phase_low_weight == "2b")  ~ "No" # Low weight occurred before COVID test
-                     )
+                       outcome_phase_low_weight == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
+                      )
          )
   
 # Check
@@ -1645,19 +1767,20 @@ dat %>%
 # Phase 4b
 dat <- dat %>%
   mutate(positive_covid_test_LW_4b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_4b == "Yes" & # Positive COVID test at phase 4b
-                       
-                       (is.na(outcome_phase_low_weight) |
-                       outcome_phase_low_weight == "4b" | # Co-occurring outcome and exposure
+           case_when( exposure_phase_positive_covid_test == "4b" &
+                     (outcome_phase_low_weight == "1b"  |
+                     outcome_phase_low_weight == "2b" |
+                      outcome_phase_low_weight == "3b")  ~ "To drop", # First experience of low weight occurred before first COVID test - need to drop
+                     
+                     exposure_phase_positive_covid_test == "4b" & # First positive COVID test at phase 4b
+                     is.na(outcome_phase_low_weight) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                     exposure_phase_positive_covid_test == "4b" & # First positive COVID test at phase 4b
+                       (outcome_phase_low_weight == "4b" | # Co-occurring outcome and exposure
                        outcome_phase_low_weight == "6b" |
                        outcome_phase_low_weight == "8b" |
                        outcome_phase_low_weight == "10b" |
-                       outcome_phase_low_weight == "12b") ~ "Yes", # Not experienced low weight before phase 4b
-                     
-                     virus.back_positive_antibodies_covid_.Wave_4b == "Yes" &
-                     (outcome_phase_low_weight == "1b"  |
-                     outcome_phase_low_weight == "2b" |
-                      outcome_phase_low_weight == "3b")  ~ "No" # Low weight occurred before COVID test
+                       outcome_phase_low_weight == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
          )
   
@@ -1669,19 +1792,21 @@ dat %>%
 # Phase 6b
 dat <- dat %>%
   mutate(positive_covid_test_LW_6b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_6b == "Yes" & # Positive COVID test at phase 6b
-                       
-                       (is.na(outcome_phase_low_weight) |
-                       outcome_phase_low_weight == "6b" | # Co-occurring outcome and exposure
-                       outcome_phase_low_weight == "8b" |
-                       outcome_phase_low_weight == "10b" |
-                       outcome_phase_low_weight == "12b") ~ "Yes", # Not experienced low weight before phase 6b
-                     
-                     virus.back_positive_antibodies_covid_.Wave_6b == "Yes" &
+           case_when(exposure_phase_positive_covid_test == "6b" &
                      (outcome_phase_low_weight == "1b"  |
                       outcome_phase_low_weight == "2b" |
                       outcome_phase_low_weight == "3b" |
-                      outcome_phase_low_weight == "4b")  ~ "No" # Low weight occurred before COVID test
+                      outcome_phase_low_weight == "4b")  ~ "To drop",# First experience of low weight occurred before first COVID test - need to drop
+                     
+                     exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
+                      is.na(outcome_phase_low_weight) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                      
+                     exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
+                       (outcome_phase_low_weight == "6b" | # Co-occurring outcome and exposure
+                       outcome_phase_low_weight == "8b" |
+                       outcome_phase_low_weight == "10b" |
+                       outcome_phase_low_weight == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
+                    
                      )
          )
       
@@ -1692,19 +1817,20 @@ dat %>%
 # Phase 8b
 dat <- dat %>%
   mutate(positive_covid_test_LW_8b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_8b == "Yes" & # Positive COVID test at phase 8b
-                       
-                       (is.na(outcome_phase_low_weight) |
-                       outcome_phase_low_weight == "8b" | # Co-occurring outcome and exposure
-                       outcome_phase_low_weight == "10b" |
-                       outcome_phase_low_weight == "12b") ~ "Yes", # Not experienced low weight before phase 8b
-                     
-                     virus.back_positive_antibodies_covid_.Wave_8b == "Yes" &
+           case_when(exposure_phase_positive_covid_test == "8b" &
                      (outcome_phase_low_weight == "1b"  |
                       outcome_phase_low_weight == "2b" |
                       outcome_phase_low_weight == "3b" |
                       outcome_phase_low_weight == "4b" |
-                      outcome_phase_low_weight == "6b")  ~ "No" # Low weight occurred before COVID test
+                      outcome_phase_low_weight == "6b")  ~ "To drop", # First experience of low weight occurred before first COVID test - need to drop
+                     
+                     exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
+                      is.na(outcome_phase_low_weight) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                     exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
+                       (outcome_phase_low_weight == "8b" | # Co-occurring outcome and exposure
+                       outcome_phase_low_weight == "10b" |
+                       outcome_phase_low_weight == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
          )
   
@@ -1716,19 +1842,20 @@ dat %>%
 # Phase 10b
 dat <- dat %>%
   mutate(positive_covid_test_LW_10b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_10b == "Yes" & # Positive COVID test at phase 10b
-                       
-                       (is.na(outcome_phase_low_weight) |
-                       outcome_phase_low_weight == "10b" | # Co-occurring outcome and exposure
-                       outcome_phase_low_weight == "12b") ~ "Yes", # Not experienced low weight before phase 10b
-                     
-                     virus.back_positive_antibodies_covid_.Wave_10b == "Yes" &
+           case_when(exposure_phase_positive_covid_test == "10b" &
                      (outcome_phase_low_weight == "1b"  |
                       outcome_phase_low_weight == "2b" |
                       outcome_phase_low_weight == "3b" |
                       outcome_phase_low_weight == "4b" |
                       outcome_phase_low_weight == "6b" |
-                      outcome_phase_low_weight == "8b" )  ~ "No" # Low weight occurred before COVID test
+                      outcome_phase_low_weight == "8b" )  ~ "To drop", # Low weight occurred before COVID test
+                     
+                     exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b
+                     is.na(outcome_phase_low_weight) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                    
+                      exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b
+                       (outcome_phase_low_weight == "10b" | # Co-occurring outcome and exposure
+                       outcome_phase_low_weight == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
          )
       
@@ -1739,19 +1866,20 @@ dat %>%
 # Phase 12b
 dat <- dat %>%
   mutate(positive_covid_test_LW_12b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_12b == "Yes" & # Positive COVID test at phase 12b
-                     
-                       is.na(outcome_phase_low_weight) | # Not experienced low weight during COPING
-                       outcome_phase_low_weight == "12b"~ "Yes",  # Co-occurring outcome and exposure
-                     
-                      virus.back_positive_antibodies_covid_.Wave_12b == "Yes" &
+           case_when(exposure_phase_positive_covid_test == "12b" &
                      (outcome_phase_low_weight == "1b"  |
                       outcome_phase_low_weight == "2b" |
                       outcome_phase_low_weight == "3b" |
                       outcome_phase_low_weight == "4b" |
                       outcome_phase_low_weight == "6b" |
                       outcome_phase_low_weight == "8b" |
-                      outcome_phase_low_weight == "10b" )  ~ "No" # Low weight occurred before COVID test
+                      outcome_phase_low_weight == "10b" )  ~ "To drop", # Low weight occurred before COVID test
+                     
+                     exposure_phase_positive_covid_test == "12b" & # First positive COVID test at phase 12b
+                     is.na(outcome_phase_low_weight) ~ "No outcome", # Not experienced low weight during COPING
+                     
+                     exposure_phase_positive_covid_test == "12b" & # First positive COVID test at phase 12b
+                       outcome_phase_low_weight == "12b" ~ "Yes"  # Co-occurring outcome and exposure
                      )
          )
       
@@ -1768,8 +1896,23 @@ NB: Have combined "Not had a test", "Negative test", and "Inconclusive test" as 
 ```{r Positve COVID test result exposure LOW WEIGHT}
 dat <- dat %>%
   mutate(positive_covid_test_before_LW =
-           case_when(
-                      # Had at least one positive covid test before low weight
+           case_when(# First positive COVID test NOT before first experience of low weight
+                    positive_covid_test_LW_1b == "To drop" |
+                    positive_covid_test_LW_2b == "To drop" |
+                    positive_covid_test_LW_3b == "To drop" |
+                    positive_covid_test_LW_4b == "To drop" |
+                    positive_covid_test_LW_6b == "To drop" |
+                    positive_covid_test_LW_8b == "To drop" |
+                    positive_covid_test_LW_10b == "To drop" |
+                    positive_covid_test_LW_12b == "To drop" ~ "Positive test after low weight", # Need to be dropped
+                    
+                    # Not answered whether they'd taken a test
+                    exposure_phase_positive_covid_test == "Not answered" ~ "Missing whether taken test", # Need to be dropped
+                    
+                     # Not answered whether they'd experienced binge eating 
+                    outcome_phase_low_weight == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
+                    
+                    # First positive COVID test before first experience of low weight
                     positive_covid_test_LW_1b == "Yes" |
                     positive_covid_test_LW_2b == "Yes" |
                     positive_covid_test_LW_3b == "Yes" |
@@ -1779,25 +1922,24 @@ dat <- dat %>%
                     positive_covid_test_LW_10b == "Yes" |
                     positive_covid_test_LW_12b == "Yes" ~ "Positive test before low weight",
                     
-                    # Not answered whether they'd taken a test
-                    is.na(virus.past_surveys_include_reported_.Wave_1b) &
-                    is.na(virus.past_surveys_include_reported_.Wave_2b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_3b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_4b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_6b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_8b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_10b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_12b) ~ "Missing whether taken test",
+                    # Experienced exposure but not outcome
+                    positive_covid_test_LW_1b == "No outcome" |
+                    positive_covid_test_LW_2b == "No outcome" |
+                    positive_covid_test_LW_3b == "No outcome" |
+                    positive_covid_test_LW_4b == "No outcome" |
+                    positive_covid_test_LW_6b == "No outcome" |
+                    positive_covid_test_LW_8b == "No outcome" |
+                    positive_covid_test_LW_10b == "No outcome" |
+                    positive_covid_test_LW_12b == "No outcome" ~ "Exposure but no outcome",
+                    
+                    # Experienced outcome but not exposure
+                    is.na(exposure_phase_positive_covid_test) &
+                     !is.na(outcome_phase_low_weight) ~ "Outcome but no exposure",
                    
-                    positive_covid_test_LW_1b == "No" |
-                    positive_covid_test_LW_2b == "No" |
-                    positive_covid_test_LW_3b == "No" |
-                    positive_covid_test_LW_4b == "No" |
-                    positive_covid_test_LW_6b == "No" |
-                    positive_covid_test_LW_8b == "No" |
-                    positive_covid_test_LW_10b == "No" |
-                    positive_covid_test_LW_12b == "No" ~ "Positive test after low weight",
-                   
+                       # Experienced neither outcome nor exposure
+                    is.na(exposure_phase_positive_covid_test) &
+                     is.na(outcome_phase_low_weight) ~ "Neither exposure nor outcome",
+                    
                     # Not had a test
                      virus.past_surveys_include_reported_.Wave_1b == "No" |
                      virus.past_surveys_include_reported_.Wave_2b == "No" |
@@ -1806,7 +1948,7 @@ dat <- dat %>%
                      virus.past_surveys_include_reported_.Wave_6b == "No" |
                      virus.past_surveys_include_reported_.Wave_8b == "No" |
                      virus.past_surveys_include_reported_.Wave_10b == "No" |
-                     virus.past_surveys_include_reported_.Wave_12b == "No"  ~ "Not had a test",
+                     virus.past_surveys_include_reported_.Wave_12b == "No"  ~ "Not had a test", # Will be grouped as 'Not positive' so order doesn't matter
                     
                     # Unsure/inconclusive test result 
                      virus.back_positive_antibodies_covid_.Wave_1b == "Unsure/inconclusive" |
@@ -1816,7 +1958,7 @@ dat <- dat %>%
                      virus.back_positive_antibodies_covid_.Wave_6b == "Unsure/inconclusive" |
                      virus.back_positive_antibodies_covid_.Wave_8b == "Unsure/inconclusive" |
                      virus.back_positive_antibodies_covid_.Wave_10b == "Unsure/inconclusive" |
-                     virus.back_positive_antibodies_covid_.Wave_12b == "Unsure/inconclusive"  ~ "Inconclusive test",
+                     virus.back_positive_antibodies_covid_.Wave_12b == "Unsure/inconclusive"  ~ "Inconclusive test", # Will be grouped as 'Not positive' so order doesn't matter
      
                      # Negative test result 
                      virus.back_positive_antibodies_covid_.Wave_1b == "No" |
@@ -1826,7 +1968,7 @@ dat <- dat %>%
                      virus.back_positive_antibodies_covid_.Wave_6b == "No" |
                      virus.back_positive_antibodies_covid_.Wave_8b == "No" |
                      virus.back_positive_antibodies_covid_.Wave_10b == "No" |
-                     virus.back_positive_antibodies_covid_.Wave_12b == "No"  ~ "Negative test"
+                     virus.back_positive_antibodies_covid_.Wave_12b == "No"  ~ "Negative test" # Will be grouped as 'Not positive' so order doesn't matter
       )
 )
                    
@@ -1838,35 +1980,55 @@ dat %>%
 # Create final variable of positive COVID test before low weight outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_LW_final =
-           case_when(positive_covid_test_before_LW == "Negative test" |
+           case_when(positive_covid_test_before_LW == "Positive test after low weight" | # Need to drop people who first experienced outcome before first experience of exposure
+                     positive_covid_test_before_LW == "Missing whether taken test" | # Need to drop people who never answered whether they'd taken a COVID test
+                     positive_covid_test_before_LW == "Missing whether experienced low weight" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced low weight
+                     
+                     positive_covid_test_before_LW == "Negative test" |
                      positive_covid_test_before_LW == "Not had a test" |
                      positive_covid_test_before_LW == "Inconclusive test" |
-                     positive_covid_test_before_LW ==  "Positive test after low weight" ~ "No",
-                     
-                     positive_covid_test_before_LW == "Positive test before low weight" ~ "Yes")
+                     positive_covid_test_before_LW == "Exposure but no outcome" |
+                     positive_covid_test_before_LW ==  "Outcome but no exposure" |
+                     positive_covid_test_before_LW ==  "Neither exposure nor outcome" ~ "No",
+                    
+                    positive_covid_test_before_LW == "Positive test before low weight" ~ "Yes")
   )
 
 # Check
 dat %>%
   freq(positive_covid_test_before_LW_final) 
 ```
+
 Passive suicidal ideation
+NB: Passive suicidal ideation was asked at EVERY phase, whereas positive covid test was asked only at follow up B. 
 ```{r Positive COVID test result exposure BEFORE outcome Passive suicidal ideation}
 
 # Phase 1b
 dat <- dat %>%
   mutate(positive_covid_test_PSS_1b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_1b == "Yes" & # Positive COVID test at phase 1b
-                       
-                       (is.na(outcome_phase_passive_suicidal_ideation) |
-                       outcome_phase_passive_suicidal_ideation == "1b" | # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "1b" & # First positive COVID test at phase 1b
+                     is.na(outcome_phase_passive_suicidal_ideation) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                     exposure_phase_positive_covid_test == "1b" & # First positive COVID test at phase 1b
+                     outcome_phase_passive_suicidal_ideation == "1a" ~ "To drop",  # First passive suicidal ideation occurred before first positive COVID test - need to drop
+                     
+                     exposure_phase_positive_covid_test == "1b" & # First positive COVID test at phase 1b
+                       (outcome_phase_passive_suicidal_ideation == "1b" | # Co-occurring outcome and exposure
+                       outcome_phase_passive_suicidal_ideation == "2a" |
                        outcome_phase_passive_suicidal_ideation == "2b" |
+                       outcome_phase_passive_suicidal_ideation == "3a" |
                        outcome_phase_passive_suicidal_ideation == "3b" |
+                       outcome_phase_passive_suicidal_ideation == "4a" |
                        outcome_phase_passive_suicidal_ideation == "4b" |
+                       outcome_phase_passive_suicidal_ideation == "5a" |
                        outcome_phase_passive_suicidal_ideation == "6b" |
+                       outcome_phase_passive_suicidal_ideation == "7a" |
                        outcome_phase_passive_suicidal_ideation == "8b" |
+                       outcome_phase_passive_suicidal_ideation == "9a" |
                        outcome_phase_passive_suicidal_ideation == "10b" |
-                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes") # Not experienced passive suicidal ideation before phase 1b
+                       outcome_phase_passive_suicidal_ideation == "11a" |
+                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
+                     )
   )
       
 # Check
@@ -1876,18 +2038,27 @@ dat %>%
 # Phase 2b
 dat <- dat %>%
   mutate(positive_covid_test_PSS_2b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_2b == "Yes" & # Positive COVID test at phase 2b
-                       
-                       (is.na(outcome_phase_passive_suicidal_ideation) |
-                       outcome_phase_passive_suicidal_ideation == "2b" | # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "2b" & # First positive COVID test at phase 2b
+                     is.na(outcome_phase_passive_suicidal_ideation) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                     exposure_phase_positive_covid_test == "2b" & # First positive COVID test at phase 2b
+                     (outcome_phase_passive_suicidal_ideation == "1a" |
+                       outcome_phase_passive_suicidal_ideation == "1b" | 
+                      outcome_phase_passive_suicidal_ideation == "2a") ~ "To drop", # First passive suicidal ideation occurred before first positive COVID test - need to drop
+                      exposure_phase_positive_covid_test == "2b" & # First positive COVID test at phase 2b
+                       (outcome_phase_passive_suicidal_ideation == "2b" | # Co-occurring outcome and exposure
+                       outcome_phase_passive_suicidal_ideation == "3a" |
                        outcome_phase_passive_suicidal_ideation == "3b" |
+                       outcome_phase_passive_suicidal_ideation == "4a" |
                        outcome_phase_passive_suicidal_ideation == "4b" |
+                       outcome_phase_passive_suicidal_ideation == "5a" |
                        outcome_phase_passive_suicidal_ideation == "6b" |
+                       outcome_phase_passive_suicidal_ideation == "7a" |
                        outcome_phase_passive_suicidal_ideation == "8b" |
+                       outcome_phase_passive_suicidal_ideation == "9a" |
                        outcome_phase_passive_suicidal_ideation == "10b" |
-                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes", # Not experienced passive suicidal ideation before phase 2b
-                     virus.back_positive_antibodies_covid_.Wave_2b == "Yes" &
-                     outcome_phase_passive_suicidal_ideation == "1b"   ~ "No" # Passive suicidal ideation occurred before COVID test
+                       outcome_phase_passive_suicidal_ideation == "11a" |
+                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
          )
   
@@ -1898,18 +2069,28 @@ dat %>%
 # Phase 3b
 dat <- dat %>%
   mutate(positive_covid_test_PSS_3b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_3b == "Yes" & # Positive COVID test at phase 3b
-                       
-                       (is.na(outcome_phase_passive_suicidal_ideation) |
-                       outcome_phase_passive_suicidal_ideation == "3b" | # Co-occurring outcome and exposure
+           case_when(exposure_phase_positive_covid_test == "3b" & # First positive COVID test at phase 3b
+                       is.na(outcome_phase_passive_suicidal_ideation) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+                     
+                     exposure_phase_positive_covid_test == "3b" & # First positive COVID test at phase 3b
+                       (outcome_phase_passive_suicidal_ideation == "1a" | 
+                        outcome_phase_passive_suicidal_ideation == "1b" | 
+                       outcome_phase_passive_suicidal_ideation == "2a" |
+                       outcome_phase_passive_suicidal_ideation == "2b" |
+                       outcome_phase_passive_suicidal_ideation == "3a") ~ "To drop", # First passive suicidal ideation occurred before first positive COVID test - need to drop
+                     
+                     exposure_phase_positive_covid_test == "3b" &  # First positive COVID test at phase 3b
+                     (outcome_phase_passive_suicidal_ideation == "3b" | # Co-occurring outcome and exposure
+                       outcome_phase_passive_suicidal_ideation == "4a" |
                        outcome_phase_passive_suicidal_ideation == "4b" |
+                       outcome_phase_passive_suicidal_ideation == "5a" |
                        outcome_phase_passive_suicidal_ideation == "6b" |
+                       outcome_phase_passive_suicidal_ideation == "7a" |
                        outcome_phase_passive_suicidal_ideation == "8b" |
+                       outcome_phase_passive_suicidal_ideation == "9a" |
                        outcome_phase_passive_suicidal_ideation == "10b" |
-                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes", # Not experienced passive suicidal ideation before phase 3b
-                     virus.back_positive_antibodies_covid_.Wave_3b == "Yes" &
-                     (outcome_phase_passive_suicidal_ideation == "1b" |
-                      outcome_phase_passive_suicidal_ideation == "2b") ~ "No" # Passive suicidal ideation occurred before COVID test
+                       outcome_phase_passive_suicidal_ideation == "11a" |
+                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
          )
       
@@ -1920,21 +2101,31 @@ dat %>%
 # Phase 4b
 dat <- dat %>%
   mutate(positive_covid_test_PSS_4b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_4b == "Yes" & # Positive COVID test at phase 4b
+           case_when(exposure_phase_positive_covid_test == "4b" & # First positive COVID test at phase 4B
+                       is.na(outcome_phase_passive_suicidal_ideation) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
                        
-                       (is.na(outcome_phase_passive_suicidal_ideation) |
-                       outcome_phase_passive_suicidal_ideation == "4b" | # Co-occurring outcome and exposure
+                       exposure_phase_positive_covid_test == "4b" & # First positive COVID test at phase 4B
+                       (outcome_phase_passive_suicidal_ideation == "1a" |
+                       outcome_phase_passive_suicidal_ideation == "1b" | 
+                       outcome_phase_passive_suicidal_ideation == "2a" |
+                       outcome_phase_passive_suicidal_ideation == "2b" |
+                       outcome_phase_passive_suicidal_ideation == "3a" |
+                       outcome_phase_passive_suicidal_ideation == "3b" |
+                       outcome_phase_passive_suicidal_ideation == "4a") ~ "To drop", # First passive suicidal ideation occurred before first positive COVID test - need to drop
+                     
+                       exposure_phase_positive_covid_test == "4b" & # First positive COVID test at phase 4B
+                       (outcome_phase_passive_suicidal_ideation == "4b" | # Co-occurring outcome and exposure
+                       outcome_phase_passive_suicidal_ideation == "5a" |
                        outcome_phase_passive_suicidal_ideation == "6b" |
+                       outcome_phase_passive_suicidal_ideation == "7a" |
                        outcome_phase_passive_suicidal_ideation == "8b" |
+                       outcome_phase_passive_suicidal_ideation == "9a" |
                        outcome_phase_passive_suicidal_ideation == "10b" |
-                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes", # Not experienced passive suicidal ideation before phase 4b
-                       virus.back_positive_antibodies_covid_.Wave_4b == "Yes" &
-                     (outcome_phase_passive_suicidal_ideation == "1b" |
-                      outcome_phase_passive_suicidal_ideation == "2b" |
-                      outcome_phase_passive_suicidal_ideation == "3b") ~ "No" # Passive suicidal ideation occurred before COVID test
+                       outcome_phase_passive_suicidal_ideation == "11a" |
+                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
-         )
-      
+  )
+              
 # Check
 dat %>%
   freq(positive_covid_test_PSS_4b)
@@ -1942,19 +2133,29 @@ dat %>%
 # Phase 6b
 dat <- dat %>%
   mutate(positive_covid_test_PSS_6b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_6b == "Yes" & # Positive COVID test at phase 6b
+           case_when(exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
+                       is.na(outcome_phase_passive_suicidal_ideation) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
                        
-                       (is.na(outcome_phase_passive_suicidal_ideation) |
-                       outcome_phase_passive_suicidal_ideation == "6b" | # Co-occurring outcome and exposure
+                     exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
+                     (outcome_phase_passive_suicidal_ideation == "1a" |
+                       outcome_phase_passive_suicidal_ideation == "1b" | 
+                       outcome_phase_passive_suicidal_ideation == "2a" | 
+                       outcome_phase_passive_suicidal_ideation == "2b" |
+                       outcome_phase_passive_suicidal_ideation == "3a" |
+                       outcome_phase_passive_suicidal_ideation == "3b" |
+                       outcome_phase_passive_suicidal_ideation == "4a" |
+                       outcome_phase_passive_suicidal_ideation == "4b" |
+                       outcome_phase_passive_suicidal_ideation == "5a") ~ "To drop",  # First passive suicidal ideation occurred before first positive COVID test - need to drop
+                     
+                     exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
+                      (outcome_phase_passive_suicidal_ideation == "6b" | # Co-occurring outcome and exposure
+                       outcome_phase_passive_suicidal_ideation == "7a" |
                        outcome_phase_passive_suicidal_ideation == "8b" |
+                       outcome_phase_passive_suicidal_ideation == "9a" |
                        outcome_phase_passive_suicidal_ideation == "10b" |
-                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes", # Not experienced passive suicidal ideation before phase 6b
-                     virus.back_positive_antibodies_covid_.Wave_6b == "Yes" &
-                     (outcome_phase_passive_suicidal_ideation == "1b" |
-                      outcome_phase_passive_suicidal_ideation == "2b" |
-                      outcome_phase_passive_suicidal_ideation == "3b" |
-                      outcome_phase_passive_suicidal_ideation == "4b") ~ "No" # Passive suicidal ideation occurred before COVID test
-                     )
+                       outcome_phase_passive_suicidal_ideation == "11a" |
+                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
+                    )
          )
   
       
@@ -1965,18 +2166,28 @@ dat %>%
 # Phase 8b
 dat <- dat %>%
   mutate(positive_covid_test_PSS_8b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_8b == "Yes" & # Positive COVID test at phase 8b
+           case_when(exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b 
+                       is.na(outcome_phase_passive_suicidal_ideation) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
                        
-                       (is.na(outcome_phase_passive_suicidal_ideation) |
-                       outcome_phase_passive_suicidal_ideation == "8b" | # Co-occurring outcome and exposure
+                     exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
+                     (outcome_phase_passive_suicidal_ideation == "1a" |
+                       outcome_phase_passive_suicidal_ideation == "1b" | 
+                       outcome_phase_passive_suicidal_ideation == "2a" |
+                       outcome_phase_passive_suicidal_ideation == "2b" |
+                       outcome_phase_passive_suicidal_ideation == "3a" |
+                       outcome_phase_passive_suicidal_ideation == "3b" |
+                       outcome_phase_passive_suicidal_ideation == "4a" |
+                       outcome_phase_passive_suicidal_ideation == "4b" |
+                       outcome_phase_passive_suicidal_ideation == "5a" |
+                       outcome_phase_passive_suicidal_ideation == "6b" |
+                       outcome_phase_passive_suicidal_ideation == "7a") ~ "To drop", # First passive suicidal ideation occurred before first positive COVID test - need to drop
+                     
+                     exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
+                    (outcome_phase_passive_suicidal_ideation == "8b" | # Co-occurring outcome and exposure
+                       outcome_phase_passive_suicidal_ideation == "9a" |
                        outcome_phase_passive_suicidal_ideation == "10b" |
-                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes", # Not experienced passive suicidal ideation before phase 8b
-                     virus.back_positive_antibodies_covid_.Wave_8b == "Yes" &
-                     (outcome_phase_passive_suicidal_ideation == "1b" |
-                      outcome_phase_passive_suicidal_ideation == "2b" |
-                      outcome_phase_passive_suicidal_ideation == "3b" |
-                      outcome_phase_passive_suicidal_ideation == "4b" |
-                      outcome_phase_passive_suicidal_ideation == "6b") ~ "No" # Passive suicidal ideation occurred before COVID test
+                       outcome_phase_passive_suicidal_ideation == "11a" |
+                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
                      )
          )
   
@@ -1988,19 +2199,29 @@ dat %>%
 # Phase 10b
 dat <- dat %>%
   mutate(positive_covid_test_PSS_10b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_10b == "Yes" & # Positive COVID test at phase 10b
+           case_when(exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b 
+                       is.na(outcome_phase_passive_suicidal_ideation) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
                        
-                       (is.na(outcome_phase_passive_suicidal_ideation) |
-                       outcome_phase_passive_suicidal_ideation == "10b" | # Co-occurring outcome and exposure
-                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes", # Not experienced passive suicidal ideation before phase 10b
-                     virus.back_positive_antibodies_covid_.Wave_10b == "Yes" &
-                     (outcome_phase_passive_suicidal_ideation == "1b" |
-                      outcome_phase_passive_suicidal_ideation == "2b" |
-                      outcome_phase_passive_suicidal_ideation == "3b" |
-                      outcome_phase_passive_suicidal_ideation == "4b" |
-                      outcome_phase_passive_suicidal_ideation == "6b" |
-                      outcome_phase_passive_suicidal_ideation == "8b") ~ "No" # Passive suicidal ideation occurred before COVID test
-                     )
+                     exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b
+                     (outcome_phase_passive_suicidal_ideation == "1a" |
+                        outcome_phase_passive_suicidal_ideation == "1b" | 
+                       outcome_phase_passive_suicidal_ideation == "2a" |
+                       outcome_phase_passive_suicidal_ideation == "2b" |
+                       outcome_phase_passive_suicidal_ideation == "3a" |
+                       outcome_phase_passive_suicidal_ideation == "3b" |
+                       outcome_phase_passive_suicidal_ideation == "4a" |
+                       outcome_phase_passive_suicidal_ideation == "4b" |
+                       outcome_phase_passive_suicidal_ideation == "5a" |
+                       outcome_phase_passive_suicidal_ideation == "6b" |
+                       outcome_phase_passive_suicidal_ideation == "7a" |
+                       outcome_phase_passive_suicidal_ideation == "8b" |
+                       outcome_phase_passive_suicidal_ideation == "9a") ~ "To drop", # First passive suicidal ideation occurred before first positive COVID test - need to drop
+                     
+                     exposure_phase_positive_covid_test == "10b" & # Positive COVID test at phase 10b
+                      (outcome_phase_passive_suicidal_ideation == "10b" | # Co-occurring outcome and exposure
+                       outcome_phase_passive_suicidal_ideation == "11a" |
+                       outcome_phase_passive_suicidal_ideation == "12b") ~ "Yes" # Experienced outcome AFTER or at SAME TIME as exposure
+                      )
          )
   
   
@@ -2012,19 +2233,28 @@ dat %>%
 # Phase 12b
 dat <- dat %>%
   mutate(positive_covid_test_PSS_12b =
-           case_when(virus.back_positive_antibodies_covid_.Wave_12b == "Yes" & # Positive COVID test at phase 12b
+           case_when(exposure_phase_positive_covid_test == "12b" & # First positive COVID test at phase 12b
+                       is.na(outcome_phase_passive_suicidal_ideation) ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
+
+                     exposure_phase_positive_covid_test == "12b" & # First positive COVID test at phase 12b
+                      (outcome_phase_passive_suicidal_ideation == "1a" |
+                       outcome_phase_passive_suicidal_ideation == "1b" | 
+                       outcome_phase_passive_suicidal_ideation == "2a" |
+                       outcome_phase_passive_suicidal_ideation == "2b" |
+                       outcome_phase_passive_suicidal_ideation == "3a" |
+                       outcome_phase_passive_suicidal_ideation == "3b" |
+                       outcome_phase_passive_suicidal_ideation == "4a" |
+                       outcome_phase_passive_suicidal_ideation == "4b" |
+                       outcome_phase_passive_suicidal_ideation == "5a" |
+                       outcome_phase_passive_suicidal_ideation == "6b" |
+                       outcome_phase_passive_suicidal_ideation == "7a" |
+                       outcome_phase_passive_suicidal_ideation == "8b" |
+                       outcome_phase_passive_suicidal_ideation == "9a" |
+                       outcome_phase_passive_suicidal_ideation == "10b" |
+                       outcome_phase_passive_suicidal_ideation == "11a") ~ "To drop", # First passive suicidal ideation occurred before first positive COVID test - need to drop
                      
-                       is.na(outcome_phase_passive_suicidal_ideation) | # Not experienced passive suicidal ideation during COPING
-                       outcome_phase_passive_suicidal_ideation == "12b" ~ "Yes", # Co-occurring outcome and exposure
-                     
-                     virus.back_positive_antibodies_covid_.Wave_12b == "Yes" &
-                     (outcome_phase_passive_suicidal_ideation == "1b" |
-                      outcome_phase_passive_suicidal_ideation == "2b" |
-                      outcome_phase_passive_suicidal_ideation == "3b" |
-                      outcome_phase_passive_suicidal_ideation == "4b" |
-                      outcome_phase_passive_suicidal_ideation == "6b" |
-                      outcome_phase_passive_suicidal_ideation == "8b" |
-                      outcome_phase_passive_suicidal_ideation == "10b") ~ "No" # Passive suicidal ideation occurred before COVID test
+                     exposure_phase_positive_covid_test == "12b" & # Positive COVID test at phase 12b
+                     outcome_phase_passive_suicidal_ideation == "12b" ~ "Yes" # Co-occurring outcome and exposure
                      )
          )
   
@@ -2035,14 +2265,29 @@ dat %>%
 ```
 
 Positive COVID test before passive suicidal ideation
-
++++ HAL HERE - check below chunk works/makes sense, then do other self-harm thoughts and behaviours
 NB: Have combined "Not had a test", "Negative test", and "Inconclusive test" as "Not positive", i.e., the only thing we count as positive is if someone has a taken a test and had a positive result. Everything else is "Not positive test" other than those who had not answered whether they had taken a test.
 +++ See comments above
 ```{r Positve COVID test result exposure passive suicidal ideation}
 dat <- dat %>%
   mutate(positive_covid_test_before_PSS =
-           case_when(
-                      # Had at least one positive covid test before passive suicidal ideation
+           case_when(# First positive COVID test NOT before first experience of low weight
+                    positive_covid_test_PSS_1b == "To drop" |
+                    positive_covid_test_PSS_2b == "To drop" |
+                    positive_covid_test_PSS_3b == "To drop" |
+                    positive_covid_test_PSS_4b == "To drop" |
+                    positive_covid_test_PSS_6b == "To drop" |
+                    positive_covid_test_PSS_8b == "To drop" |
+                    positive_covid_test_PSS_10b == "To drop" |
+                    positive_covid_test_PSS_12b == "To drop" ~ "Positive test after passive suicidal ideation", # Need to be dropped
+                    
+                     # Not answered whether they'd taken a test
+                    exposure_phase_positive_covid_test == "Not answered" ~ "Missing whether taken test", # Need to be dropped
+                    
+                     # Not answered whether they'd experienced binge eating 
+                    outcome_phase_passive_suicidal_ideation == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
+                    
+                    # First positive COVID test before first experience of passive suicidal ideation
                     positive_covid_test_PSS_1b == "Yes" |
                     positive_covid_test_PSS_2b == "Yes" |
                     positive_covid_test_PSS_3b == "Yes" |
@@ -2051,26 +2296,25 @@ dat <- dat %>%
                     positive_covid_test_PSS_8b == "Yes" |
                     positive_covid_test_PSS_10b == "Yes" |
                     positive_covid_test_PSS_12b == "Yes" ~ "Positive test before passive suicidal ideation",
+                  
+                    # Experienced exposure but not outcome
+                    positive_covid_test_PSS_1b == "No outcome" |
+                    positive_covid_test_PSS_2b == "No outcome" |
+                    positive_covid_test_PSS_3b == "No outcome" |
+                    positive_covid_test_PSS_4b == "No outcome" |
+                    positive_covid_test_PSS_6b == "No outcome" |
+                    positive_covid_test_PSS_8b == "No outcome" |
+                    positive_covid_test_PSS_10b == "No outcome" |
+                    positive_covid_test_PSS_12b == "No outcome" ~ "Exposure but no outcome",
                     
-                    # Not answered whether they'd taken a test
-                    is.na(virus.past_surveys_include_reported_.Wave_1b) &
-                    is.na(virus.past_surveys_include_reported_.Wave_2b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_3b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_4b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_6b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_8b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_10b)  &
-                    is.na(virus.past_surveys_include_reported_.Wave_12b) ~ "Missing whether taken test",
+                     # Experienced outcome but not exposure
+                    is.na(exposure_phase_positive_covid_test) &
+                     !is.na(outcome_phase_passive_suicidal_ideation) ~ "Outcome but no exposure",
                    
-                    # Positive COVID test after passive suicidal ideation
-                    positive_covid_test_PSS_1b == "No" |
-                    positive_covid_test_PSS_2b == "No" |
-                    positive_covid_test_PSS_3b == "No" |
-                    positive_covid_test_PSS_4b == "No" |
-                    positive_covid_test_PSS_6b == "No" |
-                    positive_covid_test_PSS_8b == "No" |
-                    positive_covid_test_PSS_10b == "No" |
-                    positive_covid_test_PSS_12b == "No" ~ "Positive test after passive suicidal ideation",
+                       # Experienced neither outcome nor exposure
+                    is.na(exposure_phase_positive_covid_test) &
+                     is.na(outcome_phase_passive_suicidal_ideation) ~ "Neither exposure nor outcome",
+                    
                     
                     # Not had a test
                      virus.past_surveys_include_reported_.Wave_1b == "No" |
@@ -2080,7 +2324,7 @@ dat <- dat %>%
                      virus.past_surveys_include_reported_.Wave_6b == "No" |
                      virus.past_surveys_include_reported_.Wave_8b == "No" |
                      virus.past_surveys_include_reported_.Wave_10b == "No" |
-                     virus.past_surveys_include_reported_.Wave_12b == "No"  ~ "Not had a test",
+                     virus.past_surveys_include_reported_.Wave_12b == "No"  ~ "Not had a test", # Will be grouped as 'Not positive' so order doesn't matter
                     
                     # Unsure/inconclusive test result 
                      virus.back_positive_antibodies_covid_.Wave_1b == "Unsure/inconclusive" |
@@ -2090,7 +2334,7 @@ dat <- dat %>%
                      virus.back_positive_antibodies_covid_.Wave_6b == "Unsure/inconclusive" |
                      virus.back_positive_antibodies_covid_.Wave_8b == "Unsure/inconclusive" |
                      virus.back_positive_antibodies_covid_.Wave_10b == "Unsure/inconclusive" |
-                     virus.back_positive_antibodies_covid_.Wave_12b == "Unsure/inconclusive"  ~ "Inconclusive test",
+                     virus.back_positive_antibodies_covid_.Wave_12b == "Unsure/inconclusive"  ~ "Inconclusive test", # Will be grouped as 'Not positive' so order doesn't matter
      
                      # Negative test result 
                      virus.back_positive_antibodies_covid_.Wave_1b == "No" |
@@ -2100,24 +2344,25 @@ dat <- dat %>%
                      virus.back_positive_antibodies_covid_.Wave_6b == "No" |
                      virus.back_positive_antibodies_covid_.Wave_8b == "No" |
                      virus.back_positive_antibodies_covid_.Wave_10b == "No" |
-                     virus.back_positive_antibodies_covid_.Wave_12b == "No"  ~ "Negative test"
+                     virus.back_positive_antibodies_covid_.Wave_12b == "No"  ~ "Negative test" # Will be grouped as 'Not positive' so order doesn't matter
       )
 )
                    
-# Check                     
-dat %>%
-  freq(positive_covid_test_before_PSS) 
-
-
-# Create final variable of positive covid test before passive suicidal ideation outcome
+# Create final variable of positive COVID test before passive suicidal ideation outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_PSS_final =
-           case_when(positive_covid_test_before_PSS == "Negative test" |
+           case_when(positive_covid_test_before_PSS == "Positive test after passive suicidal ideation" | # Need to drop people who first experienced outcome before first experience of exposure
+                     positive_covid_test_before_PSS == "Missing whether taken test" | # Need to drop people who never answered whether they'd taken a COVID test
+                     positive_covid_test_before_PSS == "Missing whether experienced passive suicidal ideation" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced passive suicidal ideation
+                     
+                     positive_covid_test_before_PSS == "Negative test" |
                      positive_covid_test_before_PSS == "Not had a test" |
                      positive_covid_test_before_PSS == "Inconclusive test" |
-                     positive_covid_test_before_PSS == "Positive test after passive suicidal ideation"  ~ "No",
-                     
-                     positive_covid_test_before_PSS == "Positive test before passive suicidal ideation" ~ "Yes")
+                     positive_covid_test_before_PSS == "Exposure but no outcome" |
+                     positive_covid_test_before_PSS ==  "Outcome but no exposure" |
+                     positive_covid_test_before_PSS ==  "Neither exposure nor outcome" ~ "No",
+                    
+                    positive_covid_test_before_PSS == "Positive test before passive suicidal ideation" ~ "Yes")
   )
 
 # Check
@@ -2128,7 +2373,7 @@ dat %>%
 ### Pandemic worry at baseline 
 ++NB: This needs work! Need to discuss how to score this; the below code was something I very quickly put toghether before my Centre talk. Participants are asked pandemic worry at follow up too, however I wonder if it would be best to just look at baseline as the exposure (as per Moritz's suggestion).
 
-Participants are asked how worried they are about different factors, e.g., mental health, or employment. Before working out total score - First need to work out if participants answered any of thse as 'not applicable' or if they did not answer (i.e., missing).
+Participants are asked how worried they are about different factors, e.g., mental health, or employment. Before working out total score - First need to work out if participants answered any of these as 'not applicable' or if they did not answer (i.e., missing).
 ```{r Pandemic worry as exposure, identifying not applicable or missing data}
 
 # Own Employment
@@ -2428,6 +2673,7 @@ dat$panworry_total_applicable <- 21 - dat$panworry_sumscore_missingness_not_appl
 dat %>%
   freq(panworry_total_applicable)    
 ```
+
 Highest possible score for each participant (i.e., multiply the number of questions they answered with the highest score they could possibly get on each question, i.e., 4)
 ```{r Pandemic worry highest possible score}
 
@@ -2658,6 +2904,15 @@ dat <- dat %>%
 dat %>%
   freq(panworry_total_score_percent)
 ```
+
+
+
+
+
+
+
+
+
 
 ### Loneliness at baseline
 

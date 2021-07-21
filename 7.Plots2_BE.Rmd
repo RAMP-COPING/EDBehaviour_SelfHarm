@@ -36,25 +36,17 @@ date
 
 # Read in data
 ```{r}
-dat <- readRDS(file = "../data_cleaned/data.final.with.ED.groups2021-05-31.rds")
+dat <- readRDS(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/dat.final2021-06-30.rds")
 dim(dat)
 colnames(dat)
-
-#Drop one dup cohort name columns
-dat$cohort_name.y <- NULL
-
-dat <- dat %>% 
-  rename(
-    cohort_name = cohort_name.x
-    )
 
 ```
 
 
-## Restructure data into long 
+# Restructure data into long 
 ```{r }
 
-dat.long <- dat %>%
+dat.wide <- dat %>%
   pivot_longer(
     cols = (starts_with("ed_scid5.regular_episodes_eating_binges_.") &
               contains("Wave")),
@@ -66,12 +58,10 @@ dat.long <- dat %>%
      values_from = "value")
 
 ```
-******need new variable that indicates whether X is new experience or not
 
-##NEW experience of binge; phases
+# NEW experience of binge; phases
 ```{r}
-
-dat <- dat %>%
+dat.wide <- dat.wide %>%
   mutate(new_binge_eating_each_wave =
            case_when(lifetime_binge_eating_baseline_numeric == 0 &
                      ed_scid5.regular_episodes_eating_binges == "Yes" &
@@ -114,55 +104,55 @@ dat <- dat %>%
                      
         
 #Check
-dat %>%
+dat.wide %>%
   freq(new_binge_eating_each_wave)
 
 #Convert to individual variables
-dat <- dat %>%
+dat.wide <- dat.wide %>%
   mutate(ed.screener_new_binge_eating_phase_1b =
            case_when(new_binge_eating_each_wave == 1 ~ 1
                      )
          )
   
 
-dat <- dat %>%
+dat.wide <- dat.wide %>%
   mutate(ed.screener_new_binge_eating_phase_2b =
            case_when(new_binge_eating_each_wave == 2 ~ 1
                      )
          )
   
-dat <- dat %>%
+dat.wide <- dat.wide %>%
   mutate(ed.screener_new_binge_eating_phase_3b =
            case_when(new_binge_eating_each_wave == 3 ~ 1
                      )
          )
   
-dat <- dat %>%
+dat.wide <- dat.wide %>%
   mutate(ed.screener_new_binge_eating_phase_4b =
            case_when(new_binge_eating_each_wave == 4 ~ 1
                      )
          )
   
-dat <- dat %>%
+dat.wide <- dat.wide %>%
   mutate(ed.screener_new_binge_eating_phase_6b =
            case_when(new_binge_eating_each_wave == 5 ~ 1
                      )
          )
   
-dat <- dat %>%
+dat.wide <- dat.wide %>%
   mutate(ed.screener_new_binge_eating_phase_8b =
            case_when(new_binge_eating_each_wave == 6 ~ 1
                      )
          )
   
-dat <- dat %>%
+dat.wide <- dat.wide %>%
   mutate(ed.screener_new_binge_eating_phase_10b =
            case_when(new_binge_eating_each_wave == 7 ~ 1
                      )
          )
   
 
-dat <- dat %>%
+dat.wide <- dat.wide %>%
   mutate(ed.screener_new_binge_eating_phase_12b =
            case_when(new_binge_eating_each_wave == 8 ~ 1
                      )
@@ -172,21 +162,10 @@ dat <- dat %>%
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-## Restructure data into long again for new experiences
+## Restructure data into long then wide again for new experiences
 ```{r }
 
-dat.long <- dat.long %>%
+dat.wide2 <- dat.wide %>%
   pivot_longer(
     cols = (starts_with("ed.screener_new_binge_eating_phase") &
               contains("phase")),
@@ -198,10 +177,11 @@ dat.long <- dat.long %>%
      values_from = "NEW_value")
 
 ```
-#Create new column indicating if experience was new or not
+
+# Create new column indicating if experience was new or not
 ```{r}
-dat.long <- dat.long %>%
-  split(factor(dat.long[["ID"]])) %>%
+dat.wide2 <- dat.wide2 %>%
+  split(factor(dat.wide2[["ID"]])) %>%
   map(function(dat){
         which_new <- which(dat[["ed_scid5.regular_episodes_eating_binges"]] == "Yes")[1]
         print(which_new)
@@ -225,6 +205,20 @@ dat.long <- dat.long %>%
         
         
 ```
+*** Have saved dataset here because above chunk took ~1 hour to run!
+
+Save dataset (interim)
+```{r Save dataset(interim)}
+
+saveRDS(object = dat.wide2, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/dat.wide2", date, ".rds"))
+```
+
+```{r Read in data}
+dat <- readRDS(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/dat.wide22021-07-15.rds")
+dim(dat)
+colnames(dat)
+
+```
 
 
 ##PLOTS - Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
@@ -232,7 +226,7 @@ dat.long <- dat.long %>%
 #1. Get rid of NAs and change edeq to factor
 ```{r}
 #get rid of nas
-dat.no.nas <- dat.long[!is.na(dat.long$ed_scid5.regular_episodes_eating_binges),]
+dat.no.nas <- dat[!is.na(dat$ed_scid5.regular_episodes_eating_binges),]
 ```
 
 #1. Change wave to factor and re-order
@@ -253,9 +247,6 @@ dat.no.nas <- dat.no.nas %>%
 
 #Check that this worked
 summary(dat.no.nas$phase)
-
-
-dat.no.nas$
 ```
 
 #4. Rename waves to dates
