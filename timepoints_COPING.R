@@ -319,3 +319,67 @@ coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>%
     
     startDate_waves >= start16 & startDate_waves < end16 ~ ".Wave_12b"))
 
+
+
+coping.followupa.resp.id <-  coping.followupa.resp.id %>%
+  
+  mutate(wave_resp =  case_when(startDate_waves >= start3 & startDate_waves < end3 ~ ".Wave_2a",
+                               
+                               startDate_waves >= start4 & startDate_waves < end4 ~ ".Wave_2b",
+                               
+                               startDate_waves >= start5 & startDate_waves < end5 ~ ".Wave_3a",
+                               
+                               startDate_waves >= start6 & startDate_waves < end6 ~ ".Wave_3b",
+                               
+                               startDate_waves >= start7 & startDate_waves < end7 ~ ".Wave_4a",
+                               
+                               startDate_waves >= start8 & startDate_waves < end8 ~ ".Wave_4b",
+                               
+                               startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave_5a",
+                               
+                               startDate_waves >= start10 & startDate_waves < end10 ~ ".Wave_6b",
+                               
+                               startDate_waves >= start11 & startDate_waves < end11 ~ ".Wave_7a",
+                               
+                               startDate_waves >= start12 & startDate_waves < end12 ~ ".Wave_8b",
+                               
+                               startDate_waves >= start13 & startDate_waves < end13 ~ ".Wave_9a",
+                               
+                               startDate_waves >= start14 & startDate_waves < end14 ~ ".Wave_10b",
+                               
+                               startDate_waves >= start15 & startDate_waves < end15 ~ ".Wave_11a",
+                               
+                               startDate_waves >= start16 & startDate_waves < end16 ~ ".Wave_12b"
+  ))
+
+
+coping.followupb.resp.id <-  coping.followupb.resp.id %>%
+  
+  mutate(wave_resp =  case_when(startDate_waves >= start3 & startDate_waves < end3 ~ ".Wave_2a",
+                                
+                                startDate_waves >= start4 & startDate_waves < end4 ~ ".Wave_2b",
+                                
+                                startDate_waves >= start5 & startDate_waves < end5 ~ ".Wave_3a",
+                                
+                                startDate_waves >= start6 & startDate_waves < end6 ~ ".Wave_3b",
+                                
+                                startDate_waves >= start7 & startDate_waves < end7 ~ ".Wave_4a",
+                                
+                                startDate_waves >= start8 & startDate_waves < end8 ~ ".Wave_4b",
+                                
+                                startDate_waves >= start9 & startDate_waves < end9 ~ ".Wave_5a",
+                                
+                                startDate_waves >= start10 & startDate_waves < end10 ~ ".Wave_6b",
+                                
+                                startDate_waves >= start11 & startDate_waves < end11 ~ ".Wave_7a",
+                                
+                                startDate_waves >= start12 & startDate_waves < end12 ~ ".Wave_8b",
+                                
+                                startDate_waves >= start13 & startDate_waves < end13 ~ ".Wave_9a",
+                                
+                                startDate_waves >= start14 & startDate_waves < end14 ~ ".Wave_10b",
+                                
+                                startDate_waves >= start15 & startDate_waves < end15 ~ ".Wave_11a",
+                                
+                                startDate_waves >= start16 & startDate_waves < end16 ~ ".Wave_12b"
+  ))

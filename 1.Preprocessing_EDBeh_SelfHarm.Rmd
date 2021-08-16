@@ -44,9 +44,9 @@ Specify cohort
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 
@@ -1919,6 +1919,8 @@ dim(edeq.ramp.followupb.screener.raw)[1]-dim(edeq.ramp.followupb.screener.raw.id
 }
 ```
 
+There are data on whether people have taken a COVID test and what result they have received in two datasets: "Virus" and "Resp". "Virus" questionnaire is asked only at follow up B. The "resp" questionnaire is asked at baseline and every single follow up. I will use both to find whether someone has a positive COVID test.
+
 # Virus follow up B
 ## COPING
 ### Read in data
@@ -2024,6 +2026,524 @@ dim(ramp.followupb.virus.id)
 colnames(ramp.followupb.virus.id)
 #Differences
 dim(ramp.followupb.virus.id)[1]-dim(ramp.followupb.virus.id)[1]
+}
+```
+
+# Resp baseline
+## GLAD
+### Read in data
+```{r Read in data GLAD baseline resp}
+if(GLAD == TRUE){
+glad.baseline.resp <- readRDS(file = "../data_raw/glad/resp_coping_glad.rds")
+dim(glad.baseline.resp)
+colnames(glad.baseline.resp)
+}
+```
+
+Select variables GLAD baseline resp
+```{r Select variables GLAD baseline resp}
+if(GLAD == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_baseline",
+                  "endDate")
+
+glad.baseline.resp.id <- glad.baseline.resp %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_glad", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         resp.nose_throat_swab_test = resp.throat_swab_coronavirus_nose,
+         resp.results_nose_throat_swab_test = resp.throat_swab_test_nose,
+         resp.antibody_test = resp.coronavirus_antibody_test,
+         resp.results_antibody_test = resp.results_antibody_test
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(glad.baseline.resp.id)
+# Inspect colnames
+colnames(glad.baseline.resp.id)
+#Differences
+dim(glad.baseline.resp)[1]-dim(glad.baseline.resp.id)[1]
+}
+```
+
+# Resp baseline
+## EDGI
+### Read in data
+```{r Read in data EDGI baseline resp}
+if(EDGI == TRUE){
+edgi.baseline.resp <- readRDS(file = "../data_raw/edgi/resp_coping_edgi.rds")
+dim(edgi.baseline.resp)
+colnames(edgi.baseline.resp)
+}
+```
+
+Select variables EDGI baseline resp
+```{r Select variables EDGI baseline resp}
+if(EDGI == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_baseline",
+                  "endDate")
+
+edgi.baseline.resp.id <- edgi.baseline.resp %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         resp.nose_throat_swab_test = resp.throat_swab_coronavirus_nose,
+         resp.results_nose_throat_swab_test = resp.throat_swab_test_nose,
+         resp.antibody_test = resp.coronavirus_antibody_test,
+         resp.results_antibody_test = resp.results_antibody_test
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(edgi.baseline.resp.id)
+# Inspect colnames
+colnames(edgi.baseline.resp.id)
+#Differences
+dim(edgi.baseline.resp)[1]-dim(edgi.baseline.resp.id)[1]
+}
+```
+
+# Resp baseline
+## NBR
+### Read in data
+```{r Read in data NBR baseline resp}
+if(NBR == TRUE){
+nbr.baseline.resp <- readRDS(file = "../data_raw/nbr/resp_coping_nbr.rds")
+dim(nbr.baseline.resp)
+colnames(nbr.baseline.resp)
+}
+```
+
+Select variables NBR baseline resp
+```{r Select variables NBR baseline resp}
+if(NBR == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_baseline",
+                  "endDate")
+
+nbr.baseline.resp.id <- nbr.baseline.resp %>% #new dataset with ID
+  drop_na(subjectid) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "nbr", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         resp.nose_throat_swab_test = resp.throat_swab_coronavirus_nose,
+         resp.results_nose_throat_swab_test = resp.throat_swab_test_nose,
+         resp.antibody_test = resp.coronavirus_antibody_test,
+         resp.results_antibody_test = resp.results_antibody_test
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(nbr.baseline.resp.id)
+# Inspect colnames
+colnames(nbr.baseline.resp.id)
+#Differences
+dim(nbr.baseline.resp)[1]-dim(nbr.baseline.resp.id)[1]
+}
+```
+
+# Resp baseline
+## RAMP
+### Read in data
+NB: In the RAMP baseline, participants are asked whether they've had tests in the last week, rather than ever as in GLAD, NBR, and EDGI.
+```{r Read in data RAMP baseline resp}
+if(RAMP == TRUE){
+ramp.baseline.resp <- readRDS(file = "../data_raw/ramp/resp_ramp.rds")
+dim(ramp.baseline.resp)
+colnames(ramp.baseline.resp)
+}
+
+```
+
+Select variables RAMP baseline resp
+```{r Select variables RAMP baseline resp}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_baseline",
+                  "endDate")
+
+ramp.baseline.resp.id <- ramp.baseline.resp %>% #new dataset with ID
+  drop_na(`Login ID`) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         resp.nose_throat_swab_test = resp.throat_swab_coronavirus_nose,
+         resp.results_nose_throat_swab_test = resp.throat_swab_test_nose,
+         resp.antibody_test = resp.coronavirus_week_antibody_test,
+         resp.results_antibody_test = resp.results_antibody_test
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(ramp.baseline.resp.id)
+# Inspect colnames
+colnames(ramp.baseline.resp.id)
+#Differences
+dim(ramp.baseline.resp)[1]-dim(ramp.baseline.resp.id)[1]
+}
+```
+# Resp follow up A
+## COPING 1
+### Read in data
+```{r Read in data COPING follow up A resp}
+if(COPING == TRUE){
+coping.followupa1.resp <- readRDS(file = "../data_raw/coping/resp_coping_followupa.rds")
+dim(coping.followupa1.resp)
+colnames(coping.followupa1.resp)
+}
+```
+
+Select variables COPING follow up A resp
+```{r Select variables COPING follow up A resp}
+if(COPING == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+coping.followupa1.resp.id <- coping.followupa1.resp %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         resp.nose_throat_swab_test = resp.throat_swab_nose_test,
+         resp.results_nose_throat_swab_test = resp.throat_swab_test_nose,
+         resp.antibody_test = resp.coronavirus_week_antibody_test,
+         resp.results_antibody_test = resp.results_antibody_test
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(coping.followupa1.resp.id)
+# Inspect colnames
+colnames(coping.followupa1.resp.id)
+#Differences
+dim(coping.followupa1.resp)[1]-dim(coping.followupa1.resp.id)[1]
+}
+```
+
+# Resp follow up A
+## COPING 2 ongoing
+### Read in data
+```{r Read in data COPING follow up A ongoing resp}
+if(COPING == TRUE){
+coping.followupa2.resp <- readRDS(file = "../data_raw/coping/resp_coping_followupa_ongoing.rds")
+dim(coping.followupa2.resp)
+colnames(coping.followupa2.resp)
+}
+```
+
+Select variables COPING follow up A ongoing resp
+```{r Select variables COPING follow up A ongoing resp}
+if(COPING == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+coping.followupa2.resp.id <- coping.followupa2.resp %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         resp.nose_throat_swab_test = resp.throat_swab_nose_test,
+         resp.results_nose_throat_swab_test = resp.throat_swab_test_nose,
+         resp.antibody_test = resp.coronavirus_week_antibody_test,
+         resp.results_antibody_test = resp.results_antibody_test
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(coping.followupa2.resp.id)
+# Inspect colnames
+colnames(coping.followupa2.resp.id)
+#Differences
+dim(coping.followupa2.resp)[1]-dim(coping.followupa2.resp.id)[1]
+}
+```
+
+Combine resp COPING follow up A datasets 
+```{r Combine COPING follow up A resp datasets}
+if(COPING == TRUE){
+    coping.followupa.resp.id <- rbind(coping.followupa1.resp.id,
+                                      coping.followupa2.resp.id) 
+    # **Note that some people may be in both datasets, i.e. answered the questionnaire using the original link during the time period that is considered the start of the 'ongoing' dataset, before realising and answering through the correct link. Example - questionnaires answered on the 29th July are present in both datasets. This is fine - as long as it's different people. Will need to filter by duplicate ID and duplicate wave once wave variable is created.
+  
+# Inspect dimensions
+  dim(coping.followupa.resp.id)
+# Inspect colnames
+  colnames(coping.followupa.resp.id)
+}
+```
+# Resp follow up B
+## COPING 
+### Read in data
+```{r Read in data COPING follow up B resp}
+if(COPING == TRUE){
+coping.followupb.resp <- readRDS(file = "../data_raw/coping/resp_coping_followupb.rds")
+dim(coping.followupb.resp)
+colnames(coping.followupb.resp)
+}
+```
+
+Select variables COPING follow up B resp
+```{r Select variables COPING follow up B resp}
+if(COPING == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+coping.followupb.resp.id <- coping.followupb.resp %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         resp.nose_throat_swab_test = resp.throat_swab_nose_coronavirus,
+         resp.results_nose_throat_swab_test = resp.throat_swab_test_nose,
+         resp.antibody_test = resp.antibody_test_coronavirus_week,
+         resp.results_antibody_test = resp.antibody_test_results
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(coping.followupb.resp.id)
+# Inspect colnames
+colnames(coping.followupb.resp.id)
+#Differences
+dim(coping.followupb.resp)[1]-dim(coping.followupb.resp.id)[1]
+}
+```
+
+# Resp follow up A
+## RAMP 
+### Read in data
+```{r Read in data RAMP follow up A resp}
+if(RAMP == TRUE){
+ramp.followupa.resp <- readRDS(file = "../data_raw/ramp/resp_ramp_followupa.rds")
+dim(ramp.followupa.resp)
+colnames(ramp.followupa.resp)
+}
+```
+
+Select variables RAMP follow up A resp
+```{r Select variables RAMP follow up A resp}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+ramp.followupa.resp.id <- ramp.followupa.resp %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         resp.nose_throat_swab_test = resp.throat_swab_nose_test,
+         resp.results_nose_throat_swab_test = resp.throat_swab_test_nose,
+         resp.antibody_test = resp.coronavirus_weeks_antibody_test,
+         resp.results_antibody_test = resp.results_antibody_test
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(ramp.followupa.resp.id)
+# Inspect colnames
+colnames(ramp.followupa.resp.id)
+#Differences
+dim(ramp.followupa.resp)[1]-dim(ramp.followupa.resp.id)[1]
+}
+```
+
+# Resp follow up B
+## RAMP 
+### Read in data
+```{r Read in data RAMP follow up B resp}
+if(RAMP == TRUE){
+ramp.followupb.resp <- readRDS(file = "../data_raw/ramp/resp_ramp_followupb.rds")
+dim(ramp.followupb.resp)
+colnames(ramp.followupb.resp)
+}
+```
+
+Select variables RAMP follow up B resp
+```{r Select variables RAMP follow up B resp}
+if(RAMP == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate_waves",
+                  "endDate")
+
+ramp.followupb.resp.id <- ramp.followupb.resp %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  #distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "ramp", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_waves = startDate,
+         resp.nose_throat_swab_test = resp.throat_swab_nose_coronavirus,
+         resp.results_nose_throat_swab_test = resp.throat_swab_test_nose,
+         resp.antibody_test = resp.antibody_test_coronavirus_weeks,
+         resp.results_antibody_test = resp.antibody_test_results
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  #mutate_if(is.numeric, ~na_if(., -99)) %>%
+ # mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  #mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  #mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+ # mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) # Drop empty factor levels
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+ # mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  #mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(ramp.followupb.resp.id)
+# Inspect colnames
+colnames(ramp.followupb.resp.id)
+#Differences
+dim(ramp.followupb.resp)[1]-dim(ramp.followupb.resp.id)[1]
 }
 ```
 
@@ -4486,7 +5006,7 @@ nrow(dat.raw.taf.ramp)
 }
 ```
 
-# TIMEPOINTS / PHASES - TAF RAMP - EDEQ SCREENER RAMP
+# TIMEPOINTS / PHASES - RAMP - EDEQ SCREENER RAMP
 
 **Need to think about people who answered EDEQ screener (which is only in follow up B) in an 'A' timepoint = 11 people
 (think will just drop them for the plots, but for the regression should actually keep them)
@@ -4698,6 +5218,166 @@ ramp.loss.followupb.raw.id  <- ramp.loss.followupb.raw.id %>%
 # Check number of rows
 nrow(ramp.loss.followupb.raw.id)
 }
+```
+
+# TIMEPOINTS / PHASES - RESP RAMP 
+
+Join RAMP resp datasets follow ups
+```{r Merge RAMP resp}
+if(RAMP == TRUE) {
+ramp.followup.resp.id <- rbind(ramp.followupa.resp.id,
+    ramp.followupb.resp.id)
+
+# Check column names
+colnames(ramp.followup.resp.id)
+}
+```
+
+Check number of entries per wave
+```{r Check number of entries per wave RAMP resp}
+if(RAMP == TRUE) {
+ramp.followup.resp.id %>%
+  group_by(wave_resp) %>%
+  count()
+}
+```
+
+Idenfity duplicate IDs in a single wave
+```{r Idenfity duplicate IDs in a single wave RAMP resp}
+if(RAMP == TRUE) {
+# Identify dup IDs in a single wave
+ramp.followup.resp.id %>%
+   group_by(wave_resp, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+Want the LATER data entry from people who answered twice within a single wave (again, for now!)
+[want ID AND wave to be unique]
+```{r Later date entry RAMP resp}
+if(RAMP == TRUE) {
+
+# Confirm number of rows in current dataset
+nrow(ramp.followup.resp.id)
+
+# Filter out duplicated IDs AND wave, keeping the LAST entry
+ramp.followup.resp.id <- ramp.followup.resp.id %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_resp,
+                      fromLast = TRUE)
+           )
+
+# Confirm number of rows in dataset after filtering 
+nrow(ramp.followup.resp.id)
+}
+```
+
+Change follow up RAMP resp to wide format
+```{r RAMP resp wide format}
+if(RAMP == TRUE) {
+ramp.followup.resp.id <- ramp.followup.resp.id %>%
+  group_by(wave_resp) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_resp, 
+                     values_from = c(resp.nose_throat_swab_test,
+         resp.results_nose_throat_swab_test,
+         resp.antibody_test,
+         resp.results_antibody_test)) 
+  
+} 
+```
+
+Select variables for dataset RAMP resp
+```{r Select variables for dataset RAMP resp}
+if(RAMP == TRUE) {
+ramp.followup.resp.id <- ramp.followup.resp.id  %>%
+  select(ID,
+         `resp.nose_throat_swab_test_.Wave_1a`,
+         `resp.nose_throat_swab_test_.Wave_1b`,
+         `resp.nose_throat_swab_test_.Wave_2a`,
+         `resp.nose_throat_swab_test_.Wave_2b` ,
+         `resp.nose_throat_swab_test_.Wave_3a`,
+         `resp.nose_throat_swab_test_.Wave_3b` , 
+         `resp.nose_throat_swab_test_.Wave_4a`,
+         `resp.nose_throat_swab_test_.Wave_4b`,
+         `resp.nose_throat_swab_test_.Wave_5a`,
+         `resp.nose_throat_swab_test_.Wave_6b`,
+         `resp.nose_throat_swab_test_.Wave_7a`,
+         `resp.nose_throat_swab_test_.Wave_8b`,
+         `resp.nose_throat_swab_test_.Wave_9a`,
+         `resp.nose_throat_swab_test_.Wave_10b`,
+         `resp.nose_throat_swab_test_.Wave_11a`,
+         `resp.nose_throat_swab_test_.Wave_12b`,
+         
+         `resp.results_nose_throat_swab_test_.Wave_1a`,
+         `resp.results_nose_throat_swab_test_.Wave_1b`,
+         `resp.results_nose_throat_swab_test_.Wave_2a`,
+         `resp.results_nose_throat_swab_test_.Wave_2b` ,
+         `resp.results_nose_throat_swab_test_.Wave_3a`,
+         `resp.results_nose_throat_swab_test_.Wave_3b` , 
+         `resp.results_nose_throat_swab_test_.Wave_4a`,
+         `resp.results_nose_throat_swab_test_.Wave_4b`,
+         `resp.results_nose_throat_swab_test_.Wave_5a`,
+         `resp.results_nose_throat_swab_test_.Wave_6b`,
+         `resp.results_nose_throat_swab_test_.Wave_7a`,
+         `resp.results_nose_throat_swab_test_.Wave_8b`,
+         `resp.results_nose_throat_swab_test_.Wave_9a`,
+         `resp.results_nose_throat_swab_test_.Wave_10b`,
+         `resp.results_nose_throat_swab_test_.Wave_11a`,
+         `resp.results_nose_throat_swab_test_.Wave_12b`,
+         
+          `resp.antibody_test_.Wave_1a`,
+         `resp.antibody_test_.Wave_1b`,
+         `resp.antibody_test_.Wave_2a`,
+         `resp.antibody_test_.Wave_2b` ,
+         `resp.antibody_test_.Wave_3a`,
+         `resp.antibody_test_.Wave_3b` , 
+         `resp.antibody_test_.Wave_4a`,
+         `resp.antibody_test_.Wave_4b`,
+         `resp.antibody_test_.Wave_5a`,
+         `resp.antibody_test_.Wave_6b`,
+         `resp.antibody_test_.Wave_7a`,
+         `resp.antibody_test_.Wave_8b`,
+         `resp.antibody_test_.Wave_9a`,
+         `resp.antibody_test_.Wave_10b`,
+         `resp.antibody_test_.Wave_11a`,
+         `resp.antibody_test_.Wave_12b`,
+         
+         `resp.results_antibody_test_.Wave_1a`,
+         `resp.results_antibody_test_.Wave_1b`,
+         `resp.results_antibody_test_.Wave_2a`,
+         `resp.results_antibody_test_.Wave_2b` ,
+         `resp.results_antibody_test_.Wave_3a`,
+         `resp.results_antibody_test_.Wave_3b` , 
+         `resp.results_antibody_test_.Wave_4a`,
+         `resp.results_antibody_test_.Wave_4b`,
+         `resp.results_antibody_test_.Wave_5a`,
+         `resp.results_antibody_test_.Wave_6b`,
+         `resp.results_antibody_test_.Wave_7a`,
+         `resp.results_antibody_test_.Wave_8b`,
+         `resp.results_antibody_test_.Wave_9a`,
+         `resp.results_antibody_test_.Wave_10b`,
+         `resp.results_antibody_test_.Wave_11a`,
+         `resp.results_antibody_test_.Wave_12b`)
+}
+```
+
+Remove duplicate RAMP resp screener
+```{r Remove duplicate IDs RAMP resp}
+if(RAMP == TRUE) {
+# Check col names
+colnames(ramp.followup.resp.id)
+
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+ramp.followup.resp.id  <- ramp.followup.resp.id  %>%
+  filter(., !duplicated(ID)) 
+
+# Check number of rows
+nrow(ramp.followup.resp.id)
+}
+
 ```
 
 # TIMEPOINTS / PHASES - COPING demographics
@@ -5556,6 +6236,167 @@ nrow(dat.raw.taf.coping)
 
 ```
 
+
+# TIMEPOINTS / PHASES - RESP COPING 
+
+Join COPING resp datasets follow ups
+```{r Merge COPING resp}
+if(COPING == TRUE) {
+coping.followup.resp.id <- rbind(coping.followupa.resp.id,
+    coping.followupb.resp.id)
+
+# Check column names
+colnames(coping.followup.resp.id)
+}
+```
+
+Check number of entries per wave
+```{r Check number of entries per wave COPING resp}
+if(COPING == TRUE) {
+coping.followup.resp.id %>%
+  group_by(wave_resp) %>%
+  count()
+}
+```
+
+Idenfity duplicate IDs in a single wave
+```{r Idenfity duplicate IDs in a single wave COPING resp}
+if(COPING == TRUE) {
+# Identify dup IDs in a single wave
+coping.followup.resp.id %>%
+   group_by(wave_resp, ID) %>%
+   summarize(N = n()) %>%
+   filter(N > 1)
+}
+```
+
+Want the LATER data entry from people who answered twice within a single wave (again, for now!)
+[want ID AND wave to be unique]
+```{r Later date entry COPING resp}
+if(COPING == TRUE) {
+
+# Confirm number of rows in current dataset
+nrow(coping.followup.resp.id)
+
+# Filter out duplicated IDs AND wave, keeping the LAST entry
+coping.followup.resp.id <- coping.followup.resp.id %>% 
+    group_by(ID) %>% 
+    filter(!duplicated(wave_resp,
+                      fromLast = TRUE)
+           )
+
+# Confirm number of rows in dataset after filtering 
+nrow(coping.followup.resp.id)
+}
+```
+
+Change follow up COPING resp to wide format
+```{r COPING resp wide format}
+if(COPING == TRUE) {
+coping.followup.resp.id <- coping.followup.resp.id %>%
+  group_by(wave_resp) %>%
+  mutate(row = row_number()) %>%
+  tidyr::pivot_wider(id_cols = ID,
+    names_from = wave_resp, 
+                     values_from = c(resp.nose_throat_swab_test,
+         resp.results_nose_throat_swab_test,
+         resp.antibody_test,
+         resp.results_antibody_test)) 
+  
+} 
+```
+
+Select variables for dataset COPING resp
+```{r Select variables for dataset COPING resp}
+if(COPING == TRUE) {
+coping.followup.resp.id <- coping.followup.resp.id  %>%
+  select(ID,
+         #`resp.nose_throat_swab_test_.Wave_1a`,
+        # `resp.nose_throat_swab_test_.Wave_1b`,
+         `resp.nose_throat_swab_test_.Wave_2a`,
+         `resp.nose_throat_swab_test_.Wave_2b` ,
+         `resp.nose_throat_swab_test_.Wave_3a`,
+         `resp.nose_throat_swab_test_.Wave_3b` , 
+         `resp.nose_throat_swab_test_.Wave_4a`,
+         `resp.nose_throat_swab_test_.Wave_4b`,
+         `resp.nose_throat_swab_test_.Wave_5a`,
+         `resp.nose_throat_swab_test_.Wave_6b`,
+         `resp.nose_throat_swab_test_.Wave_7a`,
+         `resp.nose_throat_swab_test_.Wave_8b`,
+         `resp.nose_throat_swab_test_.Wave_9a`,
+         `resp.nose_throat_swab_test_.Wave_10b`,
+         `resp.nose_throat_swab_test_.Wave_11a`,
+         `resp.nose_throat_swab_test_.Wave_12b`,
+         
+        # `resp.results_nose_throat_swab_test_.Wave_1a`,
+        # `resp.results_nose_throat_swab_test_.Wave_1b`,
+         `resp.results_nose_throat_swab_test_.Wave_2a`,
+         `resp.results_nose_throat_swab_test_.Wave_2b` ,
+         `resp.results_nose_throat_swab_test_.Wave_3a`,
+         `resp.results_nose_throat_swab_test_.Wave_3b` , 
+         `resp.results_nose_throat_swab_test_.Wave_4a`,
+         `resp.results_nose_throat_swab_test_.Wave_4b`,
+         `resp.results_nose_throat_swab_test_.Wave_5a`,
+         `resp.results_nose_throat_swab_test_.Wave_6b`,
+         `resp.results_nose_throat_swab_test_.Wave_7a`,
+         `resp.results_nose_throat_swab_test_.Wave_8b`,
+         `resp.results_nose_throat_swab_test_.Wave_9a`,
+         `resp.results_nose_throat_swab_test_.Wave_10b`,
+         `resp.results_nose_throat_swab_test_.Wave_11a`,
+         `resp.results_nose_throat_swab_test_.Wave_12b`,
+         
+        #  `resp.antibody_test_.Wave_1a`,
+        # `resp.antibody_test_.Wave_1b`,
+         `resp.antibody_test_.Wave_2a`,
+         `resp.antibody_test_.Wave_2b` ,
+         `resp.antibody_test_.Wave_3a`,
+         `resp.antibody_test_.Wave_3b` , 
+         `resp.antibody_test_.Wave_4a`,
+         `resp.antibody_test_.Wave_4b`,
+         `resp.antibody_test_.Wave_5a`,
+         `resp.antibody_test_.Wave_6b`,
+         `resp.antibody_test_.Wave_7a`,
+         `resp.antibody_test_.Wave_8b`,
+         `resp.antibody_test_.Wave_9a`,
+         `resp.antibody_test_.Wave_10b`,
+         `resp.antibody_test_.Wave_11a`,
+         `resp.antibody_test_.Wave_12b`,
+         
+        # `resp.results_antibody_test_.Wave_1a`,
+       #  `resp.results_antibody_test_.Wave_1b`,
+         `resp.results_antibody_test_.Wave_2a`,
+         `resp.results_antibody_test_.Wave_2b` ,
+         `resp.results_antibody_test_.Wave_3a`,
+         `resp.results_antibody_test_.Wave_3b` , 
+         `resp.results_antibody_test_.Wave_4a`,
+         `resp.results_antibody_test_.Wave_4b`,
+         `resp.results_antibody_test_.Wave_5a`,
+         `resp.results_antibody_test_.Wave_6b`,
+         `resp.results_antibody_test_.Wave_7a`,
+         `resp.results_antibody_test_.Wave_8b`,
+         `resp.results_antibody_test_.Wave_9a`,
+         `resp.results_antibody_test_.Wave_10b`,
+         `resp.results_antibody_test_.Wave_11a`,
+         `resp.results_antibody_test_.Wave_12b`)
+}
+```
+
+Remove duplicate COPING resp screener
+```{r Remove duplicate IDs COPING resp}
+if(COPING == TRUE) {
+# Check col names
+colnames(coping.followup.resp.id)
+
+# Remove dupilcate IDs (as each wave is now a column, there should be NO dup IDs)
+coping.followup.resp.id  <- coping.followup.resp.id  %>%
+  filter(., !duplicated(ID)) 
+
+# Check number of rows
+nrow(coping.followup.resp.id)
+}
+
+```
+
 # TIMEPOINTS / PHASES - loss of a loved one due to COVID COPING
 ```{r Identify phase dates loss of a loved one due to COVID COPING}
 if (COPING ==TRUE) {
@@ -5981,6 +6822,7 @@ saveRDS(object = dat.raw.taf.coping, file = paste0("/Users/helenadavies/werk/EDB
   
    saveRDS(object = coping.followupb.virus.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/VIRUS_coping_followup", date, ".rds"))
 
+     saveRDS(object = coping.followup.resp.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/RESP_coping_followup", date, ".rds"))
 }
 
 if(RAMP == TRUE) {
@@ -5995,6 +6837,7 @@ if(RAMP == TRUE) {
    
     saveRDS(object = ramp.followupb.virus.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/VIRUS_ramp_followup", date, ".rds"))
    
+    saveRDS(object = ramp.followup.resp.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/RESP_ramp_followup", date, ".rds"))
 }
 
 ```
@@ -6250,7 +7093,16 @@ edgi.10 <- edgi.loss.baseline.raw.id %>%
          cohort_name,
          grief.covid_lost_due_close,
          grief.suffered_past_month_loss)
-  
+
+
+edgi.11 <- edgi.baseline.resp.id %>%
+  select(ID, 
+         cohort_name,
+         resp.nose_throat_swab_test,
+         resp.results_nose_throat_swab_test,
+         resp.antibody_test,
+         resp.results_antibody_test)
+
        
 ##See if IDs match with edgi.5
 x <- edgi.5[edgi.5$ID %in% edgi.4$ID,]
@@ -6276,7 +7128,8 @@ dfs.list <- list(
   edgi.7,
   edgi.8,
   edgi.9, 
-  edgi.10
+  edgi.10,
+  edgi.11
 )
 }
 ```
@@ -6553,6 +7406,14 @@ glad.9 <- glad.loss.baseline.raw.id %>%
          cohort_name,
          grief.covid_lost_due_close,
          grief.suffered_past_month_loss)
+
+glad.10 <-  glad.baseline.resp.id %>%
+  select(ID, 
+         cohort_name,
+         resp.nose_throat_swab_test,
+         resp.results_nose_throat_swab_test,
+         resp.antibody_test,
+         resp.results_antibody_test)
   
 # See if IDs match with glad.3
 x <- glad.3[glad.3$ID %in% glad.1$ID,]
@@ -6578,7 +7439,8 @@ dfs.list <- list(
   glad.6,
   glad.7,
   glad.8,
-  glad.9
+  glad.9,
+  glad.10
   )
 }
 ```
@@ -6843,6 +7705,14 @@ nbr.9 <- nbr.loss.baseline.raw.id %>%
          cohort_name,
          grief.covid_lost_due_close,
          grief.suffered_past_month_loss)
+
+nbr.10 <- nbr.baseline.resp.id %>%
+  select(ID, 
+         cohort_name,
+         resp.nose_throat_swab_test,
+         resp.results_nose_throat_swab_test,
+         resp.antibody_test,
+         resp.results_antibody_test)
   
 #Check nbr mhd data IDs
 x <- nbr.5[nbr.5$ID %in% nbr.1$ID,]
@@ -6876,7 +7746,8 @@ dfs.list <- list(
   nbr.6,
   nbr.7,
   nbr.8,
-  nbr.9
+  nbr.9,
+  nbr.10
 )
 }
 ```
@@ -7179,6 +8050,14 @@ ramp.9 <- ramp.loss.baseline.raw.id %>%
          cohort_name,
          grief.covid_lost_due_close,
          grief.suffered_past_month_loss)
+
+ramp.10 <- ramp.baseline.resp.id %>%
+  select(ID, 
+         cohort_name,
+         resp.nose_throat_swab_test,
+         resp.results_nose_throat_swab_test,
+         resp.antibody_test,
+         resp.results_antibody_test)
   
 # Check ramp.4 has same IDs as other datasets
 x <- ramp.4[ramp.4$ID %in% ramp.1$ID,]
@@ -7204,7 +8083,8 @@ dfs.list <- list(
   ramp.6,
   ramp.7,
   ramp.8,
-  ramp.9
+  ramp.9,
+  ramp.10
 )
 }
 ```

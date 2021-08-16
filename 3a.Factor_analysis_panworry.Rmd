@@ -1,0 +1,509 @@
+---
+title: "Factor analysis - Pandemic worry"
+author: "Helena Davies"
+date: "12/08/2021"
+output: html_document
+---
+
+Paper to read: https://onlinelibrary.wiley.com/doi/10.1111/jan.14399
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      comment=NA,
+                      prompt=FALSE,
+                      cache=FALSE)
+```
+
+Clear workspace
+```{r clear workspace}
+rm(list = ls())
+```
+
+Packages
+```{r Load packages needed for FA}
+library(knitr) 
+library(tidyverse) 
+library(summarytools) 
+library(dplyr) 
+library(lavaan) 
+library(polycor) 
+library(psych)
+#install.packages("GPArotation")
+library(GPArotation) 
+#install.packages("REdaS")
+library(REdaS)
+library(skimr)
+library(corrplot)
+```
+
+# Read in data
+## dat is generated from the "3.Merging" script
+```{r Read in data}
+dat <- readRDS(file = "../data_cleaned/dat.final2021-07-25.rds")
+
+# Check
+dim(dat)
+colnames(dat)
+```
+
+Create vector with pandemic worry items
+```{r Create vector with pandemic worry items}
+panworry.items <- c(
+              "panworry.impact_on_your_employment_status",
+              "panworry.employment_status_household_key",
+              "panworry.impact_on_your_education_or_exams",
+              "panworry.exams_impact_education_children",
+              "panworry.financial_impact",
+              "panworry.contracting_the_virus",
+              "panworry.people_you_know_contracting_the_virus",
+              "panworry.people_you_dont_know_contracting_the_virus",
+              "panworry.impact_mental_health_wellbeing",
+              "panworry.impact_mental_health_childrens",
+              "panworry.impact_relatives_mental_health",
+              "panworry.being_socially_isolated",
+              "panworry.people_you_know_being_socially_isolated",
+              "panworry.shortage_of_essential_supplies",
+              "panworry.shortage_of_medication_or_access_to_healthcare",
+              "panworry.healthcare_people_essential_supplies",
+              "panworry.information_virus_government_accuracy",
+              "panworry.the_governments_response_to_the_pandemic",
+              "panworry.separation_from_family_members",
+              "panworry.standing_impact_global_recession",
+              "panworry.other_"
+              
+              )
+```
+
+Create a vector with the numerical pan worry variables
+```{r Create a vector containing the numeric pan worry variables}
+panworry.items.numeric <- c(
+              "panworry.impact_on_your_employment_status_numeric",
+              "panworry.employment_status_household_key_numeric",
+              "panworry.impact_on_your_education_or_exams_numeric",
+              "panworry.exams_impact_education_children_numeric",
+              "panworry.financial_impact_numeric",
+              "panworry.contracting_the_virus_numeric",
+              "panworry.people_you_know_contracting_the_virus_numeric",
+              "panworry.people_you_dont_know_contracting_the_virus_numeric",
+              "panworry.impact_mental_health_wellbeing_numeric",
+              "panworry.impact_mental_health_childrens_numeric",
+              "panworry.impact_relatives_mental_health_numeric",
+              "panworry.being_socially_isolated_numeric",
+              "panworry.people_you_know_being_socially_isolated_numeric",
+              "panworry.shortage_of_essential_supplies_numeric",
+              "panworry.shortage_of_medication_or_access_to_healthcare_numeric",
+              "panworry.healthcare_people_essential_supplies_numeric",
+              "panworry.information_virus_government_accuracy_numeric",
+              "panworry.the_governments_response_to_the_pandemic_numeric",
+              "panworry.separation_from_family_members_numeric",
+              "panworry.standing_impact_global_recession_numeric",
+              "panworry.other__numeric"
+              )
+
+```
+
+#4. Remove the not applicable from the variables
+```{r Recode Prefer not to say to NA}
+
+dat <- dat %>%
+  mutate_at(vars(panworry.items),
+  ~dplyr::recode_factor(.,
+    "Not applicable" = NA_character_
+    )
+  )
+
+skimr::skim(dat) #have a look at the data without the not applicable
+```
+
+# 5. Split your dataset into 2 groups where one has 70% of the sample, and the other has 30% of the sample. 
+These groups will then be used for your exploratory and confirmatory factor analyses. 
+
+You can't run your explanatory and conformatory factor analyses on the same sample - as you will be duplicating what you find. Here we will split the sample into two groups 70%/30%. The exploratory factor analysis (EFA) will be done in 70% of the sample, and then the remaining 30% of the sample will be used to confirm these factors using confirmatory factor analysis (CFA). 
+
+```{r split the sample into confirmatory and exploratory}
+dt = sort(sample(nrow(dat), nrow(dat)*.7)) #this identifies a random 70% of the rows into an object
+
+exploratory.group <- dat[dt,] #exploratory group just has the 70% of the rows
+
+confirmatory.group <- dat[-dt,] #confirmatory group has the other 30% of the rows
+```
+
+# Select the data for EFA and CFA
+```{r data frame for exploratory and confirmatory fa}
+#select data for efa
+data.efa <- exploratory.group %>%
+  dplyr::select(panworry.items)
+
+#check dimenions
+dim(data.efa)
+
+#select data for cfa
+data.cfa <- confirmatory.group %>%
+  dplyr::select(panworry.items)
+
+#check dimensions
+dim(data.cfa)
+```
+
+# Exploratory Factor Analysis
+
+## Select the MDDI variables only to create the dataframe for the EFA
+```{r Creating efa dataframe}
+panworry.items.df <- as.data.frame(exploratory.group [,panworry.items]) #create your dataframe with the items and group that you want
+
+is.data.frame(panworry.items.df) #check that it is now a dataframe (this is important for the factor analysis function as it has problems with tibbles)
+
+colnames(panworry.items.df) <- c("Employment status", # Add in the names you would like for your variables
+              "Household employment status",
+              "Education or exams",
+              "Children's education or exams",
+              "Finance",
+              "Contracting virus",
+              "People you know contracting virus",
+              "People you don't know contracting virus",
+              "Mental health",
+              "Children's mental health",
+              "Relative's mental health",
+              "Social isolation",
+              "People you know social isolation",
+              "Shortage of essential supplies",
+              "Shortage of meds/healthcare supplies",
+              "People you know shortage of meds/healthcare supplies",
+              "Info accuracy from Gov",
+              "Gov response to pandemic",
+              "Separation from family",
+              "Global recession/eco impact",
+              "Other")
+
+head(panworry.items.df) #Have a look at the dataframe
+```
+
+# 6 Create your polychoric matrix
+Will include maximum liklihood estimation for non-normal distributions
+```{r polycor matrix}
+polycor_matrix <- polycor::hetcor(
+  panworry.items.df,
+#  ML = TRUE, # maximum likelihood calculation (This can take a few minutes to run), include this if you are using ML in FA
+  use = "pairwise.complete.obs", # Use pairwise complete observations to maximise n
+  digits = 2 # print two digits after the floating point
+  )
+
+polycor_matrix #have a look at the matrix
+```
+
+## Test assumptions for a factor analysis
+
+#Calulating ordinal alpha
+Ordinal alpha is a reliability statistic that focuses on the reliability of the unobserved continuous variables underlying the observed item responses. It's shown to estimate reliability more accurately than Cronbach’s alpha for binary and ordinal response scales.
+Here you want to look at the "ordinal alpha" as this is a better use than usually Cronbach's alpha which is used for Pearson's correlations. 
+Typically, the alpha for a scale should not be smaller than 0.70 when used for research purposes (Gadermann & Zumbo, 2012)
+```{r calculate Ordinal alpha, KMO and bartletts}
+psych::alpha(
+  polycor_matrix$correlations,
+  check.keys = TRUE) #This is to take into account those variables that are reverse coded/negatively related.
+
+#standardised/raw aplha here is 0.81 the items are reliably measuring the same construct. From a matrix the raw and standardised aplha will always be the same. 
+```
+
+#Kaiser-Meyer-Olkin (KMO) factor adequacy
+The KMO is a measure of how suited your data is for Factor Analysis. The test measures sampling adequacy for each variable in the model and for the complete model. Values range from 0-1.
+0 indicates that the sum of partial correlations between variables is large relative to the sum of correlations, indicating diffusion (widely spread) in the pattern of correlations, hence, factor analysis is likely to be inappropriate. 
+A Value close to 1 indicates that patterns of correlations are relatively compact and so factor analysis should yield distinct and reliable factors. 
+Authors reccommend KMO of >0.8 to be mertitorious, and >0.9 to be marvelous (their words not mine)
+```{r KMO}
+psych::KMO(
+  r = polycor_matrix$correlations
+  )
+```
+
+#Bartlett's Test of Sphericity 
+Bartlett’s test tells us whether the correlation matrix is significantly different to an identity matrix (if the variables did not correlate at all - the off-diagonal components are 0). If it is significant then it means the correlation variables are overall significantly different from 0. 
+Bartlett's Test of Sphericity is supposed to be significant to run FA. 
+```{r Bartletts sphercity}
+REdaS::bart_spher(
+  polycor_matrix$correlations
+  )
+
+#the psych package gives a different value for bartlett's test and I'm not too sure why
+#psych::cortest.bartlett(
+ # polycor_matrix$correlations, 
+ # n = 1221 #sample size, you can put NULL and it will assume n = 100
+ # ) 
+```
+
+#Multicoliniearity test 
+To test for multicollinearity, you can examine the determinant of the R matrix. 
+The determinant (det) of the R matrix should be greater than 0.00001.  
+```{r determinant of R matrix and examining correlation, fig.height=7}
+det(polycor_matrix$correlations) #determinant of R matrix
+
+# Can also examine the correltaion matrix to see where high correlations are. Code for the plot taken from the correlations session
+
+# Calculate correlation matrix on specific columns (variables) from your data frame
+panworry.corr.mat <- hetcor(
+  as.data.frame(dat[,panworry.items]), # Specify the data
+  use = "pairwise.complete.obs" # Use all pairwise observations
+)
+
+# Save the p values from the correlation matrix in an object
+panworry.p.matrix <- as.matrix(panworry.corr.mat$tests)
+
+corrplot(polycor_matrix$correlations, 
+         method = "color", # objects to represent the correlations on plot
+         type = "lower", # only use the lower triangle of the matrix
+         diag = FALSE, # do not show the correlations on the diagonal
+         addgrid.col = NA,
+         addCoef.col = "black", # colour for the correlation coefficients in the plot
+         tl.cex = 0.8,
+         tl.col = "black",
+         order = "hclust", #order in clusters (subscales)
+         col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
+         # Combine with significance
+         p.mat = panworry.p.matrix, # Matrix with p values
+         sig.level = 0.01, # Choose significant level
+         insig = "blank" # Nonsignificant correlations have no colour
+         )
+```
+
+## Testing for right amount of latent factors
+
+# Very Simple Structure (VSS)
+Used to estimate how many factors are in our data. This can then be used as a starting point for our EFA. 
+VSS fits the very simple structure of a factor pattern matrix (correlations between the variables and the factors) to the original correlation matrix.
+```{r EFA very simple structure (VSS)}
+psych::vss(x = polycor_matrix$correlations, # Correlation matrix
+           n = 3, # assumed number of factors
+           rotate = "oblimin", # Rotation type: oblique or orthogonal
+           fm = "wls", #factoring method: "wls" = weighted least squares, "mle" = Maximum Likelihood 
+           n.obs = max(polycor_matrix$n), # number of observations/participants
+           cor = "poly" # Type of correlation matrix
+           )
+
+#also gives MAP criterion
+```
+
+# EFA parallel factors technique
+Used to estimate how many factors are in our data. This can then be used as a starting point for our EFA. 
+Essentially each eigenvalue (which represents the size of the factor) is compared against an eigenvalue for the corresponding factor in many randomly generated data sets that have the same characteristics as the data being analysed.
+```{r EFA parallel factors technique}
+fa.parallel <- fa.parallel(x = polycor_matrix$correlations, 
+                                      fm = "wls", #factoring method: "wls" = weighted least squares, "mle" = Maximum Likelihood 
+                                      nfactors = 3, # assumed number of factors
+                                      n.iter = 1000, # number of iterations
+                                      error.bars = T, #include error bars
+                                      cor = "poly", #polychoric correlations
+                                      n.obs = max(polycor_matrix$n) # number of participants
+                                      )
+fa.parallel 
+
+
+
+#Also gives eigenvalues 
+```
+
+
+```{r psych package EFA 3 factors}
+polycor.efa <- psych::fa(
+  r = polycor_matrix$correlations,
+  nfactors = 2, #number of factors
+  n.obs = max(polycor_matrix$n), #number of observations
+  n.iter = 1000, #Number of bootstrap interations to do in fa
+  rotate = "oblimin", #allows the factors to be correlated
+  fm = "wls", #for normal data - "ml" (maximum likelihood) is preferred, if you have skewed ordinal data, "wls" (weighted least squares) is preferred
+  scores = TRUE
+  )
+polycor.efa
+
+#print the loadings for each factor
+print(polycor.efa$loadings, cutoff = 0.3)
+
+
+#u2 is uniqueness - unique variance
+#h2 is communality - common variance 
+```
+
+# Create factor analysis plot
+```{r EFA diagram for factor 4 model, fig.height = 4}
+#name the factors
+colnames(polycor.efa$loadings) <- c(
+  "Wider impact", 
+  "Personal eco activity")
+
+#create diagram
+fa.diagram(polycor.efa, 
+           e.size = 0.05, #size of ellipses
+           rsize = 0.3, #size of rectangles
+           digits = 2, #number of digits to show 
+           sort = TRUE, #sort the factor loadings before showing the diagram
+           adj = 1, #how many different positions (1-3) should be used for the numeric labels - useful if they overlap each other
+           cex = 1, #modify font size
+           main = "Exploratory Factor Analyis: Two Factor Model" #title
+           )
+
+```
+
+#Confirmatory Factor Analysis - 2 factor model
+
+Select the pan worry variables only to create the dataframe for the CFA
+Used the 2 factor model from above to confirm it in the other 30% of the sample. 
+
+=~ defines a latent factor in the lavaan package
+```{r define cfa model based on efa fatcor model}
+panworry.items # Check you have the naming of the items correctly
+
+# Define the factors in the model. As our EFA showed 2 factors then we use the same items to define each of the factors
+# As a bonus, you are able to add an overarching factor in the same model -you just need to define it in the same way here.
+
+cfa.model <- 'Wider_impact =~ 
+              panworry.contracting_the_virus +
+              panworry.people_you_know_contracting_the_virus +
+              panworry.people_you_dont_know_contracting_the_virus+
+              panworry.impact_mental_health_wellbeing+
+              panworry.impact_mental_health_childrens+
+              panworry.impact_relatives_mental_health+
+              panworry.being_socially_isolated+
+              panworry.people_you_know_being_socially_isolated+
+              panworry.shortage_of_essential_supplies+
+              panworry.shortage_of_medication_or_access_to_healthcare+
+              panworry.healthcare_people_essential_supplies+
+              panworry.information_virus_government_accuracy+
+              panworry.the_governments_response_to_the_pandemic+
+              panworry.separation_from_family_members+
+              panworry.standing_impact_global_recession+
+              panworry.other_
+
+              Personal_eco_activity =~ 
+              panworry.impact_on_your_employment_status + 
+              panworry.financial_impact + 
+              panworry.employment_status_household_key + 
+              panworry.impact_on_your_education_or_exams +
+              panworry.exams_impact_education_children'
+```
+
+```{r run cfa}
+#run the fit statistics for this model
+cfa.model.fit <- cfa(cfa.model, 
+                     data = data.cfa, 
+                     ordered = c("panworry.impact_on_your_employment_status",
+              "panworry.employment_status_household_key",
+              "panworry.impact_on_your_education_or_exams",
+              "panworry.exams_impact_education_children",
+              "panworry.financial_impact",
+              "panworry.contracting_the_virus",
+              "panworry.people_you_know_contracting_the_virus",
+              "panworry.people_you_dont_know_contracting_the_virus",
+              "panworry.impact_mental_health_wellbeing",
+              "panworry.impact_mental_health_childrens",
+              "panworry.impact_relatives_mental_health",
+              "panworry.being_socially_isolated",
+              "panworry.people_you_know_being_socially_isolated",
+              "panworry.shortage_of_essential_supplies",
+              "panworry.shortage_of_medication_or_access_to_healthcare",
+              "panworry.healthcare_people_essential_supplies",
+              "panworry.information_virus_government_accuracy",
+              "panworry.the_governments_response_to_the_pandemic",
+              "panworry.separation_from_family_members",
+              "panworry.standing_impact_global_recession",
+              "panworry.other_"
+              ))
+```
+
+Analyse your fit statistics for your CFA
+
+CFI is the comparative fit index – values can range between 0 and 1 (values greater than 0.90, conservatively 0.95 indicate good fit). 
+
+TLI Tucker Lewis Index which also ranges between 0 and 1 with values greater than 0.90 indicating good fit. If the CFI and TLI are less than one, the CFI is always greater than the TLI.
+
+RMSEA is the root mean square error of approximation (values of 0.01, 0.05 and 0.08 indicate excellent, good and mediocre fit respectively, some go up to 0.10 for mediocre).
+
+The chi-square fit index assesses the fit between the hypothesized model and data from a set of measurement items (the observed variables). The model chi-square is the chi-square statistic obtained using maximum likelihood method. When a model is estimated using maximum likelihood, the likelihood ratio test statistic is commonly used to assess the overall goodness of fit (Jöreskog, 1969; Maydeu-Olivares, Fairchild, & Hall, 2017). Assuming the hypothesized model is correctly specified, the likelihood ratio test statistic would approach a central chi-square distribution. The chi-square test is the most commonly used global fit index in CFA and is also used to generate other fit indices. It tests whether the covariance matrix derived from the model represents the population covariance. Generally, chi-square is used as an absolute fit index, with a low chi-square value relative to the degrees of freedom (and higher p-value) indicating better model fit. Since the test is used to reject a null hypothesis representing perfect fit, chi-square is often referred to as a ‘badness of fit’ or ‘lack of fit index’ (Kline, 2005). There are limitations with using the chi-square statistic as a model fit index. First, it is sensitive to sample size with larger sample sizes decreasing the p-value where there may only be a trivial misfit (Babyak & Green, 2010). 
+```{r fit statistics for cfa}
+summary(cfa.model.fit, fit.measures = TRUE)
+```
+
+
+#Confirmatory Factor Analysis - 1 factor model
+
+Select the pan worry variables only to create the dataframe for the CFA
+Trying one factor model from above to confirm it in the other 30% of the sample. 
+
+=~ defines a latent factor in the lavaan package
+```{r define cfa model based on efa fatcor model}
+panworry.items # Check you have the naming of the items correctly
+
+# Define the factors in the model. 
+# As a bonus, you are able to add an overarching factor in the same model -you just need to define it in the same way here.
+
+cfa.model <- 'Pandemic_worry =~ 
+              panworry.contracting_the_virus +
+              panworry.people_you_know_contracting_the_virus +
+              panworry.people_you_dont_know_contracting_the_virus+
+              panworry.impact_mental_health_wellbeing+
+              panworry.impact_mental_health_childrens+
+              panworry.impact_relatives_mental_health+
+              panworry.being_socially_isolated+
+              panworry.people_you_know_being_socially_isolated+
+              panworry.shortage_of_essential_supplies+
+              panworry.shortage_of_medication_or_access_to_healthcare+
+              panworry.healthcare_people_essential_supplies+
+              panworry.information_virus_government_accuracy+
+              panworry.the_governments_response_to_the_pandemic+
+              panworry.separation_from_family_members+
+              panworry.standing_impact_global_recession+
+              panworry.other_ +
+              panworry.impact_on_your_employment_status + 
+              panworry.financial_impact + 
+              panworry.employment_status_household_key + 
+              panworry.impact_on_your_education_or_exams +
+              panworry.exams_impact_education_children'
+```
+
+```{r run cfa}
+#run the fit statistics for this model
+cfa.model.fit <- cfa(cfa.model, 
+                     data = data.cfa, 
+                     ordered = c("panworry.impact_on_your_employment_status",
+              "panworry.employment_status_household_key",
+              "panworry.impact_on_your_education_or_exams",
+              "panworry.exams_impact_education_children",
+              "panworry.financial_impact",
+              "panworry.contracting_the_virus",
+              "panworry.people_you_know_contracting_the_virus",
+              "panworry.people_you_dont_know_contracting_the_virus",
+              "panworry.impact_mental_health_wellbeing",
+              "panworry.impact_mental_health_childrens",
+              "panworry.impact_relatives_mental_health",
+              "panworry.being_socially_isolated",
+              "panworry.people_you_know_being_socially_isolated",
+              "panworry.shortage_of_essential_supplies",
+              "panworry.shortage_of_medication_or_access_to_healthcare",
+              "panworry.healthcare_people_essential_supplies",
+              "panworry.information_virus_government_accuracy",
+              "panworry.the_governments_response_to_the_pandemic",
+              "panworry.separation_from_family_members",
+              "panworry.standing_impact_global_recession",
+              "panworry.other_"
+              ))
+```
+
+Analyse your fit statistics for your CFA
+CFI is the comparative fit index – values can range between 0 and 1 (values greater than 0.90, conservatively 0.95 indicate good fit)
+RMSEA is the root mean square error of approximation (values of 0.01, 0.05 and 0.08 indicate excellent, good and mediocre fit respectively, some go up to 0.10 for mediocre).
+```{r fit statistics for cfa}
+summary(cfa.model.fit, fit.measures = TRUE)
+```
+
+
+TWO FACTOR MODEL:
+Chi-square: 31242.939
+RMSEA: 0.138
+CFI: 0.915 
+
+
+ONE FACTOR MODEL: 
+Chi-square: 31242.939
+RMSEA:0.152
+CFI:0.896
+
+One factor model = same chi-square, higher RMSEA and lower CFI - poorer fitting model.
+
