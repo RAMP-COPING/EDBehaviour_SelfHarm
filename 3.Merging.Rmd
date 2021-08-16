@@ -32,16 +32,16 @@ library(skimr)
 
 # Import all baseline data (generated from the preprocessing script)
 ```{r Read in baseline data of all datasets}
-glad_baseline <- readRDS(file = "../data_cleaned/BASELINE_glad2021-06-29.rds")
+glad_baseline <- readRDS(file = "../data_cleaned/BASELINE_glad2021-07-21.rds")
 dim(glad_baseline)
 
-edgi_baseline <- readRDS(file = "../data_cleaned/BASELINE_edgi2021-06-29.rds")
+edgi_baseline <- readRDS(file = "../data_cleaned/BASELINE_edgi2021-07-21.rds")
 dim(edgi_baseline)
 
-nbr_baseline <- readRDS(file = "../data_cleaned/BASELINE_nbr2021-06-29.rds")
+nbr_baseline <- readRDS(file = "../data_cleaned/BASELINE_nbr2021-07-21.rds")
 dim(nbr_baseline)
 
-ramp_baseline <- readRDS(file = "../data_cleaned/BASELINE_ramp2021-06-29.rds")
+ramp_baseline <- readRDS(file = "../data_cleaned/BASELINE_ramp2021-07-21.rds")
 dim(ramp_baseline)
 ```
 
@@ -193,6 +193,11 @@ dim(dem_coping_followup)
 dem_ramp_followup <- readRDS(file = "../data_cleaned/DEM_followup_ramp2021-06-29.rds")
 dim(dem_ramp_followup)
 
+resp_coping_followup <- readRDS(file = "../data_cleaned/RESP_coping_followup2021-07-21.rds")
+dim(resp_coping_followup)
+
+resp_ramp_followup <- readRDS(file = "../data_cleaned/RESP_ramp_followup2021-07-21.rds")
+dim(resp_ramp_followup)
 ```
 
 Create empty wave 1a and 1bs in COPING to merge with RAMP 
@@ -249,6 +254,17 @@ colnames(LOSS)
 nrow(LOSS)
 ```
 
+Bind RESP follow up data from RAMP & COPING
+```{r Bind RESP follow up data RAMP & COPING}
+RESP <- bind_rows(resp_coping_followup,
+                 resp_ramp_followup)
+
+
+# Check
+colnames(RESP)
+nrow(RESP)
+```
+
 Bind DEM follow up data from RAMP & COPING
 ```{r Bind DEM follow up data RAMP & COPING}
 DEM_FOLLOWUP <- bind_rows(dem_ramp_followup,
@@ -270,16 +286,28 @@ baseline_ED_groups_data <- readRDS(file = "../data_cleaned/ED_BASELINE_groups202
 colnames(baseline_ED_groups_data)
 nrow(baseline_ED_groups_data)
 ```
+# Read in data
+## EDGI, RAMP, GLAD & NBR
+### OCD screener data
+```{r Read in ED data ED grouping}
+OCD_screener <- readRDS(file = "../data_cleaned/OCD_screener2021-08-05.rds")
+
+# Check
+colnames(OCD_screener)
+nrow(OCD_screener)
+```
 
 # Final merge of all baseline and follow up data
 ## Merge all follow up data and ED baseline groupings
 ```{r Merge all follow up data and ED baseline groupings}
 dfs.list <- list(DEM_FOLLOWUP,
                  LOSS,
+                 RESP,
                  VIRUS,
                  TAF,
                  EDEQ,
                  baseline_ED_groups_data)
+               #  OCD_screener) # Will leave out for now as an optional questionnaire so will lose some participants, can add later
 
 follow_up_data <- plyr::join_all(
   dfs.list,
@@ -305,9 +333,7 @@ follow_up_data <- follow_up_data %>%
 
 ```
 
-
-
-Merge follow up data with baseline data +++ HERE!
+Merge follow up data with baseline data 
 ```{r Merge follow up data with baseline data}
 dfs.list <- list(baseline_data,
                  follow_up_data)
