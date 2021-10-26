@@ -14,8 +14,8 @@ if(GLAD == TRUE) {
           employ.contract_or_freelance_work_numeric == "1" ~ 1,
           employ.small_business_owner_numeric == "1" ~ 1,
           employ.retired_numeric  ==  "1" ~ 4,
-          employ.student_gcse_or_a_level_numeric == "1" ~ 3,
-          employ.student_university_numeric == "1" ~ 3
+          employ.student__numeric == "1" ~ 3,
+          employ.student_.1_numeric == "1" ~ 3
         )
     )
   #recode the numeric version into a factor
@@ -47,8 +47,8 @@ if(GLAD == TRUE) {
            employ.contract_or_freelance_work_numeric,
            employ.small_business_owner_numeric,
            employ.retired_numeric,
-           employ.student_gcse_or_a_level_numeric,
-           employ.student_university_numeric
+           employ.student__numeric,
+           employ.student_.1_numeric
     )
 }
 
@@ -69,8 +69,8 @@ if(EDGI == TRUE) {
           employ.contract_or_freelance_work_numeric == "1" ~ 1,
           employ.small_business_owner_numeric == "1" ~ 1,
           employ.retired_numeric  ==  "1" ~ 4,
-          employ.student_gcse_or_a_level_numeric == "1" ~ 3,
-          employ.student_university_numeric == "1" ~ 3
+          employ.student__numeric == "1" ~ 3,
+          employ.student_.1_numeric == "1" ~ 3
         )
     )
   #recode the numeric version into a factor
@@ -102,8 +102,8 @@ if(EDGI == TRUE) {
            employ.contract_or_freelance_work_numeric,
            employ.small_business_owner_numeric,
            employ.retired_numeric,
-           employ.student_gcse_or_a_level_numeric,
-           employ.student_university_numeric
+           employ.student__numeric,
+           employ.student_.1_numeric
     )
 }
 
@@ -123,8 +123,8 @@ if(NBR == TRUE) {
           employ.contract_or_freelance_work_numeric == "1" ~ 1,
           employ.small_business_owner_numeric == "1" ~ 1,
           employ.retired_numeric  ==  "1" ~ 4,
-          employ.student_gcse_or_a_level_numeric == "1" ~ 3,
-          employ.student_university_numeric == "1" ~ 3
+          employ.student__numeric == "1" ~ 3,
+          employ.student_.1_numeric == "1" ~ 3
         )
     )
   #recode the numeric version into a factor
@@ -156,8 +156,8 @@ if(NBR == TRUE) {
            employ.contract_or_freelance_work_numeric,
            employ.small_business_owner_numeric,
            employ.retired_numeric,
-           employ.student_gcse_or_a_level_numeric,
-           employ.student_university_numeric
+           employ.student__numeric,
+           employ.student_.1_numeric
     )
 }
 
@@ -177,8 +177,8 @@ if(RAMP == TRUE) {
           employ.contract_or_freelance_work_numeric == "1" ~ 1,
           employ.small_business_owner_numeric == "1" ~ 1,
           employ.retired_numeric  ==  "1" ~ 4,
-          employ.student_gcse_or_a_level_numeric == "1" ~ 3,
-          employ.student_university_numeric == "1" ~ 3
+          employ.student__numeric == "1" ~ 3,
+          employ.student_.1_numeric == "1" ~ 3
         )
     )
   #recode the numeric version into a factor
@@ -210,8 +210,8 @@ if(RAMP == TRUE) {
            employ.contract_or_freelance_work_numeric,
            employ.small_business_owner_numeric,
            employ.retired_numeric,
-           employ.student_gcse_or_a_level_numeric,
-           employ.student_university_numeric
+           employ.student__numeric,
+           employ.student_.1_numeric
     )
 }
 
@@ -232,8 +232,8 @@ if(GLAD == TRUE) {
           employ.increased_salary_numeric == "1" ~ 3,
           employ.became_employed_numeric == "1" ~ 3,
           employ.benefits_increased_numeric  ==  "1" ~ 2,
-          employ.furloughed_or_paid_leave_government_funded_numeric == "1" ~ 3,
-          employ.furloughed_or_paid_leave_company_funded_numeric == "1" ~ 3,
+          employ.furloughed_or_paid_leave__numeric == "1" ~ 3,
+          employ.furloughed_or_paid_leave_.1_numeric == "1" ~ 3,
           employ.paid_leave_furloughed_numeric == "1" ~ 3,
           employ.my_employment_status_has_not_changed_numeric == "1" ~ 4
         )
@@ -269,8 +269,8 @@ if(GLAD == TRUE) {
            employ.increased_salary_numeric,
            employ.became_employed_numeric,
            employ.benefits_increased_numeric,
-           employ.furloughed_or_paid_leave_government_funded_numeric,
-           employ.furloughed_or_paid_leave_company_funded_numeric,
+           employ.furloughed_or_paid_leave__numeric,
+           employ.furloughed_or_paid_leave_.1_numeric,
            employ.paid_leave_furloughed_numeric,
            employ.my_employment_status_has_not_changed_numeric
     )
@@ -293,8 +293,8 @@ if(EDGI == TRUE) {
           employ.increased_salary_numeric == "1" ~ 3,
           employ.became_employed_numeric == "1" ~ 3,
           employ.benefits_increased_numeric  ==  "1" ~ 2,
-          employ.furloughed_or_paid_leave_government_funded_numeric == "1" ~ 3,
-          employ.furloughed_or_paid_leave_company_funded_numeric == "1" ~ 3,
+          employ.furloughed_or_paid_leave__numeric == "1" ~ 3,
+          employ.furloughed_or_paid_leave_.1_numeric == "1" ~ 3,
           employ.paid_leave_furloughed_numeric == "1" ~ 3,
           employ.my_employment_status_has_not_changed_numeric == "1" ~ 4
         )
@@ -329,8 +329,8 @@ if(EDGI == TRUE) {
            employ.increased_salary_numeric,
            employ.became_employed_numeric,
            employ.benefits_increased_numeric,
-           employ.furloughed_or_paid_leave_government_funded_numeric,
-           employ.furloughed_or_paid_leave_company_funded_numeric,
+           employ.furloughed_or_paid_leave__numeric,
+           employ.furloughed_or_paid_leave_.1_numeric,
            employ.paid_leave_furloughed_numeric,
            employ.my_employment_status_has_not_changed_numeric
     )
@@ -352,8 +352,8 @@ if(NBR == TRUE) {
           employ.increased_salary_numeric == "1" ~ 3,
           employ.became_employed_numeric == "1" ~ 3,
           employ.benefits_increased_numeric  ==  "1" ~ 2,
-          employ.furloughed_or_paid_leave_government_funded_numeric == "1" ~ 3,
-          employ.furloughed_or_paid_leave_company_funded_numeric == "1" ~ 3,
+          employ.furloughed_or_paid_leave__numeric == "1" ~ 3,
+          employ.furloughed_or_paid_leave_.1_numeric == "1" ~ 3,
           employ.paid_leave_furloughed_numeric == "1" ~ 3,
           employ.my_employment_status_has_not_changed_numeric == "1" ~ 4
         )
@@ -388,8 +388,8 @@ if(NBR == TRUE) {
            employ.increased_salary_numeric,
            employ.became_employed_numeric,
            employ.benefits_increased_numeric,
-           employ.furloughed_or_paid_leave_government_funded_numeric,
-           employ.furloughed_or_paid_leave_company_funded_numeric,
+           employ.furloughed_or_paid_leave__numeric,
+           employ.furloughed_or_paid_leave_.1_numeric,
            employ.paid_leave_furloughed_numeric,
            employ.my_employment_status_has_not_changed_numeric
     )
@@ -410,8 +410,8 @@ if(RAMP == TRUE) {
           employ.increased_salary_numeric == "1" ~ 3,
           employ.became_employed_numeric == "1" ~ 3,
           employ.benefits_increased_numeric  ==  "1" ~ 2,
-          employ.furloughed_or_paid_leave_government_funded_numeric == "1" ~ 3,
-          employ.furloughed_or_paid_leave_company_funded_numeric== "1" ~ 3,
+          employ.furloughed_or_paid_leave__numeric == "1" ~ 3,
+          employ.furloughed_or_paid_leave_.1_numeric== "1" ~ 3,
           employ.paid_leave_furloughed_numeric == "1" ~ 3,
           employ.my_employment_status_has_not_changed_numeric == "1" ~ 4
         )
@@ -444,8 +444,8 @@ if(RAMP == TRUE) {
            employ.increased_salary_numeric,
            employ.became_employed_numeric,
            employ.benefits_increased_numeric,
-           employ.furloughed_or_paid_leave_government_funded_numeric,
-           employ.furloughed_or_paid_leave_company_funded_numeric,
+           employ.furloughed_or_paid_leave__numeric,
+           employ.furloughed_or_paid_leave_.1_numeric,
            employ.paid_leave_furloughed_numeric,
            employ.my_employment_status_has_not_changed_numeric
     )
@@ -465,10 +465,10 @@ if(GLAD == TRUE) {
           employ.stayathome_parent_or_carer_numeric == "1" ~ 0,
           employ.retired_numeric == "1" ~ 0,
           employ.became_unemployed_numeric == "0" ~ 0,
-          employ.student_gcse_or_a_level_numeric == "1" ~ 0,
-          employ.student_university_numeric == "1" ~ 0,
-          employ.furloughed_or_paid_leave_government_funded_numeric == "1" ~ 0,
-          employ.furloughed_or_paid_leave_company_funded_numeric == "1" ~ 0,
+          employ.student__numeric == "1" ~ 0,
+          employ.student_.1_numeric == "1" ~ 0,
+          employ.furloughed_or_paid_leave__numeric == "1" ~ 0,
+          employ.furloughed_or_paid_leave_.1_numeric == "1" ~ 0,
           employ.paid_leave_furloughed_numeric == "1" ~ 0
         )
     )
@@ -510,8 +510,8 @@ if(GLAD == TRUE) {
             employ.change_in_duties_or_responsibilities == "Change in duties or responsibilities" |
             employ.increased_hours == "Increased hours" |
             employ.increased_salary == "Increased salary" |
-            employ.furloughed_or_paid_leave_government_funded == "Furloughed or paid leave (Government funded)" |
-            employ.furloughed_or_paid_leave_company_funded == "Furloughed or paid leave (Company funded)" |
+            employ.furloughed_or_paid_leave_ == "Furloughed or paid leave (Government funded)" |
+            employ.furloughed_or_paid_leave_.1 == "Furloughed or paid leave (Company funded)" |
             employ.taking_unpaid_leave == "Taking unpaid leave" |
             employ.paid_leave_furloughed == "Furloughed or paid leave (Government funded with company supplement)" ~ "Employed",
           
@@ -537,8 +537,8 @@ if(GLAD == TRUE) {
                   employ.other == "Other") ~ "Employed"),
           
           (
-            (employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
-               employ.student_university == "Student (University)"
+            (employ.student_ == "Student (GCSE or A level)" |
+               employ.student_.1 == "Student (University)"
             ) &
               (is.na(employ.my_employment_status_has_not_changed) |
                  employ.my_employment_status_has_not_changed == "My employment status has not changed" |
@@ -554,8 +554,8 @@ if(GLAD == TRUE) {
                employ.unemployed =="Unemployed" |
                employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
                employ.receiving_state_income == "Receiving state income" |
-               employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
-               employ.student_university == "Student (University)") &
+               employ.student_ == "Student (GCSE or A level)" |
+               employ.student_.1 == "Student (University)") &
               is.na(employ.my_employment_status_has_not_changed)
           ) ~ "Unemployed"),
           
@@ -588,10 +588,10 @@ if(EDGI == TRUE) {
           employ.stayathome_parent_or_carer_numeric == "1" ~ 0,
           employ.retired_numeric == "1" ~ 0,
           employ.became_unemployed_numeric == "0" ~ 0,
-          employ.student_gcse_or_a_level_numeric == "1" ~ 0,
-          employ.student_university_numeric == "1" ~ 0,
-          employ.furloughed_or_paid_leave_government_funded_numeric == "1" ~ 0,
-          employ.furloughed_or_paid_leave_company_funded_numeric == "1" ~ 0,
+          employ.student__numeric == "1" ~ 0,
+          employ.student_.1_numeric == "1" ~ 0,
+          employ.furloughed_or_paid_leave__numeric == "1" ~ 0,
+          employ.furloughed_or_paid_leave_.1_numeric == "1" ~ 0,
           employ.paid_leave_furloughed_numeric == "1" ~ 0
         )
     )
@@ -632,8 +632,8 @@ if(EDGI == TRUE) {
             employ.change_in_duties_or_responsibilities == "Change in duties or responsibilities" |
             employ.increased_hours == "Increased hours" |
             employ.increased_salary == "Increased salary" |
-            employ.furloughed_or_paid_leave_government_funded == "Furloughed or paid leave (Government funded)" |
-            employ.furloughed_or_paid_leave_company_funded == "Furloughed or paid leave (Company funded)" |
+            employ.furloughed_or_paid_leave_ == "Furloughed or paid leave (Government funded)" |
+            employ.furloughed_or_paid_leave_.1 == "Furloughed or paid leave (Company funded)" |
             employ.taking_unpaid_leave == "Taking unpaid leave" |
             employ.paid_leave_furloughed == "Furloughed or paid leave (Government funded with company supplement)" ~ "Employed",
           
@@ -659,8 +659,8 @@ if(EDGI == TRUE) {
                   employ.other == "Other") ~ "Employed"),
           
           (
-            (employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
-               employ.student_university == "Student (University)"
+            (employ.student_ == "Student (GCSE or A level)" |
+               employ.student_.1 == "Student (University)"
             ) &
               (is.na(employ.my_employment_status_has_not_changed) |
                  employ.my_employment_status_has_not_changed == "My employment status has not changed" |
@@ -676,8 +676,8 @@ if(EDGI == TRUE) {
                employ.unemployed =="Unemployed" |
                employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
                employ.receiving_state_income == "Receiving state income" |
-               employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
-               employ.student_university == "Student (University)") &
+               employ.student_ == "Student (GCSE or A level)" |
+               employ.student_.1 == "Student (University)") &
               is.na(employ.my_employment_status_has_not_changed)
           ) ~ "Unemployed"),
           
@@ -710,10 +710,10 @@ if(NBR == TRUE) {
           employ.stayathome_parent_or_carer_numeric == "1" ~ 0,
           employ.retired_numeric == "1" ~ 0,
           employ.became_unemployed_numeric == "0" ~ 0,
-          employ.student_gcse_or_a_level_numeric == "1" ~ 0,
-          employ.student_university_numeric == "1" ~ 0,
-          employ.furloughed_or_paid_leave_government_funded_numeric == "1" ~ 0,
-          employ.furloughed_or_paid_leave_company_funded_numeric == "1" ~ 0,
+          employ.student__numeric == "1" ~ 0,
+          employ.student_.1_numeric == "1" ~ 0,
+          employ.furloughed_or_paid_leave__numeric == "1" ~ 0,
+          employ.furloughed_or_paid_leave_.1_numeric == "1" ~ 0,
           employ.paid_leave_furloughed_numeric == "1" ~ 0
         )
     )
@@ -753,8 +753,8 @@ if(NBR == TRUE) {
             employ.change_in_duties_or_responsibilities == "Change in duties or responsibilities" |
             employ.increased_hours == "Increased hours" |
             employ.increased_salary == "Increased salary" |
-            employ.furloughed_or_paid_leave_government_funded == "Furloughed or paid leave (Government funded)" |
-            employ.furloughed_or_paid_leave_company_funded == "Furloughed or paid leave (Company funded)" |
+            employ.furloughed_or_paid_leave_ == "Furloughed or paid leave (Government funded)" |
+            employ.furloughed_or_paid_leave_.1 == "Furloughed or paid leave (Company funded)" |
             employ.taking_unpaid_leave == "Taking unpaid leave" |
             employ.paid_leave_furloughed == "Furloughed or paid leave (Government funded with company supplement)" ~ "Employed",
           
@@ -780,8 +780,8 @@ if(NBR == TRUE) {
                   employ.other == "Other") ~ "Employed"),
           
           (
-            (employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
-               employ.student_university == "Student (University)"
+            (employ.student_ == "Student (GCSE or A level)" |
+               employ.student_.1 == "Student (University)"
             ) &
               (is.na(employ.my_employment_status_has_not_changed) |
                  employ.my_employment_status_has_not_changed == "My employment status has not changed" |
@@ -797,8 +797,8 @@ if(NBR == TRUE) {
                employ.unemployed =="Unemployed" |
                employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
                employ.receiving_state_income == "Receiving state income" |
-               employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
-               employ.student_university == "Student (University)") &
+               employ.student_ == "Student (GCSE or A level)" |
+               employ.student_.1 == "Student (University)") &
               is.na(employ.my_employment_status_has_not_changed)
           ) ~ "Unemployed"),
           
@@ -831,10 +831,10 @@ if(RAMP == TRUE) {
           employ.stayathome_parent_or_carer_numeric == "1" ~ 0,
           employ.retired_numeric == "1" ~ 0,
           employ.became_unemployed_numeric == "0" ~ 0,
-          employ.student_gcse_or_a_level_numeric == "1" ~ 0,
-          employ.student_university_numeric == "1" ~ 0,
-          employ.furloughed_or_paid_leave_government_funded_numeric == "1" ~ 0,
-          employ.furloughed_or_paid_leave_company_funded_numeric == "1" ~ 0,
+          employ.student__numeric == "1" ~ 0,
+          employ.student_.1_numeric == "1" ~ 0,
+          employ.furloughed_or_paid_leave__numeric == "1" ~ 0,
+          employ.furloughed_or_paid_leave_.1_numeric == "1" ~ 0,
           employ.paid_leave_furloughed_numeric == "1" ~ 0
         )
     )
@@ -874,8 +874,8 @@ if(RAMP == TRUE) {
               employ.change_in_duties_or_responsibilities == "Change in duties or responsibilities" |
               employ.increased_hours == "Increased hours" |
               employ.increased_salary == "Increased salary" |
-              employ.furloughed_or_paid_leave_government_funded == "Furloughed or paid leave (Government funded)" |
-              employ.furloughed_or_paid_leave_company_funded == "Furloughed or paid leave (Company funded)" |
+              employ.furloughed_or_paid_leave_ == "Furloughed or paid leave (Government funded)" |
+              employ.furloughed_or_paid_leave_.1 == "Furloughed or paid leave (Company funded)" |
              # employ.taking_unpaid_leave == "Taking unpaid leave" |
               employ.paid_leave_furloughed == "Furloughed or paid leave (Government funded with company supplement)" ~ "Employed",
             
@@ -901,8 +901,8 @@ if(RAMP == TRUE) {
                     employ.other == "Other") ~ "Employed"),
             
             (
-              (employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
-                 employ.student_university == "Student (University)"
+              (employ.student_ == "Student (GCSE or A level)" |
+                 employ.student_.1 == "Student (University)"
               ) &
                 (is.na(employ.my_employment_status_has_not_changed) |
                    employ.my_employment_status_has_not_changed == "My employment status has not changed" |
@@ -918,8 +918,8 @@ if(RAMP == TRUE) {
                  employ.unemployed =="Unemployed" |
                  employ.stayathome_parent_or_carer == "Stay-at-home parent or carer" |
                  employ.receiving_state_income == "Receiving state income" |
-                 employ.student_gcse_or_a_level == "Student (GCSE or A level)" |
-                 employ.student_university == "Student (University)") &
+                 employ.student_ == "Student (GCSE or A level)" |
+                 employ.student_.1 == "Student (University)") &
                 is.na(employ.my_employment_status_has_not_changed)
             ) ~ "Unemployed"),
             

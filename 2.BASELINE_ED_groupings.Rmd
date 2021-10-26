@@ -1,5 +1,5 @@
 ---
-title: "COPING (NBR + GLAD + EDGI) + RAMP grouping at baseline"
+title: "Previous experience of eating disorders at baseline"
 author: "Helena Davies"
 date: "06/05/2021"
 output: html_document
@@ -9,62 +9,85 @@ This script identifies whether people have experienced lifetime low weight or li
 
 Due to differences in the available variables, the way in which I have assessed lifetime binge eating and lifetime low weight differ across the datasets. 
 
-EDGI = Selected those who filled in EDGI sign-up before after 23rd Jan (i.e., up to 3 months before COPING), then looked at their answers in the EDGI sign-up as to whether they have endorsed low weight (AN screener) or binge eating (BN/BED screener). I have chosen this date as it is 3 months before the start of the pandemic. We are going to assume that if someone at this point does NOT endorse binge eating or low weight, then we can assume that if they experience it during the pandemic, then it is for the first time. This is because the EDGI participants do NOT get asked the AN, BE, AAN or ICB modules at COPING baseline as they have already been asked in EDGI. It is however likely that we capture some false positives of 'new experiences' if someone experienced it AFTER filling out the EDGI signup but BEFORE filling out the COPING baseline).
+*EDGI* = Selected those who filled in EDGI sign-up AFTER 23rd Jan (i.e., up to 3 months before COVID), then looked at their answers in the EDGI sign-up as to whether they have endorsed low weight (AN screener) or binge eating (BN/BED screener). I have chosen this date as it is 3 months before the start of the pandemic. We are going to assume that if someone at this point does NOT endorse binge eating or low weight, then we can assume that if they experience it during the pandemic, then it is for the first time. This is because the EDGI participants do NOT get asked the AN, BE, AAN or ICB modules at COPING baseline as they have already been asked in EDGI. It is however likely that we capture some false positives of 'new experiences' if someone experienced it AFTER filling out the EDGI signup but BEFORE filling out the COPING baseline).
+Plus self-reported diagnosis from mhd.
 
-RAMP = Looked at self-reported diagnoses at RAMP baseline. Endorsement of AN diagnosis is equivalent to low weight; endorsement of BN or BED is equivalent to binge eating.
+*RAMP* = Looked at self-reported diagnoses at RAMP baseline. Endorsement of AN diagnosis is equivalent to low weight; endorsement of BN or BED is equivalent to binge eating. Also looked at EDEQ self-reported binge eating in the 28 days before the pandemic.
 
-GLAD & NBR = Looked at self-reported endorsement of low weight (AN screener) and binge eating (BED/BN screener) at COPING baseline.
+*NBR* = Looked at self-reported endorsement of low weight (AN screener) and binge eating (BED/BN screener) at COPING baseline.
 
+*GLAD* = Looked at self-reported endorsement of low weight (AN screener) and binge eating (BED/BN screener) at COPING baseline.
+Added self-reported BE/Low weight and BN/BED/AN in the GLAD ED100K optional AND mhd data. NEED TO ADD GLAD COPING MHD.
+
+ORDER OF SCRIPTS
+1. Pre-processing
+2. Baseline ED groupings
+3. Merging
+4. Deriving variables
+Configure global options for all chunks
 ```{r Setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment=NA,
-                      prompt=FALSE,
-                      cache=FALSE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
 ```
 
-Delete everything in your global environment
-```{r Delete everything in your global environment}
+Clear global environment prior to initiation
+```{r Clear global environment}
 remove(list = ls())
 ```
 
-Call in library script
-```{r Souce library}
-source("./libraries.R")
-```
-
-Call in functions script
-```{r Source functions}
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
 source("./functions.R")
 ```
 
-Retrieve the recent date
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
 ```{r Recent date}
-date = Sys.Date()
+date <- Sys.Date()
 date
 ```
 
 Read in ED data: GLAD COPING BE
 ```{r Read in data GLAD COPING BE}
-dat.be.glad <- readRDS(file = "../data_raw/diagnostics/be_coping_glad.rds")
-
+dat.be.glad <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/be_coping_glad.rds")
 # Inspect dimensions
 dim(dat.be.glad)
 # Inspect colnames
 colnames(dat.be.glad)
 
 nrow(dat.be.glad)
+```
 
+Exclude cols
+```{r exclude cols}
+exclude_cols <- c("ID",
+                  "cohort_name")
 ```
 
 Select variables: GLAD COPING BE
 ```{r Select variables GLAD COPING BE}
 
-exclude_cols_dem <- c("ID",
-                  "cohort_name")
-
 dat.be.glad.id <- dat.be.glad %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% 
+  remove_duplicates("externalDataReference") %>% 
  # add_column(cohort_name = "coping_glad", .before = "be.experience_regular_episodes_binge") %>% #create new column 
   select(
          ID = externalDataReference,# ID
@@ -72,7 +95,7 @@ dat.be.glad.id <- dat.be.glad %>% #new dataset with ID
       be.ate_regard_eating_binges =  be.ate_regard_short_period #rename to same as NBR
        
          ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
+  add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
   mutate_if(is.numeric, ~na_if(., -99)) %>%
   mutate_if(is.numeric, ~na_if(., -77)) %>%
@@ -96,7 +119,7 @@ dim(dat.be.glad)[1]-dim(dat.be.glad.id )[1]
 
 Read in ED data: NBR COPING BE
 ```{r Read in data NBR COPING BE}
-dat.be.nbr <- readRDS(file = "../data_raw/diagnostics/be_coping_nbr.rds")
+dat.be.nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/be_coping_nbr.rds")
 
 # Inspect dimensions
 dim(dat.be.nbr)
@@ -109,20 +132,16 @@ nrow(dat.be.nbr)
 
 Select variables: NBR COPING BE
 ```{r Select variables NBR COPING BE}
-
-exclude_cols_dem <- c("ID",
-                  "cohort_name")
-
 dat.be.nbr.id <- dat.be.nbr %>% #new dataset with ID
   drop_na(subjectid) %>% # Drop NAs
-  distinct(subjectid, .keep_all = TRUE) %>% 
+  remove_duplicates("subjectid") %>% 
   #add_column(cohort_name = "coping_nbr", .before = "be.experience_regular_episodes_binge") %>% #create new column 
   select(
          ID = subjectid,# ID
         # cohort_name, # Sample
-       be.ate_regard_eating_binges
+       be.ate_regard_eating_binges = be.ate_regard_short_period
          ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
+  add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
   mutate_if(is.numeric, ~na_if(., -99)) %>%
   mutate_if(is.numeric, ~na_if(., -77)) %>%
@@ -144,35 +163,30 @@ dim(dat.be.nbr)[1]-dim(dat.be.nbr.id )[1]
 
 ```
 
-Read in ED data: GLAD AN SCREENER
+Read in ED data: GLAD COPING AN SCREENER
 ```{r Read in data GLAD AN screener}
-dat.an.scr.glad <- readRDS(file = "../data_raw/glad/an_scr_coping_glad.rds")
+dat.an.scr.glad.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/an_scr_coping_glad.rds")
 
 # Inspect dimensions
-dim(dat.an.scr.glad)
+dim(dat.an.scr.glad.coping)
 # Inspect colnames
-colnames(dat.an.scr.glad)
+colnames(dat.an.scr.glad.coping)
 
-nrow(dat.an.scr.glad)
-
+nrow(dat.an.scr.glad.coping)
 ```
 
 Select variables: GLAD COPING AN SCREENER
 ```{r Select variables GLAD COPING AN SCREENER}
-
-exclude_cols_dem <- c("ID",
-                  "cohort_name")
-
-dat.an.scr.glad.id <- dat.an.scr.glad %>% #new dataset with ID
+dat.an.scr.glad.coping.id <- dat.an.scr.glad.coping %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% 
+  remove_duplicates("externalDataReference") %>% 
   add_column(cohort_name = "coping_glad", .before = "an.weigh_weighed_people_thought") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-        cohort_name, # Sample
-       an.weigh_weighed_people_thought
+         cohort_name, # Sample
+        an.weigh_weighed_people_thought
          ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
+  add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
   mutate_if(is.numeric, ~na_if(., -99)) %>%
   mutate_if(is.numeric, ~na_if(., -77)) %>%
@@ -186,17 +200,17 @@ dat.an.scr.glad.id <- dat.an.scr.glad %>% #new dataset with ID
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
-dim(dat.an.scr.glad.id )
+dim(dat.an.scr.glad.coping.id )
 # Inspect colnames
-colnames(dat.an.scr.glad.id )
+colnames(dat.an.scr.glad.coping.id )
 #Differences
-dim(dat.an.scr.glad)[1]-dim(dat.an.scr.glad.id )[1]
+dim(dat.an.scr.glad.coping)[1]-dim(dat.an.scr.glad.coping.id )[1]
 
 ```
 
 Read in ED data: NBR AN SCREENER
 ```{r Read in data NBR AN SCREENER}
-dat.an.scr.nbr <- readRDS(file = "../data_raw/nbr/an_scr_coping_nbr.rds")
+dat.an.scr.nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/an_scr_coping_nbr.rds")
 
 # Inspect dimensions
 dim(dat.an.scr.nbr)
@@ -209,20 +223,16 @@ nrow(dat.an.scr.nbr)
 
 Select variables: NBR AN SCREENER
 ```{r Select variables NBR AN SCREENER}
-
-exclude_cols_dem <- c("ID",
-                  "cohort_name")
-
 dat.an.scr.nbr.id <- dat.an.scr.nbr %>% #new dataset with ID
   drop_na(subjectid) %>% # Drop NAs
-  distinct(subjectid, .keep_all = TRUE) %>% 
+  remove_duplicates("subjectid") %>% 
   add_column(cohort_name = "coping_nbr", .before = "an.weigh_weighed_people_thought") %>% #create new column 
   select(
          ID = subjectid,# ID
          cohort_name, # Sample
-       an.weigh_weighed_people_thought
+         an.weigh_weighed_people_thought
          ) %>%
-  add_numeric(., exclude = exclude_cols_dem) %>%
+  add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
   mutate_if(is.numeric, ~na_if(., -99)) %>%
   mutate_if(is.numeric, ~na_if(., -77)) %>%
@@ -244,12 +254,114 @@ dim(dat.an.scr.nbr)[1]-dim(dat.an.scr.nbr.id)[1]
 
 ```
 
+Read in ED data: GLAD COPING MHD
+```{r Read in data GLAD COPING mhd data}
+dat.mhd.glad.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/mhd_coping_glad.rds")
+
+# Inspect dimensions
+dim(dat.mhd.glad.coping)
+# Inspect colnames
+colnames(dat.mhd.glad.coping)
+
+nrow(dat.mhd.glad.coping)
+```
+
+
+Select variables: GLAD COPING MHD
+```{r Select variables GLAD COPING MHD}
+dat.mhd.glad.coping.id <- dat.mhd.glad.coping %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  remove_duplicates("externalDataReference") %>% 
+  add_column(cohort_name = "coping_glad", .before = "mhd.anorexia_nervosa") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         cohort_name, # Sample
+        mhd.anorexia_nervosa,
+        mhd.bulimia_nervosa,
+        mhd.atypical_bulimia_nervosa,
+        mhd.bingeeating_disorder,
+        mhd.atypical_bingeeating_disorder
+         ) %>%
+  add_numeric(., exclude = exclude_cols) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(dat.mhd.glad.coping.id )
+# Inspect colnames
+colnames(dat.mhd.glad.coping.id )
+#Differences
+dim(dat.mhd.glad.coping)[1]-dim(dat.mhd.glad.coping.id )[1]
+
+```
+Read in ED data: NBR COPING MHD
+```{r Read in data NBR COPING mhd data}
+dat.mhd.nbr.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/mhd_coping_nbr.rds")
+
+# Inspect dimensions
+dim(dat.mhd.nbr.coping)
+# Inspect colnames
+colnames(dat.mhd.nbr.coping)
+
+nrow(dat.mhd.nbr.coping)
+```
+
+
+Select variables: NBR COPING MHD
+```{r Select variables NBR COPING MHD}
+dat.mhd.nbr.coping.id <- dat.mhd.nbr.coping %>% #new dataset with ID
+  drop_na(subjectid) %>% # Drop NAs
+  remove_duplicates("subjectid") %>% 
+  add_column(cohort_name = "coping_glad", .before = "mhd.anorexia_nervosa") %>% #create new column 
+  select(
+         ID = subjectid,# ID
+         cohort_name, # Sample
+        mhd.anorexia_nervosa,
+        mhd.bulimia_nervosa,
+        mhd.atypical_bulimia_nervosa,
+        mhd.bingeeating_disorder,
+        mhd.atypical_bingeeating_disorder
+         ) %>%
+  add_numeric(., exclude = exclude_cols) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(dat.mhd.nbr.coping.id )
+# Inspect colnames
+colnames(dat.mhd.nbr.coping.id )
+#Differences
+dim(dat.mhd.nbr.coping)[1]-dim(dat.mhd.nbr.coping.id )[1]
+
+```
+
+
+
 # Merge data
 ## GLAD
 ```{r Merge GLAD data}
 dfs.list <- list(
   dat.be.glad.id,
- dat.an.scr.glad.id
+  dat.an.scr.glad.coping.id,
+  dat.mhd.glad.coping.id
 )
 
 # Merge
@@ -269,7 +381,8 @@ colnames(dat.ed.GLAD)
 ```{r Merge NBR data}
 dfs.list <- list(
   dat.be.nbr.id,
- dat.an.scr.nbr.id
+ dat.an.scr.nbr.id,
+ dat.mhd.nbr.coping.id
  
  )
 
@@ -288,7 +401,8 @@ colnames(dat.ed.NBR)
 # GLAD + NBR
 ```{r Merge data GLAD & NBR}
 # Merge by rbind - both datasets have same columns
-dat.ed <- rbind(dat.ed.NBR,
+dat.ed <- dat.ed.NBR %>%
+  bind_rows(
                    dat.ed.GLAD
                 )
 
@@ -306,9 +420,26 @@ nrow(dat.ed)
 dat.ed <- dat.ed %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
-             be.ate_regard_eating_binges == "Yes" ~ 1,
-             be.ate_regard_eating_binges == "No" ~ 0,
-             is.na(be.ate_regard_eating_binges) ~ NA_real_
+             # ANY yes
+             be.ate_regard_eating_binges == "Yes" |
+               mhd.bulimia_nervosa == "Bulimia nervosa" |
+        mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" |
+        mhd.bingeeating_disorder == "Binge-eating disorder" |
+        mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" ~ 1,
+        
+        # ANY NO (& no 'Yes')
+             be.ate_regard_eating_binges == "No" |
+           mhd.bulimia_nervosa == "Not Bulimia nervosa" |
+        mhd.atypical_bulimia_nervosa == "Not Atypical bulimia nervosa" |
+        mhd.bingeeating_disorder == "Not Binge-eating disorder" |
+        mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" ~ 0,
+        
+        # All missing
+             is.na(be.ate_regard_eating_binges) &
+           is.na(mhd.bulimia_nervosa) &
+        is.na(mhd.atypical_bulimia_nervosa) &
+        is.na(mhd.bingeeating_disorder) &
+        is.na(mhd.atypical_bingeeating_disorder) ~ NA_real_
            
            )
     
@@ -321,7 +452,6 @@ dat.ed %>%
 
 ## Lifetime low weight at baseline
 ```{r Lifetime low weight at baseline GLAD & NBR}
-
 dat.ed <- dat.ed %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when(
@@ -335,35 +465,340 @@ dat.ed <- dat.ed %>%
 # Check
 dat.ed %>%
   freq(lifetime_low_weight_baseline_numeric)
+```
 
+# GLAD original data
+### GLAD ED100K self-reported CLEANED diagnostics data
+```{r read in GLAD ED100K self reported diagnosis}
+exclude_cols_glad <- c("ID",
+                       "cohort_name_glad") 
+
+glad_ed100k_selfreport_diagnoses <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/eating/selfreported_ed100k_diagnoses_glad_clean.rds")
+dim(glad_ed100k_selfreport_diagnoses)
+colnames(glad_ed100k_selfreport_diagnoses)
+
+glad_ed100k_selfreport_diagnoses <- glad_ed100k_selfreport_diagnoses %>% 
+  add_column(cohort_name_glad = "glad", .before = "an.1.anorexia_nervosa") %>% #create new column 
+  select(
+         ID ,
+         cohort_name_glad, # Sample
+         an.1.anorexia_nervosa,
+         an.1.bingeeating_disorder ,
+         an.1.bulimia_nervosa,
+         an.1.atypical_binge_eating_disorder,
+         an.1.compulsive_overeating
+         ) 
+
+dim(glad_ed100k_selfreport_diagnoses)
+colnames(glad_ed100k_selfreport_diagnoses)
+```
+
+## Import GLAD mhd self-report data
+```{r Read in data glad mhd data}
+glad_mhd <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/mhd_glad_clean_2021-08-20.rds") # +++HLD: needs updating!
+dim(glad_mhd)
+colnames(glad_mhd)
+
+glad_mhd <- glad_mhd %>% 
+  add_column(cohort_name_glad = "glad", .before = "mhd.an") %>% #create new column 
+  select(
+         ID ,
+         cohort_name_glad, # Sample
+         mhd.an,
+         mhd.bn,
+         mhd.atypical_bn,
+         mhd.atypical_bed,
+         mhd.bed,
+         endDate_mhd = endDate
+         )
+
+dim(glad_mhd)
+colnames(glad_mhd)
+```
+
+## Import GLAD ED100K self-report symptom data
+AN screener
+```{r Read in data glad an screener}
+glad_AN_scr <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/glad_ed/an_scr_glad.rds")
+dim(glad_AN_scr)
+colnames(glad_AN_scr)
+
+glad_AN_scr.id <- glad_AN_scr %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  remove_duplicates("externalDataReference") %>% 
+  add_column(cohort_name_glad = "glad", .before = "an.1.people_thought_weigh_weighed") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         cohort_name_glad, # Sample
+         an.1.people_thought_weigh_weighed,
+         endDate_ED100K_AN = endDate
+         ) %>%
+  add_numeric(., exclude = exclude_cols_glad) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(glad_AN_scr.id )
+# Inspect colnames
+colnames(glad_AN_scr.id )
+#Differences
+dim(glad_AN_scr)[1]-dim(glad_AN_scr.id)[1]
+```
+
+## Import GLAD ED100K self-report symptom data
+BE symptom data
+```{r Read in data glad be data}
+glad_BE <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/glad_ed/be_glad_ed.rds")
+dim(glad_BE)
+colnames(glad_BE)
+
+glad_BE.id <- glad_BE %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  remove_duplicates("externalDataReference") %>% 
+  add_column(cohort_name_glad = "glad", .before = "be.short_period_ate_regard") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         cohort_name_glad, # Sample
+         be.short_period_ate_regard, 
+         endDate_ED100K_BE = endDate
+         ) %>%
+  add_numeric(., exclude = exclude_cols_glad) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(glad_BE.id )
+# Inspect colnames
+colnames(glad_BE.id )
+#Differences
+dim(glad_BE)[1]-dim(glad_BE.id)[1]
+```
+Merge GLAD original data
+```{r}
+dfs.list <- list(glad_BE.id,
+glad_AN_scr.id,
+glad_mhd,
+glad_ed100k_selfreport_diagnoses)
+
+glad_dat <- plyr::join_all(
+  dfs.list,
+  by = c("ID",
+         "cohort_name_glad") 
+  )
+
+# Look at the data
+colnames(glad_dat)
+```
+
+
+## Identify lifetime binge eating at GLAD sign-up AFTER 23RD JANUARY 2020
++++HLD: need to check all answer options once data is ready!
+```{r Lifetime binge eating at GLAD sign-up}
+glad_dat <- glad_dat %>%
+  mutate(lifetime_binge_eating_glad_numeric =
+           case_when(
+             # Self-reported binge eating ED100K
+             be.short_period_ate_regard == "Yes" | # GLAD self-reported binge eating optional ED100K BE module
+             
+             # Self-reported binge-type ED in optional ED100K
+             an.1.bingeeating_disorder == "Binge-eating disorder" | # GLAD ED100K self-report diagnosis BED
+             an.1.bulimia_nervosa == "Bulimia nervosa"  |    # GLAD optional ED100K self-report diagnosis BN
+             an.1.atypical_binge_eating_disorder == "Atypical BED" |  # GLAD optional ED100K self-report diagnosis ATYPICAL BED
+             an.1.compulsive_overeating == "Compulsive overeating" |  # GLAD optional ED100K self-report diagnosis compulsive overeating # +++HLD: should i include this?
+             
+             # Self-reported binge-type ED in sign-up mhd
+             mhd.atypical_bed == "Atypical binge-eating disorder" | # GLAD mhd self-report diagnosis atypical BED
+             mhd.atypical_bn == "Atypical bulimia nervosa" | # GLAD mhd self-report diagnosis atypical BN
+             mhd.bn == "BN" | # GLAD mhd self-report diagnosis BN
+             mhd.bed == "BED" # GLAD mhd self-report diagnosis BED
+             ~ 1, # Lifetime binge-eating
+            
+            # For those who filled out the optional ED100K (likely to be AFTER the main GLAD sign-up, so this should come first)
+            endDate_ED100K_BE > as.Date("2020-01-23") & # Filled out the ED100K AFTER 23RD JAN 2020 # +++HLD: Should we put an end date? i.e., 23rd March?
+           
+               (be.short_period_ate_regard == "No" & # NO GLAD self-reported binge eating optional ED100K BE module
+             an.1.bingeeating_disorder == "Not Binge-eating disorder" & # NO GLAD ED100K self-report diagnosis BED
+             an.1.bulimia_nervosa == "Not Bulimia nervosa" &    # NO GLAD optional ED100K self-report diagnosis BN
+             an.1.atypical_binge_eating_disorder == "Not Atypical BED" & # NO GLAD optional ED100K self-report diagnosis ATYPICAL BED
+             an.1.compulsive_overeating == "Not Compulsive overeating" 
+             )  # no GLAD optional ED100K self-report diagnosis of BN
+            ~ 0,    
+            
+            # For those who filled out the GLAD sign-up and not the optional ED100K  (do NOT want to capture those who DID fill out the ED100K and indicated they had binged)
+            (
+              (is.na(endDate_ED100K_BE) & 
+              endDate_mhd > as.Date("2020-01-23")) & # Filled out the MHD AFTER 23RD JAN 2020
+            (mhd.atypical_bed == "Not atypical binge-eating disorder" | # NO GLAD mhd self-report diagnosis atypical BED
+             mhd.atypical_bn == "Not atypical bulimia nervosa" | # NO GLAD mhd self-report diagnosis atypical BN
+             mhd.bn == "Not BN" | # NO GLAD mhd self-report diagnosis BN
+             mhd.bed == "Not BED" # NO GLAD mhd self-report diagnosis BED
+             )) ~ 0, 
+            
+             is.na(be.short_period_ate_regard_numeric) & # GLAD self-reported binge eating optional ED100K BE module
+             is.na(an.1.bingeeating_disorder) & # GLAD ED100K self-report diagnosis
+             is.na(an.1.bulimia_nervosa) &    # GLAD optional ED100K self-report diagnosis
+             is.na(an.1.atypical_binge_eating_disorder) & # GLAD ED100K self-report diagnosis
+             is.na(an.1.compulsive_overeating) &    # GLAD optional ED100K self-report diagnosis
+             
+             is.na(mhd.bn) & # GLAD mhd self-report diagnosis
+             is.na(mhd.bed) & # GLAD mhd self-report diagnosis  
+             is.na(mhd.atypical_bed) & # GLAD mhd self-report diagnosis
+             is.na(mhd.atypical_bn)  # GLAD mhd self-report diagnosis  
+              ~ NA_real_ # Missing all lifetime binge eating data in GLAD original data
+           )
+    
+  )
+
+# Check
+glad_dat %>%
+  freq(lifetime_binge_eating_glad_numeric)
+```
+
+## Identify lifetime low weight at GLAD sign-up AFTER 23RD JANUARY 2020
++++HLD: need to check all answer options once data is ready!
+```{r Lifetime binge eating at GLAD sign-up}
+glad_dat <- glad_dat %>%
+  mutate(lifetime_low_weight_glad_numeric =
+           case_when(
+             # Self-reported low weight ED100K
+             an.1.people_thought_weigh_weighed == "Yes" | # GLAD self-reported low weight optional ED100K AN module
+             
+             # Self-reported anorexia in optional ED100K
+             an.1.anorexia_nervosa == "Anorexia nervosa" | # GLAD ED100K self-report diagnosis AN
+             
+             # Self-reported anorexia in sign-up mhd
+             mhd.an == "AN"  # GLAD mhd self-report diagnosis AN
+             ~ 1, # Lifetime low weight
+            
+             # For those who filled out the optional ED100K (likely to be AFTER the main GLAD sign-up, so this should come first)
+            endDate_ED100K_AN > as.Date("2020-01-23") & # Filled out the ED100K AFTER 23RD JAN 2020 # +++HLD: Should we put an end date? i.e., 23rd March?
+             an.1.people_thought_weigh_weighed == "No" & # NO GLAD self-reported low weight optional ED100K AN module
+             an.1.anorexia_nervosa == "Not Anorexia nervosa"  # NO GLAD ED100K self-report diagnosis AN
+              ~ 0,    
+            
+            # For those who filled out the GLAD sign-up and not the optional ED100K  (do NOT want to capture those who DID fill out the ED100K and indicated they had low weight)
+            (
+            (is.na(endDate_ED100K_AN) & 
+              endDate_mhd > as.Date("2020-01-23")) & # Filled out the MHD AFTER 23RD JAN 2020
+            mhd.an == "Not AN"  # NO GLAD mhd self-report diagnosis anorexia nervosa
+             ) ~ 0, 
+            
+            is.na(an.1.anorexia_nervosa) &
+            is.na(an.1.people_thought_weigh_weighed) &
+            is.na(mhd.an) ~ NA_real_ # Missing all lifetime low weight data in GLAD original data
+           )
+    
+  )
+
+# Check
+glad_dat %>%
+  freq(lifetime_low_weight_glad_numeric)
+```
+
+Combine GLAD sign-up self-reported lifetime BE and lifetime low weight with GLAD COPING baseline self-reported lifetime BE and low weight
+```{r bing GLAD self-report BE lifetime}
+# Filter out participants from COPING GLAD from the merged COPING GLAD & NBR dataset
+dat.ed.glad.coping <- dat.ed %>%
+  filter(cohort_name == "coping_glad")
+
+# Merge COPING GLAD and GLAD
+dfs.list <- list(dat.ed.glad.coping,
+                 glad_dat)
+
+glad_merged <- plyr::join_all(
+  dfs.list,
+  by = "ID"
+  )
+
+# Check
+glad_merged %>%
+  colnames()
+```
+
+Lifetime binge eating: GLAD sign-up combined with GLAD COPING baseline
+```{r lifetime binge eating combined GLAD data} 
+glad_merged <- glad_merged %>%
+  mutate(lifetime_binge_eating_baseline_combined_numeric =
+           case_when(
+             lifetime_binge_eating_baseline_numeric == 1 | # Reported lifetime binge eating at COPING baseline
+             lifetime_binge_eating_glad_numeric == 1 ~ 1, # Reported lifetime binge eating at GLAD sign-up,
+             
+            is.na(lifetime_binge_eating_baseline_numeric) &
+              is.na(lifetime_binge_eating_glad_numeric) ~ NA_real_, # Missing for both
+             
+              lifetime_binge_eating_glad_numeric == 0 |  # No binge eating for at least one (either after 23rd Jan 2020 in GLAD sign-up or not endorsed at COPING baseline)
+            lifetime_binge_eating_baseline_numeric == 0 ~ 0
+            
+           )
+    
+  )
+
+# Check
+glad_merged %>%
+  freq(lifetime_binge_eating_baseline_combined_numeric)
+```
+
+Lifetime low weight: GLAD sign-up combined with GLAD COPING baseline
+```{r lifetime low weight combined GLAD data} 
+glad_merged <- glad_merged %>%
+  mutate(lifetime_low_weight_baseline_combined_numeric =
+           case_when(
+             lifetime_low_weight_baseline_numeric == 1 | # Reported lifetime low weight at COPING baseline
+             lifetime_low_weight_glad_numeric == 1 ~ 1, # Reported lifetime low weight at GLAD sign-up,
+             
+            is.na(lifetime_low_weight_baseline_numeric) &
+              is.na(lifetime_low_weight_glad_numeric) ~ NA_real_, # Missing for both
+             
+              lifetime_low_weight_glad_numeric == 0 |  # No low weight for at least one (either after 23rd Jan 2020 in GLAD sign-up or not endorsed at COPING baseline)
+            lifetime_low_weight_baseline_numeric == 0 ~ 0
+            
+           )
+    
+  )
+
+# Check
+glad_merged %>%
+  freq(lifetime_low_weight_baseline_combined_numeric)
 ```
 
 # Import RAMP MHD self-report data
 ```{r Read in data RAMP MHD self-report}
-ramp.mhd.raw <- readRDS(file = "../data_raw/ramp/health_mhq_ramp.rds")
-  dim(ramp.mhd.raw)
-  colnames(ramp.mhd.raw)
+ramp.mhd.raw <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/health_mhq_ramp.rds")
+dim(ramp.mhd.raw)
+colnames(ramp.mhd.raw)
 ```
 
 Select columns from RAMP self-report data
-NB: This is the only ED data RAMP has (i.e., no sx-level info other than the EDEQ)
 ```{r Select columns RAMP MHD self-report}
-  
-exclude_cols <- c("cohort_name",
-                    "ID")
-  
 ramp.mhd.raw.id <- ramp.mhd.raw %>%
     drop_na(`Login ID`) %>% # Drop NAs
-    distinct(`Login ID`, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    #separate(`Login ID`, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    #separate(ID, into = "ID", sep = 7) %>%
-    add_column(cohort_name = "ramp", .before = "mhd.anorexia_nervosa") %>% #create new column 
+    remove_duplicates("Login ID") %>% # Remove duplicates based on ID
+    add_column(cohort_name = "ramp", 
+               .before = "mhd.anorexia_nervosa") %>% #create new column 
     select(
       ID = `Login ID`, # ID
       cohort_name, # Sample
       mhd.anorexia_nervosa,
-       mhd.bulimia_nervosa,
-     mhd.psychological_overeating_or_bingeeating_disorder
+      mhd.bulimia_nervosa,
+      mhd.psychological_overeating_or_bingeeating_disorder
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -385,14 +820,52 @@ ramp.mhd.raw.id <- ramp.mhd.raw %>%
   dim(ramp.mhd.raw)[1]-dim(ramp.mhd.raw.id)[1]
 ```
 
-# RAMP - Lifetime binge eating at baseline
-```{r Lifetime binge eating at baseline RAMP}
+# Import RAMP EDEQ baseline data
+```{r Read in data RAMP EDEQ baseline}
+ramp.edeq.baseline <- readRDS(file =  "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_ramp2021-07-21.rds")
+dim(ramp.edeq.baseline)
+colnames(ramp.edeq.baseline)
+freq(ramp.edeq.baseline$edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric)
+```
 
-ramp.mhd.raw.id <- ramp.mhd.raw.id %>%
+```{r Select columns RAMP EDEQ baseline}
+ramp.edeq.baseline.id <- ramp.edeq.baseline %>%
+    select(
+      ID, # ID
+      cohort_name, # Sample
+      edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric # Over the past 28 days BEFORE PANDEMIC, how many times have you: Eaten what other people would regard as an unusually large amount of food with a sense of having lost control over your eating?
+      
+    ) 
+
+  # Inspect dimensions
+  dim(ramp.edeq.baseline.id)
+  # Inspect colnames
+  colnames(ramp.edeq.baseline.id)
+  # Differences
+  dim(ramp.edeq.baseline)[1]-dim(ramp.edeq.baseline.id)[1]
+```
+
+Merge RAMP MHD and EDEQ BASELINE data
+```{r bind ramp edeq and mhd data}
+dfs.list <- list(ramp.mhd.raw.id,
+                 ramp.edeq.baseline.id)
+
+ramp_dat <- plyr::join_all(dfs.list,
+                           by = c("ID",
+                                  "cohort_name")
+)
+
+```
+
+# RAMP - Lifetime/RECENT binge eating at baseline
+```{r Lifetime binge eating at baseline RAMP}
+ramp_dat <- ramp_dat %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
              mhd.psychological_overeating_or_bingeeating_disorder == "Psychological overeating or binge-eating disorder" |
-               mhd.bulimia_nervosa == "Bulimia nervosa" ~ 1, # If indicated that they have had either, than they have previously experienced binge eating
+               mhd.bulimia_nervosa == "Bulimia nervosa" | # If indicated that they have had either, than they have previously experienced binge eating
+               edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric > 0 # If indicated they have binged in the 28 days before the pandemic, this would also count as BE pre-pandemic
+              ~ 1, 
              
             is.na(mhd.psychological_overeating_or_bingeeating_disorder) &
             is.na(mhd.bulimia_nervosa) ~ NA_real_, # If missing for both, then we can't know whether they have experienced binge eating
@@ -405,14 +878,14 @@ ramp.mhd.raw.id <- ramp.mhd.raw.id %>%
   )
 
 # Check
-ramp.mhd.raw.id %>%
+ramp_dat %>%
   freq(lifetime_binge_eating_baseline_numeric)
 ```
 
 # RAMP -  Lifetime low weight baseline
 ```{r Lifetime low weight baseline RAMP}
 
-ramp.mhd.raw.id <- ramp.mhd.raw.id %>%
+ramp_dat <- ramp_dat %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when(
             mhd.anorexia_nervosa == "Anorexia nervosa" ~ 1,
@@ -424,7 +897,7 @@ ramp.mhd.raw.id <- ramp.mhd.raw.id %>%
   )
 
 # Check
-ramp.mhd.raw.id %>%
+ramp_dat %>%
   freq(lifetime_low_weight_baseline_numeric)
 
 ```
@@ -434,24 +907,28 @@ Reminder: I have chosen this date as it is 3 months before the start of the pand
 
 ## Import EDGI MHD data
 ```{r Read in data EDGI MHD}
-edgi.mhd.raw <- readRDS(file = "../data_raw/edgi/mhd_edgi.rds")
+edgi.mhd.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/edgi/mhd_edgi.rds")
 dim(edgi.mhd.raw)
 colnames(edgi.mhd.raw)
 ```
 
 Select columns EDGI mhd data
+NB: I think the ED100K AN screener is mistakenly in the mhd dataframe.
 ```{r Select columns EDGI mhd data}
 edgi.mhd.raw.id <- edgi.mhd.raw %>%
     drop_na(externalDataReference) %>% # Drop NAs
-    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    # mutate(ID = as.numeric(ID)) %>%
+    remove_duplicates("externalDataReference") %>% # Remove duplicates based on ID
     add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
-      endDate,
+      endDate_mhd = endDate,
       cohort_name, # Sample
-     mhd.people_thought_weigh_weighed
+      mhd.people_thought_weigh_weighed,
+      mhd.anorexia_nervosa,
+      mhd.bulimia_nervosa,
+      mhd.atypical_bulimia_nervosa,
+      mhd.bingeeating_disorder,                      
+      mhd.atypical_bingeeating_disorder  
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -471,11 +948,12 @@ edgi.mhd.raw.id <- edgi.mhd.raw %>%
   colnames(edgi.mhd.raw.id)
   #Differences
   dim(edgi.mhd.raw.id)[1]-dim(edgi.mhd.raw.id)[1]
+ 
 ```
 
 ## Import EDGI BE data
 ```{r Read in EDGI BE data}
-be.edgi.raw <- readRDS(file = "../data_raw/edgi/be_edgi.rds")
+be.edgi.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/edgi/be_edgi.rds")
 dim(be.edgi.raw)
 colnames(be.edgi.raw)
 ```
@@ -484,13 +962,11 @@ Select columns EDGI BE data
 ```{r Select columns EDGI BE data}
 be.edgi.raw.id <- be.edgi.raw  %>%
     drop_na(externalDataReference) %>% # Drop NAs
-    distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
-    #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
-    # mutate(ID = as.numeric(ID)) %>%
+    remove_duplicates("externalDataReference") %>% # Remove duplicates based on ID
     add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
-      endDate,
+      endDate_BE = endDate,
       be.short_period_ate_regard
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
@@ -513,57 +989,74 @@ be.edgi.raw.id <- be.edgi.raw  %>%
   dim(be.edgi.raw)[1]-dim(be.edgi.raw.id)[1]
 ```
 
-Filter by people who have filled out EDGI AFTER 23rd Jan (i.e., 3 months before start of lockdown - 23rd March)
-```{r Filter EDGI data by 23rd Jan}
-# EDGI BE  - Filter by people who completed baseline survey after 23rd Jan
-be.edgi.raw.id$endDate <- as.Date(be.edgi.raw.id$endDate)
+Merge EDGI BE and low weight data
+```{r merge EDGI BE and low weight data}
+dfs.list <- list(be.edgi.raw.id,
+                 edgi.mhd.raw.id)
 
-be.edgi.raw.id.filtered <- be.edgi.raw.id %>%
-  filter(endDate > as.Date("2021-01-23"))
 
-nrow(be.edgi.raw.id.filtered)
-
-# MHD EDGI  - Filter by people who completed baseline survey after 23rd Jan
-edgi.mhd.raw.id$endDate <- as.Date(edgi.mhd.raw.id$endDate)
-
-edgi.mhd.raw.id.filtered <- edgi.mhd.raw.id %>%
-  filter(endDate > as.Date("2021-01-23"))
-
-nrow(edgi.mhd.raw.id.filtered)
+edgi_dat <- plyr::join_all(dfs.list,
+                           by = "ID")
+# Check
+edgi_dat %>%
+  colnames()
 ```
 
-# EDGI - Lifetime binge eating at baseline
+# EDGI sign-up - Lifetime binge eating at baseline
 ```{r Lifetime binge eating baseline EDGI}
-be.edgi.raw.id.filtered <- be.edgi.raw.id.filtered %>%
+edgi_dat <- edgi_dat %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
-              be.short_period_ate_regard == "Yes" ~ 1,
-              be.short_period_ate_regard == "No" ~ 0,
-              is.na(be.short_period_ate_regard) ~ NA_real_
-           
+             be.short_period_ate_regard == "Yes" |
+             mhd.bingeeating_disorder == "Binge-eating disorder" |
+             mhd.bulimia_nervosa == "Bulimia nervosa" |
+             mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" |
+             mhd.atypical_bulimia_nervosa  == "Atypical bulimia nervosa"
+             ~ 1, # Reported any BE in EDGI sign-up
+              
+             endDate_BE > as.Date("2020-01-23") & # Filled out the ED100K AFTER 23RD JAN 2020 # +++HLD: Should we put an end date? i.e., 23rd March?
+              (
+                be.short_period_ate_regard == "No" &
+                mhd.bingeeating_disorder == "Not Binge-eating disorder" &
+                mhd.bulimia_nervosa == "Not Bulimia nervosa" &
+                mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" &
+                mhd.atypical_bulimia_nervosa  == "Not Atypical bulimia nervosa") ~ 0, 
+                
+             # Missing for all BE data in EDGI sign-up
+               is.na(be.short_period_ate_regard) &
+               is.na(mhd.bingeeating_disorder) & 
+               is.na(mhd.bulimia_nervosa) & 
+               is.na(mhd.atypical_bingeeating_disorder) & 
+               is.na(mhd.atypical_bulimia_nervosa) ~ NA_real_ 
+               
            )
   )
 
 # Check
-be.edgi.raw.id.filtered %>%
+edgi_dat %>%
   freq(lifetime_binge_eating_baseline_numeric)
 ```
 
-# EDGI -  Lifetime low weight at baseline
+# EDGI sign-up -Lifetime low weight at baseline
 ```{r Lifetime low weight baseline EDGI}
-edgi.mhd.raw.id.filtered <- edgi.mhd.raw.id.filtered %>%
+edgi_dat <- edgi_dat %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when( 
-             mhd.people_thought_weigh_weighed == "Yes" ~ 1,
+             mhd.people_thought_weigh_weighed == "Yes" |
+             mhd.anorexia_nervosa == "Anorexia nervosa"  ~ 1, # reported any low weight in EDGI sign-up
              
-             mhd.people_thought_weigh_weighed == "No" ~ 0,
+             endDate_mhd > as.Date("2020-01-23") & # Filled out the mhd AFTER 23RD JAN 2020 # +++HLD: Should we put an end date? i.e., 23rd March?
+             (mhd.people_thought_weigh_weighed == "No" &
+              mhd.anorexia_nervosa == "Not Anorexia nervosa") ~ 0,
              
-             is.na(mhd.people_thought_weigh_weighed) ~ NA_real_
+             # Missing all mhd data in EDGI sign-up
+             is.na(mhd.people_thought_weigh_weighed) & 
+              is.na(mhd.anorexia_nervosa) ~ NA_real_
            )
   )
 
 # Check
-edgi.mhd.raw.id.filtered %>%
+edgi_dat %>%
   freq(lifetime_low_weight_baseline_numeric)
 ```
 
@@ -571,57 +1064,73 @@ edgi.mhd.raw.id.filtered %>%
 
 ## RAMP
 ```{r Select variables to keep RAMP}
-dat.baseline.groups.ramp <- ramp.mhd.raw.id %>%
+ramp_dat <- ramp_dat %>%
   select(ID,
          cohort_name,
          lifetime_low_weight_baseline_numeric, # Low weight at baseline
          lifetime_binge_eating_baseline_numeric # Binge eating at baseline
          
    )
+
+ramp_dat %>%
+  colnames()
 ```
 
-## GLAD & NBR
-```{r Select variables to keep NBR & GLAD}
-#Binge eating & low weight at baseline (GLAD + NBR)
-dat.baseline.groups.nbr.glad <- dat.ed %>%
+## NBR
+```{r Select variables to keep NBR}
+nbr_dat <- dat.ed %>%
+  filter(cohort_name == "coping_nbr") %>%
   select(ID,
          cohort_name,
          lifetime_binge_eating_baseline_numeric, # Binge eating at baseline
          lifetime_low_weight_baseline_numeric # Low weight at baseline
          )
 
+nbr_dat %>%
+  colnames()
+
+nbr_dat %>%
+  nrow()
+```
+
+## GLAD
+```{r Select variables to keep GLAD}
+glad_merged <- glad_merged %>%
+  select(ID,
+         cohort_name,
+         lifetime_binge_eating_baseline_numeric = lifetime_binge_eating_baseline_combined_numeric, # Binge eating at baseline
+         lifetime_low_weight_baseline_numeric = lifetime_low_weight_baseline_combined_numeric # Low weight at baseline
+         )
+
+glad_merged %>%
+  colnames()
+
+glad_merged %>%
+  nrow()
 ```
 
 ## EDGI
 ```{r Select variables to keep EDGI}
-# Binge eating at baseline
-edgi.1 <- be.edgi.raw.id.filtered %>%
-  select(ID,
-         lifetime_binge_eating_baseline_numeric
-         )
-
-# Low weight at baseline
-edgi.2 <- edgi.mhd.raw.id.filtered %>%
+edgi_dat <- edgi_dat %>%
   select(ID,
          cohort_name,
-         lifetime_low_weight_baseline_numeric
+         lifetime_binge_eating_baseline_numeric, # Binge eating at baseline
+         lifetime_low_weight_baseline_numeric # Low weight at baseline
          )
 
-dfs.list <- list(edgi.1,
-             edgi.2)
+edgi_dat %>%
+  colnames()
 
-# Merge
-dat.baseline.groups.edgi <- plyr::join_all(
-  dfs.list,
-  by = c("ID") 
-  )
+edgi_dat %>%
+  nrow()
 ```
 
 # MERGE ALL DATA
 ```{r Merge all data}
-baseline_ED_groups <- rbind(dat.baseline.groups.ramp,
-      dat.baseline.groups.nbr.glad,
-      dat.baseline.groups.edgi
+baseline_ED_groups <- rbind(ramp_dat,
+      edgi_dat,
+      glad_merged,
+      nbr_dat
 
 )
 

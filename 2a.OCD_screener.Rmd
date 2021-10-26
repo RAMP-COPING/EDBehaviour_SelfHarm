@@ -5,54 +5,51 @@ date: "05/08/2021"
 output: html_document
 ---
 
-# Set up 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
-                      comment=NA,
-                      prompt=FALSE,
-                      cache=FALSE)
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
 ```
 
-Delete everything in your global environment
-```{r Delete everything in your global environment}
+Clear global environment prior to initiation
+```{r Clear global environment}
 remove(list = ls())
 ```
 
-Install packages
-```{r Install packages}
-#install.packages("summarytools")
-#install.packages("sjlabelled")
-#install.packages("psych")
-#install.packages("tidyverse")
-```
-
-Load packages from library 
-NB: load tidyverse last!
-```{r Load packages from library}
-library(summarytools)
-library(sjlabelled)
-library (psych)
-library(tidyverse)
-```
-
-Retrieve the recent date
-We are using the recent date to save files with paste0() as an extension to not overwrite old versions
-```{r Recent date}
-date = Sys.Date()
-date
-```
-
-Add the add_numeric function - used to convert character variables into numeric variables and sumscore function
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
 source("./functions.R")
 ```
 
-# Read in the data: OCD screener 
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "tidyverse")
+package_check(packages)
+```
 
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in the data: OCD screener 
 ## GLAD data
 ```{r GLAD read in data}
-glad_dat <- readRDS(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_raw/glad/ocd_coping_glad_optional.rds")
-  
+glad_dat <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad_opt/ocd_coping_glad_opt.rds")
 # Check
 glad_dat %>%
   colnames()
@@ -60,21 +57,24 @@ glad_dat %>%
   dim()
 ```
 
+```{r exclude cols}
+exclude_cols <- c("ID",
+                  "sample")
+```
+
 Select & rename relevant columns (will be a function at some point)
 ```{r GLAD select}
-exclude_cols_dem <- c("ID",
-                  "sample")
 glad_dat.id <- glad_dat %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% 
+  remove_duplicates("externalDataReference") %>% 
   add_column(sample = "GLAD", .after = "externalDataReference") %>% # Create new sample column
   select(
          ID = externalDataReference,# ID
          sample,
-         ocd.strong_urges_urges_dirt,
+         ocd.strong_urges_urges_dirt = ocd.strong_urges_germs_thoughts,
          ocd.feeling_driven_mental_acts
   ) %>%
-  add_numeric(exclude = exclude_cols_dem) 
+  add_numeric(exclude = exclude_cols) 
 # Inspect colnames
 colnames(glad_dat.id)
 
@@ -84,8 +84,7 @@ glad_dat.id %>%
 
 ## EDGI data
 ```{r edgi read in data}
-edgi_dat <- readRDS(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_raw/edgi/ocd_coping_edgi_optional.rds")
-  
+edgi_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi_opt/ocd_coping_edgi_opt.rds")
 # Check
 edgi_dat %>%
   colnames()
@@ -95,19 +94,17 @@ edgi_dat %>%
 
 Select & rename relevant columns (will be a function at some point)
 ```{r edgi select}
-exclude_cols_dem <- c("ID",
-                  "sample")
 edgi_dat.id <- edgi_dat %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% 
+  remove_duplicates("externalDataReference") %>% 
   add_column(sample = "EDGI", .after = "externalDataReference") %>% # Create new sample column
   select(
          ID = externalDataReference,# ID
          sample,
-         ocd.strong_urges_urges_dirt,
+         ocd.strong_urges_urges_dirt = ocd.strong_urges_germs_thoughts,
          ocd.feeling_driven_mental_acts
   ) %>%
-  add_numeric(exclude = exclude_cols_dem) 
+  add_numeric(exclude = exclude_cols) 
 # Inspect colnames
 colnames(edgi_dat.id)
 
@@ -117,8 +114,8 @@ edgi_dat.id %>%
 
 ## NBR data
 ```{r NBR read in data}
-nbr_dat <- readRDS(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_raw/nbr/ocd_coping_nbr_optional.rds")
-  
+nbr_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr_opt/ocd_coping_nbr_opt.rds")
+
 # Check
 nbr_dat %>%
   colnames()
@@ -128,19 +125,17 @@ nbr_dat %>%
 
 Select & rename relevant columns (will be a function at some point)
 ```{r NBR select}
-exclude_cols_dem <- c("ID",
-                  "sample")
 nbr_dat.id <- nbr_dat %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% 
+  remove_duplicates("externalDataReference") %>% 
   add_column(sample = "NBR", .after = "externalDataReference") %>% # Create new sample column
   select(
          ID = externalDataReference,# ID
          sample,
-         ocd.strong_urges_urges_dirt,
+         ocd.strong_urges_urges_dirt = ocd.strong_urges_germs_thoughts,
          ocd.feeling_driven_mental_acts
   ) %>%
-  add_numeric(exclude = exclude_cols_dem) 
+  add_numeric(exclude = exclude_cols) 
 # Inspect colnames
 colnames(nbr_dat.id)
 
@@ -150,7 +145,7 @@ nbr_dat.id %>%
 
 ## RAMP data
 ```{r RAMP read in data}
-ramp_dat <- readRDS(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_raw/ramp/ocd_ramp.rds")
+ramp_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/ocd_ramp.rds")
   
 # Check
 ramp_dat %>%
@@ -161,19 +156,19 @@ ramp_dat %>%
 
 Select & rename relevant columns (will be a function at some point)
 ```{r RAMP select}
-exclude_cols_dem <- c("ID",
+exclude_cols <- c("ID",
                   "sample")
 ramp_dat.id <- ramp_dat %>% #new dataset with ID
-  drop_na(externalDataReference) %>% # Drop NAs
-  distinct(externalDataReference, .keep_all = TRUE) %>% 
-  add_column(sample = "RAMP", .after = "externalDataReference") %>% # Create new sample column
+  drop_na('Login ID') %>% # Drop NAs
+  remove_duplicates("Login ID") %>% 
+  add_column(sample = "RAMP", .after = 'Login ID') %>% # Create new sample column
   select(
          ID = externalDataReference,# ID
          sample,
-         ocd.strong_urges_urges_dirt,
+         ocd.strong_urges_urges_dirt = ocd.strong_urges_germs_thoughts,
          ocd.feeling_driven_mental_acts
   ) %>%
-  add_numeric(exclude = exclude_cols_dem) 
+  add_numeric(exclude = exclude_cols) 
 # Inspect colnames
 colnames(ramp_dat.id)
 
@@ -201,7 +196,6 @@ dat %>%
 ## Unpleasant thoughts, urges, images in mind
 Q: Over the past two weeks, how often have you been bothered by unpleasant thoughts, urges, or images that repeatedly enter your mind?e.g. thoughts about dirt or germs, thoughts about harm coming to yourself or others, strong urges for things to be ordered or symmetrical)
 ```{r Freq}
-
 dat %>%
   freq(ocd.strong_urges_urges_dirt)
 
@@ -225,7 +219,6 @@ dat %>%
 ## Compulsive behaviour or mental act
 Q: Over the past two weeks, how often have you been bothered by feeling driven to perform certain behaviours or mental acts over and over again?
 ```{r Freq}
-
 dat %>%
   freq(ocd.feeling_driven_mental_acts)
 

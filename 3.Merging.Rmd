@@ -5,32 +5,49 @@ date: "06/05/2021"
 output: html_document
 ---
 
-# Set up
+Configure global options for all chunks
 ```{r Setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,
-                      comment=NA,
-                      prompt=FALSE,
-                      cache=FALSE)
-options(bitmapType = 'quartz') # to render fonts better
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
 ```
 
-Clear global environment
+Clear global environment prior to initiation
 ```{r Clear global environment}
 remove(list = ls())
 ```
 
-Retrieve the current date to use it for file endings to not overwrite files when one exports files
-```{r Recent date}
-date = Sys.Date()
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source("./functions.R")
 ```
 
-Load packages
-```{r Load packages}
-library(tidyverse)
-library(skimr)
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
 ```
 
 # Import all baseline data (generated from the preprocessing script)
++++HLD: NEED TO UPDATE
 ```{r Read in baseline data of all datasets}
 glad_baseline <- readRDS(file = "../data_cleaned/BASELINE_glad2021-07-21.rds")
 dim(glad_baseline)
@@ -43,96 +60,6 @@ dim(nbr_baseline)
 
 ramp_baseline <- readRDS(file = "../data_cleaned/BASELINE_ramp2021-07-21.rds")
 dim(ramp_baseline)
-```
-
-# Make list of EDEQ baseline columns only in RAMP
-NB: The EDEQ is only asked at baseline in the RAMP study. Therefore, this dataset has columns that the other datasets do not. In order to merge, we need to create these columns within the other datasets.
-```{r}
-edeq_baseline_columnNames <- c("edeq.deliberately_limit_amount_influence_baseline",                     
-                               "edeq.calories_made_body_shape_baseline",                               
-                               "edeq.weight_influenced_person_baseline",                                
-                               "edeq.dissatisfied_shape_weight_baseline",                              
-                               "edeq.nibbled_picked_snacks_grazed_baseline",                            
-                               "edeq.felt_anxious_blue_bored_baseline",                                
-                               "edeq.felt_anxious_blue_bored.1_baseline",                              
-                               "edeq.eating_behaviours_concerns_distressed_baseline",                  
-                               "edeq.deliberately_limit_amount_influence.1_baseline",                   
-                               "edeq.calories_made_body_shape.1_baseline",                              
-                               "edeq.weight_influenced_person.1_baseline",                              
-                               "edeq.dissatisfied_shape_weight.1_baseline",                            
-                               "edeq.eating_behaviours_concerns_distressed.1_baseline",                 
-                               "edeq.feelings_pandemic_felt_baseline",                                  
-                               "edeq.actively_been_monitoring_your_shape_or_weight_baseline",           
-                               "edeq.regard_lost_control_eaten_baseline",                               
-                               "edeq.sick_means_made_shape_baseline",                                   
-                               "edeq.diuretics_laxatives_means_shape_baseline",                         
-                               "edeq.compulsive_driven_burn_calories_baseline",                         
-                               "edeq.nibbled_picked_snacks_grazed.1_baseline",                         
-                               "edeq.felt_anxious_blue_bored.2_baseline",                               
-                               "edeq.felt_anxious_blue_bored.3_baseline",                               
-                               "edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline",        
-                               "edeq.regard_lost_control_eaten.1_baseline",                             
-                               "edeq.sick_means_made_shape.1_baseline",                                 
-                               "edeq.diuretics_laxatives_means_shape.1_baseline",                       
-                               "edeq.compulsive_driven_burn_calories.1_baseline",                       
-                               "edeq.deliberately_limit_amount_influence_baseline_numeric",             
-                               "edeq.calories_made_body_shape_baseline_numeric",                        
-                               "edeq.weight_influenced_person_baseline_numeric",                        
-                               "edeq.dissatisfied_shape_weight_baseline_numeric",                       
-                               "edeq.nibbled_picked_snacks_grazed_baseline_numeric",                    
-                               "edeq.felt_anxious_blue_bored_baseline_numeric",                         
-                               "edeq.felt_anxious_blue_bored.1_baseline_numeric",                       
-                               "edeq.eating_behaviours_concerns_distressed_baseline_numeric",           
-                               "edeq.deliberately_limit_amount_influence.1_baseline_numeric",           
-                               "edeq.calories_made_body_shape.1_baseline_numeric",                      
-                               "edeq.weight_influenced_person.1_baseline_numeric",                      
-                               "edeq.dissatisfied_shape_weight.1_baseline_numeric",                     
-                               "edeq.eating_behaviours_concerns_distressed.1_baseline_numeric",         
-                               "edeq.feelings_pandemic_felt_baseline_numeric",                          
-                               "edeq.actively_been_monitoring_your_shape_or_weight_baseline_numeric",   
-                               "edeq.regard_lost_control_eaten_baseline_numeric",                       
-                               "edeq.sick_means_made_shape_baseline_numeric",                           
-                               "edeq.diuretics_laxatives_means_shape_baseline_numeric",
-                               "edeq.compulsive_driven_burn_calories_baseline_numeric",                 
-                               "edeq.nibbled_picked_snacks_grazed.1_baseline_numeric",                  
-                               "edeq.felt_anxious_blue_bored.2_baseline_numeric",                       
-                               "edeq.felt_anxious_blue_bored.3_baseline_numeric",                       
-                               "edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline_numeric",
-                               "edeq.regard_lost_control_eaten.1_baseline_numeric",                     
-                               "edeq.sick_means_made_shape.1_baseline_numeric",                         
-                               "edeq.diuretics_laxatives_means_shape.1_baseline_numeric",               
-                               "edeq.compulsive_driven_burn_calories.1_baseline_numeric") 
-                               
-```
-
-Add all above columns as NA in NBR, EDGI, & GLAD
-```{r Add all EDEQ columns as NA in NBR, EDGI, GLAD}
-nbr_baseline[edeq_baseline_columnNames] <- NA
-
-glad_baseline[edeq_baseline_columnNames] <- NA
-
-edgi_baseline[edeq_baseline_columnNames] <- NA
-```
-                                                          
-Need same columns across all datasets in order to merge
-The below chunk adds colummns to each dataset that are not present, to get the data ready to merge.
-```{r Add columns ready to merge all datasets}
-
-# Sex, age_category_numeric, mhd.suspected_eating_disorder_diagnosed_numeric, highest_education_prepan/numeric & age_category_COPING not in RAMP
-ramp_baseline$sex <- NA
-ramp_baseline$age_category_numeric <- NA
-ramp_baseline$mhd.suspected_eating_disorder_diagnosed_numeric <- NA
-ramp_baseline$employ.taking_unpaid_leave <- NA
-ramp_baseline$highest_education_prepan <- NA
-ramp_baseline$highest_education_prepan_numeric <- NA
-ramp_baseline$age_category_COPING <- NA
-
-# Transgender & highest_education_prepan/numeric & age_category_COPING not in NBR
-nbr_baseline$transgender <- NA
-nbr_baseline$highest_education_prepan <- NA
-nbr_baseline$highest_education_prepan_numeric <- NA
-nbr_baseline$age_category_COPING <- NA
-
 ```
 
 Rename columns to be consistent across all datasets
@@ -157,10 +84,12 @@ baseline_data <- bind_rows(
 # Check
 colnames(baseline_data)
 nrow(baseline_data)
+
 ```
 
 # Merging of follow up data
 ## Import follow up data
++++HLD: NEED TO UPDATE!
 ```{r Read in data follow up all datasets}
 
 taf_ramp <- readRDS(file = "../data_cleaned/TAF_ramp2021-06-29.rds")
@@ -198,14 +127,6 @@ dim(resp_coping_followup)
 
 resp_ramp_followup <- readRDS(file = "../data_cleaned/RESP_ramp_followup2021-07-21.rds")
 dim(resp_ramp_followup)
-```
-
-Create empty wave 1a and 1bs in COPING to merge with RAMP 
-```{r Create wave 1a and wave 1b columns in COPING}
-edeq_coping_screener$ed_scid5.regular_episodes_eating_binges_.Wave_1a <- NULL 
-edeq_coping_screener$ed_scid5.regular_episodes_eating_binges_.Wave_1b <- NULL 
-edeq_coping_screener$ed_scid5.weigh_weighed_past_month_.Wave_1a <- NULL 
-edeq_coping_screener$ed_scid5.weigh_weighed_past_month_.Wave_1b <- NULL 
 ```
 
 Bind EDEQ from COPING & RAMP together
@@ -280,7 +201,7 @@ nrow(DEM_FOLLOWUP)
 ## EDGI, RAMP, GLAD & NBR
 ### ED baseline grouping data (generated from the script "2.BASELINE_ED_groupings")
 ```{r Read in ED data ED grouping}
-baseline_ED_groups_data <- readRDS(file = "../data_cleaned/ED_BASELINE_groups2021-06-29.rds")
+baseline_ED_groups_data <- readRDS(file = "../data_cleaned/ED_BASELINE_groups2021-10-20.rds")
 
 # Check
 colnames(baseline_ED_groups_data)
@@ -290,7 +211,7 @@ nrow(baseline_ED_groups_data)
 ## EDGI, RAMP, GLAD & NBR
 ### OCD screener data
 ```{r Read in ED data ED grouping}
-OCD_screener <- readRDS(file = "../data_cleaned/OCD_screener2021-08-05.rds")
+OCD_screener <- readRDS(file = "../data_cleaned/OCD_screener2021-10-20.rds")
 
 # Check
 colnames(OCD_screener)
@@ -306,8 +227,8 @@ dfs.list <- list(DEM_FOLLOWUP,
                  VIRUS,
                  TAF,
                  EDEQ,
-                 baseline_ED_groups_data)
-               #  OCD_screener) # Will leave out for now as an optional questionnaire so will lose some participants, can add later
+                 baseline_ED_groups_data,
+                 OCD_screener) # Will leave out for now as an optional questionnaire so will lose some participants, can add later
 
 follow_up_data <- plyr::join_all(
   dfs.list,
@@ -369,7 +290,7 @@ skimr::skim(data.final.no.dup)
 Save final dataset
 ```{r Save final dataset}
 saveRDS(object = data.final.no.dup,
-        file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/dat.final", date, ".rds"))
+        file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/dat_merged", date, ".rds"))
 
 ```
 

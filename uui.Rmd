@@ -1,0 +1,408 @@
+---
+title: "Untitled"
+author: "Helena Davies"
+date: "19/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+
+# Demographics 
+## GLAD 1
+### Read in data
+```{r Read in data GLAD COPING demographic}
+if(GLAD == TRUE){
+glad.coping.dem.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/glad/dem_glad.rds")
+dim(glad.coping.dem.raw)
+colnames(glad.coping.dem.raw)
+}
+```
+
+Select variables
+```{r Select variables GLAD COPING demographic}
+if(GLAD == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate",
+                  "endDate")
+
+glad.coping.dem.raw.id <- glad.coping.dem.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  remove_duplicates("externalDataReference") %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_glad", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         endDate,
+         #Age_uncleaned = demographics.how_old_are_you_now.txt, # Age
+         gender_unc = dem.which_gender_do_you_identify_with, # Gender
+         sex = dem.select_questionnaire_items_medical, #Sex
+         pregnant_binary = dem.baby_pregnant_months,
+         #EduYrs = demographics.school_education_school_years.txt, # Years in education
+         #demographics.college_or_university_degree, # level of education - univeristy
+         #demographics.a_levelsas_levels_or_equivalent, # level of education - alevel
+         #demographics.o_levelsgcses_or_equivalent, # level of education - gcse
+         #demographics.cses_or_equivalent, # level of education - cse
+         #demographics.nvq_or_hnd_or_hnc_or_equivalent, # level of education - nvq
+         #Ethnicity_unc = demographics.questions_based_ethnic_origin # Ethnicity
+         height_ft_unc = dem.what_is_your_current_height,
+         height_inch_unc = dem.what_is_your_current_height.1,
+         height_cm_unc = dem.what_is_your_current_height.2,
+         weight_st_unc = dem.current_weight_provide_pregnant,
+         weight_lb_unc = dem.current_weight_provide_pregnant.1,
+         weight_kg_unc = dem.current_weight_provide_pregnant.2,
+         highest_weight_st_unc = dem.provide_pregnant_weighed_weight,
+         highest_weight_lb_unc = dem.provide_pregnant_weighed_weight.1,
+         highest_weight_kg_unc = dem.provide_pregnant_weighed_weight.2,
+         lowest_weight_st_unc = dem.adult_height_reaching_weighed,
+         lowest_weight_lb_unc = dem.adult_height_reaching_weighed.1,
+         lowest_weight_kg_unc = dem.adult_height_reaching_weighed.2,
+         age_highest_weight_unc = dem.highest_weight.txt,
+         age_lowest_weight_unc = dem.adult_height_lowest_weight.txt,
+         uk_location = dem.live,
+         current_country = dem.in_which_country_do_you_currently_reside
+         
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(glad.coping.dem.raw.id)
+# Inspect colnames
+colnames(glad.coping.dem.raw.id)
+#Differences
+dim(glad.coping.dem.raw)[1]-dim(glad.coping.dem.raw.id)[1]
+}
+```
+
+Summarise GLAD COPING demographic
+```{r GLAD COPING demographic summary, eval=FALSE, include=FALSE}
+if(GLAD == TRUE) {
+summarytools::dfSummary(
+  glad.coping.dem.raw.id,
+  graph.col = F,
+  valid.col = F,
+  labels.col = F)
+}
+```
+
+# Demographics 
+## EDGI 
+### Read in data
+```{r Read in data EDGI COPING demographics}
+if(EDGI == TRUE){
+edgi.coping.dem.raw <- readRDS(file = "../data_raw/edgi/dem_coping_edgi.rds")
+dim(edgi.coping.dem.raw)
+colnames(edgi.coping.dem.raw)
+}
+```
+
+Select variables EDGI COPING demographics
+```{r Select variables EDGI COPING demographics}
+if(EDGI == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate",
+                  "endDate")
+
+edgi.coping.dem.raw.id <- edgi.coping.dem.raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  distinct(externalDataReference, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         endDate,
+         #startDate.prepandemic = startDate, #Date when participant signed up to glad
+         #Age_uncleaned = demographics.how_old_are_you_now.txt, # Age
+         gender_unc = dem.which_gender_do_you_identify_with, # Gender
+         sex = dem.select_questionnaire_items_medical, #Sex
+         pregnant_binary = dem.baby_pregnant_months,
+         #EduYrs = demographics.school_education_school_years.txt, # Years in education
+         #demographics.college_or_university_degree, # level of education - univeristy
+         #demographics.a_levelsas_levels_or_equivalent, # level of education - alevel
+         #demographics.o_levelsgcses_or_equivalent, # level of education - gcse
+         #demographics.cses_or_equivalent, # level of education - cse
+         #demographics.nvq_or_hnd_or_hnc_or_equivalent, # level of education - nvq
+         #Ethnicity_unc = demographics.questions_based_ethnic_origin # Ethnicity
+         height_ft_unc = dem.what_is_your_current_height,
+         height_inch_unc = dem.what_is_your_current_height.1,
+         height_cm_unc = dem.what_is_your_current_height.2,
+         weight_st_unc = dem.current_weight_provide_weight,
+         weight_lb_unc = dem.current_weight_provide_weight.1,
+         weight_kg_unc = dem.current_weight_provide_weight.2,
+         highest_weight_st_unc = dem.provide_weighed_pregnant_weight,
+         highest_weight_lb_unc = dem.provide_weighed_pregnant_weight.1,
+         highest_weight_kg_unc = dem.provide_weighed_pregnant_weight.2,
+         lowest_weight_st_unc = dem.adult_height_reaching_weighed,
+         lowest_weight_lb_unc = dem.adult_height_reaching_weighed.1,
+         lowest_weight_kg_unc = dem.adult_height_reaching_weighed.2,
+         age_highest_weight_unc = dem.highest_weight.txt,
+         age_lowest_weight_unc = dem.lowest_weight_adult_height.txt,
+         uk_location = dem.live,
+         current_country = dem.in_which_country_do_you_currently_reside
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(edgi.coping.dem.raw.id)
+# Inspect colnames
+colnames(edgi.coping.dem.raw.id)
+#Differences
+dim(edgi.coping.dem.raw)[1]-dim(edgi.coping.dem.raw.id)[1]
+}
+```
+
+Summarise EDGI COPING demographics
+```{r Summarise EDGI COPING demographics}
+if(EDGI == TRUE) {
+summarytools::dfSummary(
+  edgi.coping.dem.raw.id,
+  graph.col = F,
+  valid.col = F,
+  labels.col = F)
+}
+```
+
+
+# Demographics 
+## NBR 1
+### Read in data
+```{r Read in data NBR demographics}
+if(NBR == TRUE){
+nbr.dem.raw <- readRDS(file = "../data_raw/nbr/demographics_coping_nbr.rds")
+dim(nbr.dem.raw)
+colnames(nbr.dem.raw)
+}
+```
+
+Select variables
+```{r Select variables NBR demographics}
+if(NBR == TRUE){
+exclude_cols_dem <- c("ID",
+                  "cohort_name",
+                  "startDate",
+                  "endDate")
+
+nbr.dem.raw.id <- nbr.dem.raw %>% #new dataset with ID
+  drop_na(subjectid) %>% # Drop NAs
+  distinct(subjectid, .keep_all = TRUE) %>% # Remove duplicates based on ID
+  #separate(externalDataReference, into = c("Sample", "ID"), sep = 4) %>% # Split ID in Sample and Number
+  #mutate(externalDataReference = as.numeric(externalDataReference)) %>%
+  add_column(cohort_name = "nbr", .before = "startDate") %>% #create new column 
+  select(
+         ID = subjectid, # ID
+         cohort_name, # Sample
+         startDate_baseline = startDate,
+         endDate,
+         #startDate.prepandemic = startDate, #Date when participant signed up to glad
+         #Age_uncleaned = demographics.how_old_are_you_now.txt, # Age
+         gender_unc = demographics.which_gender_do_you_identify_with, # Gender
+         sex = demographics.select_questionnaire_items_medical, #Sex
+         pregnant_binary = demographics.baby_pregnant_months,
+         birthday_day = demographics.day,
+         birthday_month = demographics.month,
+         birthday_year = demographics.year,
+         #EduYrs = demographics.school_education_school_years.txt, # Years in education
+         #demographics.college_or_university_degree, # level of education - univeristy
+         #demographics.a_levelsas_levels_or_equivalent, # level of education - alevel
+         #demographics.o_levelsgcses_or_equivalent, # level of education - gcse
+         #demographics.cses_or_equivalent, # level of education - cse
+         #demographics.nvq_or_hnd_or_hnc_or_equivalent, # level of education - nvq
+         #Ethnicity_unc = demographics.questions_based_ethnic_origin # Ethnicity
+         height_ft_unc = demographics.what_is_your_current_height,
+         height_inch_unc = demographics.what_is_your_current_height.1,
+         height_cm_unc = demographics.what_is_your_current_height.2,
+         weight_st_unc = demographics.provide_current_weight_pregnant,
+         weight_lb_unc = demographics.provide_current_weight_pregnant.1,
+         weight_kg_unc = demographics.provide_current_weight_pregnant.2,
+         highest_weight_st_unc = demographics.provide_pregnant_weighed_weight,
+         highest_weight_lb_unc = demographics.provide_pregnant_weighed_weight.1,
+         highest_weight_kg_unc = demographics.provide_current_weight_pregnant.2,
+         lowest_weight_st_unc = demographics.adult_height_reaching_weighed,
+         lowest_weight_lb_unc = demographics.adult_height_reaching_weighed.1,
+         lowest_weight_kg_unc = demographics.adult_height_reaching_weighed.2,
+         age_highest_weight_unc = demographics.highest_weight.txt,
+         age_lowest_weight_unc = demographics.adult_height_lowest_weight.txt,
+         uk_location = demographics.live,
+         current_country = demographics.in_which_country_do_you_currently_reside,
+         
+         
+         ) %>%
+  add_numeric(., exclude = exclude_cols_dem) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(nbr.dem.raw.id)
+# Inspect colnames
+colnames(nbr.dem.raw.id)
+#Differences
+dim(nbr.dem.raw)[1]-dim(nbr.dem.raw.id)[1]
+}
+```
+
+# Make list of EDEQ baseline columns only in RAMP
+NB: The EDEQ is only asked at baseline in the RAMP study. Therefore, this dataset has columns that the other datasets do not. In order to merge, we need to create these columns within the other datasets.
+```{r}
+edeq_baseline_columnNames <- c("edeq.deliberately_limit_amount_influence_baseline",                     
+                               "edeq.calories_made_body_shape_baseline",                               
+                               "edeq.weight_influenced_person_baseline",                                
+                               "edeq.dissatisfied_shape_weight_baseline",                              
+                               "edeq.nibbled_picked_snacks_grazed_baseline",                            
+                               "edeq.felt_anxious_blue_bored_baseline",                                
+                               "edeq.felt_anxious_blue_bored.1_baseline",                              
+                               "edeq.eating_behaviours_concerns_distressed_baseline",                  
+                               "edeq.deliberately_limit_amount_influence.1_baseline",                   
+                               "edeq.calories_made_body_shape.1_baseline",                              
+                               "edeq.weight_influenced_person.1_baseline",                              
+                               "edeq.dissatisfied_shape_weight.1_baseline",                            
+                               "edeq.eating_behaviours_concerns_distressed.1_baseline",                 
+                               "edeq.feelings_pandemic_felt_baseline",                                  
+                               "edeq.actively_been_monitoring_your_shape_or_weight_baseline",           
+                               "edeq.regard_lost_control_eaten_baseline",                               
+                               "edeq.sick_means_made_shape_baseline",                                   
+                               "edeq.diuretics_laxatives_means_shape_baseline",                         
+                               "edeq.compulsive_driven_burn_calories_baseline",                         
+                               "edeq.nibbled_picked_snacks_grazed.1_baseline",                         
+                               "edeq.felt_anxious_blue_bored.2_baseline",                               
+                               "edeq.felt_anxious_blue_bored.3_baseline",                               
+                               "edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline",        
+                               "edeq.regard_lost_control_eaten.1_baseline",                             
+                               "edeq.sick_means_made_shape.1_baseline",                                 
+                               "edeq.diuretics_laxatives_means_shape.1_baseline",                       
+                               "edeq.compulsive_driven_burn_calories.1_baseline",                       
+                               "edeq.deliberately_limit_amount_influence_baseline_numeric",             
+                               "edeq.calories_made_body_shape_baseline_numeric",                        
+                               "edeq.weight_influenced_person_baseline_numeric",                        
+                               "edeq.dissatisfied_shape_weight_baseline_numeric",                       
+                               "edeq.nibbled_picked_snacks_grazed_baseline_numeric",                    
+                               "edeq.felt_anxious_blue_bored_baseline_numeric",                         
+                               "edeq.felt_anxious_blue_bored.1_baseline_numeric",                       
+                               "edeq.eating_behaviours_concerns_distressed_baseline_numeric",           
+                               "edeq.deliberately_limit_amount_influence.1_baseline_numeric",           
+                               "edeq.calories_made_body_shape.1_baseline_numeric",                      
+                               "edeq.weight_influenced_person.1_baseline_numeric",                      
+                               "edeq.dissatisfied_shape_weight.1_baseline_numeric",                     
+                               "edeq.eating_behaviours_concerns_distressed.1_baseline_numeric",         
+                               "edeq.feelings_pandemic_felt_baseline_numeric",                          
+                               "edeq.actively_been_monitoring_your_shape_or_weight_baseline_numeric",   
+                               "edeq.regard_lost_control_eaten_baseline_numeric",                       
+                               "edeq.sick_means_made_shape_baseline_numeric",                           
+                               "edeq.diuretics_laxatives_means_shape_baseline_numeric",
+                               "edeq.compulsive_driven_burn_calories_baseline_numeric",                 
+                               "edeq.nibbled_picked_snacks_grazed.1_baseline_numeric",                  
+                               "edeq.felt_anxious_blue_bored.2_baseline_numeric",                       
+                               "edeq.felt_anxious_blue_bored.3_baseline_numeric",                       
+                               "edeq.actively_been_monitoring_your_shape_or_weight_.1_baseline_numeric",
+                               "edeq.regard_lost_control_eaten.1_baseline_numeric",                     
+                               "edeq.sick_means_made_shape.1_baseline_numeric",                         
+                               "edeq.diuretics_laxatives_means_shape.1_baseline_numeric",               
+                               "edeq.compulsive_driven_burn_calories.1_baseline_numeric") 
+                               
+```
+
+Add all above columns as NA in NBR, EDGI, & GLAD
+```{r Add all EDEQ columns as NA in NBR, EDGI, GLAD}
+nbr_baseline[edeq_baseline_columnNames] <- NA
+
+glad_baseline[edeq_baseline_columnNames] <- NA
+
+edgi_baseline[edeq_baseline_columnNames] <- NA
+```
+                                                          
+Need same columns across all datasets in order to merge
+The below chunk adds colummns to each dataset that are not present, to get the data ready to merge.
+```{r Add columns ready to merge all datasets}
+
+# Sex, age_category_numeric, mhd.suspected_eating_disorder_diagnosed_numeric, highest_education_prepan/numeric & age_category_COPING not in RAMP
+ramp_baseline$sex <- NA
+ramp_baseline$age_category_numeric <- NA
+ramp_baseline$mhd.suspected_eating_disorder_diagnosed_numeric <- NA
+ramp_baseline$employ.taking_unpaid_leave <- NA
+ramp_baseline$highest_education_prepan <- NA
+ramp_baseline$highest_education_prepan_numeric <- NA
+ramp_baseline$age_category_COPING <- NA
+
+# Transgender & highest_education_prepan/numeric & age_category_COPING not in NBR
+nbr_baseline$transgender <- NA
+nbr_baseline$highest_education_prepan <- NA
+nbr_baseline$highest_education_prepan_numeric <- NA
+nbr_baseline$age_category_COPING <- NA
+
+```
+
+Create empty wave 1a and 1bs in COPING to merge with RAMP 
+```{r Create wave 1a and wave 1b columns in COPING}
+edeq_coping_screener$ed_scid5.regular_episodes_eating_binges_.Wave_1a <- NULL 
+edeq_coping_screener$ed_scid5.regular_episodes_eating_binges_.Wave_1b <- NULL 
+edeq_coping_screener$ed_scid5.weigh_weighed_past_month_.Wave_1a <- NULL 
+edeq_coping_screener$ed_scid5.weigh_weighed_past_month_.Wave_1b <- NULL 
+```
+
+
+
