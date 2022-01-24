@@ -7,23 +7,14 @@ output: html_document
 
 This script identifies whether people have experienced lifetime low weight or lifetime binge eating at baseline.
 
-Due to differences in the available variables, the way in which I have assessed lifetime binge eating and lifetime low weight differ across the datasets. 
-
-*EDGI* = Selected those who filled in EDGI sign-up AFTER 23rd Jan (i.e., up to 3 months before COVID), then looked at their answers in the EDGI sign-up as to whether they have endorsed low weight (AN screener) or binge eating (BN/BED screener). I have chosen this date as it is 3 months before the start of the pandemic. We are going to assume that if someone at this point does NOT endorse binge eating or low weight, then we can assume that if they experience it during the pandemic, then it is for the first time. This is because the EDGI participants do NOT get asked the AN, BE, AAN or ICB modules at COPING baseline as they have already been asked in EDGI. It is however likely that we capture some false positives of 'new experiences' if someone experienced it AFTER filling out the EDGI signup but BEFORE filling out the COPING baseline).
-Plus self-reported diagnosis from mhd.
-
-*RAMP* = Looked at self-reported diagnoses at RAMP baseline. Endorsement of AN diagnosis is equivalent to low weight; endorsement of BN or BED is equivalent to binge eating. Also looked at EDEQ self-reported binge eating in the 28 days before the pandemic.
-
-*NBR* = Looked at self-reported endorsement of low weight (AN screener) and binge eating (BED/BN screener) at COPING baseline.
-
-*GLAD* = Looked at self-reported endorsement of low weight (AN screener) and binge eating (BED/BN screener) at COPING baseline.
-Added self-reported BE/Low weight and BN/BED/AN in the GLAD ED100K optional AND mhd data. NEED TO ADD GLAD COPING MHD.
+Due to differences in the available variables, the way in which I have assessed lifetime binge eating and lifetime low weight differ across the datasets. See here for a description of what I have done: https://docs.google.com/document/d/1NlIEts80sh5-S_upnWEL9xn-iZihiYZDrOPj86RGdHs/edit
 
 ORDER OF SCRIPTS
 1. Pre-processing
 2. Baseline ED groupings
 3. Merging
 4. Deriving variables
+
 Configure global options for all chunks
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -65,36 +56,38 @@ date <- Sys.Date()
 date
 ```
 
-Read in ED data: GLAD COPING BE
+# Read in ED data: GLAD COPING BE
 ```{r Read in data GLAD COPING BE}
-dat.be.glad <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/be_coping_glad.rds")
+dat.be.coping.glad <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/be_coping_glad.rds")
 # Inspect dimensions
-dim(dat.be.glad)
+dim(dat.be.coping.glad)
 # Inspect colnames
-colnames(dat.be.glad)
+colnames(dat.be.coping.glad)
 
-nrow(dat.be.glad)
+nrow(dat.be.coping.glad)
 ```
 
 Exclude cols
 ```{r exclude cols}
 exclude_cols <- c("ID",
-                  "cohort_name")
+                  "sample")
 ```
 
 Select variables: GLAD COPING BE
 ```{r Select variables GLAD COPING BE}
 
-dat.be.glad.id <- dat.be.glad %>% #new dataset with ID
+dat.be.coping.glad.id <- dat.be.coping.glad %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   remove_duplicates("externalDataReference") %>% 
- # add_column(cohort_name = "coping_glad", .before = "be.experience_regular_episodes_binge") %>% #create new column 
+  add_column(sample = "GLAD", .before = "be.ate_regard_short_period") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-       #  cohort_name, # Sample
-      be.ate_regard_eating_binges =  be.ate_regard_short_period #rename to same as NBR
-       
-         ) %>%
+       sample, # Sample
+      be.ate_regard_eating_binges =  be.ate_regard_short_period, #rename to same as NBR
+      be.roughly_binge_eating_regular.txt,
+      be.current = be.regularly_occurring_overeating_episodes,
+      be.age_when_stopped = be.binge_eating_stopped_regular.txt
+       ) %>%
   add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
   mutate_if(is.numeric, ~na_if(., -99)) %>%
@@ -109,15 +102,15 @@ dat.be.glad.id <- dat.be.glad %>% #new dataset with ID
   mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
 
 # Inspect dimensions
-dim(dat.be.glad.id )
+dim(dat.be.coping.glad.id )
 # Inspect colnames
-colnames(dat.be.glad.id )
+colnames(dat.be.coping.glad.id )
 #Differences
-dim(dat.be.glad)[1]-dim(dat.be.glad.id )[1]
+dim(dat.be.coping.glad)[1]-dim(dat.be.coping.glad.id )[1]
 
 ```
 
-Read in ED data: NBR COPING BE
+# Read in ED data: NBR COPING BE
 ```{r Read in data NBR COPING BE}
 dat.be.nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/be_coping_nbr.rds")
 
@@ -135,11 +128,14 @@ Select variables: NBR COPING BE
 dat.be.nbr.id <- dat.be.nbr %>% #new dataset with ID
   drop_na(subjectid) %>% # Drop NAs
   remove_duplicates("subjectid") %>% 
-  #add_column(cohort_name = "coping_nbr", .before = "be.experience_regular_episodes_binge") %>% #create new column 
+  add_column(sample = "NBR", .before = "be.ate_regard_short_period") %>% #create new column 
   select(
          ID = subjectid,# ID
-        # cohort_name, # Sample
-       be.ate_regard_eating_binges = be.ate_regard_short_period
+       sample, # Sample
+       be.ate_regard_eating_binges = be.ate_regard_short_period,
+       be.roughly_binge_eating_regular.txt,
+       be.current = be.regularly_occurring_overeating_episodes,
+       be.age_when_stopped = be.binge_eating_stopped_regular.txt
          ) %>%
   add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -160,10 +156,9 @@ dim(dat.be.nbr.id )
 colnames(dat.be.nbr.id )
 #Differences
 dim(dat.be.nbr)[1]-dim(dat.be.nbr.id )[1]
-
 ```
 
-Read in ED data: GLAD COPING AN SCREENER
+# Read in ED data: GLAD COPING AN SCREENER
 ```{r Read in data GLAD AN screener}
 dat.an.scr.glad.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/an_scr_coping_glad.rds")
 
@@ -180,11 +175,11 @@ Select variables: GLAD COPING AN SCREENER
 dat.an.scr.glad.coping.id <- dat.an.scr.glad.coping %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   remove_duplicates("externalDataReference") %>% 
-  add_column(cohort_name = "coping_glad", .before = "an.weigh_weighed_people_thought") %>% #create new column 
+  add_column(sample = "GLAD", .before = "an.weigh_weighed_people_thought") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
-        an.weigh_weighed_people_thought
+        sample, # Sample
+        an.weigh_weighed_people_thought,
          ) %>%
   add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -208,7 +203,52 @@ dim(dat.an.scr.glad.coping)[1]-dim(dat.an.scr.glad.coping.id )[1]
 
 ```
 
-Read in ED data: NBR AN SCREENER
+# Read in ED data: GLAD COPING AN MODULE
+```{r Read in data GLAD AN screener}
+dat.an.glad.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/an_coping_glad.rds")
+
+# Inspect dimensions
+dim(dat.an.glad.coping)
+# Inspect colnames
+colnames(dat.an.glad.coping)
+
+nrow(dat.an.glad.coping)
+```
+
+Select variables: GLAD COPING AN MODULE
+```{r Select variables GLAD COPING AN SCREENER}
+dat.an.glad.coping.id <- dat.an.glad.coping %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  remove_duplicates("externalDataReference") %>% 
+  add_column(sample = "GLAD", .before = "an.1.how_old_were_you_then.txt") %>% #create new column 
+  select(
+         ID = externalDataReference,# ID
+         sample, # Sample
+        an.1.how_old_were_you_then.txt,
+         ) %>%
+  add_numeric(., exclude = exclude_cols) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(dat.an.glad.coping.id )
+# Inspect colnames
+colnames(dat.an.glad.coping.id )
+#Differences
+dim(dat.an.glad.coping)[1]-dim(dat.an.glad.coping.id )[1]
+
+```
+
+# Read in ED data: NBR AN SCREENER
 ```{r Read in data NBR AN SCREENER}
 dat.an.scr.nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/an_scr_coping_nbr.rds")
 
@@ -218,7 +258,6 @@ dim(dat.an.scr.nbr)
 colnames(dat.an.scr.nbr)
 
 nrow(dat.an.scr.nbr)
-
 ```
 
 Select variables: NBR AN SCREENER
@@ -226,10 +265,10 @@ Select variables: NBR AN SCREENER
 dat.an.scr.nbr.id <- dat.an.scr.nbr %>% #new dataset with ID
   drop_na(subjectid) %>% # Drop NAs
   remove_duplicates("subjectid") %>% 
-  add_column(cohort_name = "coping_nbr", .before = "an.weigh_weighed_people_thought") %>% #create new column 
+  add_column(sample = "NBR", .before = "an.weigh_weighed_people_thought") %>% #create new column 
   select(
          ID = subjectid,# ID
-         cohort_name, # Sample
+        sample, # Sample
          an.weigh_weighed_people_thought
          ) %>%
   add_numeric(., exclude = exclude_cols) %>%
@@ -254,7 +293,52 @@ dim(dat.an.scr.nbr)[1]-dim(dat.an.scr.nbr.id)[1]
 
 ```
 
-Read in ED data: GLAD COPING MHD
+# Read in ED data: NBR AN MODULE
+```{r Read in data NBR AN SCREENER}
+dat.an.nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/an_coping_nbr.rds")
+
+# Inspect dimensions
+dim(dat.an.nbr)
+# Inspect colnames
+colnames(dat.an.nbr)
+
+nrow(dat.an.nbr)
+```
+
+Select variables: NBR AN MODULE
+```{r Select variables NBR AN SCREENER}
+dat.an.nbr.id <- dat.an.nbr %>% #new dataset with ID
+  drop_na(subjectid) %>% # Drop NAs
+  remove_duplicates("subjectid") %>% 
+ add_column(sample = "NBR", .before = "an.1.how_old_were_you_then.txt") %>% #create new column 
+  select(
+         ID = subjectid,# ID
+        sample, # Sample
+  an.1.how_old_were_you_then.txt
+         ) %>%
+  add_numeric(., exclude = exclude_cols) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(dat.an.nbr.id )
+# Inspect colnames
+colnames(dat.an.nbr.id )
+#Differences
+dim(dat.an.nbr)[1]-dim(dat.an.nbr.id)[1]
+
+```
+
+# Read in ED data: GLAD COPING MHD
 ```{r Read in data GLAD COPING mhd data}
 dat.mhd.glad.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/mhd_coping_glad.rds")
 
@@ -266,21 +350,37 @@ colnames(dat.mhd.glad.coping)
 nrow(dat.mhd.glad.coping)
 ```
 
-
 Select variables: GLAD COPING MHD
 ```{r Select variables GLAD COPING MHD}
 dat.mhd.glad.coping.id <- dat.mhd.glad.coping %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   remove_duplicates("externalDataReference") %>% 
-  add_column(cohort_name = "coping_glad", .before = "mhd.anorexia_nervosa") %>% #create new column 
+  add_column(sample = "GLAD", .before = "mhd.anorexia_nervosa") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name, # Sample
+         sample, # Sample
+        mhd_EndDate = endDate,
         mhd.anorexia_nervosa,
+        mhd.anorexia_nervosa_current_past = mhd.anorexia_nervosa.1, # Current or in past
+        mhd.anorexia_age_at_diagnosis = mhd.anorexia_nervosa.2, # Age at diagnosis
+       
+        # Current or past binge-type ED 
+       mhd.bulimia_nervosa.1_current_past = mhd.bulimia_nervosa.1,
+       mhd.atypical_bulimia_nervosa.1_current_past = mhd.atypical_bulimia_nervosa.1,
+       mhd.bingeeating_disorder.1_current_past = mhd.bingeeating_disorder.1,
+       mhd.atypical_bingeeating_disorder.1_current_past = mhd.atypical_bingeeating_disorder.1,
+       
+       # Age at diagnosis binge-type ED
+       mhd.bulimia_nervosa.2_age_at_diagnosis = mhd.bulimia_nervosa.2,
+       mhd.atypical_bulimia_nervosa.2_age_at_diagnosis = mhd.atypical_bulimia_nervosa.2,
+       mhd.bingeeating_disorder.2_age_at_diagnosis = mhd.bingeeating_disorder.2,
+       mhd.atypical_bingeeating_disorder.2_age_at_diagnosis = mhd.atypical_bingeeating_disorder.2,
+       
         mhd.bulimia_nervosa,
         mhd.atypical_bulimia_nervosa,
         mhd.bingeeating_disorder,
-        mhd.atypical_bingeeating_disorder
+        mhd.atypical_bingeeating_disorder,
+       mhd.suspected_eating_disorder_diagnosed
          ) %>%
   add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -303,7 +403,8 @@ colnames(dat.mhd.glad.coping.id )
 dim(dat.mhd.glad.coping)[1]-dim(dat.mhd.glad.coping.id )[1]
 
 ```
-Read in ED data: NBR COPING MHD
+
+# Read in ED data: NBR COPING MHD
 ```{r Read in data NBR COPING mhd data}
 dat.mhd.nbr.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/mhd_coping_nbr.rds")
 
@@ -315,21 +416,37 @@ colnames(dat.mhd.nbr.coping)
 nrow(dat.mhd.nbr.coping)
 ```
 
-
 Select variables: NBR COPING MHD
 ```{r Select variables NBR COPING MHD}
 dat.mhd.nbr.coping.id <- dat.mhd.nbr.coping %>% #new dataset with ID
   drop_na(subjectid) %>% # Drop NAs
   remove_duplicates("subjectid") %>% 
-  add_column(cohort_name = "coping_glad", .before = "mhd.anorexia_nervosa") %>% #create new column 
+  add_column(sample = "NBR", .before = "mhd.anorexia_nervosa") %>% #create new column 
   select(
          ID = subjectid,# ID
-         cohort_name, # Sample
+         sample, # Sample
+         mhd_EndDate = endDate,
         mhd.anorexia_nervosa,
+        mhd.anorexia_nervosa_current_past = mhd.anorexia_nervosa.1, # Current or in past
+        mhd.anorexia_age_at_diagnosis = mhd.anorexia_nervosa.2, # Age at diagnosis
+       
+       # Current or past binge-type ED 
+       mhd.bulimia_nervosa.1_current_past = mhd.bulimia_nervosa.1,
+       mhd.atypical_bulimia_nervosa.1_current_past = mhd.atypical_bulimia_nervosa.1,
+       mhd.bingeeating_disorder.1_current_past = mhd.bingeeating_disorder.1,
+       mhd.atypical_bingeeating_disorder.1_current_past = mhd.atypical_bingeeating_disorder.1,
+       
+       # Age at diagnosis binge-type ED
+       mhd.bulimia_nervosa.2_age_at_diagnosis = mhd.bulimia_nervosa.2,
+       mhd.atypical_bulimia_nervosa.2_age_at_diagnosis = mhd.atypical_bulimia_nervosa.2,
+       mhd.bingeeating_disorder.2_age_at_diagnosis = mhd.bingeeating_disorder.2,
+       mhd.atypical_bingeeating_disorder.2_age_at_diagnosis = mhd.atypical_bingeeating_disorder.2,
+       
         mhd.bulimia_nervosa,
         mhd.atypical_bulimia_nervosa,
         mhd.bingeeating_disorder,
-        mhd.atypical_bingeeating_disorder
+        mhd.atypical_bingeeating_disorder,
+        mhd.suspected_eating_disorder_diagnosed
          ) %>%
   add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -353,42 +470,92 @@ dim(dat.mhd.nbr.coping)[1]-dim(dat.mhd.nbr.coping.id )[1]
 
 ```
 
+# Read in DEM data: NBR COPING AGE
+```{r Read in data NBR COPING AGE data}
+age_dat_nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_nbr/demographics/age_coping_nbr_clean_INTERNAL_ONLY.rds")
+dim(age_dat_nbr)
+colnames(age_dat_nbr)
+```
 
+# Read in DEM data: GLAD COPING AGE
+```{r Read in data GLAD COPING AGE data}
+age_dat_glad_coping <- readRDS(file =  "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_glad/demographics/age_coping_glad_clean_INTERNAL_ONLY.rds")
+dim(age_dat_glad_coping)
+colnames(age_dat_glad_coping)
+```
 
 # Merge data
-## GLAD
+## GLAD COPING
 ```{r Merge GLAD data}
-dfs.list <- list(
-  dat.be.glad.id,
-  dat.an.scr.glad.coping.id,
-  dat.mhd.glad.coping.id
-)
-
 # Merge
-dat.ed.GLAD <- plyr::join_all(dfs.list,
-                                      by = c("ID"))
+dat_glad1 <- dplyr::full_join(dat.be.coping.glad.id,
+                              dat.an.scr.glad.coping.id,
+                              by = c("ID",
+                                     "sample"
+                                     )
+                              )
+
+dat_glad2 <- dplyr::full_join(dat.mhd.glad.coping.id,
+                              dat.an.glad.coping.id,
+                              by = c("ID",
+                                     "sample"
+                                     )
+                              )
+
+
+dat_glad3 <- dplyr::full_join(dat_glad1,
+                              age_dat_glad_coping,
+                              by = c("ID",
+                                     "sample"
+                                     )
+                              )
+
+dat.ed.GLAD.COPING <- dplyr::full_join(dat_glad3,
+                              dat_glad2,
+                              by = c("ID",
+                                     "sample"
+                                     )
+                              )
+
 
 # Check rows
-nrow(dat.ed.GLAD)
+nrow(dat.ed.GLAD.COPING)
 
 # Check columns
-colnames(dat.ed.GLAD)
-
+colnames(dat.ed.GLAD.COPING)
 ```
 
 # Merge data
 ## NBR
 ```{r Merge NBR data}
-dfs.list <- list(
-  dat.be.nbr.id,
- dat.an.scr.nbr.id,
- dat.mhd.nbr.coping.id
- 
- )
-
 # Merge
-dat.ed.NBR <- plyr::join_all(dfs.list,
-                                      by = c("ID"))
+dat_nbr1 <- dplyr::full_join(dat.be.nbr.id,
+                              dat.an.scr.nbr.id,
+                              by = c("ID",
+                                     "sample"
+                                     )
+                              )
+
+dat_nbr2 <- dplyr::full_join(dat.mhd.nbr.coping.id,
+                              dat.an.nbr.id,
+                              by = c("ID",
+                                     "sample"
+                                     )
+                              )
+
+dat_nbr3 <- dplyr::full_join(dat_nbr1,
+                              age_dat_nbr,
+                              by = c("ID",
+                                     "sample"
+                                     )
+                            )
+
+dat.ed.NBR <- dplyr::full_join(dat_nbr3,
+                              dat_nbr2,
+                              by = c("ID",
+                                     "sample"
+                                     )
+                            )
 
 # Check rows
 nrow(dat.ed.NBR)
@@ -397,96 +564,528 @@ nrow(dat.ed.NBR)
 colnames(dat.ed.NBR)
 ```
 
-# Merge data 
+# Bind data 
 # GLAD + NBR
-```{r Merge data GLAD & NBR}
-# Merge by rbind - both datasets have same columns
-dat.ed <- dat.ed.NBR %>%
+```{r Bind data GLAD & NBR}
+# Bind
+dat.ed.COPING <- dat.ed.NBR %>%
   bind_rows(
-                   dat.ed.GLAD
+                   dat.ed.GLAD.COPING
                 )
 
-
 # Check colnames 
-colnames(dat.ed)
+colnames(dat.ed.COPING)
 
 # Check number of people
-nrow(dat.ed)
+nrow(dat.ed.COPING)
 ```
 
-# GLAD & NBR
-## Lifetime binge eating at baseline
+## How many people have a binge-type ED or binge eating that might have started during the pandemic?
+### First, work out age at beginning of pandemic
+```{r age at beginning of pandemic GLAD and NBR}
+# First, need to calculate age at the beginning of the pandemic (23rd March 2020)
+## NBR participants
+dat.ed.COPING$age_start_pandemic_cop <- lubridate::interval(
+    start = dat.ed.COPING$dem.dob_cop,
+    end = as.Date("2020-03-23")) %/% # use modulo to round down
+        lubridate::duration(num = 1, units = "years")
+
+## GLAD participants
+dat.ed.COPING$age_start_pandemic_glad <- lubridate::interval(
+    start = dat.ed.COPING$dem.dob,
+    end = as.Date("2020-03-23")) %/% # use modulo to round down
+        lubridate::duration(num = 1, units = "years")
+
+## Final age at start for both GLAD and NBR participants
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(age_start_pandemic =
+           case_when(
+             !is.na(age_start_pandemic_cop) ~ age_start_pandemic_cop,
+             !is.na(age_start_pandemic_glad) ~ age_start_pandemic_glad
+             )
+         )
+```
+
+### Binge-eating disorder
+```{r working out if during the pandemic or before binge-eating disorder}
+# Work out if during pandemic - binge-eating disorder
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(pandemic_BED_vs_start_pandemic_age =
+           case_when(
+            
+             # Capture first people who have turned the age at which they get diagnosed within the first three months of the pandemic 
+             mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
+             mhd.bingeeating_disorder == "Binge-eating disorder" &
+             age_start_pandemic < mhd.bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
+          
+          # This should then be people who turned the age at which they got diagnosed AFTER the first three months of the pandemic
+          mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
+          mhd.bingeeating_disorder == "Binge-eating disorder" &
+          age_start_pandemic < mhd.bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pandemic binge eating", #...they've turned that age since the pandemic started and accounted for diagnostic delays, possibly started during the pandemic
+             
+           mhd.bingeeating_disorder == "Binge-eating disorder" &
+           age_start_pandemic > mhd.bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", # ...but they got diagnosed with binge-eating disorder at an age younger than their age at the beginning of the pandemic
+            
+            mhd.bingeeating_disorder == "Binge-eating disorder" &
+             age_start_pandemic == mhd.bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Probably pre-pandemic binge eating", #...same age at start of pandemic as age at diagnosis, difficult to tell when symptoms started EXACTLY
+         
+         mhd.bingeeating_disorder == "Binge-eating disorder" ~ "Missing age data" #   People left over
+             ) 
+         )
+
+
+# Check 
+dat.ed.COPING %>%
+  freq(pandemic_BED_vs_start_pandemic_age)
+
+# For people who are probably pre-pandemic binge eating...look at date of filling survey and current or past
+dat.ed.COPING %>%
+  filter(pandemic_BED_vs_start_pandemic_age == "Probably pre-pandemic binge eating") %>%
+  select(mhd_EndDate,
+         age_start_pandemic,
+         mhd.bingeeating_disorder.2_age_at_diagnosis_numeric,
+         mhd.bingeeating_disorder.1_current_past)
+```
+17/01/22: There are 39 people who have said they have current binge-eating disorder and their age at diagnosis is the same as their age at start of the pandemic. Many answered COPING in the first 3 months of the pandemic. There are 3 people who have said they have past binge-eating disorder and their age at diagnosis is the same as their age at start of the pandemic. We will drop these people and effectively categorise them as 'pre-pandemic binge eating' as it is likely symptoms started before the pandemic.
+
+### Atypical binge-eating disorder
+```{r working out if during the pandemic or before atypical binge-eating disorder}
+# Work out if during pandemic - atypical binge-eating disorder
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(pandemic_atypical_BED_vs_start_pandemic_age =
+           case_when(
+             
+            mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
+              mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" &
+             age_start_pandemic < mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
+          
+            mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
+              mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" &
+             age_start_pandemic < mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pandemic binge eating", #...they've turned that age since the pandemic started and accounted for diagnostic delays
+             
+              mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" &
+             age_start_pandemic > mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
+            
+           mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" &
+             age_start_pandemic == mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Probably pre-pandemic binge eating", #...same age, difficult to tell when they started EXACTLY
+          
+           mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" ~ "Missing age data" #   People left over
+
+             ) 
+         )
+
+# Check 
+dat.ed.COPING %>%
+  freq(pandemic_atypical_BED_vs_start_pandemic_age)
+
+# For people who are probably pre-pandemic binge eating...look at date of filling survey and current or past
+dat.ed.COPING %>%
+  filter(pandemic_atypical_BED_vs_start_pandemic_age == "Probably pre-pandemic binge eating") %>%
+  select(mhd_EndDate,
+         age_start_pandemic,
+         mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric,
+         mhd.atypical_bingeeating_disorder.1_current_past)
+
+```
+17/01/22: There are five people who have said they have current atypical binge-eating disorder and their age at diagnosis is the same as their age at the start of the pandemic. We will drop these people and effectively categorise them as 'pre-pandemic binge eating' as it is likely symptoms started before the pandemic.
+
+### Bulimia
+```{r working out if during the pandemic or before bulimia}
+# Work out if during pandemic - bulimia nervosa
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(pandemic_BN_vs_start_pandemic_age =
+           case_when(
+             
+             mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
+            mhd.bulimia_nervosa == "Bulimia nervosa" &
+             age_start_pandemic < mhd.bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
+           
+           mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
+            mhd.bulimia_nervosa == "Bulimia nervosa" &
+             age_start_pandemic < mhd.bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pandemic binge eating", #...they've turned that age since the pandemic started and accounted for diagnostic delays
+           
+             mhd.bulimia_nervosa == "Bulimia nervosa" &
+             age_start_pandemic > mhd.bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
+            
+           mhd.bulimia_nervosa == "Bulimia nervosa" &
+             age_start_pandemic == mhd.bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Probably pre-pandemic binge eating", #...same age, difficult to tell when they started EXACTLY
+             
+            mhd.bulimia_nervosa == "Bulimia nervosa" ~ "Missing age data" # People left over
+             ) 
+         )
+
+
+# Check 
+dat.ed.COPING %>%
+  freq(pandemic_BN_vs_start_pandemic_age)
+
+# For people who are probably pre-pandemic binge eating...look at date of filling survey and current or past
+dat.ed.COPING %>%
+  filter(pandemic_BN_vs_start_pandemic_age == "Probably pre-pandemic binge eating") %>%
+  select(mhd_EndDate,
+         age_start_pandemic,
+         mhd.bulimia_nervosa.2_age_at_diagnosis_numeric,
+         mhd.bulimia_nervosa.1_current_past,
+         mhd.bulimia_nervosa)
+```
+17/01/22: There are nine people who have said they have current bulimia nervosa and got diagnosed at the same age that they were at the start of the pandemic. We will drop these people and effectively categorise them as 'pre-pandemic binge eating'.
+
+### Atypical bulimia
+```{r working out if during the pandemic or before atypical bulimia}
+# Work out if during pandemic - bulimia nervosa
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(pandemic_atypical_BN_vs_start_pandemic_age =
+           case_when(
+             
+            mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
+             mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" &
+             age_start_pandemic < mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
+          
+             
+             mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
+              mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" &
+             age_start_pandemic < mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pandemic binge eating", #...they've turned that age since the pandemic started and accounted for diagnostic delays
+            
+            
+             mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" &
+             age_start_pandemic > mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
+            
+             mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" &
+             age_start_pandemic == mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Probably pre-pandemic binge eating", #...same age, difficult to tell when they started EXACTLY
+             
+               mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" ~ "Missing age data" # People left over
+             ) 
+         )
+
+# Check 
+dat.ed.COPING %>%
+  freq(pandemic_atypical_BN_vs_start_pandemic_age)
+
+# For people who are probably pre-pandemic binge eating...look at date of filling survey and current or past
+dat.ed.COPING %>%
+  filter(pandemic_atypical_BN_vs_start_pandemic_age == "Probably pre-pandemic binge eating") %>%
+  select(mhd_EndDate,
+         age_start_pandemic,
+         mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric,
+         mhd.atypical_bulimia_nervosa.1_current_past)
+```
+17/01/22: There is one person who has said they have current atypical bulimia and got diagnosed at the same age that they were at the start of the pandemic; they are also NA for mhd end date. We will drop this person and effectively categorise them as 'pre-pandemic binge eating'.
+
+### Binge eating
+```{r working out if during the pandemic or before binge eating}
+# Work out if during pandemic - binge eating
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(pandemic_BE_vs_start_pandemic_age =
+           case_when(
+             
+            be.ate_regard_eating_binges == "Yes" & 
+             age_start_pandemic < be.roughly_binge_eating_regular.txt ~ "Pandemic binge eating", #...but they've turned that age since the pandemic started (i.e., started binge eating during the pandemic)
+             
+              be.ate_regard_eating_binges == "Yes" & 
+             age_start_pandemic > be.roughly_binge_eating_regular.txt ~ "Pre-pandemic binge eating", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
+            
+             be.ate_regard_eating_binges == "Yes" & 
+             age_start_pandemic == be.roughly_binge_eating_regular.txt ~ "Probably pre-pandemic binge eating", #...same age, difficult to tell when they started EXACTLY
+             
+               be.ate_regard_eating_binges == "Yes"  ~ "Missing age data" # People left over
+             ) 
+         )
+
+
+# Check 
+dat.ed.COPING %>%
+  freq(pandemic_BE_vs_start_pandemic_age)
+
+# For people who are probably pre-pandemic binge eating...look at date of filling survey and current or past
+dat.ed.COPING %>%
+  filter(pandemic_BE_vs_start_pandemic_age == "Probably pre-pandemic binge eating") %>%
+  select(mhd_EndDate,
+         age_start_pandemic,
+         be.roughly_binge_eating_regular.txt)
+```
+17/01/22: There are 109 people who were the same age at the start of the pandemic as their age when they started binge eating so we can not work out whether they started before or during the pandemic. Will have to drop. 
+
+
+## Now, need to combine all the binge phenotypes and identify prepan versus pandemic
+```{r identify people we are unsure about} 
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(any_pandemic_binge_eating_vs_start_pandemic_age =
+           case_when(   # People who indicated an age at symptom or diagnosis YOUNGER than their age at the start of the pandemic
+                       pandemic_BE_vs_start_pandemic_age == "Pre-pandemic binge eating" |
+                       pandemic_BED_vs_start_pandemic_age == "Pre-pandemic binge eating" |
+                       pandemic_atypical_BED_vs_start_pandemic_age == "Pre-pandemic binge eating" |
+                       pandemic_BN_vs_start_pandemic_age == "Pre-pandemic binge eating" |
+                       pandemic_atypical_BN_vs_start_pandemic_age == "Pre-pandemic binge eating" ~ "Pre-pandemic binge eating",
+                     
+                         # People who indicated an age at symptom or diagnosis OLDER than their age at the start of the pandemic
+                       pandemic_BE_vs_start_pandemic_age == "Pandemic binge eating" |
+                       pandemic_BED_vs_start_pandemic_age == "Pandemic binge eating" |
+                       pandemic_atypical_BED_vs_start_pandemic_age == "Pandemic binge eating" |
+                       pandemic_BN_vs_start_pandemic_age == "Pandemic binge eating" |
+                       pandemic_atypical_BN_vs_start_pandemic_age == "Pandemic binge eating" ~ "Pandemic binge eating",
+                     
+                        # People who are missing either age at start of pandemic and/or diagnosis/symptom start (NB: ~2,000 NBR participants have not provided DOB)
+                       pandemic_BE_vs_start_pandemic_age == "Missing age data" |
+                       pandemic_BED_vs_start_pandemic_age == "Missing age data" |
+                       pandemic_atypical_BED_vs_start_pandemic_age == "Missing age data" |
+                       pandemic_BN_vs_start_pandemic_age == "Missing age data" |
+                       pandemic_atypical_BN_vs_start_pandemic_age == "Missing age data" ~ "Missing age data"
+                     
+                    # The rest may have indicated that they have never binged or the same age
+                     
+                     )
+         )
+dat.ed.COPING %>%
+  freq(any_pandemic_binge_eating_vs_start_pandemic_age)
+```
+17/01/22: There are 14 people who we have been able to identify as having pandemic binge eating (i.e., binge eating that started during the pandemic).
+
+## COPING GLAD & NBR: Lifetime binge eating at baseline
 ```{r Lifetime binge eating at baseline GLAD & NBR}
-dat.ed <- dat.ed %>%
+dat.ed.COPING <- dat.ed.COPING %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
-             # ANY yes
-             be.ate_regard_eating_binges == "Yes" |
-               mhd.bulimia_nervosa == "Bulimia nervosa" |
-        mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" |
-        mhd.bingeeating_disorder == "Binge-eating disorder" |
-        mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" ~ 1,
+            # (See code above)
+            # People who, for any binge-type ED or binge eating, indicated prepandemic (taking into account age at pandemic start etc)
+              any_pandemic_binge_eating_vs_start_pandemic_age ==  "Pre-pandemic binge eating"  ~ 1,
+              
+           # People who, for any binge-type ED or binge eating, indicated pandemic start and therefore, before the pandemic had NOT experienced binge eating (taking into account birthdays etc) *will need to code these people as baseline binge eating*
+            any_pandemic_binge_eating_vs_start_pandemic_age ==  "Pandemic binge eating"  ~ 0,
+      
+           # Never binged and never suspected eating disorder
+           be.ate_regard_eating_binges == "No" &
+           mhd.suspected_eating_disorder_diagnosed == "No" ~ 0, 
         
-        # ANY NO (& no 'Yes')
-             be.ate_regard_eating_binges == "No" |
-           mhd.bulimia_nervosa == "Not Bulimia nervosa" |
-        mhd.atypical_bulimia_nervosa == "Not Atypical bulimia nervosa" |
-        mhd.bingeeating_disorder == "Not Binge-eating disorder" |
-        mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" ~ 0,
+           # Never binged BUT has suspected ED (i.e., got shown ED options) BUT never suspected binge-type ED 
+           be.ate_regard_eating_binges == "No" &
+           mhd.bulimia_nervosa == "Not Bulimia nervosa" &
+           mhd.atypical_bulimia_nervosa == "Not Atypical bulimia nervosa" &
+           mhd.bingeeating_disorder == "Not Binge-eating disorder" &
+           mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" ~ 0,
+         
+            # Added 17/01/22: Never binged but also either did not answer MHD question, or put "Yes" but did not indicate which ED, or put "Not sure"
+           be.ate_regard_eating_binges == "No" ~ 0,
+          
+           # Missing binge eating data 
+         is.na(be.ate_regard_eating_binges) &
+         (
+          is.na(mhd.suspected_eating_disorder_diagnosed) |
+          (is.na(mhd.bulimia_nervosa) &
+          is.na(mhd.atypical_bulimia_nervosa) &
+          is.na(mhd.bingeeating_disorder) &
+          is.na(mhd.atypical_bingeeating_disorder))
+        ) |
         
-        # All missing
-             is.na(be.ate_regard_eating_binges) &
-           is.na(mhd.bulimia_nervosa) &
-        is.na(mhd.atypical_bulimia_nervosa) &
-        is.na(mhd.bingeeating_disorder) &
-        is.na(mhd.atypical_bingeeating_disorder) ~ NA_real_
-           
-           )
-    
-  )
+        # Missing age data
+          any_pandemic_binge_eating_vs_start_pandemic_age == "Missing age data" ~ 2
+        )
+      )
 
 # Check
-dat.ed %>%
+dat.ed.COPING %>%
   freq(lifetime_binge_eating_baseline_numeric)
+
+# +++ There are ~800 people who have missing data for either the binge eating question or the mhd, what should we do with these people? OR, for example, has said they've never binged but then endorsed a BED diagnosis...
+         
+dat.ed.COPING %>%
+  filter(is.na(lifetime_binge_eating_baseline_numeric)) %>%
+  select(
+           be.ate_regard_eating_binges,
+           mhd.suspected_eating_disorder_diagnosed,
+           mhd.bulimia_nervosa,
+           mhd.atypical_bulimia_nervosa,
+           mhd.bingeeating_disorder,
+           mhd.atypical_bingeeating_disorder,
+           age_start_pandemic,
+           be.roughly_binge_eating_regular.txt
+         
+        )
 ```
 
-## Lifetime low weight at baseline
+17/01/22: There were 904 people who we could not classify as lifetime BE at baseline (1 = yes (i.e., prepandemic), 0 = No lifetime BE). 
+33 people have answered "No" to ever binge eating, but then not answered the MHD questionnaire, or said "Yes" but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime binge eating" as it is the symptom we are most interested in rather than if they have had a full eating disorder.
+Now, there are 871 people who we can not classify. Either 'Yes' or missing for the BE question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for BE).
+
+# Low weight
+## How many people have anorexia that may have started during the pandemic? 
+```{r working out if during the pandemic or before anorexia}
+# Work out if during pandemic - anorexia
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(pandemic_AN_vs_start_pandemic_age =
+           case_when(
+             
+              mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
+              mhd.anorexia_nervosa == "Anorexia nervosa" &
+             age_start_pandemic < mhd.anorexia_age_at_diagnosis_numeric ~ "Pre-pandemic low weight", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
+            
+            mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
+            mhd.anorexia_nervosa == "Anorexia nervosa" &
+           age_start_pandemic < mhd.anorexia_age_at_diagnosis_numeric  ~ "Pandemic low weight", #...they've turned that age since the pandemic started and accounted for diagnostic delays
+            
+             
+               mhd.anorexia_nervosa == "Anorexia nervosa" &
+             age_start_pandemic > mhd.anorexia_age_at_diagnosis_numeric ~ "Pre-pandemic low weight", # ...low weight at an age younger than their age at the beginning of the pandemic
+            
+              mhd.anorexia_nervosa == "Anorexia nervosa" &
+             age_start_pandemic == mhd.anorexia_age_at_diagnosis_numeric ~ "Probably pre-pandemic low weight", #...same age, difficult to tell when they started EXACTLY
+             
+               mhd.anorexia_nervosa == "Anorexia nervosa" ~ "Missing age data" # People left over
+             ) 
+         )
+
+# Check 
+dat.ed.COPING %>%
+  freq(pandemic_AN_vs_start_pandemic_age)
+
+# For people who are probably pre-pandemic low weight...look at date of filling survey and current or past
+dat.ed.COPING %>%
+  filter(pandemic_AN_vs_start_pandemic_age == "Probably pre-pandemic low weight") %>%
+  select(mhd_EndDate,
+         age_start_pandemic,
+         mhd.anorexia_age_at_diagnosis_numeric,
+         mhd.anorexia_nervosa_current_past)
+```
+17/01/22: There are 5 people who have said they have current anorexia and their age at diagnosis is the same as their age at start of the pandemic (and all answered COPING early on in pandemic). There are 3 people who have said it's in the past but have a diagnosis age the same as their age at the start of the pandemic. We will drop these people and effectively categorise them as 'pre-pandemic low weight' as it is likely symptoms started before the pandemic.
+
+## How many people have low weight that may have started during the pandemic? 
+```{r working out if during the pandemic or before low weight}
+# Work out if during pandemic - low weight
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(pandemic_LW_vs_start_pandemic_age =
+           case_when(
+             
+           an.weigh_weighed_people_thought == "Yes"  & # Had lifetime low weight
+             age_start_pandemic < an.1.how_old_were_you_then.txt ~ "Pandemic low weight", #...but they've turned that age since the pandemic started (i.e., started binge eating during the pandemic)
+             
+              an.weigh_weighed_people_thought == "Yes"  & # Had lifetime low weight
+             age_start_pandemic > an.1.how_old_were_you_then.txt ~ "Pre-pandemic low weight", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
+            
+             an.weigh_weighed_people_thought == "Yes"  & # Had lifetime low weight
+             age_start_pandemic == an.1.how_old_were_you_then.txt ~ "Probably pre-pandemic low weight", #...same age, difficult to tell when they started EXACTLY
+             
+              an.weigh_weighed_people_thought == "Yes" ~ "Missing age data"   # People left over
+             ) 
+         )
+
+
+# Check 
+dat.ed.COPING %>%
+  freq(pandemic_LW_vs_start_pandemic_age)
+
+# For people who are probably pre-pandemic low weight...look at date of filling survey and current or past
+dat.ed.COPING %>%
+  filter(pandemic_LW_vs_start_pandemic_age == "Probably pre-pandemic low weight") %>%
+  select(mhd_EndDate,
+         age_start_pandemic,
+         an.1.how_old_were_you_then.txt)
+```
+
+17/01/22: There are 193 people who put the same age at start of low weight as their age at the start of the pandemic so we can not work out whether they started before or during the pandemic. Will have to drop. 
+
+## Now, need to combine all the low weight phenotypes and identify prepan versus pandemic
+```{r combine low weight phenotypes} 
+dat.ed.COPING <- dat.ed.COPING %>%
+  mutate(any_pandemic_low_weight_vs_start_pandemic_age =
+           case_when(   # People who indicated an age at symptom or diagnosis YOUNGER than their age at the start of the pandemic
+                       pandemic_LW_vs_start_pandemic_age == "Pre-pandemic low weight" |
+                       pandemic_AN_vs_start_pandemic_age == "Pre-pandemic low weight"  ~ "Pre-pandemic low weight",
+                     
+                         # People who indicated an age at symptom or diagnosis OLDER than their age at the start of the pandemic
+                       pandemic_LW_vs_start_pandemic_age == "Pandemic low weight" |
+                       pandemic_AN_vs_start_pandemic_age == "Pandemic low weight"  ~ "Pandemic low weight",
+                     
+                        # People who are missing either age at start of pandemic and/or diagnosis/symptom start (NB: ~2,000 NBR participants have not provided DOB)
+                       pandemic_LW_vs_start_pandemic_age == "Missing age data" |
+                       pandemic_AN_vs_start_pandemic_age == "Missing age data"  ~ "Missing age data"
+                     
+                    # The rest may have indicated that they have never had low weight 
+                     
+                     )
+         )
+dat.ed.COPING %>%
+  freq(any_pandemic_low_weight_vs_start_pandemic_age)
+```
+
+## COPING GLAD & NBR: Lifetime low weight at baseline
 ```{r Lifetime low weight at baseline GLAD & NBR}
-dat.ed <- dat.ed %>%
+dat.ed.COPING <- dat.ed.COPING %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when(
-            an.weigh_weighed_people_thought == "Yes" ~ 1, # Low weight 
-            an.weigh_weighed_people_thought == "No" ~ 0 # Never been at low weight
-            
-           )
-    
-  )
-
+            # (See code above)
+            # People who, for any binge-type ED or low weight, indicated prepandemic (taking into account age at pandemic start etc)
+              any_pandemic_low_weight_vs_start_pandemic_age ==  "Pre-pandemic low weight"  ~ 1,
+              
+           # People who, for any binge-type ED or low weight, indicated pandemic start and therefore, before the pandemic, had NOT experienced low weight (taking into account birthdays etc) *will need to code these people as baseline low weight*
+            any_pandemic_low_weight_vs_start_pandemic_age ==  "Pandemic low weight"  ~ 0,
+      
+       # Never low weight and never suspected eating disorder
+        an.weigh_weighed_people_thought == "No" &
+        mhd.suspected_eating_disorder_diagnosed == "No" ~ 0, 
+       
+        # Never low weight BUT has suspected ED (i.e., got shown ED options) BUT never suspected anorexia
+         an.weigh_weighed_people_thought == "No" &
+        mhd.anorexia_nervosa == "Not Anorexia nervosa"  ~ 0,
+       
+       # Added 17/01/22: People with symptom data but unclear with diagnosis data
+       an.weigh_weighed_people_thought == "No" ~ 0,
+         
+           # Missing low weight data 
+         is.na(an.weigh_weighed_people_thought) &
+         (
+          is.na(mhd.suspected_eating_disorder_diagnosed) |
+          (is.na(mhd.anorexia_nervosa))
+        ) |
+        
+        # Missing age data
+          any_pandemic_low_weight_vs_start_pandemic_age == "Missing age data" ~ 2
+        )
+      )
+           
+          
 # Check
-dat.ed %>%
+dat.ed.COPING %>%
   freq(lifetime_low_weight_baseline_numeric)
+
+# +++ There are 927 people who have missing data for either the low weight question or the mhd, what should we do with these people? 
+dat.ed.COPING %>%
+  filter(is.na(lifetime_low_weight_baseline_numeric)) %>%
+  select(any_pandemic_low_weight_vs_start_pandemic_age,
+           an.weigh_weighed_people_thought,
+           mhd.suspected_eating_disorder_diagnosed,
+           mhd.anorexia_nervosa,
+           age_start_pandemic,
+           mhd.anorexia_age_at_diagnosis_numeric,
+           an.1.how_old_were_you_then.txt
+        )
 ```
+17/01/22: There were 929 people who we could not classify as lifetime LW at baseline (1 = yes (i.e., prepandemic), 0 = No lifetime BE). 
+31 people have answered "No" to ever being of low weight, but then not answered the MHD questionnaire, or said "Yes" but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime low weight" as it is the symptom we are most interested in rather than if they have had a full eating disorder.
+Now, there are 898 people who we can not classify. Either 'Yes' or missing for the LW question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for LW).
+
 
 # GLAD original data
+## ED100K AFTER 23RD JAN
+Reminder: I have chosen this date as it is 3 months before the start of the pandemic. We are going to assume that if someone at this point does NOT endorse binge eating or low weight, then we can assume that if they experience it during the pandemic, then it is for the first time (it is however likely that we capture some false positives of 'new experiences' if someone experienced it after filling out the GLAD signup but before filling out the COPING baseline). 
 ### GLAD ED100K self-reported CLEANED diagnostics data
 ```{r read in GLAD ED100K self reported diagnosis}
 exclude_cols_glad <- c("ID",
-                       "cohort_name_glad") 
+                       "sample_glad") 
 
 glad_ed100k_selfreport_diagnoses <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/eating/selfreported_ed100k_diagnoses_glad_clean.rds")
 dim(glad_ed100k_selfreport_diagnoses)
 colnames(glad_ed100k_selfreport_diagnoses)
 
 glad_ed100k_selfreport_diagnoses <- glad_ed100k_selfreport_diagnoses %>% 
-  add_column(cohort_name_glad = "glad", .before = "an.1.anorexia_nervosa") %>% #create new column 
+  add_column(sample_glad = "GLAD", .before = "an.1.anorexia_nervosa") %>% #create new column 
   select(
-         ID ,
-         cohort_name_glad, # Sample
+         ID,
+         sample_glad, # Sample
          an.1.anorexia_nervosa,
          an.1.bingeeating_disorder ,
          an.1.bulimia_nervosa,
          an.1.atypical_binge_eating_disorder,
-         an.1.compulsive_overeating
+         an.1.compulsive_overeating,
+         an.1.overeating
          ) 
 
 dim(glad_ed100k_selfreport_diagnoses)
@@ -495,19 +1094,20 @@ colnames(glad_ed100k_selfreport_diagnoses)
 
 ## Import GLAD mhd self-report data
 ```{r Read in data glad mhd data}
-glad_mhd <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/mhd_glad_clean_2021-08-20.rds") # +++HLD: needs updating!
+glad_mhd <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/glad/mhd_glad.rds") # 
 dim(glad_mhd)
 colnames(glad_mhd)
 
 glad_mhd <- glad_mhd %>% 
-  add_column(cohort_name_glad = "glad", .before = "mhd.an") %>% #create new column 
+  remove_duplicates("externalDataReference") %>%
+  add_column(sample_glad = "GLAD", .before = "mhd.an") %>% #create new column 
   select(
-         ID ,
-         cohort_name_glad, # Sample
+         ID = externalDataReference ,
+         sample_glad, # Sample
          mhd.an,
          mhd.bn,
-         mhd.atypical_bn,
-         mhd.atypical_bed,
+     #    mhd.atypical_bn, # Not in GLAD
+     #    mhd.atypical_bed, # Not in GLAD
          mhd.bed,
          endDate_mhd = endDate
          )
@@ -526,10 +1126,10 @@ colnames(glad_AN_scr)
 glad_AN_scr.id <- glad_AN_scr %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   remove_duplicates("externalDataReference") %>% 
-  add_column(cohort_name_glad = "glad", .before = "an.1.people_thought_weigh_weighed") %>% #create new column 
+  add_column(sample_glad = "GLAD", .before = "an.1.people_thought_weigh_weighed") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name_glad, # Sample
+         sample_glad, # Sample
          an.1.people_thought_weigh_weighed,
          endDate_ED100K_AN = endDate
          ) %>%
@@ -552,6 +1152,46 @@ dim(glad_AN_scr.id )
 colnames(glad_AN_scr.id )
 #Differences
 dim(glad_AN_scr)[1]-dim(glad_AN_scr.id)[1]
+
+# Read in AN ED100K for age at symptom start question
+glad_AN_age <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/glad_ed/an_glad_ed.rds")
+dim(glad_AN_age)
+colnames(glad_AN_age)
+
+
+glad_AN_age.id <- glad_AN_age %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  remove_duplicates("externalDataReference") %>% 
+  select(
+         ID = externalDataReference,# ID
+         an.how_old_were_you_then, # age
+         ) %>%
+  add_numeric(., exclude = exclude_cols_glad) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(glad_AN_age.id )
+# Inspect colnames
+colnames(glad_AN_age.id )
+#Differences
+dim(glad_AN_age)[1]-dim(glad_AN_age.id)[1]
+
+
+# Merge the two datasets
+glad_AN <- dplyr::full_join(glad_AN_scr.id,
+                            glad_AN_age.id,
+                            by = "ID")
+
 ```
 
 ## Import GLAD ED100K self-report symptom data
@@ -564,11 +1204,12 @@ colnames(glad_BE)
 glad_BE.id <- glad_BE %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   remove_duplicates("externalDataReference") %>% 
-  add_column(cohort_name_glad = "glad", .before = "be.short_period_ate_regard") %>% #create new column 
+  add_column(sample_glad = "GLAD", .before = "be.short_period_ate_regard") %>% #create new column 
   select(
          ID = externalDataReference,# ID
-         cohort_name_glad, # Sample
+         sample_glad, # Sample
          be.short_period_ate_regard, 
+         be.began_roughly_regular_episodes.txt,
          endDate_ED100K_BE = endDate
          ) %>%
   add_numeric(., exclude = exclude_cols_glad) %>%
@@ -591,116 +1232,264 @@ colnames(glad_BE.id )
 #Differences
 dim(glad_BE)[1]-dim(glad_BE.id)[1]
 ```
-Merge GLAD original data
-```{r}
-dfs.list <- list(glad_BE.id,
-glad_AN_scr.id,
-glad_mhd,
-glad_ed100k_selfreport_diagnoses)
 
-glad_dat <- plyr::join_all(
-  dfs.list,
-  by = c("ID",
-         "cohort_name_glad") 
-  )
+Merge GLAD original data
+```{r merge glad and glad coping}
+glad1 <- dplyr::full_join(glad_BE.id,
+                          glad_AN,
+                          by = c("ID",
+                                 "sample_glad"))
+
+
+glad2 <- dplyr::full_join(glad_mhd,
+                          glad_ed100k_selfreport_diagnoses,
+                          by = c("ID",
+                                 "sample_glad"))
+
+glad3 <- dplyr::full_join(glad1,
+                          glad2,
+                          by = c("ID",
+                                 "sample_glad"))
+
+# Get age at start of pandemic from COPING data
+age_at_pandemic_start <- dat.ed.COPING %>%
+  select(ID,
+         age_start_pandemic)
+
+
+glad_dat <- dplyr::left_join(glad3,
+                          age_at_pandemic_start,
+                          by = "ID")        
 
 # Look at the data
 colnames(glad_dat)
+nrow(glad_dat)
 ```
 
-
-## Identify lifetime binge eating at GLAD sign-up AFTER 23RD JANUARY 2020
-+++HLD: need to check all answer options once data is ready!
+## Identify prepandemic binge eating at GLAD sign-up (AFTER 23RD JANUARY 2020 to identify those with likely NO prepan experience)
+NB: Can use dates with the symptom-level data because participants are asked when their symptoms start
 ```{r Lifetime binge eating at GLAD sign-up}
 glad_dat <- glad_dat %>%
-  mutate(lifetime_binge_eating_glad_numeric =
+  mutate(lifetime_binge_eating_baseline_GLAD_numeric =
            case_when(
-             # Self-reported binge eating ED100K
-             be.short_period_ate_regard == "Yes" | # GLAD self-reported binge eating optional ED100K BE module
              
-             # Self-reported binge-type ED in optional ED100K
+            # DIAGNOSIS LEVEL - NO AGE DATA (NB: here we are likely to capture people who actually had pandemic experiences but there is no age data to check this with)
+            
+              # Self-reported binge-type ED in optional ED100K 
              an.1.bingeeating_disorder == "Binge-eating disorder" | # GLAD ED100K self-report diagnosis BED
              an.1.bulimia_nervosa == "Bulimia nervosa"  |    # GLAD optional ED100K self-report diagnosis BN
              an.1.atypical_binge_eating_disorder == "Atypical BED" |  # GLAD optional ED100K self-report diagnosis ATYPICAL BED
-             an.1.compulsive_overeating == "Compulsive overeating" |  # GLAD optional ED100K self-report diagnosis compulsive overeating # +++HLD: should i include this?
-             
-             # Self-reported binge-type ED in sign-up mhd
-             mhd.atypical_bed == "Atypical binge-eating disorder" | # GLAD mhd self-report diagnosis atypical BED
-             mhd.atypical_bn == "Atypical bulimia nervosa" | # GLAD mhd self-report diagnosis atypical BN
-             mhd.bn == "BN" | # GLAD mhd self-report diagnosis BN
-             mhd.bed == "BED" # GLAD mhd self-report diagnosis BED
-             ~ 1, # Lifetime binge-eating
+             an.1.compulsive_overeating == "Compulsive overeating" |  # GLAD optional ED100K self-report compulsive overeating 
+             an.1.overeating == "Overeating" | # GLAD optional ED100K self-report overeating 
+               
+           # Self-reported binge-type ED in sign-up mhd (NB: There is NO screening question in glad mhd [unlike glad coping mhd]; everyone is asked about eating disorder diagnosis. Also no atypical BN or atypical BED in GLAD signup mhd)
+               mhd.bn == 1 | # GLAD mhd self-report diagnosis BN
+               mhd.bed == 1 # GLAD mhd self-report diagnosis BED
+             ~ 1, # Prepandemic binge-eating 
             
-            # For those who filled out the optional ED100K (likely to be AFTER the main GLAD sign-up, so this should come first)
-            endDate_ED100K_BE > as.Date("2020-01-23") & # Filled out the ED100K AFTER 23RD JAN 2020 # +++HLD: Should we put an end date? i.e., 23rd March?
+           # SYMPTOM LEVEL - (NB: We have age data for the symptom level info)
            
-               (be.short_period_ate_regard == "No" & # NO GLAD self-reported binge eating optional ED100K BE module
+       # Capture people who answered BEFORE the pandemic
+          
+           # (For those who report BE, doesn't matter if after Jan or not - if they report an experience before the pandemic, they have got previous experience regardless of whether it occurred years ago and need to be dropped from our analyses)
+              
+          # Binge eating BEFORE the pandemic
+           endDate_ED100K_BE < as.Date("2020-03-23") &  # Answered questionnaire before the pandemic
+            
+          # Self-reported binge eating ED100K 
+             be.short_period_ate_regard == "Yes" ~ 1, # Prepandemic binge eating (all people with a binge-type ED are captured above)
+           
+          # No binge eating BEFORE the pandemic
+           (((endDate_ED100K_BE > as.Date("2020-01-23") &  # Answered BE ED100K between Jan 23rd and March 23rd 2020 
+           endDate_ED100K_BE < as.Date("2020-03-23")) & 
+            
+            be.short_period_ate_regard == "No") &  # No self-reported binge eating ED100K 
+            
+            ((endDate_mhd > as.Date("2020-01-23") &  # Answered MHD between Jan 23rd and March 23rd 2020 
+           endDate_mhd < as.Date("2020-03-23")) & 
+            
+            mhd.bn == 0 & # No self-report diagnosis of a binge-type ED
+            mhd.bed == 0)) ~ 0,  # No prepandemic BE
+       
+      # Capture people who answered DURING the pandemic (so need to check ages)    
+            
+           #  Binge eating DURING pandemic (started before)
+            (endDate_ED100K_BE >= as.Date("2020-03-23") & 
+             be.short_period_ate_regard == "Yes" &
+            age_start_pandemic >= be.began_roughly_regular_episodes.txt ~ 1), 
+             
+           # Newly experienced binge eating DURING pandemic (started during)
+             (endDate_ED100K_BE >= as.Date("2020-03-23") & 
+             be.short_period_ate_regard == "Yes" &
+             age_start_pandemic <  be.began_roughly_regular_episodes.txt ~ 9), # PANDEMIC experience of binge eating ( we need to count these people as baseline experience of binge eating)
+           
+          # No binge eating or binge-type ED at baseline (answered during pandemic; may go on to experience it during)
+             endDate_ED100K_BE >= as.Date("2020-03-23") & 
+             be.short_period_ate_regard == "No" &
+             mhd.bn == 0 & # No self-report diagnosis of a binge-type ED
+             mhd.bed == 0 ~ 0,  # No BE at baseline
+           
+          # Just in case, capture those left over:
+      
+      # Optional ED100K: For those who filled out the optional ED100K, they are likely to have done so AFTER the main GLAD sign-up, so this should come first as this captures more recent info
+      
+            (endDate_ED100K_BE > as.Date("2020-01-23") & # Filled out the ED100K AFTER 23RD JAN 2020 
+           
+            (be.short_period_ate_regard == "No" & # NO GLAD self-reported binge eating optional ED100K BE module
              an.1.bingeeating_disorder == "Not Binge-eating disorder" & # NO GLAD ED100K self-report diagnosis BED
              an.1.bulimia_nervosa == "Not Bulimia nervosa" &    # NO GLAD optional ED100K self-report diagnosis BN
              an.1.atypical_binge_eating_disorder == "Not Atypical BED" & # NO GLAD optional ED100K self-report diagnosis ATYPICAL BED
-             an.1.compulsive_overeating == "Not Compulsive overeating" 
-             )  # no GLAD optional ED100K self-report diagnosis of BN
-            ~ 0,    
+             an.1.compulsive_overeating == "Not Compulsive overeating" & # no GLAD optional ED100K self-report compulsive overeating
+             an.1.overeating == "Not Overeating" &   # no GLAD optional ED100K self-report overeating
+             
+             mhd.bn == 0 & # Need to have also not reported BN or BED in the sign-up questionnaire
+             mhd.bed == 0))  ~ 0,    
             
-            # For those who filled out the GLAD sign-up and not the optional ED100K  (do NOT want to capture those who DID fill out the ED100K and indicated they had binged)
+            # For those who only filled out the GLAD sign-up and not the optional ED100K  (do NOT want to capture those who DID fill out the ED100K and indicated they had binged)
             (
               (is.na(endDate_ED100K_BE) & 
               endDate_mhd > as.Date("2020-01-23")) & # Filled out the MHD AFTER 23RD JAN 2020
-            (mhd.atypical_bed == "Not atypical binge-eating disorder" | # NO GLAD mhd self-report diagnosis atypical BED
-             mhd.atypical_bn == "Not atypical bulimia nervosa" | # NO GLAD mhd self-report diagnosis atypical BN
-             mhd.bn == "Not BN" | # NO GLAD mhd self-report diagnosis BN
-             mhd.bed == "Not BED" # NO GLAD mhd self-report diagnosis BED
+            (mhd.bn == 0 & # NO GLAD mhd self-report diagnosis BN
+             mhd.bed == 0 # NO GLAD mhd self-report diagnosis BED
              )) ~ 0, 
             
-             is.na(be.short_period_ate_regard_numeric) & # GLAD self-reported binge eating optional ED100K BE module
+         # Added 17/01/22: Capture those with symptom-only data
+      
+            # No pre-pandemic binge eating
+                 # Answered questionnaire after the 23rd Jan but before the pandemic
+           ((endDate_ED100K_BE > as.Date("2020-01-23") &
+           endDate_ED100K_BE < as.Date("2020-03-23")) &  
+            # No self-reported binge eating ED100K 
+             be.short_period_ate_regard == "No") ~ 0, # No prepandemic binge eating 
+      
+                 # Answered questionnaire DURING the pandemic
+             endDate_ED100K_BE >= as.Date("2020-03-23") &  
+            # No self-reported binge eating ED100K 
+             be.short_period_ate_regard == "No" ~ 0, # No lifetime pandemic binge eating (& therefore no prepan)
+      
+         # Missing all binge data 
+             is.na(be.short_period_ate_regard) & # GLAD self-reported binge eating optional ED100K BE module
              is.na(an.1.bingeeating_disorder) & # GLAD ED100K self-report diagnosis
              is.na(an.1.bulimia_nervosa) &    # GLAD optional ED100K self-report diagnosis
              is.na(an.1.atypical_binge_eating_disorder) & # GLAD ED100K self-report diagnosis
              is.na(an.1.compulsive_overeating) &    # GLAD optional ED100K self-report diagnosis
-             
-             is.na(mhd.bn) & # GLAD mhd self-report diagnosis
-             is.na(mhd.bed) & # GLAD mhd self-report diagnosis  
-             is.na(mhd.atypical_bed) & # GLAD mhd self-report diagnosis
-             is.na(mhd.atypical_bn)  # GLAD mhd self-report diagnosis  
-              ~ NA_real_ # Missing all lifetime binge eating data in GLAD original data
+             is.na(an.1.overeating) &    # GLAD optional ED100K self-report diagnosis
+              is.na(mhd.bn) & # GLAD mhd self-report diagnosis
+             is.na(mhd.bed)  # GLAD mhd self-report diagnosis  
+           ~ 2 # Missing all lifetime binge eating data in GLAD original data 
            )
     
-  )
+  )  
 
-# Check
+# Check 
 glad_dat %>%
-  freq(lifetime_binge_eating_glad_numeric)
+  freq(lifetime_binge_eating_baseline_GLAD_numeric)
+
+# Investigate NAs 
+glad_dat %>%
+  filter(is.na(lifetime_binge_eating_baseline_GLAD_numeric) &
+          (endDate_mhd > as.Date("2020-01-23") |
+           endDate_ED100K_BE > as.Date("2020-01-23"))) %>%
+  select( be.short_period_ate_regard,
+          an.1.bingeeating_disorder,
+          an.1.bulimia_nervosa,
+          an.1.atypical_binge_eating_disorder,
+          an.1.compulsive_overeating,
+          an.1.overeating,
+          mhd.bn,
+          mhd.bed,
+          endDate_ED100K_BE,
+          endDate_mhd,
+          age_start_pandemic,
+          be.began_roughly_regular_episodes.txt
+  )
 ```
+17/01/22: Captured another 32 people who otherwise would have been dropped as 'No lifetime binge eating' as they answered the questionnaire after the 23rd Jan 2020 and endorsed no lifetime binge eating but did not answer the MHD question about diagnosis.
+There are 232 people who answered the GLAD MHD or ED100K BE after the 23rd Jan 2020 and could not be categorised. All bar one are "Yes" or NA for binge eating. One is "No" for binge eating BUT answered the BE ED100K in 2019 but the MHD in 2020. Some have not answered the BE question but then put an age at which they started binge eating. Some have answered during the pandemic and indicated 'Yes' to BE question but are missing for either their age at the start of the pandemic or the age at which BE began so we can not be sure when the BE started. Will drop all. 
 
 ## Identify lifetime low weight at GLAD sign-up AFTER 23RD JANUARY 2020
-+++HLD: need to check all answer options once data is ready!
 ```{r Lifetime binge eating at GLAD sign-up}
 glad_dat <- glad_dat %>%
-  mutate(lifetime_low_weight_glad_numeric =
+  mutate(lifetime_low_weight_baseline_GLAD_numeric =
            case_when(
-             # Self-reported low weight ED100K
-             an.1.people_thought_weigh_weighed == "Yes" | # GLAD self-reported low weight optional ED100K AN module
              
+             # DIAGNOSIS LEVEL - NO AGE DATA (NB: here we are likely to capture people who actually had pandemic experiences but there is no age data to check this with)
              # Self-reported anorexia in optional ED100K
              an.1.anorexia_nervosa == "Anorexia nervosa" | # GLAD ED100K self-report diagnosis AN
              
-             # Self-reported anorexia in sign-up mhd
-             mhd.an == "AN"  # GLAD mhd self-report diagnosis AN
+             # Self-reported anorexia in sign-up mhd (NB: There is NO screening question in glad mhd [unlike glad coping mhd]; everyone is asked about eating disorder diagnosis)
+             mhd.an == 1 # GLAD mhd self-report diagnosis AN
              ~ 1, # Lifetime low weight
             
-             # For those who filled out the optional ED100K (likely to be AFTER the main GLAD sign-up, so this should come first)
-            endDate_ED100K_AN > as.Date("2020-01-23") & # Filled out the ED100K AFTER 23RD JAN 2020 # +++HLD: Should we put an end date? i.e., 23rd March?
-             an.1.people_thought_weigh_weighed == "No" & # NO GLAD self-reported low weight optional ED100K AN module
-             an.1.anorexia_nervosa == "Not Anorexia nervosa"  # NO GLAD ED100K self-report diagnosis AN
-              ~ 0,    
+    # SYMPTOM LEVEL - (NB: We have age data for the symptom level info)
+          
+    # Capture people who answered BEFORE the pandemic
+      
+          # (For those who report low weight, doesn't matter if after Jan or not - if they report an experience, they have got previous experience regardless of when it occurred and need to be dropped from our analyses)
+              
+          # Low weight BEFORE the pandemic
+          endDate_ED100K_AN < as.Date("2020-03-23") &  # Answered questionnaire before the pandemic
+          an.1.people_thought_weigh_weighed == "Yes" ~ 1, # Also prepandemic low weight
+           
+           # No low weight BEFORE the pandemic
+           ((endDate_ED100K_AN > as.Date("2020-01-23") &  # Answered between Jan 23rd and March 23rd 2020 
+           endDate_ED100K_AN < as.Date("2020-03-23")) & 
             
-            # For those who filled out the GLAD sign-up and not the optional ED100K  (do NOT want to capture those who DID fill out the ED100K and indicated they had low weight)
+            an.1.people_thought_weigh_weighed == "No" &  # No self-reported low weight ED100K 
+            mhd.an == 0 & # No self-report diagnosis of anorexia
+            an.1.anorexia_nervosa == "Not Anorexia nervosa") ~ 0,  
+          
+          
+    # Capture people who answered DURING the pandemic (so need to check ages)    
+            
+           # Low weight DURING pandemic (started before)
+            (endDate_ED100K_AN >= as.Date("2020-03-23") & 
+             an.1.people_thought_weigh_weighed == "Yes" &
+           age_start_pandemic >= an.how_old_were_you_then ~ 1), 
+          
+          # Newly experienced low weight DURING pandemic (started during)
+             (endDate_ED100K_AN >= as.Date("2020-03-23") & 
+             an.1.people_thought_weigh_weighed == "Yes" &
+             age_start_pandemic <  an.how_old_were_you_then ~ 9), 
+           
+         # No low weight or anorexia at baseline (answered during pandemic; may go on to experience it during)
+             endDate_ED100K_AN >= as.Date("2020-03-23") & 
+            an.1.people_thought_weigh_weighed == "No" &
+            mhd.an == 0 & # No self-report diagnosis of anorexia
+            an.1.anorexia_nervosa == "Not Anorexia nervosa" ~ 0, 
+           
+       # Just in case, capture those left over. 
+      
+         # Optional ED100K: For those who filled out the optional ED100K, they are likely to have done so AFTER the main GLAD sign-up, so this should come first as this captures more recent info
+      
+            (endDate_ED100K_AN > as.Date("2020-01-23") & # Filled out the ED100K AFTER 23RD JAN 2020 
+           
+            (an.1.people_thought_weigh_weighed == "No" & # NO GLAD self-reported low weight optional ED100K module
+            an.1.anorexia_nervosa == "Not Anorexia nervosa" &
+             mhd.an == 0 ))  ~ 0,  # Need to have also not endorsed AN in the sign-up  
+          
+             # For those who only filled out the GLAD sign-up and not the optional ED100K  (do NOT want to capture those who DID fill out the ED100K and indicated they had had low weight)
             (
-            (is.na(endDate_ED100K_AN) & 
+              (is.na(endDate_ED100K_AN) & 
               endDate_mhd > as.Date("2020-01-23")) & # Filled out the MHD AFTER 23RD JAN 2020
-            mhd.an == "Not AN"  # NO GLAD mhd self-report diagnosis anorexia nervosa
-             ) ~ 0, 
-            
+               mhd.an == 0
+              ) ~ 0, 
+          
+          # Added 17/01/22: Capture those with symptom-only data
+      
+            # No pre-pandemic low weight
+                 # Answered questionnaire after the 23rd Jan but before the pandemic
+           ((endDate_ED100K_AN > as.Date("2020-01-23") &
+           endDate_ED100K_AN < as.Date("2020-03-23")) &  
+            # No self-reported binge eating ED100K 
+             an.1.people_thought_weigh_weighed == "No") ~ 0, # No prepandemic low weight
+      
+                 # Answered questionnaire DURING the pandemic
+             endDate_ED100K_AN >= as.Date("2020-03-23") &  
+            # No self-reported binge eating ED100K 
+             an.1.people_thought_weigh_weighed == "No" ~ 0, # No lifetime pandemic low weight (& therefore no prepan)
+      
+           # Missing all low weight data 
             is.na(an.1.anorexia_nervosa) &
             is.na(an.1.people_thought_weigh_weighed) &
             is.na(mhd.an) ~ NA_real_ # Missing all lifetime low weight data in GLAD original data
@@ -708,46 +1497,68 @@ glad_dat <- glad_dat %>%
     
   )
 
-# Check
+# Check  
 glad_dat %>%
-  freq(lifetime_low_weight_glad_numeric)
+  freq(lifetime_low_weight_baseline_GLAD_numeric)
+
+# Investigate NAs
+glad_dat %>%
+  filter(is.na(lifetime_low_weight_baseline_GLAD_numeric) &
+          (endDate_mhd > as.Date("2020-01-23") |
+           endDate_ED100K_AN > as.Date("2020-01-23"))) %>%
+  select( mhd.an,
+          an.1.people_thought_weigh_weighed,
+          an.1.anorexia_nervosa,
+          endDate_mhd,
+          endDate_ED100K_AN,
+           age_start_pandemic,
+          an.how_old_were_you_then
+  )
 ```
+17/01/22: Captured another 240 people who otherwise would have been dropped as 'No lifetime low weight' as they answered the questionnaire after the 23rd Jan 2020 and endorsed no lifetime low weight but either did not answer the MHD question about diagnosis or the optional 'an.1.anorexia_nervosa' question.
+There are 640 people who answered the GLAD MHD or ED100K BE after the 23rd Jan 2020 and could not be categorised. All bar one are "Yes" or NA for low weight symptom question. One is "No" for low weight symptom question BUT answered the AN ED100K in 2019 but the MHD in 2020. Some have not answered the LW question but then put an age at which they first experienced low weight. Some have answered during the pandemic and indicated 'Yes' to LW question but are missing for either their age at the start of the pandemic or the age at which LW began so we can not be sure when the LW started. Will drop all. 
 
 Combine GLAD sign-up self-reported lifetime BE and lifetime low weight with GLAD COPING baseline self-reported lifetime BE and low weight
 ```{r bing GLAD self-report BE lifetime}
 # Filter out participants from COPING GLAD from the merged COPING GLAD & NBR dataset
-dat.ed.glad.coping <- dat.ed %>%
-  filter(cohort_name == "coping_glad")
+dat.ed.GLAD.COPING <- dat.ed.COPING %>%
+  filter(sample == "GLAD")
+
+# Check
+dat.ed.GLAD.COPING %>%
+  nrow()
 
 # Merge COPING GLAD and GLAD
-dfs.list <- list(dat.ed.glad.coping,
-                 glad_dat)
+glad_merged <- dplyr::full_join(dat.ed.GLAD.COPING,
+                                glad_dat,
+                                by = "ID")
 
-glad_merged <- plyr::join_all(
-  dfs.list,
-  by = "ID"
-  )
 
 # Check
 glad_merged %>%
   colnames()
+
+glad_merged %>%
+  nrow()
 ```
 
-Lifetime binge eating: GLAD sign-up combined with GLAD COPING baseline
+# Combine GLAD and GLAD COPING: Lifetime binge eating: GLAD sign-up combined with GLAD COPING baseline
 ```{r lifetime binge eating combined GLAD data} 
 glad_merged <- glad_merged %>%
   mutate(lifetime_binge_eating_baseline_combined_numeric =
            case_when(
              lifetime_binge_eating_baseline_numeric == 1 | # Reported lifetime binge eating at COPING baseline
-             lifetime_binge_eating_glad_numeric == 1 ~ 1, # Reported lifetime binge eating at GLAD sign-up,
+             lifetime_binge_eating_baseline_GLAD_numeric == 1 ~ 1, # Reported lifetime binge eating at GLAD sign-up,
              
             is.na(lifetime_binge_eating_baseline_numeric) &
-              is.na(lifetime_binge_eating_glad_numeric) ~ NA_real_, # Missing for both
+              is.na(lifetime_binge_eating_baseline_GLAD_numeric) ~ NA_real_, # Missing for both
              
-              lifetime_binge_eating_glad_numeric == 0 |  # No binge eating for at least one (either after 23rd Jan 2020 in GLAD sign-up or not endorsed at COPING baseline)
-            lifetime_binge_eating_baseline_numeric == 0 ~ 0
+              lifetime_binge_eating_baseline_numeric == 0 |  # No binge eating for at least one (either after 23rd Jan 2020 in GLAD sign-up or not endorsed at COPING baseline)
+            lifetime_binge_eating_baseline_GLAD_numeric == 0 ~ 0,
             
-           )
+            lifetime_binge_eating_baseline_GLAD_numeric == 9 ~ 0, # Those identified as having a pandemic experience (GLAD only) need to be set to 0 for pre-pandemic experience
+            any_pandemic_binge_eating_vs_start_pandemic_age ==  "Pandemic binge eating" ~ 0 # Those identified as having a pandemic experience (GLAD COPING) need to be set to 0 for pre-pandemic experience
+            )
     
   )
 
@@ -762,14 +1573,16 @@ glad_merged <- glad_merged %>%
   mutate(lifetime_low_weight_baseline_combined_numeric =
            case_when(
              lifetime_low_weight_baseline_numeric == 1 | # Reported lifetime low weight at COPING baseline
-             lifetime_low_weight_glad_numeric == 1 ~ 1, # Reported lifetime low weight at GLAD sign-up,
+             lifetime_low_weight_baseline_GLAD_numeric == 1 ~ 1, # Reported lifetime low weight at GLAD sign-up,
              
             is.na(lifetime_low_weight_baseline_numeric) &
-              is.na(lifetime_low_weight_glad_numeric) ~ NA_real_, # Missing for both
+              is.na(lifetime_low_weight_baseline_GLAD_numeric) ~ NA_real_, # Missing for both
              
-              lifetime_low_weight_glad_numeric == 0 |  # No low weight for at least one (either after 23rd Jan 2020 in GLAD sign-up or not endorsed at COPING baseline)
-            lifetime_low_weight_baseline_numeric == 0 ~ 0
+              lifetime_low_weight_baseline_numeric == 0 |  # No low weight for at least one (either after 23rd Jan 2020 in GLAD sign-up or not endorsed at COPING baseline)
+            lifetime_low_weight_baseline_GLAD_numeric == 0 ~ 0,
             
+            lifetime_low_weight_baseline_GLAD_numeric == 9 ~ 0, # Those identified as having a pandemic experience need to be set to 0 for pre-pandemic experience
+            any_pandemic_low_weight_vs_start_pandemic_age ==  "Pandemic low weight" ~ 0  # Those identified as having a pandemic experience (GLAD COPING) need to be set to 0 for pre-pandemic experience
            )
     
   )
@@ -781,25 +1594,51 @@ glad_merged %>%
 
 # Import RAMP MHD self-report data
 ```{r Read in data RAMP MHD self-report}
-ramp.mhd.raw <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/health_mhq_ramp.rds")
+ramp.mhd.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/ramp/clinical/mhd_ramp_clean.rds")
 dim(ramp.mhd.raw)
 colnames(ramp.mhd.raw)
 ```
 
 Select columns from RAMP self-report data
+NB: No questions in RAMP about age at diagnosis..
 ```{r Select columns RAMP MHD self-report}
 ramp.mhd.raw.id <- ramp.mhd.raw %>%
+    select(
+      ID,
+      sample, # Sample
+      startDate_mhd = startDate,
+      mhd.an_cop_numeric,                                                   
+      mhd.bn_cop_numeric,                                                    
+      mhd.bed_cop_numeric,                                                   
+) 
+
+# Inspect dimensions
+ramp.mhd.raw.id %>%
+  dim()
+# Inspect colnames
+ramp.mhd.raw.id %>%
+  colnames()
+```
+
+# Import RAMP EDEQ baseline screener data
+```{r Read in data RAMP EDEQ baseline}
+ramp.edeq.scr.baseline <- readRDS(file =  "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/ed_scid5_ramp.rds")
+dim(ramp.edeq.scr.baseline)
+colnames(ramp.edeq.scr.baseline)
+```
+
+```{r Select columns RAMP EDEQ screener baseline}
+ramp.edeq.scr.baseline.id <- ramp.edeq.scr.baseline %>%
     drop_na(`Login ID`) %>% # Drop NAs
     remove_duplicates("Login ID") %>% # Remove duplicates based on ID
-    add_column(cohort_name = "ramp", 
-               .before = "mhd.anorexia_nervosa") %>% #create new column 
+    add_column(sample = "RAMP", 
+               .before = "ed_scid5.weigh_weighed_past_month") %>% #create new column 
     select(
       ID = `Login ID`, # ID
-      cohort_name, # Sample
-      mhd.anorexia_nervosa,
-      mhd.bulimia_nervosa,
-      mhd.psychological_overeating_or_bingeeating_disorder
-    ) %>%
+      sample, # Sample
+      ed_scid5.weigh_weighed_past_month, # Over the past month, have you weighed much less than other people thought you ought to weigh?
+      ed_scid5.regular_episodes_eating_binges # Over the past month, have you had regular episodes of overeating or eating binges when you ate what most people would regard as an unusually large amount of food in a short period of time ?
+      ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
     mutate_if(is.numeric, ~na_if(., -99)) %>%
@@ -813,29 +1652,28 @@ ramp.mhd.raw.id <- ramp.mhd.raw %>%
     mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
     mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
   # Inspect dimensions
-  dim(ramp.mhd.raw.id)
+  dim(ramp.edeq.scr.baseline.id)
   # Inspect colnames
-  colnames(ramp.mhd.raw.id)
+  colnames(ramp.edeq.scr.baseline.id)
   # Differences
-  dim(ramp.mhd.raw)[1]-dim(ramp.mhd.raw.id)[1]
+  dim(ramp.edeq.scr.baseline)[1]-dim(ramp.edeq.scr.baseline.id)[1]
 ```
 
 # Import RAMP EDEQ baseline data
 ```{r Read in data RAMP EDEQ baseline}
-ramp.edeq.baseline <- readRDS(file =  "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_ramp2021-07-21.rds")
+ramp.edeq.baseline <- readRDS(file =  "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_ramp2022-01-14.rds")
 dim(ramp.edeq.baseline)
 colnames(ramp.edeq.baseline)
-freq(ramp.edeq.baseline$edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric)
 ```
 
 ```{r Select columns RAMP EDEQ baseline}
 ramp.edeq.baseline.id <- ramp.edeq.baseline %>%
     select(
       ID, # ID
-      cohort_name, # Sample
+      sample, # Sample
+      ed_scid5.regular_episodes_eating_binges_.Wavebaseline,
       edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric # Over the past 28 days BEFORE PANDEMIC, how many times have you: Eaten what other people would regard as an unusually large amount of food with a sense of having lost control over your eating?
-      
-    ) 
+      ) 
 
   # Inspect dimensions
   dim(ramp.edeq.baseline.id)
@@ -845,16 +1683,27 @@ ramp.edeq.baseline.id <- ramp.edeq.baseline %>%
   dim(ramp.edeq.baseline)[1]-dim(ramp.edeq.baseline.id)[1]
 ```
 
-Merge RAMP MHD and EDEQ BASELINE data
+Merge RAMP MHD and EDEQ BASELINE and EDEQ SCREENER data
 ```{r bind ramp edeq and mhd data}
-dfs.list <- list(ramp.mhd.raw.id,
-                 ramp.edeq.baseline.id)
-
-ramp_dat <- plyr::join_all(dfs.list,
-                           by = c("ID",
-                                  "cohort_name")
+ramp_mhd_and_edeq <- dplyr::full_join(ramp.mhd.raw.id,
+                          ramp.edeq.baseline.id,
+                          by = c("ID",
+                                  "sample")
 )
 
+
+ramp_dat <- dplyr::full_join(ramp_mhd_and_edeq,
+                          ramp.edeq.scr.baseline.id,
+                          by = c("ID",
+                                  "sample")
+)
+
+# Check
+ramp_dat %>%
+  colnames()
+
+ramp_dat %>%
+  nrow()
 ```
 
 # RAMP - Lifetime/RECENT binge eating at baseline
@@ -862,36 +1711,57 @@ ramp_dat <- plyr::join_all(dfs.list,
 ramp_dat <- ramp_dat %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
-             mhd.psychological_overeating_or_bingeeating_disorder == "Psychological overeating or binge-eating disorder" |
-               mhd.bulimia_nervosa == "Bulimia nervosa" | # If indicated that they have had either, than they have previously experienced binge eating
-               edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric > 0 # If indicated they have binged in the 28 days before the pandemic, this would also count as BE pre-pandemic
-              ~ 1, 
+              mhd.bn_cop_numeric == 1 |   #...diagnosis of BN or BED                                                
+              mhd.bed_cop_numeric == 1 ~ 1, # Likely BE before the pandemic although will capture people with pandemic-starting binge eating but no age data available to check this)
              
-            is.na(mhd.psychological_overeating_or_bingeeating_disorder) &
-            is.na(mhd.bulimia_nervosa) ~ NA_real_, # If missing for both, then we can't know whether they have experienced binge eating
+             # If indicated they have binged in the 28 days before the pandemic, this would also count as BE pre-pandemic
+               edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric > 0 ~ 1, 
              
-              mhd.psychological_overeating_or_bingeeating_disorder == "Not Psychological overeating or binge-eating disorder" |
-               mhd.bulimia_nervosa == "Not Bulimia nervosa" ~ 0 # If they have indicated that they have NOT had either, then we can assume they have not experienced binge eating
+             # No binge eating
+             mhd.bn_cop_numeric == 0 &  # Never had a binge-type ED
+             mhd.bed_cop_numeric ==  0 &                                                    
+            (edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric == 0 |
+            is.na(edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric)) # Did not get shown question because they did not pass the screener
+               ~  0,
+           
+           # Missing all binge data
+           is.na(mhd.bn_cop_numeric) &
+           is.na(mhd.bed_cop_numeric) &
+           is.na(ed_scid5.regular_episodes_eating_binges) ~ 2
+           
            
            )
-    
   )
+    
 
 # Check
 ramp_dat %>%
   freq(lifetime_binge_eating_baseline_numeric)
+
+# Investigate NAs 
+ramp_dat %>%
+  filter(is.na(lifetime_binge_eating_baseline_numeric))  %>%
+  select( mhd.bn_cop_numeric,
+          mhd.bed_cop_numeric,
+          edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric,
+          ed_scid5.regular_episodes_eating_binges,
+          startDate_mhd
+  )
 ```
+17/01/22: There are 1151 RAMP participants who we can not classify. Most of these people have either not answered the BN or BED diagnosis question (NA/Don't know/PNTA). 129 of these people have put 0 for both mhd.bn and mhd.bed BUT have 'Seen but not answered' the pre-pandemic BE question (i.e., passed the screener which is either low weight or BE over the past month).
+NB: 16 passed the screener because of their answers to the low weight screener rather than the BE screener.
+
 
 # RAMP -  Lifetime low weight baseline
 ```{r Lifetime low weight baseline RAMP}
-
 ramp_dat <- ramp_dat %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when(
-            mhd.anorexia_nervosa == "Anorexia nervosa" ~ 1,
-            mhd.anorexia_nervosa == "Not Anorexia nervosa" ~ 0,
-            is.na(mhd.anorexia_nervosa) ~ NA_real_
-            
+            mhd.an_cop_numeric == 1  # ...indicated diagnosis of anorexia
+              ~ 1, # low weight likely to have occured before the pandemic (although will capture people with pandemic-starting low weight but no age data available to check this)
+              
+            mhd.an_cop_numeric == 0 ~ 0 
+             
            )
     
   )
@@ -899,13 +1769,14 @@ ramp_dat <- ramp_dat %>%
 # Check
 ramp_dat %>%
   freq(lifetime_low_weight_baseline_numeric)
-
 ```
+17/01/22: There are 8664 
 
-# EDGI = ED100K AFTER 23RD JAN
-Reminder: I have chosen this date as it is 3 months before the start of the pandemic. We are going to assume that if someone at this point does NOT endorse binge eating or low weight, then we can assume that if they experience it during the pandemic, then it is for the first time (it is however likely that we capture some false positives of 'new experiences' if someone experienced it after filling out the EDGI signup but before filling out the COPING baseline). This is because the EDGI participants do NOT get asked the AN, BE, AAN or ICB modules at COPING baseline as they have already been asked in EDGI. 
 
+
+# EDGI 
 ## Import EDGI MHD data
+NB: Have read in the raw data because I think the ED100K AN screener is mistakenly in the mhd dataframe.
 ```{r Read in data EDGI MHD}
 edgi.mhd.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/edgi/mhd_edgi.rds")
 dim(edgi.mhd.raw)
@@ -918,18 +1789,24 @@ NB: I think the ED100K AN screener is mistakenly in the mhd dataframe.
 edgi.mhd.raw.id <- edgi.mhd.raw %>%
     drop_na(externalDataReference) %>% # Drop NAs
     remove_duplicates("externalDataReference") %>% # Remove duplicates based on ID
-    add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
+    add_column(sample = "EDGI", .before = "startDate") %>% #create new column 
     select(
       ID = externalDataReference, # ID
-      endDate_mhd = endDate,
-      cohort_name, # Sample
-      mhd.people_thought_weigh_weighed,
+      sample, # Sample
+      mhd.people_thought_weigh_weighed, # ED1OOK AN screener
       mhd.anorexia_nervosa,
       mhd.bulimia_nervosa,
       mhd.atypical_bulimia_nervosa,
       mhd.bingeeating_disorder,                      
-      mhd.atypical_bingeeating_disorder  
-    ) %>%
+      mhd.atypical_bingeeating_disorder,
+      mhd.suspected_eating_disorder_diagnosed,
+      AN_age_at_diagnosis = mhd.anorexia_nervosa.2,
+      BN_age_at_diagnosis = mhd.bulimia_nervosa.2,
+      atypical_BN_age_at_diagnosis = mhd.atypical_bulimia_nervosa.2,
+      BED_age_at_diagnosis = mhd.bingeeating_disorder.2,
+      atypical_BED_age_at_diagnosis = mhd.atypical_bingeeating_disorder.2,
+      endDate_mhd = endDate
+      ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
     mutate_if(is.numeric, ~na_if(., -99)) %>%
@@ -948,7 +1825,46 @@ edgi.mhd.raw.id <- edgi.mhd.raw %>%
   colnames(edgi.mhd.raw.id)
   #Differences
   dim(edgi.mhd.raw.id)[1]-dim(edgi.mhd.raw.id)[1]
- 
+```
+
+## Import EDGI AN data
+(to get age at symptom start for low weight)
+```{r Read in data EDGI AN}
+edgi_an <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/edgi/an_edgi.rds")
+dim(edgi_an)
+colnames(edgi_an)
+```
+
+Select columns EDGI AN data
+```{r Select columns EDGI AN data}
+edgi_an_id <- edgi_an %>%
+    drop_na(externalDataReference) %>% # Drop NAs
+    remove_duplicates("externalDataReference") %>% # Remove duplicates based on ID
+    add_column(sample = "EDGI", .before = "startDate") %>% #create new column 
+    select(
+      ID = externalDataReference, # ID
+      sample, # Sample
+      an.how_old_were_you_then.txt,
+      endDate_AN = endDate
+      ) %>%
+    add_numeric(., exclude = exclude_cols) %>%
+    mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+    mutate_if(is.numeric, ~na_if(., -99)) %>%
+    mutate_if(is.numeric, ~na_if(., -77)) %>%
+    mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+    mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+    mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+    mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+    mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+  # Inspect dimensions
+  dim(edgi_an_id)
+  # Inspect colnames
+  colnames(edgi_an_id)
+  #Differences
+  dim(edgi_an_id)[1]-dim(edgi_an)[1]
 ```
 
 ## Import EDGI BE data
@@ -963,11 +1879,13 @@ Select columns EDGI BE data
 be.edgi.raw.id <- be.edgi.raw  %>%
     drop_na(externalDataReference) %>% # Drop NAs
     remove_duplicates("externalDataReference") %>% # Remove duplicates based on ID
-    add_column(cohort_name = "coping_edgi", .before = "startDate") %>% #create new column 
+    add_column(sample = "EDGI", .before = "be.short_period_ate_regard") %>% #create new column 
     select(
       ID = externalDataReference, # ID
-      endDate_BE = endDate,
-      be.short_period_ate_regard
+      sample,
+      be.short_period_ate_regard,
+      BE_symptom_start = be.began_roughly_regular_episodes.txt,
+      endDate_BE = endDate
     ) %>%
     add_numeric(., exclude = exclude_cols) %>%
     mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -991,43 +1909,177 @@ be.edgi.raw.id <- be.edgi.raw  %>%
 
 Merge EDGI BE and low weight data
 ```{r merge EDGI BE and low weight data}
-dfs.list <- list(be.edgi.raw.id,
-                 edgi.mhd.raw.id)
+edgi1 <- dplyr::full_join(edgi_an_id,
+                          be.edgi.raw.id,
+                           by = c("ID",
+                                  "sample"))
 
 
-edgi_dat <- plyr::join_all(dfs.list,
-                           by = "ID")
+edgi_BE_LW <- dplyr::full_join(edgi1,
+                          edgi.mhd.raw.id,
+                          by = c("ID",
+                                  "sample")
+)
+
+
 # Check
-edgi_dat %>%
+edgi_BE_LW %>%
   colnames()
+
+edgi_BE_LW %>%
+  nrow()
+```
+
+# First, work out age at start of pandemic for EDGI participants
+```{r age at start of pandemic EDGI participants}
+# Read in DOB data for EDGI participants
+age_dat_edgi_coping <- readRDS(file =  "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_edgi/demographics/age_coping_edgi_clean_INTERNAL_ONLY.rds")
+dim(age_dat_edgi_coping)
+colnames(age_dat_edgi_coping)
+
+# Work out age at start of pandemic
+age_dat_edgi_coping$age_start_pandemic<- lubridate::interval(
+    start = age_dat_edgi_coping$dem.dob,
+    end = as.Date("2020-03-23")) %/% # use modulo to round down
+        lubridate::duration(num = 1, units = "years")
+
+# Merge with other EDGI data
+edgi_dat <- dplyr::full_join(edgi_BE_LW,
+                            age_dat_edgi_coping,
+                            by =c("ID",
+                                  "sample"))
 ```
 
 # EDGI sign-up - Lifetime binge eating at baseline
+All 1s (i.e., prepandemic experience of binge eating are derived first where applicable)
 ```{r Lifetime binge eating baseline EDGI}
 edgi_dat <- edgi_dat %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
-             be.short_period_ate_regard == "Yes" |
-             mhd.bingeeating_disorder == "Binge-eating disorder" |
+          
+     # Capture those who answered EDGI BEFORE the pandemic
+           
+           # Binge eating BEFORE the pandemic
+           endDate_BE < as.Date("2020-03-23") & # Answered BE questionnaire before the pandemic
+           be.short_period_ate_regard == "Yes" ~ 1, # Prepandemic binge eating
+           
+           # Binge-type eating disorder before the pandemic
+            endDate_mhd < as.Date("2020-03-23") & # Answered mhd questionnaire before the pandemic
+             (mhd.bingeeating_disorder == "Binge-eating disorder" |
              mhd.bulimia_nervosa == "Bulimia nervosa" |
              mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" |
-             mhd.atypical_bulimia_nervosa  == "Atypical bulimia nervosa"
-             ~ 1, # Reported any BE in EDGI sign-up
+             mhd.atypical_bulimia_nervosa  == "Atypical bulimia nervosa") ~ 1, # Reported any BE in EDGI sign-up
+           
+          # No binge eating or suspected ED BEFORE the pandemic
+           endDate_BE < as.Date("2020-03-23") & # Answered BE questionnaire before the pandemic
+           
+             (be.short_period_ate_regard == "No" & # No pre-pandemic binge eating or suspected ED
+            mhd.suspected_eating_disorder_diagnosed == "No") ~ 0, 
+           
+             # No binge eating or binge-type ED BEFORE the pandemic
+            endDate_BE < as.Date("2020-03-23") & # Answered BE questionnaire before the pandemic
+           
+             (be.short_period_ate_regard == "No" & # No pre-pandemic binge eating
+           
+             mhd.bingeeating_disorder == "Not Binge-eating disorder" & # No binge-type eating disorder before the pandemic
+             mhd.bulimia_nervosa == "Not Bulimia nervosa" &
+             mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" &
+             mhd.atypical_bulimia_nervosa  == "Not Atypical bulimia nervosa") ~ 0, # No prepan BE
               
-             endDate_BE > as.Date("2020-01-23") & # Filled out the ED100K AFTER 23RD JAN 2020 # +++HLD: Should we put an end date? i.e., 23rd March?
-              (
-                be.short_period_ate_regard == "No" &
-                mhd.bingeeating_disorder == "Not Binge-eating disorder" &
-                mhd.bulimia_nervosa == "Not Bulimia nervosa" &
-                mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" &
-                mhd.atypical_bulimia_nervosa  == "Not Atypical bulimia nervosa") ~ 0, 
+    # Capture those who answered EDGI DURING the pandemic 
+         
+           # Binge eating DURING the pandemic
+             endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire DURING the pandemic
+             be.short_period_ate_regard == "Yes" &
+             age_start_pandemic >= BE_symptom_start_numeric ~ 1, # Symptoms started before the pandemic (drop from analyses)
+    
+           # Binge-type eating disorder DURING the pandemic
+            (endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire DURING the pandemic
+      
+            ((mhd.bingeeating_disorder == "Binge-eating disorder" &
+               age_start_pandemic >= BED_age_at_diagnosis_numeric) |
+      
+              (mhd.bulimia_nervosa == "Bulimia nervosa" &
+               age_start_pandemic >= BN_age_at_diagnosis_numeric) |
+      
+              (mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder"  &
+               age_start_pandemic >= atypical_BED_age_at_diagnosis_numeric) |
+      
+            (mhd.atypical_bulimia_nervosa  == "Atypical bulimia nervosa"  &
+               age_start_pandemic >= atypical_BN_age_at_diagnosis_numeric))) ~ 1, # Binge-type ED diagnosed before pandemic (drop from analyses)
+            
+            # Newly experienced binge eating DURING the pandemic - first three months diagnosis
+            endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire DURING the pandemic
+            be.short_period_ate_regard == "Yes" &
+            age_start_pandemic < BE_symptom_start_numeric ~ 9,  # Want to keep these people as having a pandemic experience of binge eating
+    
+           # Newly experienced binge-type eating disorder DURING the pandemic - diagnosed in first three months
+             ((endDate_BE >= as.Date("2020-03-23") &
+               endDate_BE < as.Date("2020-06-23")) & # Answered BE questionnaire DURING the pandemic in first 3 months
+              ((mhd.bingeeating_disorder == "Binge-eating disorder" &
+               age_start_pandemic < BED_age_at_diagnosis_numeric) |
+      
+              (mhd.bulimia_nervosa == "Bulimia nervosa" &
+               age_start_pandemic < BN_age_at_diagnosis_numeric) |
+      
+              (mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder"  &
+               age_start_pandemic < atypical_BED_age_at_diagnosis_numeric) |
+      
+            (mhd.atypical_bulimia_nervosa  == "Atypical bulimia nervosa"  &
+               age_start_pandemic < atypical_BN_age_at_diagnosis_numeric))) ~ 1, #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
+            
+          # Newly experienced binge-type eating disorder DURING the pandemic - diagnosed after first three months
+             (endDate_BE >= as.Date("2020-06-23") & # Answered BE questionnaire DURING the pandemic AFTER the first three months
+              ((mhd.bingeeating_disorder == "Binge-eating disorder" &
+               age_start_pandemic < BED_age_at_diagnosis_numeric) |
+      
+              (mhd.bulimia_nervosa == "Bulimia nervosa" &
+               age_start_pandemic < BN_age_at_diagnosis_numeric) |
+      
+              (mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder"  &
+               age_start_pandemic < atypical_BED_age_at_diagnosis_numeric) |
+      
+            (mhd.atypical_bulimia_nervosa  == "Atypical bulimia nervosa"  &
+               age_start_pandemic < atypical_BN_age_at_diagnosis_numeric))) ~ 9, # Want to keep these people as having a pandemic experience of binge eating
+    
+        # No binge eating and no suspected ED at baseline (answered during pandemic; may go on to experience it during pandemic)
+           endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire during the pandemic
+           
+             (be.short_period_ate_regard == "No" & # No binge eating
+              mhd.suspected_eating_disorder_diagnosed == "No") ~ 0, # No BE at baseline
+    
+            # No binge eating and no binge-type ED at baseline (answered during pandemic; may go on to experience it during)
+           endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire during the pandemic
+           
+             (be.short_period_ate_regard == "No" & # No binge eating
+           
+             mhd.bingeeating_disorder == "Not Binge-eating disorder" & # No binge-type eating disorder 
+             mhd.bulimia_nervosa == "Not Bulimia nervosa" &
+             mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" &
+             mhd.atypical_bulimia_nervosa  == "Not Atypical bulimia nervosa") ~ 0, 
+    
+           # # Just in case, capture anyone left over (For EDGI, doesn't really matter when they answered it if they put No [started in Feb 2020]. We are interested in whether they then go on to experience it during the pandemic)
+            # Never binged and never suspected eating disorder
+              be.short_period_ate_regard == "No" &
+              mhd.suspected_eating_disorder_diagnosed == "No" ~ 0,
+             
+             # Never binged BUT has suspected ED [i.e., got asked which ED] BUT not a binge-type eating disorder
+              be.short_period_ate_regard == "No" &
+              mhd.bingeeating_disorder == "Not Binge-eating disorder" &
+              mhd.bulimia_nervosa == "Not Bulimia nervosa" &
+              mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" &
+              mhd.atypical_bulimia_nervosa  == "Not Atypical bulimia nervosa" ~ 0, 
                 
-             # Missing for all BE data in EDGI sign-up
+            # Added 17/01/22: Capture people with symptom-only data:
+              be.short_period_ate_regard == "No" ~ 0,
+    
+           # Missing for all BE data in EDGI sign-up
                is.na(be.short_period_ate_regard) &
+               is.na(mhd.suspected_eating_disorder_diagnosed) &
                is.na(mhd.bingeeating_disorder) & 
                is.na(mhd.bulimia_nervosa) & 
                is.na(mhd.atypical_bingeeating_disorder) & 
-               is.na(mhd.atypical_bulimia_nervosa) ~ NA_real_ 
+               is.na(mhd.atypical_bulimia_nervosa) ~ 2 # To check
                
            )
   )
@@ -1035,42 +2087,229 @@ edgi_dat <- edgi_dat %>%
 # Check
 edgi_dat %>%
   freq(lifetime_binge_eating_baseline_numeric)
+
+# Investigate NAs 
+edgi_dat %>%
+  filter(is.na(lifetime_binge_eating_baseline_numeric) &
+           be.short_period_ate_regard == "Yes") %>%
+  select( be.short_period_ate_regard,
+         mhd.suspected_eating_disorder_diagnosed,
+         mhd.bingeeating_disorder, 
+         mhd.bulimia_nervosa,
+         mhd.atypical_bingeeating_disorder,
+         mhd.atypical_bulimia_nervosa,
+         endDate_BE,
+         endDate_mhd,
+         BE_symptom_start_numeric,
+         age_start_pandemic
+           )
 ```
+17/01/22: There are 2,966 people in EDGI who we can not classify. 185 have not answered BE questions. Other have put "Yes"
+and answered it during the pandemic BUT are missing 'age at start of pandemic' data (only have this for people who answered COPING; only using data from COPING participants anyway) or BE symptom start data.
 
 # EDGI sign-up -Lifetime low weight at baseline
 ```{r Lifetime low weight baseline EDGI}
+
 edgi_dat <- edgi_dat %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when( 
-             mhd.people_thought_weigh_weighed == "Yes" |
-             mhd.anorexia_nervosa == "Anorexia nervosa"  ~ 1, # reported any low weight in EDGI sign-up
              
-             endDate_mhd > as.Date("2020-01-23") & # Filled out the mhd AFTER 23RD JAN 2020 # +++HLD: Should we put an end date? i.e., 23rd March?
-             (mhd.people_thought_weigh_weighed == "No" &
-              mhd.anorexia_nervosa == "Not Anorexia nervosa") ~ 0,
+        # Capture those who answered EDGI BEFORE the pandemic
              
-             # Missing all mhd data in EDGI sign-up
-             is.na(mhd.people_thought_weigh_weighed) & 
-              is.na(mhd.anorexia_nervosa) ~ NA_real_
+             # Low weight before the pandemic
+             endDate_AN < as.Date("2020-03-23") & # Answered AN questionnaire before the pandemic
+           mhd.people_thought_weigh_weighed == "Yes" ~ 1, # Prepandemic low weight
+           
+           # Anorexia diagnosis before the pandemic
+           endDate_mhd < as.Date("2020-03-23") & # Answered mhd questionnaire before the pandemic
+           mhd.anorexia_nervosa == "Anorexia nervosa"  ~ 1, 
+              
+          # No low weight or suspected ED before the pandemic
+           endDate_AN < as.Date("2020-03-23") & # Answered AN questionnaire before the pandemic
+           
+             (mhd.people_thought_weigh_weighed == "No" & # No pre-pandemic low weight or suspected ED
+            mhd.suspected_eating_disorder_diagnosed == "No") ~ 0, 
+          
+          # No low weight or anorexia before the pandemic
+           endDate_AN < as.Date("2020-03-23") & # Answered AN questionnaire before the pandemic
+           
+             (mhd.people_thought_weigh_weighed == "No" & # No pre-pandemic low weight or suspected ED
+            mhd.anorexia_nervosa == "Not Anorexia nervosa") ~ 0, 
+          
+          
+      # Capture those who answered EDGI DURING the pandemic: need to check ages
+     
+          # Low weight BEFORE the pandemic
+             endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
+              mhd.people_thought_weigh_weighed == "Yes" &
+             age_start_pandemic >= an.how_old_were_you_then.txt_numeric ~ 1, 
+          
+            # Anorexia BEFORE the pandemic
+             endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
+              mhd.anorexia_nervosa == "Anorexia nervosa" &
+             age_start_pandemic >= AN_age_at_diagnosis_numeric ~ 1, 
+           
+           # Newly experienced low weight DURING the pandemic
+              endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
+             mhd.people_thought_weigh_weighed == "Yes" &
+             age_start_pandemic < an.how_old_were_you_then.txt_numeric ~ 9, # Want to keep these people (they should be counted as no prepan experience as their experience was DURING the pandemic)
+           
+           # Newly experienced anorexia DURING the pandemic - diagnosed in first three 3 months
+             (endDate_AN >= as.Date("2020-03-23") & 
+                endDate_AN < as.Date("2020-06-23")) & # Answered AN questionnaire during the pandemic, in first three months
+             mhd.anorexia_nervosa == "Anorexia nervosa" &
+             age_start_pandemic < an.how_old_were_you_then.txt_numeric ~ 1, #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
+           
+          # Newly experienced anorexia DURING the pandemic - diagnosed after first three 3 months
+             endDate_AN >= as.Date("2020-06-23") & # Answered AN questionnaire during the pandemic, AFTER first three months
+             mhd.anorexia_nervosa == "Anorexia nervosa" &
+             age_start_pandemic < an.how_old_were_you_then.txt_numeric ~ 9, # Want to keep these people (they should be counted as no prepan experience as their experience was DURING the pandemic)
+           
+        # No low weight and no suspected ED at baseline (answered during pandemic; may go on to experience it during pandemic)
+            endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
+              mhd.people_thought_weigh_weighed == "No" & # No low weight
+              mhd.suspected_eating_disorder_diagnosed == "No" ~ 0, # No suspected ED at baseline
+    
+            # No low weight and no anorexia at baseline (answered during pandemic; may go on to experience it during)
+           endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
+           mhd.people_thought_weigh_weighed == "No" & # No low weight
+           mhd.anorexia_nervosa == "Not Anorexia nervosa" ~ 0, 
+    
+           # Just in case, capture anyone left over (doesn't really matter when they answered it if they put No, because we are interested in whether they then go on to experience it during the pandemic)
+      
+          # No pre-pandemic/lifetime experience
+            mhd.people_thought_weigh_weighed == "No" &
+           (mhd.suspected_eating_disorder_diagnosed == "No" |
+            mhd.anorexia_nervosa == "Not Anorexia nervosa") ~ 0,
+      
+           # Added 17/01/22: Capture people with symptom-only data:
+              mhd.people_thought_weigh_weighed == "No" ~ 0,
+      
+          # Missing for all LW data in EDGI sign-up
+               is.na(mhd.people_thought_weigh_weighed) &
+               is.na(mhd.suspected_eating_disorder_diagnosed) &
+               is.na(mhd.anorexia_nervosa) ~ 2 # To check
            )
   )
 
 # Check
 edgi_dat %>%
   freq(lifetime_low_weight_baseline_numeric)
+
+
+# Investigate NAs
+edgi_dat %>%
+  filter(is.na(lifetime_low_weight_baseline_numeric) &
+           !is.na(mhd.people_thought_weigh_weighed)) %>%
+  select( mhd.people_thought_weigh_weighed,
+         mhd.anorexia_nervosa,
+         endDate_mhd,
+         age_start_pandemic,
+         an.how_old_were_you_then.txt_numeric
+           )
+```
+17/01/22: There are 2,667 people in EDGI who we can not classify. 246 have not answered LW questions. Other have put "Yes"
+and answered it during the pandemic BUT are missing 'age at start of pandemic' data (only have this for people who answered COPING; only using data from COPING participants anyway) or LW symptom start data. 
+
+
+# Create new variable identifying those with pandemic experiences of phenotypes
+```{r new variable - pandemic experiences}
+# GLAD (have already put these people as 0 for prepandemic experience in the merged data)
+glad_merged <- glad_merged %>%
+  mutate(pandemic_binge_eating_derived =
+           case_when(
+             lifetime_binge_eating_baseline_GLAD_numeric == 9 |
+               any_pandemic_binge_eating_vs_start_pandemic_age == "Pandemic binge eating" ~ 1
+           )
+  )
+
+glad_merged <- glad_merged %>%
+  mutate(pandemic_low_weight_derived =
+           case_when(
+             lifetime_low_weight_baseline_GLAD_numeric == 9 |
+               any_pandemic_low_weight_vs_start_pandemic_age == "Pandemic low weight" ~ 1
+           )
+  )          
+
+# NBR 
+nbr_dat <- dat.ed.COPING %>%
+  filter(sample == "NBR") %>%
+  mutate(pandemic_binge_eating_derived =
+           case_when(
+             any_pandemic_binge_eating_vs_start_pandemic_age == "Pandemic binge eating" ~ 1
+             
+           ))
+  
+         
+nbr_dat <- nbr_dat %>%
+  mutate(pandemic_low_weight_derived =
+           case_when(
+             any_pandemic_low_weight_vs_start_pandemic_age == "Pandemic low weight" ~ 1
+             
+           ))
+
+# For NBR, need to also put these participants as 0 for pre-pandemic experience
+nbr_dat <- nbr_dat %>%
+  mutate(lifetime_binge_eating_baseline_numeric =
+           case_when(
+            any_pandemic_binge_eating_vs_start_pandemic_age == "Pandemic binge eating" ~ 0,
+             TRUE ~ lifetime_binge_eating_baseline_numeric
+           )
+  )
+
+nbr_dat <- nbr_dat %>%
+  mutate(lifetime_low_weight_baseline_numeric =
+           case_when(
+             any_pandemic_low_weight_vs_start_pandemic_age == "Pandemic low weight" ~ 0,
+             TRUE ~ lifetime_low_weight_baseline_numeric
+           )
+  )   
+  
+# EDGI
+edgi_dat <- edgi_dat %>%
+  mutate(pandemic_binge_eating_derived =
+           case_when(
+             lifetime_binge_eating_baseline_numeric == 9  ~ 1
+           )
+  )
+
+edgi_dat <- edgi_dat %>%
+  mutate(pandemic_low_weight_derived =
+           case_when(
+             lifetime_low_weight_baseline_numeric == 9  ~ 1
+           )
+  )   
+
+# For EDGI, need to also put these participants as 0 for pre-pandemic experience
+edgi_dat <- edgi_dat %>%
+  mutate(lifetime_binge_eating_baseline_numeric =
+           case_when(
+             lifetime_binge_eating_baseline_numeric == 9  ~ 0,
+             TRUE ~ lifetime_binge_eating_baseline_numeric
+           )
+  )
+
+edgi_dat <- edgi_dat %>%
+  mutate(lifetime_low_weight_baseline_numeric =
+           case_when(
+             lifetime_low_weight_baseline_numeric == 9  ~ 0,
+             TRUE ~ lifetime_low_weight_baseline_numeric
+           )
+  ) 
 ```
 
-# Select variables from each dataset to keep
 
+# Select variables from each dataset to keep
 ## RAMP
 ```{r Select variables to keep RAMP}
 ramp_dat <- ramp_dat %>%
   select(ID,
-         cohort_name,
-         lifetime_low_weight_baseline_numeric, # Low weight at baseline
-         lifetime_binge_eating_baseline_numeric # Binge eating at baseline
+         sample,
+         lifetime_low_weight_baseline_numeric, # Low weight at baseline 
+         lifetime_binge_eating_baseline_numeric # Binge eating at baseline 
          
    )
+
 
 ramp_dat %>%
   colnames()
@@ -1078,16 +2317,18 @@ ramp_dat %>%
 
 ## NBR
 ```{r Select variables to keep NBR}
-nbr_dat <- dat.ed %>%
-  filter(cohort_name == "coping_nbr") %>%
+nbr_dat <- nbr_dat %>%
   select(ID,
-         cohort_name,
+         sample,
          lifetime_binge_eating_baseline_numeric, # Binge eating at baseline
-         lifetime_low_weight_baseline_numeric # Low weight at baseline
+         lifetime_low_weight_baseline_numeric, # Low weight at baseline
+         pandemic_binge_eating_derived,
+         pandemic_low_weight_derived
          )
 
 nbr_dat %>%
   colnames()
+
 
 nbr_dat %>%
   nrow()
@@ -1097,9 +2338,11 @@ nbr_dat %>%
 ```{r Select variables to keep GLAD}
 glad_merged <- glad_merged %>%
   select(ID,
-         cohort_name,
+         sample,
          lifetime_binge_eating_baseline_numeric = lifetime_binge_eating_baseline_combined_numeric, # Binge eating at baseline
-         lifetime_low_weight_baseline_numeric = lifetime_low_weight_baseline_combined_numeric # Low weight at baseline
+         lifetime_low_weight_baseline_numeric = lifetime_low_weight_baseline_combined_numeric, # Low weight at baseline,
+        pandemic_binge_eating_derived,
+         pandemic_low_weight_derived
          )
 
 glad_merged %>%
@@ -1113,9 +2356,11 @@ glad_merged %>%
 ```{r Select variables to keep EDGI}
 edgi_dat <- edgi_dat %>%
   select(ID,
-         cohort_name,
+         sample,
          lifetime_binge_eating_baseline_numeric, # Binge eating at baseline
-         lifetime_low_weight_baseline_numeric # Low weight at baseline
+         lifetime_low_weight_baseline_numeric, # Low weight at baseline
+         pandemic_binge_eating_derived,
+         pandemic_low_weight_derived
          )
 
 edgi_dat %>%
@@ -1127,12 +2372,12 @@ edgi_dat %>%
 
 # MERGE ALL DATA
 ```{r Merge all data}
-baseline_ED_groups <- rbind(ramp_dat,
+baseline_ED_groups <- ramp_dat %>%
+  bind_rows(
       edgi_dat,
       glad_merged,
-      nbr_dat
+      nbr_dat)
 
-)
 
 # Check 
 nrow(baseline_ED_groups)

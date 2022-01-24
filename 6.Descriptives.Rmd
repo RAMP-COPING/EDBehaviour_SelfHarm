@@ -1,0 +1,494 @@
+---
+title: "Descriptives"
+author: "Helena Davies"
+date: "19/12/21"
+output: word_document
+---
+
+This script derives variables ready for regression analyses.
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "naniar",
+              "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in data
+## Final cleaned data
+```{r Read in data}
+dat <- readRDS(file = "../data_cleaned/final_dat2021-12-20.rds")
+
+# Check
+dim(dat)
+colnames(dat)
+
+# Check cohort
+dat %>%
+  freq(sample)
+```
+
+## BMI data
+### BMI (at time of assessment) 
+Merged: GLAD sign-up, EDGI sign-up, NBR COPING (not assessed in RAMP)
+Read in data
+```{r Read in data bmi}
+# GLAD & EDGI
+bmi_edgi_glad_signup <- readRDS(file ="/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad_edgi/demographics/signup_bmi_height_weight_glad_edgi_clean.rds")
+
+bmi_edgi_glad_signup %>%
+  colnames()
+
+bmi_edgi_glad_signup %>%
+  dim()
+
+bmi_edgi_glad_signup <- bmi_edgi_glad_signup %>%
+  select(ID,
+         sample, 
+         dem.bmi_signup
+         )
+
+# GLAD COPING, EDGI COPING, & NBR
+bmi_coping <- readRDS(file ="/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_glad_edgi_nbr/demographics/signup_bmi_height_weight_coping_glad_edgi_nbr_clean.rds")
+
+bmi_coping %>%
+  colnames()
+
+bmi_coping %>%
+  dim()
+
+bmi_coping <- bmi_coping %>%
+  select(ID,
+         sample, 
+         dem.bmi_signup_cop
+         )
+
+# Merge GLAD COPING, EDGI COPING, & NBR with GLAD & EDGI
+bmi_at_assessment <- dplyr::full_join(bmi_coping,
+                          bmi_edgi_glad_signup,
+                          by = c("ID",
+                                  "sample"
+                                  )
+)
+
+# Check
+bmi_at_assessment %>%
+  dim()
+
+# Check
+bmi_at_assessment %>%
+  nrow()
+
+# Set BMIs of less than 0 (e.g., -666) to NA
+bmi_at_assessment <- bmi_at_assessment %>%
+  mutate(dem.bmi_signup_cop =
+           case_when(dem.bmi_signup_cop < 0 ~ NA_real_,
+                     TRUE ~ as.numeric(dem.bmi_signup_cop)
+                     )
+         )
+```
+
+### Lowest BMI
+Merged: GLAD, GLAD COPING, EDGI, EDGI COPING, NBR (AN lowest BMI not assessed in EDGI COPING or RAMP)
+Read in data
+```{r Read in data bmi}
+# GLAD & EDGI
+lowest_bmi_edgi_glad_signup <- readRDS(file ="/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad_edgi/demographics/lowest_bmi_height_weight_glad_edgi_clean.rds")
+
+lowest_bmi_edgi_glad_signup %>%
+  colnames()
+
+lowest_bmi_edgi_glad_signup %>%
+  dim()
+
+lowest_bmi_edgi_glad_signup <- lowest_bmi_edgi_glad_signup %>%
+  select(ID,
+         sample, 
+         dem.bmi_lowest,
+         an.bmi_lowest
+         )
+
+# GLAD COPING, EDGI COPING, & NBR
+lowest_bmi_coping <- readRDS(file ="/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_glad_edgi_nbr/demographics/lowest_bmi_height_weight_coping_glad_edgi_nbr_clean.rds")
+
+lowest_bmi_coping %>%
+  colnames()
+
+lowest_bmi_coping %>%
+  dim()
+
+lowest_bmi_coping <- lowest_bmi_coping %>%
+  select(ID,
+         sample, 
+         dem.bmi_lowest_cop,
+         an.bmi_lowest_cop
+         )
+
+# Merge GLAD COPING, EDGI COPING, & NBR with GLAD & EDGI
+bmi_lowest <- dplyr::full_join(lowest_bmi_coping,
+                          lowest_bmi_edgi_glad_signup,
+                          by = c("ID",
+                                  "sample"
+                                  )
+)
+
+# Check
+bmi_lowest %>%
+  dim()
+
+# Check
+bmi_lowest %>%
+  nrow()
+
+# If someone reported BMI during AN module (at any height), we want to have this variable rather than their lowest BMI at adult height
+bmi_lowest <- bmi_lowest %>%
+  mutate(lowest_bmi_final =
+           case_when(
+             !is.na(an.bmi_lowest_cop) ~ an.bmi_lowest_cop,
+             TRUE ~ dem.bmi_lowest_cop
+           ))
+
+
+# Set BMIs of less than 0 (e.g., -666) to NA
+bmi_lowest <- bmi_lowest %>%
+  mutate(lowest_bmi_final =
+           case_when(lowest_bmi_final < 0 ~ NA_real_,
+                     TRUE ~ as.numeric(lowest_bmi_final)
+                     )
+         )
+```
+
+### Highest BMI 
+Merged: GLAD, GLAD COPING, EDGI, EDGI COPING, NBR  [not in RAMP]
+Read in data
+```{r Read in data bmi}
+# GLAD & EDGI
+highest_bmi_edgi_glad_signup <- readRDS(file ="/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad_edgi/demographics/highest_bmi_height_weight_glad_edgi_clean.rds")
+
+highest_bmi_edgi_glad_signup %>%
+  colnames()
+
+highest_bmi_edgi_glad_signup %>%
+  dim()
+
+highest_bmi_edgi_glad_signup <- highest_bmi_edgi_glad_signup %>%
+  select(ID,
+         sample, 
+         dem.bmi_highest
+         )
+
+# GLAD COPING, EDGI COPING, & NBR
+highest_bmi_coping <- readRDS(file ="/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_glad_edgi_nbr/demographics/highest_bmi_weight_coping_glad_edgi_nbr_clean.rds")
+
+highest_bmi_coping %>%
+  colnames()
+
+highest_bmi_coping %>%
+  dim()
+
+highest_bmi_coping <- highest_bmi_coping %>%
+  select(ID,
+         sample, 
+         dem.bmi_highest_cop
+         )
+
+# Merge GLAD COPING, EDGI COPING, & NBR with GLAD & EDGI
+bmi_highest <- dplyr::full_join(highest_bmi_coping,
+                          highest_bmi_edgi_glad_signup,
+                          by = c("ID",
+                                  "sample"
+                                  )
+)
+
+# Check
+bmi_highest %>%
+  dim()
+
+# Check
+bmi_highest %>%
+  nrow()
+
+# Set BMIs of less than 0 (e.g., -666) to NA
+bmi_highest <- bmi_highest %>%
+  mutate(dem.bmi_highest_cop =
+           case_when(dem.bmi_highest_cop < 0 ~ NA_real_,
+                     TRUE ~ as.numeric(dem.bmi_highest_cop)
+                     )
+         )
+```
+
+# Merge cleaned data and BMI data
+```{r merge cleaned data and BMI data}
+bmi1 <- dplyr::full_join(bmi_highest,
+                         bmi_lowest,
+                         by = c("ID",
+                                "sample")
+)
+
+
+bmi <- dplyr::full_join(bmi1,
+                         bmi_at_assessment,
+                        by = c("ID",
+                                "sample")
+)
+
+dat <- dplyr::full_join(dat,
+                        bmi,
+                        by = c("ID",
+                                "sample")
+)
+```
+
+
+# Freq of descriptives within each regression model
+
+## First, create groups 
+```{r create groups}
+binge_eating_group <- dat %>%
+   filter( !is.na(NEW_binge_eating_pandemic) &
+             !is.na(age_category_COVID_baseline) & 
+             !is.na(gender_cleaned) &
+             !is.na(race_categories) & 
+             !is.na(highest_education) &
+             !is.na(mental_health_diagnosis) &
+             !is.na(paid_employment_key_worker) & 
+             !is.na(vulnerable_group_member) &
+             !is.na(panworry_total_score) & 
+             !is.na(positive_covid_test_before_BE_final) &
+             !is.na(increased_loneliness_during_pandemic) &
+             !is.na(main_eco_change_before_BE_final)  &
+             !is.na(increased_loneliness_during_pandemic) &
+             !is.na(living_situation_change_before_BE_final)
+          ) 
+
+
+low_weight_group <- dat %>%
+   filter( !is.na(NEW_low_weight_pandemic) &
+             !is.na(age_category_COVID_baseline) & 
+             !is.na(gender_cleaned) &
+             !is.na(race_categories) & 
+             !is.na(highest_education) &
+             !is.na(mental_health_diagnosis) &
+             !is.na(paid_employment_key_worker) & 
+             !is.na(vulnerable_group_member) &
+             !is.na(panworry_total_score) & 
+             !is.na(positive_covid_test_before_BE_final) &
+             !is.na(increased_loneliness_during_pandemic) &
+             !is.na(main_eco_change_before_BE_final)  &
+             !is.na(increased_loneliness_during_pandemic) &
+             !is.na(living_situation_change_before_BE_final) &
+             !is.na(ocd.repetitive_unpleasant_thoughts_binary) &
+             !is.na(ocd.compulsive_beh_mental_act_binary)
+           )
+
+harmful_ideation_group <- dat %>%
+   filter( !is.na(NEW_harmful_ideation_pandemic) &
+             !is.na(age_category_COVID_baseline) & 
+             !is.na(gender_cleaned) &
+             !is.na(race_categories) & 
+             !is.na(highest_education) &
+             !is.na(mental_health_diagnosis) &
+             !is.na(paid_employment_key_worker) & 
+             !is.na(vulnerable_group_member) &
+             !is.na(panworry_total_score) & 
+             !is.na(positive_covid_test_before_BE_final) &
+             !is.na(increased_loneliness_during_pandemic) &
+             !is.na(main_eco_change_before_BE_final)  &
+             !is.na(increased_loneliness_during_pandemic) &
+             !is.na(living_situation_change_before_BE_final)
+          ) 
+
+selfharm_group <- dat %>%
+   filter( !is.na(NEW_selfharm_pandemic) &
+             !is.na(age_category_COVID_baseline) & 
+             !is.na(gender_cleaned) &
+             !is.na(race_categories) & 
+             !is.na(highest_education) &
+             !is.na(mental_health_diagnosis) &
+             !is.na(paid_employment_key_worker) & 
+             !is.na(vulnerable_group_member) &
+             !is.na(panworry_total_score) & 
+             !is.na(positive_covid_test_before_BE_final) &
+             !is.na(increased_loneliness_during_pandemic) &
+             !is.na(main_eco_change_before_BE_final)  &
+             !is.na(increased_loneliness_during_pandemic) &
+             !is.na(living_situation_change_before_BE_final)
+          ) 
+```
+
+```{r histogram of BMIs}
+# Histogram of BMIs
+hist(dat$lowest_bmi_final)
+hist(dat$dem.bmi_highest_cop)
+hist(dat$dem.bmi_signup_cop)
+```
+
+# Freq tables
+## Whole sample
+```{r table summaries whole sample}
+# Number of participants
+dat %>%
+  nrow()
+
+# Median of BMIs
+mean(na.omit(dat$lowest_bmi_final))
+sd(na.omit(dat$lowest_bmi_final))
+mean(na.omit(dat$dem.bmi_highest_cop))
+sd(na.omit(dat$dem.bmi_highest_cop))
+mean(na.omit(dat$dem.bmi_signup_cop))
+sd(na.omit(dat$dem.bmi_signup_cop))
+
+dat %>%
+  select(age_category_COVID_baseline,
+         gender_cleaned,
+         race_categories,
+         highest_education
+         ) %>%
+  tbl_summary(missing_text = "Missing")
+
+dat %>%
+  freq(sex_binary_numeric)
+```
+
+## Binge eating
+```{r table summaries binge eating}
+# Number of participants
+binge_eating_group %>%
+  nrow()
+
+# Mean of BMIs
+mean(na.omit(binge_eating_group$lowest_bmi_final))
+sd(na.omit(binge_eating_group$lowest_bmi_final))
+mean(na.omit(binge_eating_group$dem.bmi_highest_cop))
+sd(na.omit(binge_eating_group$dem.bmi_highest_cop))
+mean(na.omit(binge_eating_group$dem.bmi_signup_cop))
+sd(na.omit(binge_eating_group$dem.bmi_signup_cop))
+
+binge_eating_group %>%
+  select(age_category_COVID_baseline,
+         gender_cleaned,
+         race_categories,
+         highest_education
+         ) %>%
+  tbl_summary(missing_text = "Missing")
+
+binge_eating_group %>%
+  freq(sex_binary_numeric)
+```
+
+## Low weight
+```{r table summaries low weight}
+# Number of participants
+low_weight_group %>%
+  nrow()
+
+# Median of BMIs
+mean(na.omit(low_weight_group$lowest_bmi_final))
+sd(na.omit(low_weight_group$lowest_bmi_final))
+mean(na.omit(low_weight_group$dem.bmi_highest_cop))
+sd(na.omit(low_weight_group$dem.bmi_highest_cop))
+mean(na.omit(low_weight_group$dem.bmi_signup_cop))
+sd(na.omit(low_weight_group$dem.bmi_signup_cop))
+
+low_weight_group %>%
+  select(age_category_COVID_baseline,
+         gender_cleaned,
+         race_categories,
+         highest_education
+         ) %>%
+  tbl_summary(missing_text = "Missing")
+
+low_weight_group %>%
+  freq(sex_binary_numeric)
+
+```
+
+## Harmful ideation
+```{r table summaries harmful ideation}
+# Number of participants
+harmful_ideation_group %>%
+  nrow()
+
+# Median of BMIs
+mean(na.omit(harmful_ideation_group$lowest_bmi_final))
+sd(na.omit(harmful_ideation_group$lowest_bmi_final))
+mean(na.omit(harmful_ideation_group$dem.bmi_highest_cop))
+sd(na.omit(harmful_ideation_group$dem.bmi_highest_cop))
+mean(na.omit(harmful_ideation_group$dem.bmi_signup_cop))
+sd(na.omit(harmful_ideation_group$dem.bmi_signup_cop))
+
+harmful_ideation_group %>%
+  select(age_category_COVID_baseline,
+         gender_cleaned,
+         race_categories,
+         highest_education
+         ) %>%
+  tbl_summary(missing_text = "Missing")
+
+harmful_ideation_group %>%
+  freq(sex_binary_numeric)
+```
+
+## Self-harm 
+```{r table summaries self-harm }
+# Number of participants
+selfharm_group %>%
+  nrow()
+
+# Median of BMIs
+mean(na.omit(selfharm_group$lowest_bmi_final))
+sd(na.omit(selfharm_group$lowest_bmi_final))
+mean(na.omit(selfharm_group$dem.bmi_highest_cop))
+sd(na.omit(selfharm_group$dem.bmi_highest_cop))
+mean(na.omit(selfharm_group$dem.bmi_signup_cop))
+sd(na.omit(selfharm_group$dem.bmi_signup_cop))
+
+selfharm_group %>%
+  select(age_category_COVID_baseline,
+         gender_cleaned,
+         race_categories,
+         highest_education
+         ) %>%
+  tbl_summary(missing_text = "Missing")
+
+selfharm_group %>%
+  freq(sex_binary_numeric)
+```
+
+
+
+

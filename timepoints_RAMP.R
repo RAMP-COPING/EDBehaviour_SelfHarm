@@ -167,8 +167,7 @@ taf.ramp.followupa.raw.id <-  taf.ramp.followupa.raw.id %>%
                                
                                startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
                                
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
-  ))
+                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"))
 
 taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw.id %>%
   mutate(wave_taf =  case_when(startDate_waves >= start1 & startDate_waves < end1 ~ ".Wave_1a",
@@ -211,8 +210,7 @@ taf.ramp.followupb.raw.id <- taf.ramp.followupb.raw.id %>%
                                
                                startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
                                
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
-  ))
+                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"))
 
 
 edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>%
@@ -254,10 +252,10 @@ edeq.ramp.followupb.screener.raw.id <- edeq.ramp.followupb.screener.raw.id %>%
                               
                              # startDate_waves >= start19 & startDate_waves < end19 ~ ".Wave_15a",
                               
-                              startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b
+                              startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"))
                               
                             #startDate_waves >= start21 & startDate_waves < end21 ~ "#.Wave_17a",
-                            ))
+                            
 
 
 ramp.followupb.virus.id <- ramp.followupb.virus.id %>%
@@ -300,12 +298,12 @@ ramp.followupb.virus.id <- ramp.followupb.virus.id %>%
     
    # startDate_waves >= start19 & startDate_waves < end19 ~ ".Wave_15a",
     
-    startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16a",
+    startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"))
     
    # startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17b"
    
   
-    ))
+    
 
 
 dem.ramp.followupa.raw.id <-  dem.ramp.followupa.raw.id %>%
@@ -350,8 +348,7 @@ dem.ramp.followupa.raw.id <-  dem.ramp.followupa.raw.id %>%
                                
                                startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
                                
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
-  ))
+                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"))
 
 dem.ramp.followupb.raw.id <- dem.ramp.followupb.raw.id %>%
   mutate(wave_dem =  case_when(startDate_waves >= start1 & startDate_waves < end1 ~ ".Wave_1a",
@@ -394,8 +391,7 @@ dem.ramp.followupb.raw.id <- dem.ramp.followupb.raw.id %>%
                                
                                startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
                                
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
-  ))
+                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"))
 
 
 
@@ -439,10 +435,10 @@ ramp.loss.followupb.raw.id <- ramp.loss.followupb.raw.id %>%
     
    # startDate_waves >= start19 & startDate_waves < end19 ~ ".Wave_15a",
     
-    startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
+    startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"))
     
    # startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
-    ))
+    
 
 
 ramp.followupa.resp.id <-  ramp.followupa.resp.id %>%
@@ -487,8 +483,7 @@ ramp.followupa.resp.id <-  ramp.followupa.resp.id %>%
                                
                                startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
                                
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
-  ))
+                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"))
 
 
 
@@ -534,6 +529,5 @@ ramp.followupb.resp.id <-  ramp.followupb.resp.id %>%
                                 
                                 startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
                                 
-                                startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
-  ))
+                                startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"))
 
