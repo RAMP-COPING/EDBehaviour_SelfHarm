@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
   echo = TRUE,
   comment = '',
   prompt = FALSE, 
-  cache = FALSE
+  cache = FALSE 
   )
 ```
 

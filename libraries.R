@@ -4,7 +4,7 @@ if(!require(tidyverse)){
   install.packages("tidyverse")
   library(tidyverse)
 }
-if(!require(stringi)){
+if(!require(stringi)){ 
   install.packages("strini")
   library(stringi)
 }

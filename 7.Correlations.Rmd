@@ -297,7 +297,7 @@ dev.off()
 ```{r harmful ideation correlation matrix}
 # Select items for correlation matrix
 HI_dat_corr_mat <- dat_dummy %>%
-  select(
+  select( 
    "Man" = "gender_cleaned_Man",
    "Woman" = "gender_cleaned_Woman",
    "Minoritised_gender" = "gender_cleaned_Minoritised gender",
