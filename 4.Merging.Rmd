@@ -1,0 +1,346 @@
+---
+title: "Merging data"
+author: "Helena Davies"
+date: "06/05/2021"
+output: html_document
+---
+
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in data
+## Baseline data (generated from the script 1.Preprocessing_EDBeh_SelfHarm)
+```{r Read in baseline data of all datasets}
+glad_baseline <- readRDS(file = "../data_cleaned/BASELINE_glad2022-01-14.rds")
+dim(glad_baseline)
+
+edgi_baseline <- readRDS(file = "../data_cleaned/BASELINE_edgi2022-01-14.rds")
+dim(edgi_baseline)
+
+nbr_baseline <- readRDS(file = "../data_cleaned/BASELINE_nbr2022-01-17.rds")
+dim(nbr_baseline)
+
+ramp_baseline <- readRDS(file = "../data_cleaned/BASELINE_ramp2022-01-14.rds")
+dim(ramp_baseline)
+```
+
+Compare columns
+```{r compare columns}
+janitor::compare_df_cols(
+  edgi_baseline,
+  nbr_baseline,
+  ramp_baseline,
+  glad_baseline
+)
+```
+# From the above, can see that highest edication is a factor in nbr_baseline but numeric everywhere else
+```{r convert highest education in nbr to factor}
+nbr_baseline$highest_education<- as.factor(nbr_baseline$highest_education)
+```
+
+## ED baseline grouping data (generated from the script "2.BASELINE_ED_groupings")
+```{r Read in ED data ED grouping}
+baseline_ED_groups_data <- readRDS(file = "../data_cleaned/ED_BASELINE_groups2022-01-17.rds")
+
+# Check
+colnames(baseline_ED_groups_data)
+nrow(baseline_ED_groups_data)
+```
+
+## OCD screener data (generated from the script "3.OCD_screener")
+```{r Read in ED data ED grouping}
+OCD_screener <- readRDS(file = "../data_cleaned/OCD_screener2022-01-17.rds")
+
+# Check
+colnames(OCD_screener)
+nrow(OCD_screener)
+```
+
+## Follow up data
+NB: No follow ups have a 'sample' column because all COPING data were merged.
+```{r Read in data follow up all datasets}
+# Thoughts and feelings questionnaire (self-harm)
+taf_ramp <- readRDS(file = "../data_cleaned/TAF_ramp2022-01-17.rds")
+dim(taf_ramp)
+
+taf_coping <- readRDS(file = "../data_cleaned/TAF_coping2022-01-17.rds")
+dim(taf_coping)
+
+# EDEQ (eating disorder behaviour)
+edeq_coping_screener <- readRDS(file = "../data_cleaned/EDEQ_screener_coping2022-01-17.rds")
+dim(edeq_coping_screener)
+
+edeq_ramp_screener <- readRDS(file = "../data_cleaned/EDEQ_screener_ramp2022-01-17.rds")
+dim(edeq_ramp_screener)
+
+# Virus questionnaire
+virus_ramp <- readRDS(file = "../data_cleaned/VIRUS_ramp_followup2022-01-17.rds")
+dim(virus_ramp)
+  
+virus_coping <- readRDS(file = "../data_cleaned/VIRUS_coping_followup2022-01-17.rds")
+dim(virus_coping)
+
+# Loss 
+loss_ramp <- readRDS(file = "../data_cleaned/LOSS_ramp_followup2022-01-17.rds")
+dim(loss_ramp)
+
+loss_coping <- readRDS(file = "../data_cleaned/LOSS_coping_followup2022-01-17.rds")
+dim(loss_coping)
+
+# Demographics (living situation and vulnerable group member)
+dem_coping_followup <- readRDS(file = "../data_cleaned/DEM_followup_coping2022-01-17.rds")
+dim(dem_coping_followup)
+
+dem_ramp_followup <- readRDS(file = "../data_cleaned/DEM_followup_ramp2022-01-17.rds")
+dim(dem_ramp_followup)
+
+# Respiratory questionnaire
+resp_coping_followup <- readRDS(file = "../data_cleaned/RESP_coping_followup2022-01-17.rds")
+dim(resp_coping_followup)
+
+resp_ramp_followup <- readRDS(file = "../data_cleaned/RESP_ramp_followup2022-01-17.rds")
+dim(resp_ramp_followup)
+```
+
+# Bind all baseline data
+```{r Bind all baseline data}
+# Bind all baseline data
+baseline_data <- glad_baseline %>%
+  bind_rows(
+  edgi_baseline,
+  nbr_baseline,
+  ramp_baseline
+  
+)
+
+# Check
+colnames(baseline_data)
+nrow(baseline_data)
+```
+
+# Bind all follow-up data
+Bind EDEQ from COPING & RAMP together
+```{r Bind EDEQ COPING and RAMP}
+# Bind all EDEQ data
+EDEQ <- bind_rows(edeq_ramp_screener,
+                 edeq_coping_screener)
+
+
+# Check
+colnames(EDEQ)
+nrow(EDEQ)
+
+```
+
+Bind TAF from COPING & RAMP together
+```{r Bind TAF COPING and RAMP}
+# Bind all TAF data
+TAF <- bind_rows(taf_ramp,
+                 taf_coping)
+
+# Check
+colnames(TAF)
+nrow(TAF)
+```
+
+Bind VIRUS data from RAMP & COPING
+```{r Bind VIRUS data COPING and RAMP}
+VIRUS <- bind_rows(virus_ramp,
+                 virus_coping)
+
+
+# Check 
+colnames(VIRUS)
+nrow(VIRUS)
+```
+
+Bind LOSS data from RAMP & COPING
+```{r Bind LOSS data RAMP & COPING}
+LOSS <- bind_rows(loss_ramp,
+                 loss_coping)
+
+
+# Check
+colnames(LOSS)
+nrow(LOSS)
+```
+
+Bind RESP follow up data from RAMP & COPING
+```{r Bind RESP follow up data RAMP & COPING}
+RESP <- bind_rows(resp_coping_followup,
+                 resp_ramp_followup)
+
+
+# Check
+colnames(RESP)
+nrow(RESP)
+```
+
+Bind DEM follow up data from RAMP & COPING
+```{r Bind DEM follow up data RAMP & COPING}
+# First, merge dem_ramp_followup with dem_ramp_followup_benefits_decreased
+DEM_FOLLOWUP <- bind_rows(dem_ramp_followup,
+                 dem_coping_followup)
+
+
+# Check
+colnames(DEM_FOLLOWUP)
+nrow(DEM_FOLLOWUP)
+
+```
+
+# Merge all baseline and follow up data
+## First, merge all follow-up data
+```{r Merge all follow up data and ED baseline groupings}
+dat_merged1 <- dplyr::full_join(DEM_FOLLOWUP,
+                                LOSS,
+                                by = "ID"
+                                )
+
+
+
+dat_merged2 <- dplyr::full_join(RESP,
+                                VIRUS,
+                                by = "ID"
+                                )
+
+
+dat_merged3 <- dplyr::full_join(TAF,
+                                EDEQ,
+                                by = "ID"
+                                )
+
+
+dat_merged4 <- dplyr::full_join(baseline_ED_groups_data,
+                                OCD_screener,
+                                by = "ID"
+                                )
+
+
+dat_merged_A <- dplyr::full_join(dat_merged1,
+                                dat_merged2,
+                                by = "ID"
+                                )
+
+
+
+dat_merged_B <- dplyr::full_join(dat_merged3,
+                                dat_merged4,
+                                by = "ID"
+                                )
+
+
+
+follow_up_data <- dplyr::full_join(dat_merged_A,
+                                dat_merged_B,
+                                by = "ID"
+                                )
+
+
+# Check
+colnames(follow_up_data)
+nrow(follow_up_data)
+
+# Check for dup IDs
+follow_up_data$ID.dup <- duplicated(follow_up_data$ID)
+summary(as.factor(follow_up_data$ID.dup))
+```
+
+## Second, merge follow up data with baseline data 
+```{r Merge follow up data with baseline data}
+all_dat <- dplyr::full_join(baseline_data,
+                                follow_up_data,
+                                by = "ID"
+                                )
+
+# Check
+colnames(all_dat)
+nrow(all_dat)
+
+# Check for dup IDs
+all_dat$ID.dup <- duplicated(all_dat$ID)
+summary(as.factor(all_dat$ID.dup))
+```
+
+## Need to remove people who have answered both EDGI and GLAD - am keeping only one of their data points (decided based on ED100K responses). Added 30/11/21.
+```{r remove one data point of people in both EDGI and GLAD }
+# Read in data with IDs to drop
+IDs_to_drop <- readRDS(file = paste0("/Users/helenadavies/werk/NetAnalEDMan/data/GLAD_EDGI_IDs_to_drop_dat_2021-11-30.rds"))
+dim(IDs_to_drop)
+colnames(IDs_to_drop)
+
+length(unique(IDs_to_drop$GLAD_EDGI_IDs_to_drop)) # 861 unique IDs
+
+# Only keep IDs that are NOT in these data
+all_dat <- all_dat %>%
+  filter(ID %!in% IDs_to_drop$GLAD_EDGI_IDs_to_drop)
+
+# Check 
+dim(all_dat) # 469 IDs were dropped (the ~400 have probably been dropped elsewhere during the data cleaning process)
+
+# Check unique IDs
+length(unique(all_dat$ID))
+```
+
+Remove duplicate IDs (if necessary)
+```{r Remove duplicate IDs from final dataset, eval=FALSE, include=FALSE}
+# As each phase is now a column, there should be NO dup IDs
+all_dat_no_dup  <- all_dat  %>%
+  drop_na(ID) %>% # Drop NAs
+  remove_duplicates("ID") 
+ 
+# Check 
+nrow(all_dat_no_dup)
+```
+
+Check final data
+```{r Skim final data with no dup IDs}
+# Look at the data
+#skimr::skim(all_dat)
+```
+
+Save final dataset
+```{r Save final dataset}
+saveRDS(object = all_dat,
+        file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/all_dat", date, ".rds"))
+
+```
+
