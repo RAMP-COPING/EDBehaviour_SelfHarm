@@ -236,7 +236,8 @@ dat %>%
   freq(ocd.compulsive_beh_mental_act_binary)
 
 ```
-# Select variables for final dataset
+
+# Select variables for final dataset 
 ```{r Select columns to save}
 dat_final <- dat %>%
   select(ID,

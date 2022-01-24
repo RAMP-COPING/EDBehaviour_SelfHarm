@@ -11,7 +11,7 @@ This script derives variables ready for sensitivity analysis in which exposures 
 knitr::opts_chunk$set(
   echo = TRUE,
   comment = '',
-  prompt = FALSE,
+  prompt = FALSE, 
   cache = FALSE
   )
 ```
