@@ -2,7 +2,7 @@
 ## Create wave column in COPING
 
 ##End dates here are NOT 'expiry' dates, because some participants requested extra time and for those who were sent questionnaires by text message, no expiration date could be set. For the purposes of waves, I will effectively ignore expiration dates to capture these people, and instead use the start date of the next timepoint as the end date for the previous wave. Code should be inclusive of the start date but NOT the end date, i.e., should mean that we capture people who filled in the questionnaire ON the start date (all must be BEFORE the end date, not ON the end date)
-
+ 
 ##Follow up A and B can overlap in time, but follow up A can not overlap with the timing of another follow up A
 
 ###FORTNIGHTLY; All fortnightly waves are labelled 1a, 1b, 2a, 2b, etc. Thus, all waves labelled under one number (e.g. 1a and 1b) represent one month, which corresponds to the labelling of the monthly waves (wave 5a, wave 6b, etc etc). The letters indicate the questionnaire that got sent out at that time.

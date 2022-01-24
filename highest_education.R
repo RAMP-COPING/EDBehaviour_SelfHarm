@@ -4,7 +4,7 @@ if(GLAD == TRUE) {
   highest_education_glad_coping <- highest_education_glad_coping %>%
     mutate(
       highest_education_numeric =
-        case_when(
+        case_when( 
           employ.phd == "1" ~ 5,
           employ.masters_degree_or_equivalent == "1" ~ 5,
           employ.postgraduate_degree_or_equivalent == "1" ~ 5,

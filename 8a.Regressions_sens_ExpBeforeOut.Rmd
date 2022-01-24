@@ -56,7 +56,7 @@ date
 dat <- readRDS(file = "../data_cleaned/sens_dat2022-01-07.rds")
 dim(dat)
    colnames(dat)
-```
+``` 
 
 ## BASIC MODELS 
 ### Re-ordering variables / converting to factors

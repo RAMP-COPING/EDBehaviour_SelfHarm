@@ -75,7 +75,7 @@ janitor::compare_df_cols(
 ```{r convert highest education in nbr to factor}
 nbr_baseline$highest_education<- as.factor(nbr_baseline$highest_education)
 ```
-
+ 
 ## ED baseline grouping data (generated from the script "2.BASELINE_ED_groupings")
 ```{r Read in ED data ED grouping}
 baseline_ED_groups_data <- readRDS(file = "../data_cleaned/ED_BASELINE_groups2022-01-17.rds")

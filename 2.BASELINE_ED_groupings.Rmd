@@ -930,7 +930,7 @@ dat.ed.COPING <- dat.ed.COPING %>%
              age_start_pandemic == mhd.anorexia_age_at_diagnosis_numeric ~ "Probably pre-pandemic low weight", #...same age, difficult to tell when they started EXACTLY
              
                mhd.anorexia_nervosa == "Anorexia nervosa" ~ "Missing age data" # People left over
-             ) 
+             )  
          )
 
 # Check 

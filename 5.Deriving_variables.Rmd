@@ -23847,7 +23847,7 @@ dat %>%
 # Check NAs
 missing <- dat %>%
   filter(is.na(living_situation_change_before_SH_final))
-
+ 
 missing %>%
   filter(exposure_phase_living_situation_change != "Missing at every phase" &
           outcome_phase_selfharm != "Not answered or PNTA" &

@@ -483,7 +483,7 @@ dat %>%
              !is.na(race_binary) & 
              !is.na(NEW_binge_eating_pandemic) &
              !is.na(highest_education) &
-             !is.na(psych_disorder_factor) &
+             !is.na(psych_disorder_factor) & 
              !is.na(paid_employment_key_worker) & 
              !is.na(vulnerable_group_member) &
              !is.na(panworry_total_score) & 

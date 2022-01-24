@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   comment = '',
   prompt = FALSE,
   cache = FALSE
-  )
+  ) 
 ```
 
 Clear global environment prior to initiation

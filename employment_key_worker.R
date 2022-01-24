@@ -4,7 +4,7 @@ if(GLAD == TRUE) {
   glad_coping_employment_id <- glad_coping_employment_id  %>%
     mutate(
       key_worker_numeric =
-        case_when(
+        case_when( 
           employ.government_work_key_workers_numeric == 0 ~ 0,
           employ.government_work_key_workers_numeric > 0 ~ 1,
         )

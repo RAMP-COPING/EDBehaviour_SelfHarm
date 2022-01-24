@@ -3,7 +3,7 @@
 #Add_numeric function
 #Function used to convert character variables into numeric variables.
 # add_numeric function
-# Author: Yuhao Lin
+# Author: Yuhao Lin 
 
 add_numeric <- function(dat, exclude = NULL) {
   dat_fct <- sjlabelled::as_label(dat)
