@@ -50,7 +50,7 @@ date
 # Read in data
 ## data.final is generated from the "4.Merging" script
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/all_dat2022-01-17.rds")
+dat <- readRDS(file = "../data_cleaned/all_dat2022-01-25.rds")
 
 # Check
 dim(dat)

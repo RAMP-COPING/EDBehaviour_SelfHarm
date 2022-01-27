@@ -1661,7 +1661,7 @@ ramp.edeq.scr.baseline.id <- ramp.edeq.scr.baseline %>%
 
 # Import RAMP EDEQ baseline data
 ```{r Read in data RAMP EDEQ baseline}
-ramp.edeq.baseline <- readRDS(file =  "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_ramp2022-01-14.rds")
+ramp.edeq.baseline <- readRDS(file =  "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_ramp2022-01-25.rds")
 dim(ramp.edeq.baseline)
 colnames(ramp.edeq.baseline)
 ```
