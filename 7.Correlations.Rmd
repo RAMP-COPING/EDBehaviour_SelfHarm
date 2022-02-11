@@ -48,7 +48,7 @@ date
 
 # Read in data
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/final_dat2022-01-07.rds")
+dat <- readRDS(file = "../data_cleaned/final_dat2022-01-25.rds")
 dim(dat)
    colnames(dat)
 ```
