@@ -115,6 +115,7 @@ gender_sex_edgi_transgender_dat <- dplyr::full_join(gender_sex_edgi_dat,
                                                            "sample"
                                                            )
                                                     )
+
 }
 
 if(GLAD == TRUE){
@@ -132,8 +133,9 @@ gender_sex_glad_transgender_dat <- dplyr::full_join(gender_sex_glad_dat,
                                                     transgender_glad_dat,
                                                     by = c("ID",
                                                            "sample"
-                                                           )
+                                                           ) 
                                                     )
+
 
 }
 
@@ -3330,7 +3332,7 @@ if(EDGI == TRUE) {
 edgi.1 <- age_dat_edgi_coping %>% 
   select(ID,
   sample,
-  age_numeric = dem.dob_age_cop,
+  age_numeric = dem.age_likely_cop,
   age_category = dem.age_category_cop
   )
 
@@ -3594,7 +3596,7 @@ if(GLAD == TRUE) {
 glad.1 <- age_dat_glad_coping %>% 
   select(ID,
    sample,
-  age_numeric = dem.dob_age_cop,
+  age_numeric = dem.age_likely_cop,
   age_category = dem.age_category_cop
   )
 
