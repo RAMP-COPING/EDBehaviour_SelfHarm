@@ -1,0 +1,111 @@
+---
+title: 'Merging: Derived variables'
+author: "Helena Davies"
+date: "21/02/2022"
+output: html_document
+---
+
+This script merges all the derived variables ready for regression analyses.
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
+source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in data
+```{r Read in dataset}
+# Binge eating
+dat_BE <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_BE2022-02-21.rds")
+
+# Low weight
+dat_LW <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_LW2022-02-21.rds")
+
+# Harmful ideation
+dat_HI <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_HI2022-02-21.rds")
+
+# Self-harm
+dat_SH <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_SH2022-02-21.rds")
+
+
+#dat_test <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat2022-01-25.rds")
+
+```
+
+
+
+
+# Merge data
+```{r merge all data}
+dat_BE_LW <- dplyr::left_join(dat_BE,
+                              dat_LW,
+                              by = c("ID",
+                                     "sample")
+)
+
+
+dat_BE_LW_HI <- dplyr::left_join(dat_BE_LW,
+                              dat_HI,
+                              by = c("ID",
+                                     "sample"
+                                     )
+)
+
+
+dat_BE_LW_HI_SH <- dplyr::left_join(dat_BE_LW_HI,
+                              dat_SH,
+                              by = c("ID",
+                                     "sample"
+                                     )
+)
+```
+
+# Check data
+```{r check data}
+dat_BE_LW_HI_SH %>%
+  nrow()
+
+dat_BE_LW_HI_SH %>%
+  colnames()
+```
+
+# Save
+```{r save data}
+saveRDS(object = dat_BE_LW_HI_SH,
+        file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_merged_", date, ".rds"))
+```
+
