@@ -1040,7 +1040,7 @@ Select variables RAMP EDEQ baseline
 if(RAMP == TRUE){
 edeq_ramp_screener_baseline_raw_id <- edeq_ramp_screener_baseline_raw %>% #new dataset with ID
   drop_na(`Login ID`) %>% # Drop NAs
- # remove_duplicates("Login ID") %>% # Remove duplicates based on ID
+  remove_duplicates("Login ID") %>% # Remove duplicates based on ID
   add_column(sample = "RAMP", .before = "startDate") %>% #create new column 
   select(
          ID = `Login ID`, # ID
@@ -4124,6 +4124,7 @@ ramp.1 <- age_dat_ramp %>%
   sample,
   age_category = dem.age_category
   )
+
 
 # Gender
 ramp.2 <- gender_sex_dat_ramp %>% 
