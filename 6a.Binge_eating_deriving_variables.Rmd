@@ -364,7 +364,7 @@ dat %>%
 ```
 
 # Identify at which phase they first experienced the outcome
-This is for ensuring the exposure is reported either BEFORE or in the SAME PHASE as the outcome. E.g,. we do not want to include cases of binge eating (for example) if they exposure (e.g., living situation change) was self-reported AFTER the binge eating.
+This is for ensuring the exposure is reported either BEFORE or in the SAME PHASE as the outcome. E.g,. we do not want to include cases of binge eating (for example) if their exposure (e.g., living situation change) was self-reported AFTER the binge eating.
 First, need to identify at which phase participants first experienced each outcome, to ensure that their experience of the exposure happened BEFORE the outcome.
 
 ## Binge eating
@@ -625,7 +625,7 @@ dat <- dat %>%
          )
 
 dat %>%
-  freq(sex_binary_numeric) # NB: Missing data is becuase we are only looking at EDGI AND GLAD COPING and ~7000 NBR participants did not answer the sex question.
+  freq(sex_binary_numeric) # NB: Missing data is because we are only looking at EDGI AND GLAD COPING and ~7000 NBR participants did not answer the sex question.
 
 dat %>%
   filter(is.na(sex_binary_numeric)) %>%
@@ -1895,7 +1895,7 @@ dat <- dat %>%
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
-                    (outcome_phase_binge_eating == "6b" | # Co-occuring symptom and exposure
+                    (outcome_phase_binge_eating == "6b" | # Co-occurring symptom and exposure
                      outcome_phase_binge_eating == "8b" |
                      outcome_phase_binge_eating == "10b" |
                        outcome_phase_binge_eating == "12b"|
@@ -1952,7 +1952,7 @@ dat <- dat %>%
                    outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
-                    (outcome_phase_binge_eating == "8b" |  # Co-occuring symptom and exposure
+                    (outcome_phase_binge_eating == "8b" |  # Co-occurring symptom and exposure
                      outcome_phase_binge_eating == "10b" |
                        outcome_phase_binge_eating == "12b"|
                          outcome_phase_binge_eating == "14b" |
@@ -2010,7 +2010,7 @@ dat <- dat %>%
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b
-                    (outcome_phase_binge_eating == "10b" | # Co-occuring symptom and exposure
+                    (outcome_phase_binge_eating == "10b" | # Co-occurring symptom and exposure
                        outcome_phase_binge_eating == "12b"|
                          outcome_phase_binge_eating == "14b" |
                        outcome_phase_binge_eating == "16b") ~ "Yes" 
@@ -2069,7 +2069,7 @@ dat <- dat %>%
                      exposure_phase_positive_covid_test == "12b" & # First positive COVID test at phase 12b
                    (outcome_phase_binge_eating == "12b"|
                          outcome_phase_binge_eating == "14b" |
-                       outcome_phase_binge_eating == "16b") ~ "Yes" # Co-occuring symptom and exposure
+                       outcome_phase_binge_eating == "16b") ~ "Yes" # Co-occurring symptom and exposure
                          
          ) 
   )
@@ -2128,7 +2128,7 @@ dat <- dat %>%
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "14b" & # First positive COVID test at phase 14b
-                   (outcome_phase_binge_eating == "14b" | # Co-occuring symptom and exposure
+                   (outcome_phase_binge_eating == "14b" | # Co-occurring symptom and exposure
                        outcome_phase_binge_eating == "16b") ~ "Yes" 
                          
          ) 
@@ -2188,7 +2188,7 @@ dat <- dat %>%
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "16b" & # First positive COVID test at phase 16b
-                   outcome_phase_binge_eating == "16b" ~ "Yes" # Co-occuring symptom and exposure
+                   outcome_phase_binge_eating == "16b" ~ "Yes" # Co-occurring symptom and exposure
                          
          ) 
   )
