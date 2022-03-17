@@ -51,7 +51,7 @@ date
 # Read in data
 ## Final cleaned data
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/final_dat_no_dup_entries2022-02-21.rds")
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_2022-02-21.rds")
 
 # Check
 dim(dat)
@@ -461,7 +461,7 @@ dat %>%
              !is.na(race_binary) & 
              !is.na(NEW_selfharm_pandemic) &
              !is.na(highest_education) &
-             !is.na(psych_disorder_factor) &
+             !is.na(mental_health_diagnosis) &
              !is.na(paid_employment_key_worker) & 
              !is.na(vulnerable_group_member) &
              !is.na(panworry_total_score) & 
