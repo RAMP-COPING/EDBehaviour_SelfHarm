@@ -866,7 +866,7 @@ dat <- dat %>%
            case_when(
              PREPANDEMIC_passive_suicidal_ideation == 0 & # No pre-pandemic passive suicidal ideation
                
-               #...but occured at least once during the pandemic
+               #...but occurred at least once during the pandemic
                      (TWO_WEEKS_PANDEMIC_passive_suicidal_ideation == 1   | # either in the past two weeks question
                       EVER_PANDEMIC_passive_suicidal_ideation == 1)  ~ 1, # or in the lifetime question
                      
@@ -1015,7 +1015,7 @@ dat <- dat %>%
            case_when(
              PREPANDEMIC_passive_suicidal_ideation == 0 & # No pre-pandemic passive suicidal ideation
                
-               #...but occured at least once during the pandemic
+               #...but occurred at least once during the pandemic
                      (TWO_WEEKS_PANDEMIC_passive_suicidal_ideation == 1   | # either in the past two weeks question
                       EVER_PANDEMIC_passive_suicidal_ideation == 1)  ~ 1, # or in the lifetime question
                      
@@ -1405,7 +1405,8 @@ dat <- dat %>%
                is.na(taf.felt_weeks_past.1_.Wave_4a))) & 
                
                (is.na(taf.have_you_contemplated_harming_yourself_.Wave_4b) |
-                (taf.have_you_contemplated_harming_yourself_.Wave_4b == "Yes" &
+                ((taf.have_you_contemplated_harming_yourself_.Wave_4b == "Yes, once" |
+                  taf.have_you_contemplated_harming_yourself_.Wave_4b == "Yes, more than once") &
                is.na(taf.felt_weeks_past.1_.Wave_4b))) & 
                
                (is.na(taf.have_you_contemplated_harming_yourself_.Wave_5a) |
@@ -1767,7 +1768,7 @@ dat <- dat %>%
            case_when(
              PREPANDEMIC_selfharm_ideation == 0 & # No pre-pandemic self-harm ideation
                
-               #...but occured at least once during the pandemic
+               #...but occurred at least once during the pandemic
                      (TWO_WEEKS_PANDEMIC_selfharm_ideation == 1   | # either in the past two weeks question
                       EVER_PANDEMIC_selfharm_ideation == 1)  ~ 1, # or in the lifetime question
                      
@@ -1917,7 +1918,7 @@ dat <- dat %>%
            case_when(
              PREPANDEMIC_selfharm_ideation == 0 & # No pre-pandemic self-harm ideation
                
-               #...but occured at least once during the pandemic
+               #...but occurred at least once during the pandemic
                      (TWO_WEEKS_PANDEMIC_selfharm_ideation == 1   | # either in the past two weeks question
                       EVER_PANDEMIC_selfharm_ideation == 1)  ~ 1, # or in the lifetime question
                      
