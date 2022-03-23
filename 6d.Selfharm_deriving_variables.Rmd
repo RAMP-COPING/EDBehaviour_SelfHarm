@@ -1826,7 +1826,7 @@ dat <- dat %>%
                    outcome_phase_selfharm == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
-                    (outcome_phase_selfharm == "6b" | # Co-occuring symptom and exposure
+                    (outcome_phase_selfharm == "6b" | # Co-occurring symptom and exposure
                        outcome_phase_selfharm == "7a" | 
                      outcome_phase_selfharm == "8b" |
                        outcome_phase_selfharm == "9a" | 
@@ -1904,7 +1904,7 @@ dat <- dat %>%
                     outcome_phase_selfharm == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
-                    (outcome_phase_selfharm == "8b" |  # Co-occuring symptom and exposure
+                    (outcome_phase_selfharm == "8b" |  # Co-occurring symptom and exposure
                        outcome_phase_selfharm == "9a" | 
                      outcome_phase_selfharm == "10b" |
                        outcome_phase_selfharm == "11a" | 
@@ -1943,7 +1943,7 @@ dat <- dat %>%
                     outcome_phase_selfharm == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "9a" & # First positive COVID test at phase 9a
-                    (outcome_phase_selfharm == "9a" | # Co-occuring exposure & outcome
+                    (outcome_phase_selfharm == "9a" | # Co-occurring exposure & outcome
                       outcome_phase_selfharm == "10b" |
                        outcome_phase_selfharm == "11a" | 
                      outcome_phase_selfharm == "12b"|
@@ -1983,7 +1983,7 @@ dat <- dat %>%
                    outcome_phase_selfharm == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b
-                    ( outcome_phase_selfharm == "10b" | # Co-occuring symptom and exposure
+                    ( outcome_phase_selfharm == "10b" | # Co-occurring symptom and exposure
                        outcome_phase_selfharm == "11a" | 
                        outcome_phase_selfharm == "12b"|
                        outcome_phase_selfharm == "13a" |
