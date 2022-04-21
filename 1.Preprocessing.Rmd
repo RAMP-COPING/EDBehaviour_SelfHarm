@@ -21,7 +21,7 @@ remove(list = ls())
 ```
 
 Read in file with path to data channel
-```{r Read in file with path to data channel on teams}
+```{r Read in file with path to data channel}
 source(file = "../credentials/paths.R")
 ```
 
