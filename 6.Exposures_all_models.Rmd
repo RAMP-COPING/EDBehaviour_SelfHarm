@@ -508,7 +508,6 @@ dat %>%
   freq(ocd.compulsive_beh_mental_act_binary)
 ```
 
-
 # Saving dataset
 ## Select & save variables needed for analysis
 ```{r Select final variables ready for regression analyses}
