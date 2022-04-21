@@ -54,7 +54,7 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat <- readRDS(filepath_saved_data, "final_dat_no_dup_entries2022-02-21.rds"))
+dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-02-21.rds"))
 ```
 
 # Outcome = Low weight
