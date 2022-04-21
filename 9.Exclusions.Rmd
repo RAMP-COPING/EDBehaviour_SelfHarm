@@ -1,0 +1,319 @@
+---
+title: "Exclusions"
+author: "Helena Davies"
+date: "21/04/2022"
+output: html_document
+---
+
+
+This script merges all the derived variables ready for regression analyses.
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in data
+```{r read in data}
+dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-04-21.rds"))
+```
+
+# Filter out by people who either answered the COPING survey or are a RAMP participant ++ need to work on this- is there another wya to assess participation in COPING?
+```{r}
+dat_not_cop <- dat_raw %>%
+  filter((sample == "GLAD" |
+           sample == "EDGI") &
+  is.na(age_category_COVID_baseline))
+  
+dat <- dat_raw %>%
+  filter(ID %!in% dat_not_cop$ID)
+
+dat %>%
+  freq(sample)
+```
+
+# Check where participants are from before exclusion criteria applied
+```{r cohort info less detail}
+cohort_info <- read_csv(paste0(filepath_nbr_additional_info, "DEPRECATED_coping_participants_export_20200730_hashed.csv"))
+
+cohort_info <- cohort_info %>%
+  select(ID = "NBR ID",
+         cohort 
+         )
+
+cohort_info %>%
+  freq(cohort)
+
+dat <- dplyr::full_join(dat,
+                        cohort_info)
+
+
+dat %>%
+  filter(sample =="NBR") %>%
+  freq(cohort)
+
+dat <- dat %>%
+  mutate(sample =
+           case_when(cohort == "GLAD" ~ "GLAD",
+                     TRUE ~ sample))
+```
+
+# Exclude for missing data on ANY exposure
+## Gender
+Exclude participants with missing gender
+```{r gender missing diagnosis data}
+dim(dat)
+dat_excl_gen <- dat %>%
+  drop_na(gender_cleaned)
+nrow(dat_excl_gen)-nrow(dat)
+```
+17,414 participants did not report their gender
+
+## Age
+Exclude participants with missing age
+```{r age missing diagnosis data}
+dat_excl_gen_age <- dat_excl_gen %>%
+  drop_na(age_category_COVID_baseline)
+nrow(dat_excl_gen_age)-nrow(dat_excl_gen)
+
+dat_excl_age <- dat %>%
+  drop_na(age_category_COVID_baseline)
+nrow(dat_excl_age)-nrow(dat)
+```
+14,001 did not report their age
+
+## Race
+Exclude participants with missing race
+```{r race missing diagnosis data}
+dat_excl_gen_age_race <- dat_excl_gen_age %>%
+  drop_na(race_binary)
+nrow(dat_excl_gen_age_race)-nrow(dat_excl_gen_age)
+
+dat_excl_race <- dat %>%
+  drop_na(race_binary)
+nrow(dat_excl_race)-nrow(dat)
+```
+15,506 did not report their race
+
+## Education level
+Exclude participants with missing education level
+```{r education missing diagnosis data}
+dat_excl_gen_age_race_edu <- dat_excl_gen_age_race %>%
+  drop_na(highest_education)
+nrow(dat_excl_gen_age_race_edu)-nrow(dat_excl_gen_age_race)
+
+dat_excl_edu <- dat %>%
+  drop_na(highest_education)
+nrow(dat_excl_edu)-nrow(dat)
+```
+18,288 did not report their education level
+
+## Mental health diagnosis
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych <- dat_excl_gen_age_race_edu %>%
+  drop_na(mental_health_diagnosis)
+nrow(dat_excl_gen_age_race_edu_psych)-nrow(dat_excl_gen_age_race_edu)
+
+dat_excl_psych <- dat %>%
+  drop_na(mental_health_diagnosis)
+nrow(dat_excl_psych)-nrow(dat)
+```
+15823 did not report their mental health diagnosis
+
+## Employment status
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych_emp <- dat_excl_gen_age_race_edu_psych %>%
+  drop_na(paid_employment_key_worker)
+nrow(dat_excl_gen_age_race_edu_psych_emp)-nrow(dat_excl_gen_age_race_edu_psych)
+
+dat_excl_emp <- dat %>%
+  drop_na(paid_employment_key_worker)
+nrow(dat_excl_emp)-nrow(dat)
+```
+18386 did not report their employment status
+
+## Being a vulnerable group member
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych_emp_vuln <- dat_excl_gen_age_race_edu_psych_emp %>%
+  drop_na(vulnerable_group_member)
+nrow(dat_excl_gen_age_race_edu_psych_emp_vuln)-nrow(dat_excl_gen_age_race_edu_psych)
+
+dat_excl_vuln <- dat %>%
+  drop_na(vulnerable_group_member)
+nrow(dat_excl_vuln)-nrow(dat)
+```
+18723 did not report being a vulnerable group member
+
+## Pandemic worry score
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych_emp_vuln_pan <- dat_excl_gen_age_race_edu_psych_emp_vuln %>%
+  drop_na(panworry_total_score)
+nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan)-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln)
+
+dat_excl_pan <- dat %>%
+  drop_na(panworry_total_score)
+nrow(dat_excl_pan)-nrow(dat)
+```
+34,676 did not report a pandemic worry score at baseline
+
+## Infection with COVID-19 (across all outcomes)
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+  drop_na(positive_covid_test_before_BE_final) %>%
+  drop_na(positive_covid_test_before_LW_final) %>%
+  drop_na(positive_covid_test_before_HI_final) %>%
+  drop_na(positive_covid_test_before_SH_final) 
+
+nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid)-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan)
+
+dat_excl_covid <- dat %>%
+   drop_na(positive_covid_test_before_BE_final) %>%
+  drop_na(positive_covid_test_before_LW_final) %>%
+  drop_na(positive_covid_test_before_HI_final) %>%
+  drop_na(positive_covid_test_before_SH_final) 
+nrow(dat_excl_covid)-nrow(dat)
+```
+35103 are missing for all COVID-19 infection information
+
+## Lost someone (across all outcomes)
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid %>%
+  drop_na(lost_someone_before_BE_final) %>%
+  drop_na(lost_someone_before_LW_final) %>%
+  drop_na(lost_someone_before_HI_final) %>%
+  drop_na(lost_someone_before_SH_final) 
+
+nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid)-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan)
+
+dat_excl_loss <- dat %>%
+  drop_na(lost_someone_before_BE_final) %>%
+  drop_na(lost_someone_before_LW_final) %>%
+  drop_na(lost_someone_before_HI_final) %>%
+  drop_na(lost_someone_before_SH_final) 
+nrow(dat_excl_loss)-nrow(dat)
+```
+31606 are missing losing someone information
+
+## Pandemic loneliness
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss %>%
+  drop_na(increased_loneliness_during_pandemic) 
+
+nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone)-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss)
+
+dat_excl_lone <- dat%>%
+  drop_na(increased_loneliness_during_pandemic) 
+nrow(dat_excl_lone)-nrow(dat)
+```
+41627 are missing for increased loneliness variable
+
+## Change in main eco activity
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone_eco <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone %>%
+   drop_na(main_eco_change_before_BE_final) %>%
+   drop_na(main_eco_change_before_LW_final) %>%
+   drop_na(main_eco_change_before_SH_final) %>%
+   drop_na(main_eco_change_before_HI_final)
+
+nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone_eco)-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone)
+
+dat_excl_eco <- dat %>%
+   drop_na(main_eco_change_before_BE_final) %>%
+   drop_na(main_eco_change_before_LW_final) %>%
+   drop_na(main_eco_change_before_SH_final) %>%
+   drop_na(main_eco_change_before_HI_final) 
+nrow(dat_excl_eco)-nrow(dat)
+```
+32150 people are missing main eco change activity
+
+## Change in living situation
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone_eco_liv <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone_eco %>%
+   drop_na(living_situation_change_before_BE_final) %>%
+   drop_na(living_situation_change_before_LW_final) %>%
+   drop_na(living_situation_change_before_SH_final) %>%
+   drop_na(living_situation_change_before_HI_final)
+
+nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone_eco)-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone)
+
+dat_excl_ <- dat %>%
+   drop_na(living_situation_change_before_BE_final) %>%
+   drop_na(living_situation_change_before_LW_final) %>%
+   drop_na(living_situation_change_before_SH_final) %>%
+   drop_na(living_situation_change_before_HI_final)
+nrow(dat_excl_)-nrow(dat)
+```
+32433 change in living situation missing
+
+## Missing all outcomes
+Exclude participants with missing education level
+```{r mental health diagnosis missing diagnosis data}
+dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone_eco_liv_alloutcomes <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone_eco %>%
+   drop_na(NEW_low_weight_pandemic) %>%
+   drop_na(NEW_binge_eating_pandemic) %>%
+   drop_na(NEW_harmful_ideation_pandemic) %>%
+   drop_na(NEW_selfharm_pandemic)
+
+nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone_eco_liv_alloutcomes)-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan_covid_loss_lone_eco)
+
+dat_excl_alloutcome <- dat %>%
+   drop_na(NEW_low_weight_pandemic) %>%
+   drop_na(NEW_binge_eating_pandemic) %>%
+   drop_na(NEW_harmful_ideation_pandemic) %>%
+   drop_na(NEW_selfharm_pandemic)
+nrow(dat_excl_alloutcome)-nrow(dat)
+```
+6698 FURTHER participants had missing data on all of the outcome variables
+
+
+
+
