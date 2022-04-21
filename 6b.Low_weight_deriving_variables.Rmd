@@ -4622,7 +4622,7 @@ missing %>%
 ```{r Select final variables ready for regression analyses}
 final_dat_LW <- dat %>%
   select(ID,
-         sample,
+         lifetime_low_weight_baseline_numeric,
          # Outcome for eating disorder regressions
          NEW_low_weight_pandemic,
         

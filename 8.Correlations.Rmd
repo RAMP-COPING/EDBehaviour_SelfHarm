@@ -54,15 +54,15 @@ dim(dat)
 ```
 
 # CORRELATION MATRICES of outcome variables
-## Binge eating
-```{r binge eating correlation matrix}
+## all outcomes
+```{r all outcomes correlation matrix}
 # Select items for correlation matrix
 outcome_corr <- dat %>%
   select(
-   "NEW_binge_eating_pandemic",
-   "NEW_low_weight_pandemic",
-   "NEW_harmful_ideation_pandemic",
-   "NEW_selfharm_pandemic"
+   `New onset binge eating` = "NEW_binge_eating_pandemic",
+   `New onset low weight` = "NEW_low_weight_pandemic",
+   `New onset harmful ideation` = "NEW_harmful_ideation_pandemic",
+   `New onset self-harm` = "NEW_selfharm_pandemic"
  ) 
 
 # Run correlation analyses with continious and dichotomous variables 
@@ -77,7 +77,7 @@ outcome_corr_object <- psych::mixedCor(data=outcome_corr,
 outcome_corr_object_object_matrix <- outcome_corr_object$rho
 
 # Write file path to save plot
-pdf(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/all_outcomes_corr_matrix.pdf")
+png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/all_outcomes_corr_matrix.png")
 
 # Create correlation matrix with hierarchical clustering
 outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_object_matrix, 
@@ -86,12 +86,13 @@ outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_obje
          diag = FALSE, # do not show the correlations on the diagonal
          addgrid.col = NA,
          addCoef.col = "black", # colour for the correlation coefficients in the plot
-         tl.cex = 0.5,
+         tl.cex = 1,
+         cl.cex = 1,
          order = "hclust",
          tl.col = "black",
          cl.align.text = "c",
          col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
-         number.font = 0.1,
+         number.font = 0.5,
          number.cex = 0.4,
          sig.level = 0.01, # Choose significant level
          insig = "blank", # Nonsignificant correlations have no colour,
@@ -100,6 +101,7 @@ outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_obje
 
 # Save plot
 dev.off()
+
 ```
 
 
@@ -193,7 +195,7 @@ BE_corr_mat_object <- psych::mixedCor(data=BE_dat_corr_mat,
 BE_corr_mat_object_matrix <- BE_corr_mat_object$rho
 
 # Write file path to save plot
-pdf(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/BE_exposures_corr_matrix.pdf")
+png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/BE_exposures_corr_matrix.png")
 
 # Create correlation matrix with hierarchical clustering
 BE_exposures_corr_matrix <- corrplot::corrplot(BE_corr_mat_object_matrix, 
@@ -268,7 +270,7 @@ LW_corr_mat_object <- psych::mixedCor(data=LW_dat_corr_mat,
 LW_corr_mat_object_matrix <- LW_corr_mat_object$rho
 
 # Write file path to save plot
-pdf(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/LW_exposures_corr_matrix.pdf")
+png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/LW_exposures_corr_matrix.png")
 
 # Create correlation matrix with hierarchical clustering
 corrplot::corrplot(LW_corr_mat_object_matrix, 
@@ -341,7 +343,7 @@ HI_corr_mat_object <- psych::mixedCor(data=HI_dat_corr_mat,
 HI_corr_mat_object_matrix <- HI_corr_mat_object$rho
 
 # Write file path to save plot
-pdf(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/HI_exposures_corr_matrix.pdf")
+png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/HI_exposures_corr_matrix.png")
 
 # Create correlation matrix with hierarchical clustering
 corrplot::corrplot(HI_corr_mat_object_matrix, 
@@ -413,7 +415,7 @@ SH_corr_mat_object <- psych::mixedCor(data=SH_dat_corr_mat,
 SH_corr_mat_object_matrix <- SH_corr_mat_object$rho
 
 # Write file path to save plot
-pdf(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/SH_exposures_corr_matrix.pdf")
+png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/SH_exposures_corr_matrix.png")
 
 # Create correlation matrix with hierarchical clustering
 corrplot::corrplot(SH_corr_mat_object_matrix, 

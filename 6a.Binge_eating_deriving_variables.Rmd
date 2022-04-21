@@ -5060,6 +5060,7 @@ missing %>%
 final_dat_BE <- dat %>%
   select(ID,
          sample,
+         lifetime_binge_eating_baseline_numeric,
          # Outcome for eating disorder regressions
          NEW_binge_eating_pandemic,
          outcome_phase_binge_eating,
