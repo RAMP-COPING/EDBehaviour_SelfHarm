@@ -50,31 +50,23 @@ date
 # Read in data
 ```{r Read in dataset}
 # Binge eating
-dat_BE <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_BE2022-02-21.rds")
+dat_BE <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_BE2022-03-24.rds")
 
 # Low weight
-dat_LW <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_LW2022-02-21.rds")
+dat_LW <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_LW2022-03-24.rds")
 
 # Harmful ideation
-dat_HI <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_HI2022-02-21.rds")
+dat_HI <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_HI2022-03-24.rds")
 
 # Self-harm
-dat_SH <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_SH2022-02-21.rds")
-
-
-#dat_test <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat2022-01-25.rds")
-
+dat_SH <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_SH2022-03-24.rds")
 ```
-
-
-
 
 # Merge data
 ```{r merge all data}
 dat_BE_LW <- dplyr::left_join(dat_BE,
                               dat_LW,
-                              by = c("ID",
-                                     "sample")
+                              by = c("ID")
 )
 
 

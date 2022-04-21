@@ -5720,6 +5720,8 @@ missing %>%
 final_dat_SH <- dat %>%
   select(ID,
          sample,
+         # prepan
+         PREPANDEMIC_selfharm,
          # Outcome for self harm regressions 
          NEW_selfharm_pandemic,
        
