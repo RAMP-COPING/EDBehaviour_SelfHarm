@@ -20,15 +20,20 @@ Clear global environment prior to initiation
 remove(list = ls())
 ```
 
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
 Add the add_numeric function - used to convert character variables into numeric variables
 Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
 Add the sumscores function - used to generate sumscores
 Add the package_check function - used to install and load dependencies
 Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
 source("./functions.R")
 ```
 
@@ -49,7 +54,7 @@ date
 # Read in the data: OCD screener 
 ## GLAD data
 ```{r GLAD read in data}
-glad_dat <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad_opt/ocd_coping_glad_opt.rds")
+glad_dat <- readRDS(file = passte0(filepath_raw_latest_freeze, "coping_glad_opt/ocd_coping_glad_opt.rds"))
 # Check
 glad_dat %>%
   colnames()
@@ -84,7 +89,7 @@ glad_dat.id %>%
 
 ## EDGI data
 ```{r edgi read in data}
-edgi_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi_opt/ocd_coping_edgi_opt.rds")
+edgi_dat <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi_opt/ocd_coping_edgi_opt.rds"))
 # Check
 edgi_dat %>%
   colnames()
@@ -111,7 +116,7 @@ colnames(edgi_dat.id)
 
 ## NBR data
 ```{r NBR read in data}
-nbr_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr_opt/ocd_coping_nbr_opt.rds")
+nbr_dat <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr_opt/ocd_coping_nbr_opt.rds"))
 
 # Check
 nbr_dat %>%
@@ -142,7 +147,7 @@ nbr_dat.id %>%
 
 ## RAMP data
 ```{r RAMP read in data}
-ramp_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/ocd_ramp.rds")
+ramp_dat <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/ocd_ramp.rds"))
   
 # Check
 ramp_dat %>%
@@ -189,7 +194,6 @@ dat %>%
 ```
 
 # Recoding variables
-
 ## Unpleasant thoughts, urges, images in mind
 Q: Over the past two weeks, how often have you been bothered by unpleasant thoughts, urges, or images that repeatedly enter your mind?e.g. thoughts about dirt or germs, thoughts about harm coming to yourself or others, strong urges for things to be ordered or symmetrical)
 ```{r Freq}
@@ -234,7 +238,6 @@ dat <- dat %>%
 # Check new binary variable
 dat %>%
   freq(ocd.compulsive_beh_mental_act_binary)
-
 ```
 
 # Select variables for final dataset 
@@ -251,7 +254,6 @@ dat_final <- dat %>%
 
 # Save dataset
 ```{r Save dataset}
-saveRDS(object = dat_final, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/OCD_screener", date, ".rds"))
-
+saveRDS(object = dat_final, file = paste0(filepath_saved_data, "OCD_screener", date, ".rds")))
 ```
 
