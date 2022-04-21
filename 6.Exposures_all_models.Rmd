@@ -1,0 +1,549 @@
+---
+title: "Exposures in all models"
+author: "Helena Davies"
+date: "21/04/2022"
+output: html_document
+---
+
+This script derives exposure variables present in all regression models. 
+
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in data
+```{r Read in dataset}
+dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-02-21.rds"))
+```
+
+# EXPOSURES / EXPLANATORY VARIABLES
+[NB: only need to get the below within one script as will not change depending on outcome]
+  •	Age
+  •	Gender
+  •	Racialised minority
+  •	Highest education level 
+  •	Psychiatric disorder 
+  • Key worker status 
+  • Loneliness
+  • Pandemic worry
+  • Defined as vulnerable person according to Government 
+  • OCD screeners (for low weight model only)
+  
+[NB: for the below exposures, will need to derive these differently depending on the outcome because they were reported at every/every other phase and we are taking only those reported BEFORE or in the SAME PHASE as the outcome. These exposure variables are generated separately in each outcome script]
+  • Positive COVID test or ill due to COVID  
+  • Loss of loved one due to COVID
+  • Change in economic activity
+  • Change in living situation
+## Age
+```{r Age as exposure}
+# Collapse age categories of 16-18 and 19-25 to 16-25, and over 71 to 71+ (very small categories otherwise)
+dat <- dat   %>%
+   mutate(age_category_COVID_baseline = 
+           case_when(
+               as.character(age_category) == "16-18" |
+               as.character(age_category) == "19-25" ~ "16-25",
+             
+               as.character(age_category) == "26-35" ~ "26-35",
+             
+               as.character(age_category) == "36-45" ~ "36-45",
+             
+               as.character(age_category) == "46-55" ~ "46-55",
+             
+               as.character(age_category) == "56-65" ~ "56-65",
+             
+               as.character(age_category) == "66-70" ~ "66-70",
+             
+              (as.character(age_category) == "71-75" |
+              as.character(age_category) == "76-80" |
+              as.character(age_category) == "81-85" |
+              as.character(age_category) == "86-90" |
+              as.character(age_category) == "91-100" |
+              as.character(age_category) == "+100" |
+              as.character(age_category) == "100+") ~ "71+",
+             
+              (age_numeric >= 16 &
+                 age_numeric <= 25) ~ "16-25",
+          
+             (age_numeric >= 26 &
+                 age_numeric <= 35) ~ "26-35",
+            
+               (age_numeric >= 36 &
+                 age_numeric <= 45) ~ "36-45",
+            
+            (age_numeric >= 46 &
+                 age_numeric <= 55) ~ "46-55",
+            
+              (age_numeric >= 56 &
+                 age_numeric <= 65) ~ "56-65",
+             
+              (age_numeric >= 66 &
+                 age_numeric <= 70) ~ "66-70",
+            
+               age_numeric >= 71  ~ "71+"
+             )
+         )
+
+# Check
+dat %>%
+  freq(age_category_COVID_baseline)
+
+
+# Re-order for regression analyses with largest age group as reference
+dat <- dat %>%
+  mutate(age_category_COVID_baseline = factor(age_category_COVID_baseline,
+                       levels = c("56-65",
+                                  "16-25",
+                                  "26-35",
+                                  "36-45",
+                                  "46-55",
+                                   "66-70",
+                                   "71+"
+                                  
+                         
+          )))
+
+# Check (NB: lots of missing GLAD and EDGI but that's probably because we are only looking at people who did the COPING survey). Lots of people in RAMP and NBR did not provide their DOB therefore we don't know their age.
+dat %>%
+  freq(age_category_COVID_baseline)
+
+# Check NAs
+dat %>%
+  filter(is.na(age_category_COVID_baseline)) %>%
+  freq(age_numeric)
+
+# Check NAs
+dat %>%
+  filter(is.na(age_category_COVID_baseline)) %>%
+  freq(age_category)
+```
+
+## Gender
+```{r Gender as exposure variable}
+# Recode 
+dat <- dat %>%
+  mutate(gender_cleaned = 
+           case_when(transgender == "Yes" ~ "Minoritised gender",
+                     
+                     gender == "Male" ~ "Man",
+                     gender == "Female" ~ "Woman",
+                     
+                     gender == "Non-binary" ~ "Minoritised gender",
+                     gender == "Self-define" ~ "Minoritised gender"
+            )
+         )
+
+# Check
+dat %>%
+  freq(gender_cleaned) # NAs are people who did not answer the gender question (or from GLAD/EDGI signup only)
+
+dat %>%
+  filter(is.na(gender_cleaned)) %>%
+  freq(gender)
+```
+
+## Sex (male = 0, female = 1)
+```{r Sex as exposure variable}
+# Recode to binary sex
+dat <- dat %>%
+  mutate(sex_binary_numeric = 
+           case_when(sex  == "Male" ~ 0,
+                     
+                     sex == "Female" ~ 1,
+                     
+                     # NB: RAMP does not have sex, but does have whether someone is transgender
+                    
+                     # Non-transgender male
+                      sample == "RAMP" &
+                       gender == "Male" &
+                       transgender == "No" ~ 0,
+                     
+                     # Transgender male, assigned female at birth
+                     sample == "RAMP" &
+                       gender == "Male" &
+                       transgender == "Yes" ~ 1,
+                     
+                     # Non-transgender female
+                      sample == "RAMP" &
+                       gender == "Female" &
+                       transgender == "No" ~ 1,
+                     
+                     # Transgender female, assigned male at birth
+                     sample == "RAMP" &
+                       gender == "Female" &
+                       transgender == "Yes" ~ 0
+                     
+            )
+         )
+
+dat %>%
+  freq(sex_binary_numeric) # NB: Missing data is becuase we are only looking at EDGI AND GLAD COPING and ~7000 NBR participants did not answer the sex question.
+
+dat %>%
+  filter(is.na(sex_binary_numeric)) %>%
+  freq(sample)
+```
+
+## Race
+```{r Race as exposure variable}
+# Recode to binary
+dat <- dat %>%
+  mutate(race_binary = 
+           case_when(ethnicity == "Arab" |
+                     ethnicity == "Asian or Asian British" |
+                       ethnicity == "Asian or Asian British (including Chinese)" |
+                       ethnicity == "Black or Black British" |
+                       ethnicity == "Mixed" |
+                       ethnicity == "Mixed or multiple ethnic origins" |
+                       ethnicity == "Other" |
+                       ethnicity == "Other ethnic group (please specify)" ~ "Racially minoritised",
+                     
+                      ethnicity == "White" |
+                      ethnicity == "White, white European or Caucasian" ~ "White"
+                      
+            )
+         )
+
+# Check
+dat %>%
+  freq(race_binary)
+
+# Check NAs
+dat %>%
+  filter(is.na(race_binary)) %>%
+  freq(ethnicity)
+
+# Reorder so that 'White' is reference category
+dat <- dat %>%
+  mutate(race_binary = factor(race_binary,
+                       levels = c("White",
+                                  "Racially minoritised"
+                                  )))
+dat %>%
+  freq(race_binary)
+
+# Create another variable that keeps all categories - if groups are big enough, should use this.
+dat <- dat %>%
+  mutate(race_categories = 
+           case_when(ethnicity == "Arab" ~ "Arab",
+                     ethnicity == "Asian or Asian British" |
+                       ethnicity == "Asian or Asian British (including Chinese)" ~ "Asian",
+                       ethnicity == "Black or Black British" ~ "Black",
+                       ethnicity == "Mixed" |
+                       ethnicity == "Mixed or multiple ethnic origins" ~ "Mixed race",
+                       ethnicity == "Other" |
+                       ethnicity == "Other ethnic group (please specify)" ~ "Other",
+                     
+                      ethnicity == "White" |
+                      ethnicity == "White, white European or Caucasian" ~ "White"
+                      
+            )
+         )
+
+# Check
+dat %>%
+  freq(race_categories)
+
+```
+
+## Education
+This is from baseline COPING and RAMP data (i.e., not GLAD or EDGI signups). 
+```{r Education as exposure variable}
+# Convert to binary variable to reduce number of exposure variables and maximise likelihood of models running.
+dat <- dat %>%
+  mutate(A_Levels_higher =
+           case_when( 
+                    highest_education == "No formal qualifications" ~ "No",
+                     highest_education == "GCSE/CSE" &
+                     age_numeric <= 18 ~ "Education not finished",
+                     highest_education == "GCSE/CSE" ~ "No",
+                     highest_education == "NVQ" ~ "No",
+                     highest_education == "A-levels" ~"Yes",
+                     highest_education == "University/Other professional qualifications" ~ "Yes"
+              
+           ))
+
+# Check
+dat %>%
+  freq(A_Levels_higher) 
+
+# Check NAs
+dat %>%
+  filter(is.na(A_Levels_higher)) %>%
+  freq(highest_education)
+
+# will also keep 'highest education' variable in case categories are big enough.
+```
+
+## Psychiatric disorder
+This is from EDGI and GLAD sign-up data, as well as data from COPING and RAMP baseline. This was generated in the preprocessing script.
+```{r Psychiatric disorder as exposure}
+# Convert PNTA or don't know to NA
+dat <- dat %>% 
+  mutate(mental_health_diagnosis =
+           case_when(mental_health_diagnosis == "PNTA or don't know" ~ NA_character_,
+                     TRUE  ~  mental_health_diagnosis         
+           ))
+  
+# Check
+dat %>%
+  freq(mental_health_diagnosis)
+
+dat %>%
+  filter(is.na(mental_health_diagnosis)) %>%
+  freq(sample)
+```
+
+## Employed & key worker status
+I have separated out those who are a key worker (and thus employed), those who are not a key worker but are employed, those who are unemployed (and thus not a key worker), and those who are students. This is from baseline COPING and RAMP data and was generated in the preprocessing script.
+```{r Employed / key-worker status as exposure}
+dat <- dat %>%
+  mutate(paid_employment_key_worker =
+           case_when(
+                     key_worker == "Key worker" ~ "Key worker", # Employed and key worker
+                     
+                      baseline_paid_employment == "Paid employment" ~ "Paid employment", # In paid employment but did not endorse being a key worker (may be missing for that question) 
+                     
+                     baseline_paid_employment == "Not in paid employment" ~ "Not paid employment", # Not in paid employment (and therefore not key worker)
+                     baseline_paid_employment == "Student" ~ "Student", # Student (and therefore not key worker),
+                     
+                     baseline_paid_employment == "Retired" ~ "Retired" # Retired (and therefore not key worker),
+                     )
+           )
+# Check
+dat %>%
+  freq(paid_employment_key_worker)
+
+# Check NAs
+dat %>%
+  filter(is.na(paid_employment_key_worker)) %>%
+  freq(baseline_paid_employment)
+
+# Re-order for regression analysis
+dat <- dat %>%
+  mutate(paid_employment_key_worker = factor(paid_employment_key_worker,
+                       levels = c("Paid employment",
+                                  "Key worker",
+                                  "Not paid employment",
+                                  "Student",
+                                  "Retired"
+                                  )))
+dat %>%
+  freq(paid_employment_key_worker)
+```
+
+## Member of vulnerable group
+This is baseline COPING and RAMP data (this is not asked at follow ups).
+```{r Member of vulnerable group exposure}
+# Recode / rename
+dat <- dat %>%
+  mutate(vulnerable_group_member =
+           case_when(dem2.member_vulnerable_group == "Not I am not a member of a vulnerable group" ~ "Yes",
+                     dem2.member_vulnerable_group == "I am not a member of a vulnerable group" ~ "No"
+             
+           ))
+
+# Check
+dat %>%
+  freq(vulnerable_group_member)
+
+# Check NAs
+dat %>%
+  filter(is.na(vulnerable_group_member)) %>%
+  freq(dem2.member_vulnerable_group)
+```
+
+## Increased loneliness at baseline
+First, create numeric variable that demonstrates baseline PANDEMIC loneliness score
+All questions begin with: Over the past two weeks, how often have you felt that the following statements apply to you?
+```{r Baseline pandemic loneliness score}
+dat <- dat %>%
+  mutate(across(starts_with("lone."),
+                ~case_when(
+                  . == "Hardly ever" ~ 0,
+                  . == "Some of the time" ~ 1,
+                  .  == "Often" ~ 2,
+                  TRUE ~ NA_real_)))
+
+```
+
+Calculate PANDEMIC loneliness score
+```{r Loneliness baseline score}
+dat$loneliness_pandemic_count <- rowSums(dat[ ,
+                                 c("lone.felt_alone",
+                                   "lone.felt_isolated_from_others",
+                                   "lone.felt_left_out",
+                                   "lone.felt_that_you_lack_companionship")],
+                                  na.rm = FALSE)
+
+# Check
+dat %>%
+  freq(loneliness_pandemic_count)
+```
+
+Create numeric variable that demonstrates PREPANDEMIC loneliness score
+Score of loneliness pre-pandemic
+ All questions start with: Before the pandemic, how often have you felt that the following statements apply to you?
+```{r Loneliness prepandemic score}
+dat$loneliness_prepandemic_count <- rowSums(dat[ ,
+                                 c("lone.felt_alone.1",
+                                   "lone.felt_isolated_from_others.1",
+                                   "lone.felt_left_out.1",
+                                   "lone.felt_that_you_lack_companionship.1")],
+                                  na.rm = FALSE)
+
+# Check
+dat %>%
+  freq(loneliness_prepandemic_count)
+```
+
+Calculate whether they have experienced an increase in loneliness during the pandemic or not 
+```{r Loneliness increased during pandemic}
+dat <- dat %>%
+  mutate(increased_loneliness_during_pandemic =
+           case_when(
+           loneliness_pandemic_count > loneliness_prepandemic_count ~ "Yes", # These people have higher loneliness scores at baseline than retrospective prepandemic loneliness scores
+         loneliness_pandemic_count <= loneliness_prepandemic_count ~ "No" # These people have lower or the same loneliness scores at baseline than retrospective prepandemic loneliness scores
+         )
+  )
+
+# Check
+dat %>%
+  freq(increased_loneliness_during_pandemic)
+```
+
+## Pandemic worry at baseline 
+Participants are asked how worried they are about different factors, e.g., mental health, or employment. Before working out total score - First need to work out if participants answered any of these as 'not applicable' or if they did not answer (i.e., missing).
+
+First need to create new variables in which '5' i.e., 'Not applicable' = 0, so that it is not included in final calculation of score. We can think of something not being applicable to someone in the same way as it not worrying them.
+```{r Pandemic worry recode 'Not applicable' to 0}
+dat <- dat %>%
+  mutate(across(starts_with("panworry.") &
+                  contains("numeric"),
+                ~case_when(
+                  . == 5 ~ 0,
+                  TRUE ~ .)))
+```
+
+Sum score of answers (e.g., score of 4 on a question = "Extremely worried")
+```{r Pandemic worry sum score actual answers}
+dat$panworry_total_score <- rowSums(dat[ ,
+                                 c("panworry.impact_on_your_employment_status_numeric",
+                                   "panworry.household_employment_status_key_numeric",
+                                   "panworry.impact_on_your_education_or_exams_numeric",
+                                   "panworry.exams_impact_education_children_numeric",
+                                   "panworry.financial_impact_numeric",
+                                   "panworry.contracting_the_virus_numeric",
+                                   "panworry.people_you_know_contracting_the_virus_numeric",
+                                   "panworry.people_you_dont_know_contracting_the_virus_numeric",
+                                   "panworry.impact_mental_health_wellbeing_numeric",
+                                   "panworry.childrens_mental_health_impact_numeric",
+                                   "panworry.relatives_impact_mental_health_numeric",
+                                   "panworry.being_socially_isolated_numeric",
+                                   "panworry.people_you_know_being_socially_isolated_numeric",
+                                   "panworry.shortage_of_essential_supplies_numeric",
+                                   "panworry.shortage_of_medication_or_access_to_healthcare_numeric",
+                                   "panworry.healthcare_people_essential_supplies_numeric",
+                                   "panworry.information_virus_government_accuracy_numeric",
+                                   "panworry.the_governments_response_to_the_pandemic_numeric",
+                                   "panworry.separation_from_family_members_numeric",
+                                   "panworry.global_recession_economy_longstanding_numeric",
+                                   "panworry.other__numeric")],
+                                   na.rm = FALSE)
+
+# Check
+dat %>%
+  freq(panworry_total_score)    
+```
+
+## OCD screener
+```{r ocd screener}
+# Check
+dat %>%
+  freq(ocd.repetitive_unpleasant_thoughts_binary)
+
+# Check
+dat %>%
+  freq(ocd.compulsive_beh_mental_act_binary)
+```
+
+
+# Saving dataset
+## Select & save variables needed for analysis
+```{r Select final variables ready for regression analyses}
+final_dat_BE <- dat %>%
+  select(ID,
+         sample,
+        
+         # Exposures only in low weight models
+         ocd.repetitive_unpleasant_thoughts_binary,
+         ocd.compulsive_beh_mental_act_binary,
+         
+         # Exposures in all models
+         age_category_COVID_baseline,
+         gender_cleaned,
+         sex_binary_numeric,
+         race_binary,
+         A_Levels_higher,
+         mental_health_diagnosis,
+         paid_employment_key_worker,
+         vulnerable_group_member,
+         increased_loneliness_during_pandemic,
+         panworry_total_score,
+        
+        # Extra variables (more categories - will use if able to)
+        highest_education,
+        race_categories,
+        transgender,
+        gender
+        )
+```
+
+Save final dataset 
+Save dataset
+```{r save dataset}
+saveRDS(object = final_dat_BE,
+       file = paste0(filepath_saved_data, "exposures_all_models", date, ".rds"))
+
+```
