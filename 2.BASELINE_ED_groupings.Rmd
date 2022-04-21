@@ -895,8 +895,8 @@ dat.ed.COPING %>%
         )
 ```
 17/01/22: There were 904 people who we could not classify as lifetime BE at baseline (1 = yes (i.e., prepandemic), 0 = No lifetime BE). 
-33 people have answered "No" to ever binge eating, but then not answered the MHD questionnaire, or said "Yes" but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime binge eating" as it is the symptom we are most interested in rather than if they have had a full eating disorder.
-Now, there are 871 people who we can not classify. Either 'Yes' or missing for the BE question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for BE).
+33 people have answered "No" to ever binge eating, but then not answered the MHD questionnaire, or said "Yes" to suspected eating disorder but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime binge eating" as it is the symptom we are most interested in rather than if they have had any other eating disorder.
+Now, there are 871 people who we can not classify. Either 'Yes' or missing for the BE question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for BE) for suspected eating disorder diagnosis.
 
 # Low weight
 ## How many people have anorexia that may have started during the pandemic? 
@@ -1049,8 +1049,8 @@ dat.ed.COPING %>%
         )
 ```
 17/01/22: There were 929 people who we could not classify as lifetime LW at baseline (1 = yes (i.e., prepandemic), 0 = No lifetime BE). 
-31 people have answered "No" to ever being of low weight, but then not answered the MHD questionnaire, or said "Yes" but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime low weight" as it is the symptom we are most interested in rather than if they have had a full eating disorder.
-Now, there are 898 people who we can not classify. Either 'Yes' or missing for the LW question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for LW).
+31 people have answered "No" to ever being of low weight, but then not answered the MHD questionnaire, or said "Yes" to suspecting an eating disorder but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime low weight" as it is the symptom we are most interested in rather than if they have had any other eating disorder.
+Now, there are 898 people who we can not classify. Either 'Yes' or missing for the LW question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for LW) for the MHD.
 
 
 # GLAD original data
@@ -1760,7 +1760,7 @@ ramp_dat <- ramp_dat %>%
 ramp_dat %>%
   freq(lifetime_low_weight_baseline_numeric)
 ```
-17/01/22: There are 8664 
+17/01/22: There are 8603 people missing (i.e., have put PNTA/Don't know/Seen but not answered for the MHD anorexia question at RAMP baseline)
 
 # EDGI 
 ## Import EDGI MHD data
@@ -2286,7 +2286,6 @@ edgi_dat <- edgi_dat %>%
   ) 
 ```
 
-
 # Select variables from each dataset to keep
 ## RAMP
 ```{r Select variables to keep RAMP}
@@ -2375,6 +2374,5 @@ colnames(baseline_ED_groups)
 Save dataset
 ```{r Save final dataset ED baseline groupings}
 saveRDS(object = baseline_ED_groups,
-        file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/ED_BASELINE_groups", date, ".rds")))
-
+        file = paste0(filepath_saved_data, "ED_BASELINE_groups", date, ".rds"))
 ```
