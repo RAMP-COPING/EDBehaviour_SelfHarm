@@ -64,7 +64,7 @@ dat_BE <- readRDS(paste0(filepath_saved_data, "final_dat_BE2022-03-24.rds"))
 dat_LW <- readRDS(paste0(filepath_saved_data, "final_dat_LW2022-03-24.rds"))
 
 # Outcome:Harmful ideation (& outcome-specific variables)
-dat_HI <- readRDS(paste0(filepath_saved_data, "final_dat_HI2022-03-24.rds"))
+dat_HI <- readRDS(paste0(filepath_saved_data, "final_dat_HI2022-04-25.rds"))
 
 # Outcome: Self-harm (& outcome-specific variables)
 dat_SH <- readRDS(paste0(filepath_saved_data, "final_dat_SH2022-03-24.rds"))

@@ -20,15 +20,20 @@ Clear global environment prior to initiation
 remove(list = ls())
 ```
 
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
 Add the add_numeric function - used to convert character variables into numeric variables
 Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
 Add the sumscores function - used to generate sumscores
 Add the package_check function - used to install and load dependencies
 Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
 source("./functions.R")
 ```
 
@@ -48,10 +53,67 @@ date
 
 # Read in data
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/final_dat_merged_2022-02-21.rds")
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-04-25.rds")
+
+# Check
 dim(dat)
-   colnames(dat)
+colnames(dat)
 ```
+
+# PREPROCESSING 
+```{r}
+# Select items for correlation matrix
+outcome_corr <- dat %>%
+  select(
+   `New onset binge eating` = "NEW_binge_eating_pandemic",
+   `New onset low weight` = "NEW_low_weight_pandemic",
+   `New onset self-harm ideation` = "NEW_selfharm_ideation_pandemic",
+   `New onset passive suicidal ideation` = "NEW_passive_suicidal_ideation_pandemic",
+   `New onset self-harm` = "NEW_selfharm_pandemic"
+ ) 
+
+# Run correlation analyses with continious and dichotomous variables 
+outcome_corr_object <- psych::mixedCor(data=outcome_corr,
+         c= NULL,  # Continuous variables
+         p= NULL,
+         d= 1:5, # Dichotomous variable
+             use="pairwise.complete.obs")
+
+
+# Save correlation matrix in an object
+outcome_corr_object_object_matrix <- outcome_corr_object$rho
+
+# Write file path to save plot
+png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/all_outcomes_corr_matrix.png")
+
+# Create correlation matrix with hierarchical clustering
+outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_object_matrix, 
+         method = "color", # objects to represent the correlations on plot
+         type = "lower", # only use the lower triangle of the matrix
+         diag = FALSE, # do not show the correlations on the diagonal
+         addgrid.col = NA,
+         addCoef.col = "black", # colour for the correlation coefficients in the plot
+         tl.cex = 1,
+         cl.cex = 1,
+         order = "hclust",
+         tl.col = "black",
+         cl.align.text = "c",
+         col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
+         number.font = 0.5,
+         number.cex = 1, # size of co-efficients
+         sig.level = 0.01, # Choose significant level
+         insig = "blank", # Nonsignificant correlations have no colour,
+         bg = "white"
+         )
+
+# Save plot
+dev.off()
+```
+
+
+
+HAL HERE!
+
 
 # CORRELATION MATRICES of outcome variables
 ## all outcomes
@@ -77,7 +139,7 @@ outcome_corr_object <- psych::mixedCor(data=outcome_corr,
 outcome_corr_object_object_matrix <- outcome_corr_object$rho
 
 # Write file path to save plot
-png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/all_outcomes_corr_matrix.png")
+png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/analysis_outcomes_corr_matrix.png")
 
 # Create correlation matrix with hierarchical clustering
 outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_object_matrix, 

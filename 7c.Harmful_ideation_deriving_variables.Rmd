@@ -8069,9 +8069,10 @@ missing %>%
 final_dat_HI <- dat %>%
   select(ID,
          sample,
-        PREPANDEMIC_passive_suicidal_ideation,
-        PREPANDEMIC_selfharm_ideation,
-         
+        # Save original variables
+        NEW_selfharm_ideation_pandemic,
+        NEW_passive_suicidal_ideation_pandemic,
+          
          # Outcome for self harm regressions 
          NEW_harmful_ideation_pandemic,
 

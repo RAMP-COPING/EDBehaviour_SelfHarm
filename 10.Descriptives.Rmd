@@ -55,7 +55,7 @@ date
 # Read in data
 ## Final cleaned data
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-04-22.rds")
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-04-25.rds")
 
 # Check
 dim(dat)
@@ -348,12 +348,6 @@ selfharm_group <- dat_final %>% # 14,706
           ) 
 ```
 
-```{r histogram of BMIs}
-# Histogram of BMIs
-hist(dat_final$lowest_bmi_final)
-hist(dat_final$dem.bmi_highest_cop)
-hist(dat_final$dem.bmi_signup_cop)
-```
 # Signup BMIs - formatted for manuscript
 ```{r signup BMI formatting plots for manuscript}
 # Whole sample
@@ -867,26 +861,6 @@ selfharm_group %>%
   freq(sex_binary_numeric)
 ```
 
-# Additional info
-Of the NBR sample, which cohort are they from?
-```{r NBR which cohrt}
-nbr_info <- read.csv("/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/nbr_additional_info/coping_participants_export_20200730_hashed.csv")
-
-nbr_info <- nbr_info %>%
-  select(ID = NBR.ID,
-         cohort)
-
-# Merge
-dat_filtered_merged <- dplyr::left_join(dat_final,
-                        nbr_info,
-                        by ="ID"
-                        )
-
-dat_filtered_merged %>%
-  filter(sample == "NBR") %>%
-  freq(cohort)
-```
-
 # Freq tables of exposures split by outcome
 ## Binge eating 
 ```{r binge eating exposures split by outcome}
@@ -1173,414 +1147,81 @@ selfharm_group %>%
   freq(NEW_selfharm_pandemic)
 ```         
 
-# Percentage new onset - BEFORE exclusion
+# Percentage new onset - whole sample
 ```{r percentage new onset binge eating}
 dat %>%
-  filter(!is.na(NEW_binge_eating_pandemic)) %>%
+  filter(BE_model_included == 1) %>%
   freq(NEW_binge_eating_pandemic)
 
-(5121/24330)*100 # 21.0%
-
-
-dat %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_binge_eating_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(positive_covid_test_before_BE_final) &
-             !is.na(lost_someone_before_BE_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_BE_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_BE_final)
-          ) %>%
-   freq(NEW_binge_eating_pandemic)
-
-(1330/6589)*100 # 20.2%
+(2267/13197)*100 # 17.2%
 ``` 
 
 ```{r percentage new onset low weight}
 dat %>%
-  filter(!is.na(NEW_low_weight_pandemic)) %>%
+  filter(LW_model_included == 1) %>%
   freq(NEW_low_weight_pandemic)
 
-(2741/25274)*100 # 10.8%
-
-dat %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_low_weight_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(lost_someone_before_LW_final) &
-             !is.na(positive_covid_test_before_LW_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_LW_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_LW_final) &
-             !is.na(ocd.compulsive_beh_mental_act_binary) &
-             !is.na(ocd.repetitive_unpleasant_thoughts_binary)
-           ) %>%
-   freq(NEW_low_weight_pandemic)
-
-(607/6265)*100 # 9.7%
+(1080/12036)*100 # 8.9%
 ```
 
 ```{r percentage new onset harmful ideation}
 dat %>%
-  filter(!is.na(NEW_harmful_ideation_pandemic)) %>%
+  filter(HI_model_included == 1) %>%
   freq(NEW_harmful_ideation_pandemic)
 
-(6748/20603)*100 # 32.8%
-
-dat %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_harmful_ideation_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(lost_someone_before_HI_final) &
-             !is.na(positive_covid_test_before_HI_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_HI_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_HI_final) 
-           ) %>%
-   freq(NEW_harmful_ideation_pandemic)
-
-(1484/4132)*100 # 35.9%
+(2480/9099)*100 # 27.3%
 ```
 
 
 ```{r percentage new onset self-harm}
 dat %>%
-  filter(!is.na(NEW_selfharm_pandemic)) %>%
+  filter(SH_model_included == 1) %>%
   freq(NEW_selfharm_pandemic)
 
-(1044/30090)*100 # 3.5%
-
-dat %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_selfharm_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(lost_someone_before_SH_final) &
-             !is.na(positive_covid_test_before_SH_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_SH_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_SH_final) 
-           ) %>%
-   freq(NEW_selfharm_pandemic)
-
-(328/7392)*100 # 4.4%
+(510/14706)*100 # 3.5%
 ```
 
 ## Percentage new onset - NBR only & NBR/RAMP only
 ```{r percentage new onset binge eating NBR & RAMP only}
-# NBR only
-dat %>%
-  filter(sample == "NBR") %>%
-  filter(!is.na(NEW_binge_eating_pandemic)) %>%
-  freq(NEW_binge_eating_pandemic)
-
-(1610/11473)*100 # 14.0%
-
 # NBR & RAMP only
 dat %>%
   filter(sample == "NBR" |
            sample == "RAMP") %>%
-  filter(!is.na(NEW_binge_eating_pandemic)) %>%
+  filter(BE_model_included == 1) %>%
   freq(NEW_binge_eating_pandemic)
 
-(3624/18409)*100 # 19.7%
-
-# NBR only 
-dat %>%
-  filter(sample == "NBR") %>%
-  filter(!is.na(NEW_binge_eating_pandemic)) %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_binge_eating_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(positive_covid_test_before_BE_final) &
-             !is.na(lost_someone_before_BE_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_BE_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_BE_final)
-          ) %>%
-   freq(NEW_binge_eating_pandemic)
-
-(387/2687)*100 # 14.4%
-
-# NBR & RAMP only
-dat %>%
-  filter(sample == "NBR" |
-           sample == "RAMP") %>%
-  filter(!is.na(NEW_binge_eating_pandemic)) %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_binge_eating_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(positive_covid_test_before_BE_final) &
-             !is.na(lost_someone_before_BE_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_BE_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_BE_final)
-          ) %>%
-   freq(NEW_binge_eating_pandemic)
-
-(845/4341)*100 # 19.5%
+(1502/9555)*100 # 15.7%
 ```
 
 ```{r percentage new onset low weight NBR & RAMP only}
-# NBR only
-dat %>%
-  filter(sample == "NBR") %>%
-  filter(!is.na(NEW_low_weight_pandemic)) %>%
-  freq(NEW_low_weight_pandemic)
-
-(904/10757)*100 # 8.4%
-
 # NBR & RAMP only
 dat %>%
   filter(sample == "NBR" |
            sample == "RAMP") %>%
-  filter(!is.na(NEW_low_weight_pandemic)) %>%
+  filter(LW_model_included == 1) %>%
   freq(NEW_low_weight_pandemic)
 
-(1976/18664)*100 # 10.6%
-
-# NBR only
-dat %>%
-  filter(sample == "NBR") %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_low_weight_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(lost_someone_before_LW_final) &
-             !is.na(positive_covid_test_before_LW_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_LW_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_LW_final) &
-             !is.na(ocd.compulsive_beh_mental_act_binary) &
-             !is.na(ocd.repetitive_unpleasant_thoughts_binary)
-           ) %>%
-   freq(NEW_low_weight_pandemic)
-
-(135/2078)*100 # 6.5%
-
-dat %>%
-  filter(sample == "NBR" |
-           sample == "RAMP") %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_low_weight_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(lost_someone_before_LW_final) &
-             !is.na(positive_covid_test_before_LW_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_LW_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_LW_final) &
-             !is.na(ocd.compulsive_beh_mental_act_binary) &
-             !is.na(ocd.repetitive_unpleasant_thoughts_binary)
-           ) %>%
-   freq(NEW_low_weight_pandemic)
-
-(390/4118)*100 # 9.5%
+(763/8594)*100 # 8.9%
 ```
 
 ```{r percentage new onset harmful ideation NBR & RAMP only}
-# NBR only
-dat %>%
-  filter(sample == "NBR") %>%
-  filter(!is.na(NEW_harmful_ideation_pandemic)) %>%
-  freq(NEW_harmful_ideation_pandemic)
-
-(1922/11505)*100 # 16.7%
-
 # NBR & RAMP only
 dat %>%
   filter(sample == "NBR" |
            sample == "RAMP") %>%
-  filter(!is.na(NEW_harmful_ideation_pandemic)) %>%
+  filter(HI_model_included == 1) %>%
   freq(NEW_harmful_ideation_pandemic)
 
-(4227/16758)*100 # 25.2%
-
-
-# NBR only
-dat %>%
-  filter(sample == "NBR") %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_harmful_ideation_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(lost_someone_before_HI_final) &
-             !is.na(positive_covid_test_before_HI_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_HI_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_HI_final) 
-           ) %>%
-   freq(NEW_harmful_ideation_pandemic)
-
-(388/2117)*100 # 18.3%
-
-
-# NBR & RAMP only
-dat %>%
-  filter(sample == "NBR" |
-           sample == "RAMP") %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_harmful_ideation_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(lost_someone_before_HI_final) &
-             !is.na(positive_covid_test_before_HI_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_HI_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_HI_final) 
-           ) %>%
-   freq(NEW_harmful_ideation_pandemic)
-
-(879/3154)*100 # 27.9%
+(1498/7418)*100 # 20.2%
 ```
 
 ```{r percentage new onset self harm NBR & RAMP only}
-# NBR only
-dat %>%
-  filter(sample == "NBR") %>%
-  filter(!is.na(NEW_selfharm_pandemic)) %>%
-  freq(NEW_selfharm_pandemic)
-
-(274/14494)*100 # 1.9%
-
 # NBR & RAMP only
 dat %>%
   filter(sample == "NBR" |
            sample == "RAMP") %>%
-  filter(!is.na(NEW_selfharm_pandemic)) %>%
+  filter(SH_model_included == 1) %>%
   freq(NEW_selfharm_pandemic)
 
-(569/22636)*100 # 2.5%
-
-# NBR only
-dat %>%
-  filter(sample == "NBR") %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_selfharm_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(lost_someone_before_SH_final) &
-             !is.na(positive_covid_test_before_SH_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_SH_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_SH_final) 
-           ) %>%
-   freq(NEW_selfharm_pandemic)
-
-(68/2995)*100 # 2.3%
-
-# NBR & RAMP only
-dat %>%
-  filter(sample == "NBR" |
-           sample == "RAMP") %>%
-   filter( !is.na(age_category_COVID_baseline) & 
-             !is.na(gender_cleaned) &
-             !is.na(race_binary) & 
-             !is.na(NEW_selfharm_pandemic) &
-             !is.na(highest_education) &
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(lost_someone_before_SH_final) &
-             !is.na(positive_covid_test_before_SH_final) &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(main_eco_change_before_SH_final)  &
-             !is.na(increased_loneliness_during_pandemic) &
-             !is.na(living_situation_change_before_SH_final) 
-           ) %>%
-   freq(NEW_selfharm_pandemic)
-
-(154/4870)*100 # 3.2%
+(265/10548)*100 # 2.5%
 ```
-
-
-
-```{r age COPING data to check IDs}
-age_dat_edgi_coping <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_edgi/demographics/age_coping_edgi_clean.rds"))
-dim(age_dat_edgi_coping)
-colnames(age_dat_edgi_coping)
-
-age_dat_glad_coping <- readRDS(file =  paste0(filepath_cleaned_latest_freeze, "coping_glad/demographics/age_coping_glad_clean.rds"))
-dim(age_dat_glad_coping)
-colnames(age_dat_glad_coping)
-
-# NBR
-age_dat_nbr <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_nbr/demographics/age_coping_nbr_clean.rds"))
-dim(age_dat_nbr)
-colnames(age_dat_nbr)
-```
-
-
