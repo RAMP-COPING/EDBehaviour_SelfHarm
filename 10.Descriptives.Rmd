@@ -55,7 +55,7 @@ date
 # Read in data
 ## Final cleaned data
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-04-25.rds")
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-04-26.rds")
 
 # Check
 dim(dat)
@@ -280,7 +280,7 @@ dat_final <- dplyr::left_join(dat,
 # Freq of descriptives within each regression model
 ## First, create groups 
 ```{r create groups}
-binge_eating_group <- dat_final %>% # 13,197
+binge_eating_group <- dat_final %>% # 18,229
    filter( !is.na(NEW_binge_eating_pandemic) &
              !is.na(age_category_COVID_baseline) & 
              !is.na(gender_cleaned) &
@@ -297,7 +297,7 @@ binge_eating_group <- dat_final %>% # 13,197
           ) 
 
 
-low_weight_group <- dat_final %>% # 12,036
+low_weight_group <- dat_final %>% # 16,390
    filter( !is.na(NEW_low_weight_pandemic) &
              !is.na(age_category_COVID_baseline) & 
              !is.na(gender_cleaned) &
@@ -315,7 +315,7 @@ low_weight_group <- dat_final %>% # 12,036
              !is.na(ocd.compulsive_beh_mental_act_binary)
            )
 
-harmful_ideation_group <- dat_final %>% # 9,099
+harmful_ideation_group <- dat_final %>% # 12,677
    filter( !is.na(NEW_harmful_ideation_pandemic) &
              !is.na(age_category_COVID_baseline) & 
              !is.na(gender_cleaned) &

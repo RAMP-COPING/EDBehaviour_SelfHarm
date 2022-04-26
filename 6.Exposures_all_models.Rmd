@@ -466,6 +466,45 @@ dat <- dat %>%
                   TRUE ~ .)))
 ```
 
+```{r check missingness}
+panworry <- dat %>%
+  select("panworry.impact_on_your_employment_status_numeric",
+                                   "panworry.household_employment_status_key_numeric",
+                                   "panworry.impact_on_your_education_or_exams_numeric",
+                                   "panworry.exams_impact_education_children_numeric",
+                                   "panworry.financial_impact_numeric",
+                                   "panworry.contracting_the_virus_numeric",
+                                   "panworry.people_you_know_contracting_the_virus_numeric",
+                                   "panworry.people_you_dont_know_contracting_the_virus_numeric",
+                                   "panworry.impact_mental_health_wellbeing_numeric",
+                                   "panworry.childrens_mental_health_impact_numeric",
+                                   "panworry.relatives_impact_mental_health_numeric",
+                                   "panworry.being_socially_isolated_numeric",
+                                   "panworry.people_you_know_being_socially_isolated_numeric",
+                                   "panworry.shortage_of_essential_supplies_numeric",
+                                   "panworry.shortage_of_medication_or_access_to_healthcare_numeric",
+                                   "panworry.healthcare_people_essential_supplies_numeric",
+                                   "panworry.information_virus_government_accuracy_numeric",
+                                   "panworry.the_governments_response_to_the_pandemic_numeric",
+                                   "panworry.separation_from_family_members_numeric",
+                                   "panworry.global_recession_economy_longstanding_numeric",
+                                   "panworry.other__numeric")
+
+
+
+colMeans(is.na(panworry))*100
+```
+
+The 'other' item on the pandemic worry measure has higher missigness than all other variables. This is probably because the question asked people to 'Please specify' within a text box. I am going to assume that anyone who answered ALL other questions bar the 'Other' question most likely does not have anything to specify and therefore skipped the question. I will set anyone who is missing for 'Other' to 0.
+```{r set missing for other to 0}
+dat <- dat %>%
+  mutate(panworry.other__numeric =
+           case_when(is.na(panworry.other__numeric) ~ 0,
+                     !is.na(panworry.other__numeric) ~ panworry.other__numeric
+                     )
+  )
+```
+
 Sum score of answers (e.g., score of 4 on a question = "Extremely worried")
 ```{r Pandemic worry sum score actual answers}
 dat$panworry_total_score <- rowSums(dat[ ,
@@ -489,7 +528,8 @@ dat$panworry_total_score <- rowSums(dat[ ,
                                    "panworry.the_governments_response_to_the_pandemic_numeric",
                                    "panworry.separation_from_family_members_numeric",
                                    "panworry.global_recession_economy_longstanding_numeric",
-                                   "panworry.other__numeric")],
+                                   "panworry.other__numeric"
+                                   )],
                                    na.rm = FALSE)
 
 # Check
@@ -511,7 +551,7 @@ dat %>%
 # Saving dataset
 ## Select & save variables needed for analysis
 ```{r Select final variables ready for regression analyses}
-final_dat_BE <- dat %>%
+final_dat <- dat %>%
   select(ID,
          sample,
         
@@ -542,7 +582,6 @@ final_dat_BE <- dat %>%
 Save final dataset 
 Save dataset
 ```{r save dataset}
-saveRDS(object = final_dat_BE,
+saveRDS(object = final_dat,
        file = paste0(filepath_saved_data, "exposures_all_models", date, ".rds"))
-
 ```
