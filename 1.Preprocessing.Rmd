@@ -5,14 +5,6 @@ date: "21/04/2021"
 output: html_document
 ---
 
-ORDER OF SCRIPTS
-1. Pre-processing
-2. Baseline ED groupings
-3. OCD screener
-4. Merging
-5. Deriving variables
- 
-
 Configure global options for all chunks
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -28,15 +20,20 @@ Clear global environment prior to initiation
 remove(list = ls())
 ```
 
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
 Add the add_numeric function - used to convert character variables into numeric variables
 Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
 Add the sumscores function - used to generate sumscores
 Add the package_check function - used to install and load dependencies
 Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
 source("./functions.R")
 ```
 
@@ -68,27 +65,27 @@ COPING = TRUE
 - AGE AT COVID ASSESSMENT (i.e., EDGI and GLAD COPING baseline questionnaire NOT GLAD/EDGI signup)
 ```{r read in age cleaned data}
 if(EDGI == TRUE){
-age_dat_edgi_coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_edgi/demographics/age_coping_edgi_clean.rds")
+age_dat_edgi_coping <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_edgi/demographics/age_coping_edgi_clean.rds"))
 dim(age_dat_edgi_coping)
 colnames(age_dat_edgi_coping)
 }
 
 if(GLAD == TRUE){
-age_dat_glad_coping <- readRDS(file =  "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_glad/demographics/age_coping_glad_clean.rds")
+age_dat_glad_coping <- readRDS(file =  paste0(filepath_cleaned_latest_freeze, "coping_glad/demographics/age_coping_glad_clean.rds"))
 dim(age_dat_glad_coping)
 colnames(age_dat_glad_coping)
 }
 
 if(NBR == TRUE){
 # NBR
-age_dat_nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_nbr/demographics/age_coping_nbr_clean.rds")
+age_dat_nbr <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_nbr/demographics/age_coping_nbr_clean.rds"))
 dim(age_dat_nbr)
 colnames(age_dat_nbr)
 }
 
 if(RAMP == TRUE){
 # RAMP
-age_dat_ramp <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/ramp/demographics/age_ramp_clean.rds")
+age_dat_ramp <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "ramp/demographics/age_ramp_clean.rds"))
 dim(age_dat_ramp)
 colnames(age_dat_ramp)
 }
@@ -100,11 +97,11 @@ NB: The question about being transgender is only available in GLAD/EDGI signup, 
 ```{r read in gender/sex cleaned data}
 if(EDGI == TRUE){
 # EDGI
-gender_sex_edgi_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_edgi/demographics/sex_gender_sexuality_coping_edgi_clean.rds")
+gender_sex_edgi_dat <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_edgi/demographics/sex_gender_sexuality_coping_edgi_clean.rds"))
 dim(gender_sex_edgi_dat)
 colnames(gender_sex_edgi_dat)
 
-transgender_edgi_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/edgi/demographics/sex_gender_sexuality_edgi_clean.rds")
+transgender_edgi_dat <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "edgi/demographics/sex_gender_sexuality_edgi_clean.rds"))
 dim(transgender_edgi_dat)
 colnames(transgender_edgi_dat)
 
@@ -120,11 +117,11 @@ gender_sex_edgi_transgender_dat <- dplyr::full_join(gender_sex_edgi_dat,
 
 if(GLAD == TRUE){
 # GLAD
-gender_sex_glad_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_glad/demographics/sex_gender_sexuality_coping_glad_clean.rds")
+gender_sex_glad_dat <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_glad/demographics/sex_gender_sexuality_coping_glad_clean.rds"))
 dim(gender_sex_glad_dat)
 colnames(gender_sex_glad_dat)
 
-transgender_glad_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/demographics/sex_gender_sexuality_glad_clean.rds")
+transgender_glad_dat <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "glad/demographics/sex_gender_sexuality_glad_clean.rds"))
 dim(transgender_glad_dat)
 colnames(transgender_glad_dat)
 
@@ -141,14 +138,14 @@ gender_sex_glad_transgender_dat <- dplyr::full_join(gender_sex_glad_dat,
 
 if(NBR == TRUE){
 # NBR
-gender_sex_nbr_dat <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_nbr/demographics/sex_gender_sexuality_coping_nbr_clean.rds")
+gender_sex_nbr_dat <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_nbr/demographics/sex_gender_sexuality_coping_nbr_clean.rds"))
 dim(gender_sex_nbr_dat)
 colnames(gender_sex_nbr_dat)
 }
 
 if(RAMP == TRUE){
 # RAMP
-gender_sex_dat_ramp <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/ramp/demographics/sex_gender_sexuality_ramp_clean.rds")
+gender_sex_dat_ramp <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "ramp/demographics/sex_gender_sexuality_ramp_clean.rds"))
 dim(gender_sex_dat_ramp)
 colnames(gender_sex_dat_ramp)
 
@@ -159,28 +156,28 @@ colnames(gender_sex_dat_ramp)
 ```{r read in ethnicity cleaned data}
 if(EDGI == TRUE){
 # EDGI
-ethnicity_dat_edgi <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/edgi/demographics/ethnicity_edgi_clean.rds")
+ethnicity_dat_edgi <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "edgi/demographics/ethnicity_edgi_clean.rds"))
 dim(ethnicity_dat_edgi)
 colnames(ethnicity_dat_edgi)
 }
 
 if(GLAD == TRUE){
 # GLAD
-ethnicity_dat_glad <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/demographics/ethnicity_glad_clean.rds")
+ethnicity_dat_glad <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "glad/demographics/ethnicity_glad_clean.rds"))
 dim(ethnicity_dat_glad)
 colnames(ethnicity_dat_glad)
 }
 
 if(NBR == TRUE){
 # NBR
-ethnicity_dat_nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_nbr/demographics/ethnicity_coping_nbr_clean.rds")
+ethnicity_dat_nbr <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_nbr/demographics/ethnicity_coping_nbr_clean.rds"))
 dim(ethnicity_dat_nbr)
 colnames(ethnicity_dat_nbr)
 }
 
 if(RAMP == TRUE){
 # RAMP
-ethnicity_dat_ramp <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/ramp/demographics/ethnicity_ramp_clean.rds")
+ethnicity_dat_ramp <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "ramp/demographics/ethnicity_ramp_clean.rds"))
 dim(ethnicity_dat_ramp)
 colnames(ethnicity_dat_ramp)
 }
@@ -192,7 +189,7 @@ NB: highest education AT COVID ASSESSMENT (i.e., EDGI and GLAD COPING baseline q
 ```{r read in highest education cleaned data EDGI}
 if(EDGI == TRUE){
 # EDGI
-highest_education_edgi_coping_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi/employ_coping_edgi.rds")
+highest_education_edgi_coping_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi/employ_coping_edgi.rds"))
 dim(highest_education_edgi_coping_raw)
 colnames(highest_education_edgi_coping_raw)
 
@@ -230,7 +227,7 @@ dim(highest_education_edgi_coping)[1]-dim(highest_education_edgi_coping_raw)[1]
 ```{r read in highest education cleaned data GLAD}
 if(GLAD == TRUE){
 # GLAD
-highest_education_glad_coping_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/employ_coping_glad.rds")
+highest_education_glad_coping_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/employ_coping_glad.rds"))
 dim(highest_education_glad_coping_raw)
 colnames(highest_education_glad_coping_raw)
 
@@ -268,7 +265,7 @@ dim(highest_education_glad_coping)[1]-dim(highest_education_glad_coping_raw)[1]
 ```{r read in highest education cleaned data NBR}
 if(NBR == TRUE){
 # NBR
-highest_education_nbr_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/employ_coping_nbr.rds")
+highest_education_nbr_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/employ_coping_nbr.rds"))
 dim(highest_education_nbr_raw)
 colnames(highest_education_nbr_raw)
 
@@ -306,7 +303,7 @@ dim(highest_education_nbr)[1]-dim(highest_education_nbr_raw)[1]
 ```{r read in highest education cleaned data RAMP}
 if(RAMP == TRUE){
 # RAMP
-highest_education_ramp_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/employ_ramp.rds")
+highest_education_ramp_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/employ_ramp.rds"))
 dim(highest_education_ramp_raw)
 colnames(highest_education_ramp_raw)
 
@@ -362,7 +359,7 @@ exclude_cols_dem <- c("ID",
 ## Read in RAMP employment data
 ```{r Read in data RAMP employment}
 if(RAMP == TRUE){
-ramp_dem_employ_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/employ_ramp.rds")
+ramp_dem_employ_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/employ_ramp.rds"))
 dim(ramp_dem_employ_raw)
 colnames(ramp_dem_employ_raw)
 }
@@ -405,7 +402,7 @@ dim(ramp_dem_employ_raw)[1]-dim(ramp_dem_employ_raw_id)[1]
 ## Read in NBR employment data
 ```{r Read in data NBR employment}
 if(NBR == TRUE){
-nbr_dem_employ_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/employ_coping_nbr.rds")
+nbr_dem_employ_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/employ_coping_nbr.rds"))
 dim(nbr_dem_employ_raw)
 colnames(nbr_dem_employ_raw)
 
@@ -450,7 +447,7 @@ dim(nbr_dem_employ_raw)[1]-dim(nbr_dem_employ_raw_id)[1]
 ## Read in EDGI COPING employment data
 ```{r Read in data EDGI COPING employment}
 if(EDGI == TRUE){
-edgi_coping_employment_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi/employ_coping_edgi.rds")
+edgi_coping_employment_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi/employ_coping_edgi.rds"))
 dim(edgi_coping_employment_raw)
 colnames(edgi_coping_employment_raw)
 
@@ -495,7 +492,7 @@ dim(edgi_coping_employment_raw)[1]-dim(edgi_coping_employment_id)[1]
 ## Read in GLAD COPING employment data
 ```{r Read in data GLAD employment}
 if(GLAD == TRUE){
-glad_coping_employment_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/employ_coping_glad.rds")
+glad_coping_employment_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/employ_coping_glad.rds"))
 dim(glad_coping_employment_raw)
 colnames(glad_coping_employment_raw)
 }
@@ -547,19 +544,19 @@ source("./employment_key_worker.R")
 ```{r read in mental health diagnosis cleaned data}
 if(EDGI == TRUE){
 # EDGI
-mhd_dat_id <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/edgi/clinical/mhd_edgi_clean.rds")
+mhd_dat_id <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "edgi/clinical/mhd_edgi_clean.rds"))
 dim(mhd_dat_id)
 colnames(mhd_dat_id)
 }
 
 if(GLAD == TRUE){
 # GLAD
-mhd_dat_glad <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/clinical/mhd_glad_clean.rds")
+mhd_dat_glad <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "glad/clinical/mhd_glad_clean.rds"))
 dim(mhd_dat_glad)
 colnames(mhd_dat_glad)
 
 # GLAD COPING 
-mhd_dat_glad_coping  <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_glad/clinical/mhd_coping_glad_clean.rds")
+mhd_dat_glad_coping  <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_glad/clinical/mhd_coping_glad_clean.rds"))
 dim(mhd_dat_glad_coping)
 colnames(mhd_dat_glad_coping)
 
@@ -574,7 +571,7 @@ mhd_dat_id <- dplyr::full_join(mhd_dat_glad,
 
 if(NBR == TRUE){
 # NBR
-mhd_dat_id <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_nbr/clinical/mhd_coping_nbr_clean.rds")
+mhd_dat_id <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_nbr/clinical/mhd_coping_nbr_clean.rds"))
 dim(mhd_dat_id)
 colnames(mhd_dat_id)
 
@@ -583,7 +580,7 @@ colnames(mhd_dat_id)
 }
 
 if(RAMP == TRUE){
-mhd_dat_id <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/ramp/clinical/mhd_ramp_clean.rds")
+mhd_dat_id <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "ramp/clinical/mhd_ramp_clean.rds"))
 dim(mhd_dat_id)
 colnames(mhd_dat_id)
 }
@@ -592,7 +589,7 @@ colnames(mhd_dat_id)
 ### GLAD ED100K self-reported diagnosis
 ```{r read in GLAD ED100K self reported diagnosis}
 if(GLAD == TRUE){
-glad_ed100k_selfreport <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/eating/selfreported_ed100k_diagnoses_glad_clean.rds")
+glad_ed100k_selfreport <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "glad/eating/selfreported_ed100k_diagnoses_glad_clean.rds"))
 dim(glad_ed100k_selfreport)
 colnames(glad_ed100k_selfreport)
 }
@@ -600,21 +597,15 @@ colnames(glad_ed100k_selfreport)
 
 ### Algorithms
 ```{r read in algorithms for each dataset}
-# CIDI-D, incl. RAMP?
-
-
-# CIDI-A, incl. RAMP?
-
-
 # Eating disorders (NB: not in RAMP or EDGI COPING)
 
 ## GLAD & COPING GLAD 
 if(GLAD == TRUE){
-ed_algorithms_coping_glad <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_glad/algorithms/ed_algorithms_diagnostics_coping_glad_clean.rds")
+ed_algorithms_coping_glad <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_glad/algorithms/ed_algorithms_diagnostics_coping_glad_clean.rds"))
 dim(ed_algorithms_coping_glad)
 colnames(ed_algorithms_coping_glad)
 
-ed_algorithms_glad_signup <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/algorithms/ed_algorithms_diagnostics_glad_clean.rds")
+ed_algorithms_glad_signup <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "glad/algorithms/ed_algorithms_diagnostics_glad_clean.rds"))
 dim(ed_algorithms_glad_signup)
 colnames(ed_algorithms_glad_signup)
 
@@ -629,14 +620,14 @@ ed_algorithms_glad <- dplyr::full_join(ed_algorithms_coping_glad,
 
 ## NBR 
 if(NBR == TRUE){
-ed_algorithms_nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_nbr/algorithms/ed_algorithms_diagnostics_coping_nbr_clean.rds")
+ed_algorithms_nbr <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_nbr/algorithms/ed_algorithms_diagnostics_coping_nbr_clean.rds"))
 dim(ed_algorithms_nbr)
 colnames(ed_algorithms_nbr) 
 } 
 
 if(EDGI == TRUE){
 ## EDGI
-ed_algorithms_edgi <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/edgi/algorithms/ed_algorithms_diagnostics_edgi_clean.rds")
+ed_algorithms_edgi <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "edgi/algorithms/ed_algorithms_diagnostics_edgi_clean.rds"))
 dim(ed_algorithms_edgi)
 colnames(ed_algorithms_edgi)
 }
@@ -654,7 +645,7 @@ source("./mental_health_diagnosis.R")
 ### Read in data
 ```{r Read in data GLAD COPING living situation}
 if(GLAD == TRUE){
-glad_living_situation_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/dem2_coping_glad.rds")
+glad_living_situation_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/dem2_coping_glad.rds"))
 dim(glad_living_situation_raw)
 colnames(glad_living_situation_raw)
 }
@@ -699,7 +690,7 @@ dim(glad_living_situation_raw)[1]-dim(glad_living_situation_id)[1]
 ### Read in data
 ```{r Read in data EDGI COPING living situation}
 if(EDGI == TRUE){
-edgi_living_situation_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi/dem2_coping_edgi.rds")
+edgi_living_situation_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi/dem2_coping_edgi.rds"))
 dim(edgi_living_situation_raw)
 colnames(edgi_living_situation_raw)
 }
@@ -744,7 +735,7 @@ dim(edgi_living_situation_raw)[1]-dim(edgi_living_situation_id)[1]
 ### Read in data
 ```{r Read in data NBR living situation}
 if(NBR == TRUE){
-nbr_living_situation_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/dem_coping_nbr.rds")
+nbr_living_situation_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/dem_coping_nbr.rds"))
 dim(nbr_living_situation_raw)
 colnames(nbr_living_situation_raw)
 }
@@ -789,7 +780,7 @@ dim(nbr_living_situation_raw)[1]-dim(nbr_living_situation_id)[1]
 ### Read in data
 ```{r Read in data RAMP living situation}
 if(RAMP == TRUE){
-ramp_living_situation_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/dem_ramp.rds")
+ramp_living_situation_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/dem_ramp.rds"))
 dim(ramp_living_situation_raw)
 colnames(ramp_living_situation_raw)
 }
@@ -834,7 +825,7 @@ dim(ramp_living_situation_raw)[1]-dim(ramp_living_situation_id)[1]
 ### Read in data 
 ```{r Read in data EDGI baseline pandemic worry}
 if(EDGI == TRUE){
-edgi_pan_worry <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi/panworry_coping_edgi.rds")
+edgi_pan_worry <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi/panworry_coping_edgi.rds"))
 dim(edgi_pan_worry)
 colnames(edgi_pan_worry)
 }
@@ -875,7 +866,6 @@ colnames(edgi_pan_worry.id)
 #Differences
 dim(edgi_pan_worry)[1]-dim(edgi_pan_worry.id)[1]
 }
-
 ```
 
 # Pandemic worry at baseline
@@ -883,7 +873,7 @@ dim(edgi_pan_worry)[1]-dim(edgi_pan_worry.id)[1]
 ### Read in data 
 ```{r Read in data GLAD baseline pandemic worry}
 if(GLAD == TRUE){
-glad_pan_worry <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/panworry_coping_glad.rds")
+glad_pan_worry <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/panworry_coping_glad.rds"))
 dim(glad_pan_worry)
 colnames(glad_pan_worry)
 }
@@ -931,7 +921,7 @@ dim(glad_pan_worry)[1]-dim(glad_pan_worry.id)[1]
 ### Read in data 
 ```{r Read in data NBR baseline pandemic worry}
 if(NBR == TRUE){
-nbr_pan_worry <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/panworry_coping_nbr.rds")
+nbr_pan_worry <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/panworry_coping_nbr.rds"))
 dim(nbr_pan_worry)
 colnames(nbr_pan_worry)
 }
@@ -972,7 +962,6 @@ colnames(nbr_pan_worry.id)
 #Differences
 dim(nbr_pan_worry)[1]-dim(nbr_pan_worry.id)[1]
 }
-
 ```
 
 # Pandemic worry at baseline
@@ -980,7 +969,7 @@ dim(nbr_pan_worry)[1]-dim(nbr_pan_worry.id)[1]
 ### Read in data 
 ```{r Read in data RAMP baseline pandemic worry}
 if(RAMP == TRUE){
-ramp_pan_worry <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/panworry_ramp.rds")
+ramp_pan_worry <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/panworry_ramp.rds"))
 dim(ramp_pan_worry)
 colnames(ramp_pan_worry)
 }
@@ -1021,7 +1010,6 @@ colnames(ramp_pan_worry.id)
 #Differences
 dim(ramp_pan_worry)[1]-dim(ramp_pan_worry.id)[1]
 }
-
 ```
 
 # Read in EDEQ baseline data (although note that is only present in RAMP)
@@ -1029,7 +1017,7 @@ dim(ramp_pan_worry)[1]-dim(ramp_pan_worry.id)[1]
 ### Read in data
 ```{r Read in data RAMP EDEQ screener baseline}
 if(RAMP == TRUE){
-edeq_ramp_screener_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/ed_scid5_ramp.rds")
+edeq_ramp_screener_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/ed_scid5_ramp.rds"))
 dim(edeq_ramp_screener_baseline_raw)
 colnames(edeq_ramp_screener_baseline_raw)
 }
@@ -1066,7 +1054,7 @@ dim(edeq_ramp_screener_baseline_raw)[1]-dim(edeq_ramp_screener_baseline_raw_id)[
 
 ```{r Read in data RAMP EDEQ baseline}
 if(RAMP == TRUE){
-edeq_ramp_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/edeq_ramp.rds")
+edeq_ramp_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/edeq_ramp.rds"))
 dim(edeq_ramp_baseline_raw)
 colnames(edeq_ramp_baseline_raw)
 }
@@ -1132,7 +1120,6 @@ colnames(edeq_ramp_baseline_id)
 #Differences
 dim(edeq_ramp_baseline_raw)[1]-dim(edeq_ramp_baseline_id)[1]
 }
-
 ```
 
 # EDEQ screener follow up B
@@ -1141,11 +1128,10 @@ dim(edeq_ramp_baseline_raw)[1]-dim(edeq_ramp_baseline_id)[1]
 NB: The EDEQ screener is only available in follow up B across both RAMP and COPING.
 ```{r Read in data COPING follow up B EDEQ screener}
 if(COPING == TRUE){
-edeq.coping.followupb.screener.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupb/ed_scid5_coping_followupb.rds")
+edeq.coping.followupb.screener.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupb/ed_scid5_coping_followupb.rds"))
 dim(edeq.coping.followupb.screener.raw)
 colnames(edeq.coping.followupb.screener.raw)
 }
-
 ```
 
 Select variables COPING follow up B EDEQ screener
@@ -1183,10 +1169,9 @@ dim(edeq.coping.followupb.screener.raw)[1]-dim(edeq.coping.followupb.screener.ra
 ### Read in data
 ```{r Read in data RAMP follow up B EDEQ screener}
 if(RAMP == TRUE){
-edeq.ramp.followupb.screener.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp_followupb/ed_scid5_ramp_followupb.rds")
+edeq.ramp.followupb.screener.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp_followupb/ed_scid5_ramp_followupb.rds"))
 dim(edeq.ramp.followupb.screener.raw)
 colnames(edeq.ramp.followupb.screener.raw)
-
 }
 ```
 
@@ -1230,7 +1215,7 @@ There are data on whether people have taken a COVID test and what result they ha
 ### Read in data
 ```{r Read in data COPING follow up B virus}
 if(COPING == TRUE){
-coping.followupb.virus <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupb/virus_coping_followupb.rds")
+coping.followupb.virus <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupb/virus_coping_followupb.rds"))
 dim(coping.followupb.virus)
 colnames(coping.followupb.virus)
 }
@@ -1281,7 +1266,7 @@ dim(coping.followupb.virus)[1]-dim(coping.followupb.virus.id)[1]
 ### Read in data
 ```{r Read in data RAMP follow up B virus}
 if(RAMP == TRUE){
-ramp.followupb.virus <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/2021-11-05/ramp_followupb/virus_ramp_followupb.rds")
+ramp.followupb.virus <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp_followupb/virus_ramp_followupb.rds"))
 dim(ramp.followupb.virus)
 colnames(ramp.followupb.virus)
 }
@@ -1332,7 +1317,7 @@ dim(ramp.followupb.virus.id)[1]-dim(ramp.followupb.virus.id)[1]
 ### Read in data
 ```{r Read in data GLAD baseline resp}
 if(GLAD == TRUE){
-glad_baseline_resp_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/resp_coping_glad.rds")
+glad_baseline_resp_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/resp_coping_glad.rds"))
 dim(glad_baseline_resp_raw)
 colnames(glad_baseline_resp_raw)
 }
@@ -1386,7 +1371,7 @@ dim(glad_baseline_resp_raw)[1]-dim(glad_baseline_resp_id)[1]
 ### Read in data
 ```{r Read in data EDGI baseline resp}
 if(EDGI == TRUE){
-edgi_baseline_resp_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi/resp_coping_edgi.rds")
+edgi_baseline_resp_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi/resp_coping_edgi.rds"))
 dim(edgi_baseline_resp_raw)
 colnames(edgi_baseline_resp_raw)
 }
@@ -1441,7 +1426,7 @@ dim(edgi_baseline_resp_raw)[1]-dim(edgi_baseline_resp_id)[1]
 ### Read in data
 ```{r Read in data NBR baseline resp}
 if(NBR == TRUE){
-nbr_baseline_resp_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/resp_coping_nbr.rds")
+nbr_baseline_resp_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/resp_coping_nbr.rds"))
 dim(nbr_baseline_resp_raw)
 colnames(nbr_baseline_resp_raw)
 }
@@ -1496,7 +1481,7 @@ dim(nbr_baseline_resp_raw)[1]-dim(nbr_baseline_resp_id)[1]
 NB: In the RAMP baseline, participants are asked whether they've had tests in the last week, rather than ever as in GLAD, NBR, and EDGI.
 ```{r Read in data RAMP baseline resp}
 if(RAMP == TRUE){
-ramp_baseline_resp_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/resp_ramp.rds")
+ramp_baseline_resp_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/resp_ramp.rds"))
 dim(ramp_baseline_resp_raw)
 colnames(ramp_baseline_resp_raw)
 }
@@ -1550,10 +1535,9 @@ dim(ramp_baseline_resp_raw)[1]-dim(ramp_baseline_resp_id)[1]
 ### Read in data
 ```{r Read in data COPING follow up A resp}
 if(COPING == TRUE){
-coping.followupa1.resp <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupa/resp_coping_followupa.rds")
+coping.followupa1.resp <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupa/resp_coping_followupa.rds"))
 dim(coping.followupa1.resp)
 colnames(coping.followupa1.resp)
-
 }
 ```
 
@@ -1604,7 +1588,7 @@ dim(coping.followupa1.resp)[1]-dim(coping.followupa1.resp.id)[1]
 ### Read in data
 ```{r Read in data COPING follow up A ongoing resp}
 if(COPING == TRUE){
-coping.followupa2.resp <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupa_ongoing/resp_coping_followupa_ongoing.rds")
+coping.followupa2.resp <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupa_ongoing/resp_coping_followupa_ongoing.rds"))
 dim(coping.followupa2.resp)
 colnames(coping.followupa2.resp)
 }
@@ -1671,7 +1655,7 @@ if(COPING == TRUE){
 ### Read in data
 ```{r Read in data COPING follow up B resp}
 if(COPING == TRUE){
-coping.followupb.resp <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupb/resp_coping_followupb.rds")
+coping.followupb.resp <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupb/resp_coping_followupb.rds"))
 dim(coping.followupb.resp)
 colnames(coping.followupb.resp)
 }
@@ -1724,7 +1708,7 @@ dim(coping.followupb.resp)[1]-dim(coping.followupb.resp.id)[1]
 ### Read in data
 ```{r Read in data RAMP follow up A resp}
 if(RAMP == TRUE){
-ramp.followupa.resp <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp_followupa/resp_ramp_followupa.rds")
+ramp.followupa.resp <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp_followupa/resp_ramp_followupa.rds"))
 dim(ramp.followupa.resp)
 colnames(ramp.followupa.resp)
 }
@@ -1777,7 +1761,7 @@ dim(ramp.followupa.resp)[1]-dim(ramp.followupa.resp.id)[1]
 ### Read in data
 ```{r Read in data RAMP follow up B resp}
 if(RAMP == TRUE){
-ramp.followupb.resp <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/2021-11-05/ramp_followupb/resp_ramp_followupb.rds")
+ramp.followupb.resp <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp_followupb/resp_ramp_followupb.rds"))
 dim(ramp.followupb.resp)
 colnames(ramp.followupb.resp)
 }
@@ -1830,7 +1814,7 @@ dim(ramp.followupb.resp)[1]-dim(ramp.followupb.resp.id)[1]
 ### Read in data
 ```{r Read in data GLAD TAF baseline}
 if(GLAD == TRUE){
-taf_glad_coping_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/taf_coping_glad.rds")
+taf_glad_coping_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/taf_coping_glad.rds"))
 dim(taf_glad_coping_baseline_raw)
 colnames(taf_glad_coping_baseline_raw)
 }
@@ -1883,8 +1867,6 @@ colnames(taf_glad_coping_baseline_id)
 #Differences
 dim(taf_glad_coping_baseline_raw)[1]-dim(taf_glad_coping_baseline_id)[1]
 }
-
-
 ```
 
 # TAF - baseline
@@ -1892,7 +1874,7 @@ dim(taf_glad_coping_baseline_raw)[1]-dim(taf_glad_coping_baseline_id)[1]
 ### Read in data
 ```{r Read in data EDGI TAF baseline}
 if(EDGI == TRUE){
-taf_edgi_coping_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi/taf_coping_edgi.rds")
+taf_edgi_coping_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi/taf_coping_edgi.rds"))
 dim(taf_edgi_coping_baseline_raw)
 colnames(taf_edgi_coping_baseline_raw)
 }
@@ -1952,11 +1934,10 @@ dim(taf_edgi_coping_baseline_raw)[1]-dim(taf_edgi_coping_baseline_id)[1]
 ### Read in data
 ```{r Read in data NBR TAF baseline}
 if(NBR == TRUE){
-taf_nbr_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/taf_coping_nbr.rds")
+taf_nbr_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/taf_coping_nbr.rds"))
 dim(taf_nbr_baseline_raw)
 colnames(taf_nbr_baseline_raw)
 }
-
 ```
 
 Select variables NBR TAF baseline
@@ -2012,10 +1993,9 @@ dim(taf_nbr_baseline_raw)[1]-dim(taf_nbr_baseline_id)[1]
 ### Read in data
 ```{r Read in data RAMP TAF baseline}
 if(RAMP == TRUE){
-taf_ramp_baseline_raw <- readRDS(file ="/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/taf_ramp.rds")
+taf_ramp_baseline_raw <- readRDS(file =paste0(filepath_raw_latest_freeze, "ramp/taf_ramp.rds"))
 dim(taf_ramp_baseline_raw)
 colnames(taf_ramp_baseline_raw)
-
 }
 ```
 
@@ -2072,7 +2052,7 @@ dim(taf_ramp_baseline_raw)[1]-dim(taf_ramp_baseline_id)[1]
 ### Read in data
 ```{r Read in data COPING follow up A TAF first two phases}
 if(COPING == TRUE){
-taf.coping.followupa.raw.1 <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupa/taf_coping_followupa.rds")
+taf.coping.followupa.raw.1 <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupa/taf_coping_followupa.rds"))
 dim(taf.coping.followupa.raw.1)
 colnames(taf.coping.followupa.raw.1)
 }
@@ -2127,7 +2107,7 @@ dim(taf.coping.followupa.raw.1)[1]-dim(taf.coping.followupa.raw.id.1)[1]
 ### Read in data
 ```{r Read in data COPING follow up A TAF first subsequent phases}
 if(COPING == TRUE){
-taf.coping.followupa.raw.2 <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupa_ongoing/taf_coping_followupa_ongoing.rds")
+taf.coping.followupa.raw.2 <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupa_ongoing/taf_coping_followupa_ongoing.rds"))
 dim(taf.coping.followupa.raw.2)
 colnames(taf.coping.followupa.raw.2)
 }
@@ -2194,7 +2174,7 @@ if(COPING == TRUE){
 ### Read in data
 ```{r Read in data COPING follow up B TAF}
 if(COPING == TRUE){
-taf.coping.followupb.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupb/taf_coping_followupb.rds")
+taf.coping.followupb.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupb/taf_coping_followupb.rds"))
 dim(taf.coping.followupb.raw)
 colnames(taf.coping.followupb.raw)
 }
@@ -2249,7 +2229,7 @@ dim(taf.coping.followupb.raw)[1]-dim(taf.coping.followupb.raw.id)[1]
 ### Read in data
 ```{r Read in data RAMP follow up A TAF}
 if(RAMP == TRUE){
-taf.ramp.followupa.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp_followupa/taf_ramp_followupa.rds")
+taf.ramp.followupa.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp_followupa/taf_ramp_followupa.rds"))
 dim(taf.ramp.followupa.raw)
 colnames(taf.ramp.followupa.raw)
 }
@@ -2304,7 +2284,7 @@ dim(taf.ramp.followupa.raw)[1]-dim(taf.ramp.followupa.raw.id)[1]
 ### Read in data
 ```{r Read in data RAMP follow up B TAF}
 if(RAMP == TRUE){
-taf.ramp.followupb.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/2021-11-05/ramp_followupb/taf_ramp_followupb.rds")
+taf.ramp.followupb.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp_followupb/taf_ramp_followupb.rds"))
 dim(taf.ramp.followupb.raw)
 colnames(taf.ramp.followupb.raw)
 }
@@ -2359,7 +2339,7 @@ dim(taf.ramp.followupb.raw)[1]-dim(taf.ramp.followupb.raw.id)[1]
 ### Read in data 
 ```{r Read in data RAMP follow up A demographics}
 if(RAMP == TRUE) {
-  dem.ramp.followupa.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/2021-11-05/ramp_followupa/dem_ramp_followupa.rds")
+dem.ramp.followupa.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp_followupa/dem_ramp_followupa.rds"))
 dim(dem.ramp.followupa.raw)
 colnames(dem.ramp.followupa.raw)
 }
@@ -2403,7 +2383,7 @@ dem.ramp.followupa.raw.id <- dem.ramp.followupa.raw %>% #new dataset with ID
          dem.reduction_in_hours,
          dem.reduction_in_salary,
          dem.benefits_increased,
-         # dem.benefits_decreased, +++ this variable has been accidentally deleted in later datasets. Have created script to get people's previous answers.
+         # dem.benefits_decreased,
          dem.change_in_duties_or_responsibilites = dem.change_in_duties_or_responsibilities,
          dem.became_employed,
          dem.increased_hours,
@@ -2445,7 +2425,7 @@ dim(dem.ramp.followupa.raw.id)[1]-dim(dem.ramp.followupa.raw)[1]
 ### Read in data 
 ```{r Read in data RAMP follow up B demographics} 
 if(RAMP == TRUE) {
-dem.ramp.followupb.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp_followupb/dem_ramp_followupb.rds")
+dem.ramp.followupb.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp_followupb/dem_ramp_followupb.rds"))
 dim(dem.ramp.followupb.raw)
 colnames(dem.ramp.followupb.raw)
 }
@@ -2489,7 +2469,7 @@ dem.ramp.followupb.raw.id <- dem.ramp.followupb.raw %>% #new dataset with ID
          dem.reduction_in_hours,
          dem.reduction_in_salary,
          dem.benefits_increased,
-         # dem.benefits_decreased, +++ this variable has been accidentally deleted in later datasets. Have created script to get people's previous answers.
+         # dem.benefits_decreased, 
          dem.change_in_duties_or_responsibilites = dem.change_in_duties_or_responsibilities,
          dem.became_employed,
          dem.increased_hours,
@@ -2530,11 +2510,10 @@ dim(dem.ramp.followupb.raw)[1]-dim(dem.ramp.followupb.raw.id)[1]
 ### Read in data 
 ```{r Read in data COPING follow up A demographics first two phases}
 if(COPING == TRUE) {
-coping.dem.followupa.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupa/dem_coping_followupa.rds")
+coping.dem.followupa.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupa/dem_coping_followupa.rds"))
 dim(coping.dem.followupa.raw)
 colnames(coping.dem.followupa.raw)
 }
-  
 ```
 
 Select variables COPING follow up A demographics
@@ -2616,11 +2595,10 @@ dim(coping.dem.followupa.raw.id.1)[1]-dim(coping.dem.followupa.raw)[1]
 ### Read in data 
 ```{r Read in data COPING follow up A demographics subsequent phases}
 if(COPING == TRUE) {
-coping.dem.followupa.ongoing.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupa_ongoing/dem_coping_followupa_ongoing.rds")
+coping.dem.followupa.ongoing.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupa_ongoing/dem_coping_followupa_ongoing.rds"))
 dim(coping.dem.followupa.ongoing.raw)
 colnames(coping.dem.followupa.ongoing.raw)
 }
-  
 ```
 
 Select variables COPING follow up B demographics
@@ -2715,11 +2693,10 @@ if(COPING == TRUE){
 ### Read in data 
 ```{r Read in data COPING follow up B demographics}
 if(COPING == TRUE) {
-coping.dem.followupb.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupb/dem_coping_followupb.rds")
+coping.dem.followupb.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupb/dem_coping_followupb.rds"))
 dim(coping.dem.followupb.raw)
 colnames(coping.dem.followupb.raw)
 }
-  
 ```
 
 Select variables COPING follow up B demographics
@@ -2802,11 +2779,10 @@ dim(coping.dem.followupb.raw)[1]-dim(coping.dem.followupb.raw.id)[1]
 ### Read in data
 ```{r Read in data GLAD losing someone due to COVID}
 if(GLAD == TRUE) {
-glad_loss_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/grief_coping_glad.rds")
+glad_loss_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/grief_coping_glad.rds"))
 dim(glad_loss_baseline_raw)
 colnames(glad_loss_baseline_raw)
 }
-  
 ```
 
 Select variables GLAD losing someone due to COVID
@@ -2854,7 +2830,7 @@ dim(glad_loss_baseline_id)[1]-dim(glad_loss_baseline_raw)[1]
 ### Read in data
 ```{r Read in dat EDGI losing someone due to COVID}
 if(EDGI == TRUE) {
-edgi_loss_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi/grief_coping_edgi.rds")
+edgi_loss_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi/grief_coping_edgi.rds"))
 dim(edgi_loss_baseline_raw)
 colnames(edgi_loss_baseline_raw)
 }
@@ -2903,7 +2879,7 @@ dim(edgi_loss_baseline_id)[1]-dim(edgi_loss_baseline_raw)[1]
 ### Read in data
 ```{r Read in dat NBR losing someone due to COVID}
 if(NBR == TRUE) {
-nbr_loss_baseline_raw<- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/grief_coping_nbr.rds")
+nbr_loss_baseline_raw<- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/grief_coping_nbr.rds"))
 dim(nbr_loss_baseline_raw)
 colnames(nbr_loss_baseline_raw)
 }
@@ -2924,8 +2900,7 @@ nbr_loss_baseline_id <- nbr_loss_baseline_raw %>% #new dataset with ID
          sample, # Sample
        grief.covid_lost_due_close = grief.lost_due_close_past,
        grief.suffered_past_month_loss = grief.significant_relationship_suffered_past
-       
-         ) %>%
+       ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
  #mutate_if(is.numeric, ~na_if(., -99)) %>%
@@ -2952,10 +2927,9 @@ dim(nbr_loss_baseline_id)[1]-dim(nbr_loss_baseline_raw)[1]
 ### Read in data
 ```{r Read in data RAMP losing someone due to COVID}
 if(RAMP == TRUE) {
-ramp_loss_baseline_raw<- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/grief_ramp.rds")
+ramp_loss_baseline_raw<- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/grief_ramp.rds"))
 dim(ramp_loss_baseline_raw)
 colnames(ramp_loss_baseline_raw)
-
 }
 ```
 
@@ -2972,9 +2946,8 @@ ramp_loss_baseline_id <- ramp_loss_baseline_raw %>% #new dataset with ID
   select(
          ID = `Login ID`, # ID
          sample, # Sample
-       grief.covid_lost_due_close = grief.lost_due_close_past,
-       grief.suffered_past_month_loss = grief.significant_relationship_suffered_past
-       
+         grief.covid_lost_due_close = grief.lost_due_close_past,
+         grief.suffered_past_month_loss = grief.significant_relationship_suffered_past
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -3002,7 +2975,7 @@ dim(ramp_loss_baseline_id)[1]-dim(ramp_loss_baseline_raw)[1]
 ### Read in data
 ```{r Read in data losing someone due to COVID COPING follow up}
 if(COPING == TRUE) {
-coping.loss.followupb.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_followupb/grief_coping_followupb.rds")
+coping.loss.followupb.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_followupb/grief_coping_followupb.rds"))
 dim(coping.loss.followupb.raw)
 colnames(coping.loss.followupb.raw)
 }
@@ -3025,7 +2998,6 @@ coping.loss.followupb.raw.id <- coping.loss.followupb.raw %>% #new dataset with 
          #endDate,
          grief.due_past_month_lost,
          grief.suffered_past_month_loss
-        
          ) %>%
   add_numeric(., exclude = exclude_cols_dem) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -3053,7 +3025,7 @@ dim(coping.loss.followupb.raw.id)[1]-dim(coping.loss.followupb.raw)[1]
 ### Read in data
 ```{r Read in data losing someone due to RAMP COPING follow up}
 if(RAMP == TRUE) {
-ramp.loss.followupb.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/2021-11-05/ramp_followupb/grief_ramp_followupb.rds")
+ramp.loss.followupb.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp_followupb/grief_ramp_followupb.rds"))
 dim(ramp.loss.followupb.raw)
 colnames(ramp.loss.followupb.raw)
 }
@@ -3104,7 +3076,7 @@ dim(ramp.loss.followupb.raw.id)[1]-dim(ramp.loss.followupb.raw)[1]
 ### Read in data
 ```{r Read in data GLAD loneliness at baseline}
 if(GLAD == TRUE) {
-glad_loneliness_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/lone_coping_glad.rds")
+glad_loneliness_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/lone_coping_glad.rds"))
 dim(glad_loneliness_baseline_raw)
 colnames(glad_loneliness_baseline_raw)
 }
@@ -3160,11 +3132,10 @@ dim(glad_loneliness_baseline_raw)[1]-dim(glad_loneliness_baseline_id)[1]
 ### Read in data
 ```{r Read in data EDGI loneliness at baseline}
 if(EDGI == TRUE) {
-edgi_loneliness_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_edgi/lone_coping_edgi.rds")
+edgi_loneliness_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi/lone_coping_edgi.rds"))
 dim(edgi_loneliness_baseline_raw)
 colnames(edgi_loneliness_baseline_raw)
 }
-  
 ```
 
 Select variables EDGI loneliness at baseline
@@ -3216,7 +3187,7 @@ dim(edgi_loneliness_baseline_id)[1]-dim(edgi_loneliness_baseline_id)[1]
 ### Read in data
 ```{r Read in data RAMP loneliness at baseline}
 if(RAMP == TRUE) {
-  ramp_loneliness_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/lone_ramp.rds")
+  ramp_loneliness_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/lone_ramp.rds"))
 dim(ramp_loneliness_baseline_raw)
 colnames(ramp_loneliness_baseline_raw)
 }
@@ -3271,7 +3242,7 @@ dim(ramp_loneliness_baseline_id)[1]-dim(ramp_loneliness_baseline_raw)[1]
 ### Read in data
 ```{r Read in data NBR loneliness at baseline}
 if(NBR == TRUE) {
-nbr_loneliness_baseline_raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/lone_coping_nbr.rds")
+nbr_loneliness_baseline_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/lone_coping_nbr.rds"))
 dim(nbr_loneliness_baseline_raw)
 colnames(nbr_loneliness_baseline_raw)
 }
@@ -3465,8 +3436,7 @@ edgi.9 <- edgi_pan_worry.id %>%
          panworry.other_,
          
          panworry.impact_on_your_employment_status_numeric,                                    
-         panworry.household_employment_status_key_numeric = panworry.employment_status_household_key_numeric,  # Rename to same as GLAD                
-         panworry.impact_on_your_education_or_exams_numeric,            
+         panworry.household_employment_status_key_numeric = panworry.employment_status_household_key_numeric,  # Rename to same as GLAD panworry.impact_on_your_education_or_exams_numeric,            
          panworry.exams_impact_education_children_numeric,              
          panworry.financial_impact_numeric,                           
          panworry.contracting_the_virus_numeric,                       
@@ -3584,7 +3554,6 @@ summary(as.factor(dat_edgi_merged$ID.dup))
  # Check for duplicate names of columns
 names_freq <- as.data.frame(table(names(dat_edgi_merged)))
 names_freq[names_freq$Freq > 1, ]
-
 }
 ```
 
@@ -4104,7 +4073,6 @@ dat_nbr_merged <- dplyr::full_join(dat.raw.nbr3,
 Get rid of duplicates in NBR
 ```{r Check duplicates NBR final dataset}
 if(NBR == TRUE) {
-
 dat_nbr_merged$ID.dup <- duplicated(dat_nbr_merged$ID)
 summary(as.factor(dat_nbr_merged$ID.dup))
 
@@ -4117,7 +4085,6 @@ names_freq[names_freq$Freq > 1, ]
 RAMP variable list
 ```{r RAMP variable list}
 if(RAMP == TRUE) {
-
 # Age
 ramp.1 <- age_dat_ramp %>% 
   select(ID,
@@ -4460,17 +4427,17 @@ names_freq[names_freq$Freq > 1, ]
 # Export baseline data
 ```{r export data}
 if(GLAD == TRUE) {
-saveRDS(object = dat_glad_merged, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_glad", date, ".rds"))
+saveRDS(object = dat_glad_merged, file = paste0(filepath_saved_data, "BASELINE_glad", date, ".rds"))
 }
 if(EDGI == TRUE) {
-saveRDS(object = dat_edgi_merged, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_edgi", date, ".rds"))
+saveRDS(object = dat_edgi_merged, file = paste0(filepath_saved_data, "BASELINE_edgi", date, ".rds"))
   
 }
 if(RAMP == TRUE) {
-  saveRDS(object = dat_ramp_merged, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_ramp", date, ".rds"))
+  saveRDS(object = dat_ramp_merged, file = paste0(filepath_saved_data, "BASELINE_ramp", date, ".rds"))
 }
 if(NBR == TRUE) {
-  saveRDS(object = dat_nbr_merged, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_nbr", date, ".rds"))
+  saveRDS(object = dat_nbr_merged, file = paste0(filepath_saved_data, "BASELINE_nbr", date, ".rds"))
 }
 ```
 
@@ -4524,7 +4491,7 @@ nrow(dat.raw.dem.ramp.followup)
 
 # Need to split duplicated IDs into separate datasets
 
-  # Identify IDs from the last entry
+# Identify IDs from the last entry
 A_duplicated_IDS <- dat.raw.dem.ramp.followup %>%
   group_by(ID) %>% 
     filter(duplicated(wave_dem,
@@ -4533,7 +4500,7 @@ A_duplicated_IDS <- dat.raw.dem.ramp.followup %>%
 
 A_duplicated_IDS$change_wave_name <- "FALSE" # Will not change wave name of entries
 
-  # Identify IDs from the earlier entry
+# Identify IDs from the earlier entry
 B_duplicated_IDS <- dat.raw.dem.ramp.followup %>%
   group_by(ID) %>% 
     filter(duplicated(wave_dem,
@@ -4648,10 +4615,8 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.living_situation_.Wave_14b`,
          `dem.living_situation_.Wave_15a`,
          `dem.living_situation_.Wave_16b`,
-       #  `dem.living_situation_.Wave_17a`,
-         
-          
-         `dem.employment_.Wave_1a`,
+
+          `dem.employment_.Wave_1a`,
          `dem.employment_.Wave_1b`,
          `dem.employment_.Wave_2a`,
          `dem.employment_.Wave_2b`,
@@ -4671,8 +4636,6 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.employment_.Wave_14b`,
          `dem.employment_.Wave_15a`,
          `dem.employment_.Wave_16b`,
-       #  `dem.employment_.Wave_17a`,
-         
            
          `dem.health_of_a_relative_.Wave_1a`,
          `dem.health_of_a_relative_.Wave_1b`,
@@ -4694,7 +4657,6 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.health_of_a_relative_.Wave_14b`,
          `dem.health_of_a_relative_.Wave_15a`,
          `dem.health_of_a_relative_.Wave_16b`,
-        # `dem.health_of_a_relative_.Wave_17a`,
          
          `dem.household_employment_status_key_.Wave_1a`,
          `dem.household_employment_status_key_.Wave_1b`,
@@ -4716,8 +4678,6 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.household_employment_status_key_.Wave_14b`,
          `dem.household_employment_status_key_.Wave_15a`,
          `dem.household_employment_status_key_.Wave_16b`,
-        # `dem.household_employment_status_key_.Wave_17a`,
-         
           
          `dem.unwell_coronavirus_weeks_physical_.Wave_1a`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_1b`,
@@ -4739,10 +4699,8 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.unwell_coronavirus_weeks_physical_.Wave_14b`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_15a`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_16b`,
-      #   `dem.unwell_coronavirus_weeks_physical_.Wave_17a`
-     
-     
-     `dem.coronavirus_relative_previously_ill.1_.Wave_1a`,
+  
+           `dem.coronavirus_relative_previously_ill.1_.Wave_1a`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_1b`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_2a`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_2b`,
@@ -4805,9 +4763,7 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.living_situation_.Wave_14b_dup`,
          `dem.living_situation_.Wave_15a_dup`,
          `dem.living_situation_.Wave_16b_dup`,
-       #  `dem.living_situation_.Wave_17a_dup`,
          
-          
          `dem.employment_.Wave_1a_dup`,
          `dem.employment_.Wave_1b_dup`,
          `dem.employment_.Wave_2a_dup`,
@@ -4828,9 +4784,7 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.employment_.Wave_14b_dup`,
          `dem.employment_.Wave_15a_dup`,
          `dem.employment_.Wave_16b_dup`,
-       #  `dem.employment_.Wave_17a_dup`,
-         
-        
+       
          `dem.health_of_a_relative_.Wave_1a_dup`,
          `dem.health_of_a_relative_.Wave_1b_dup`,
          `dem.health_of_a_relative_.Wave_2a_dup`,
@@ -4851,8 +4805,7 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.health_of_a_relative_.Wave_14b_dup`,
          `dem.health_of_a_relative_.Wave_15a_dup`,
          `dem.health_of_a_relative_.Wave_16b_dup`,
-        # `dem.health_of_a_relative_.Wave_17a_dup`,
-         
+        
          `dem.household_employment_status_key_.Wave_1a_dup`,
          `dem.household_employment_status_key_.Wave_1b_dup`,
          `dem.household_employment_status_key_.Wave_2a_dup`,
@@ -4873,9 +4826,7 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.household_employment_status_key_.Wave_14b_dup`,
          `dem.household_employment_status_key_.Wave_15a_dup`,
          `dem.household_employment_status_key_.Wave_16b_dup`,
-        # `dem.household_employment_status_key_.Wave_17a_dup`,
-         
-        
+       
          `dem.unwell_coronavirus_weeks_physical_.Wave_1a_dup`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_1b_dup`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_2a_dup`,
@@ -4896,8 +4847,6 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.unwell_coronavirus_weeks_physical_.Wave_14b_dup`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_15a_dup`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_16b_dup`,
-      #   `dem.unwell_coronavirus_weeks_physical_.Wave_17a`
-     
      
      `dem.coronavirus_relative_previously_ill.1_.Wave_1a_dup`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_1b_dup`,
@@ -4920,8 +4869,7 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.coronavirus_relative_previously_ill.1_.Wave_15a_dup`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_16b_dup`,
      
-     
-         `dem.coronavirus_relative_ill_suspected_.Wave_1a_dup`,
+        `dem.coronavirus_relative_ill_suspected_.Wave_1a_dup`,
          `dem.coronavirus_relative_ill_suspected_.Wave_1b_dup`,
          `dem.coronavirus_relative_ill_suspected_.Wave_2a_dup`,
          `dem.coronavirus_relative_ill_suspected_.Wave_2b_dup`,
@@ -5000,7 +4948,6 @@ dat.raw.taf.ramp %>%
    filter(N > 1)
 }
 ```
-
 
 ```{r count both entries dup IDs single phase RAMP TAF}
 if(RAMP == TRUE) {
@@ -5129,8 +5076,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.worth_living_life_people_.Wave_15a`,
          `taf.worth_living_life_people_.Wave_16b`,
          
-         
-      `taf.felt_weeks_past_.Wave_1a`,
+        `taf.felt_weeks_past_.Wave_1a`,
          `taf.felt_weeks_past_.Wave_1b`,
          `taf.felt_weeks_past_.Wave_2a`,
          `taf.felt_weeks_past_.Wave_2b`,
@@ -5150,7 +5096,6 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.felt_weeks_past_.Wave_14b`,
          `taf.felt_weeks_past_.Wave_15a`,
          `taf.felt_weeks_past_.Wave_16b`,
-       #  `taf.felt_weeks_past_.Wave_17a`,
          
          `taf.have_you_contemplated_harming_yourself_.Wave_1a`,
          `taf.have_you_contemplated_harming_yourself_.Wave_1b`,
@@ -5172,7 +5117,6 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.have_you_contemplated_harming_yourself_.Wave_14b`,
          `taf.have_you_contemplated_harming_yourself_.Wave_15a`,
          `taf.have_you_contemplated_harming_yourself_.Wave_16b`,
-       #  `taf.have_you_contemplated_harming_yourself_.Wave_17a`,
          
          `taf.felt_weeks_past.1_.Wave_1a`,
          `taf.felt_weeks_past.1_.Wave_1b`,
@@ -5194,8 +5138,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.felt_weeks_past.1_.Wave_14b`,
          `taf.felt_weeks_past.1_.Wave_15a`,
          `taf.felt_weeks_past.1_.Wave_16b`,
-       #  `taf.felt_weeks_past.1_.Wave_17a`,
-         
+        
           `taf.meant_life_end_weeks_.Wave_1a`,
          `taf.meant_life_end_weeks_.Wave_1b`,
          `taf.meant_life_end_weeks_.Wave_2a`,
@@ -5216,8 +5159,6 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.meant_life_end_weeks_.Wave_14b`,
          `taf.meant_life_end_weeks_.Wave_15a`,
          `taf.meant_life_end_weeks_.Wave_16b`,
-        # `taf.meant_life_end_weeks_.Wave_17a`
-      
       
        `taf.worth_living_life_people_.Wave_1a_dup`,
          `taf.worth_living_life_people_.Wave_1b_dup`,
@@ -5241,7 +5182,7 @@ dat.raw.taf.ramp <- dat.raw.taf.ramp %>%
          `taf.worth_living_life_people_.Wave_16b_dup`,
          
          # Duplicated entries
-      `taf.felt_weeks_past_.Wave_1a_dup`,
+         `taf.felt_weeks_past_.Wave_1a_dup`,
          `taf.felt_weeks_past_.Wave_1b_dup`,
          `taf.felt_weeks_past_.Wave_2a_dup`,
          `taf.felt_weeks_past_.Wave_2b_dup`,
@@ -5344,10 +5285,6 @@ nrow(dat.raw.taf.ramp)
 ```
 
 # TIMEPOINTS / PHASES - RAMP - EDEQ SCREENER RAMP
-
-**Need to think about people who answered EDEQ screener (which is only in follow up B) in an 'A' timepoint = 11 people
-(think will just drop them for the plots, but for the regression should actually keep them)
-
 Check number of entries per wave
 ```{r Check number of entries per wave RAMP EDEQ screener}
 if(RAMP == TRUE) {
@@ -5581,7 +5518,6 @@ edeq.ramp.followupb.screener.raw.id  <- edeq.ramp.followupb.screener.raw.id  %>%
 # Check number of rows
 nrow(edeq.ramp.followupb.screener.raw.id)
 }
-
 ```
 
 # TIMEPOINTS / PHASES - loss of loved one due to COVID RAMP
@@ -5933,7 +5869,6 @@ ramp.followup.resp.id <- ramp.followup.resp.id  %>%
          `resp.coronavirus_test_nosethroat_swab_.Wave_14b`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_15a`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_16b`,
-        # `resp.coronavirus_test_nosethroat_swab_.Wave_17a`,
          
          `resp.results_nosethroat_swab_test_.Wave_1a`,
          `resp.results_nosethroat_swab_test_.Wave_1b`,
@@ -5955,9 +5890,7 @@ ramp.followup.resp.id <- ramp.followup.resp.id  %>%
          `resp.results_nosethroat_swab_test_.Wave_14b`,
          `resp.results_nosethroat_swab_test_.Wave_15a`,
          `resp.results_nosethroat_swab_test_.Wave_16b`,
-       #  `resp.results_nosethroat_swab_test_.Wave_17a`,
-         
-       
+      
           `resp.coronavirus_antibody_test_.Wave_1a`,
          `resp.coronavirus_antibody_test_.Wave_1b`,
          `resp.coronavirus_antibody_test_.Wave_2a`,
@@ -5978,7 +5911,6 @@ ramp.followup.resp.id <- ramp.followup.resp.id  %>%
          `resp.coronavirus_antibody_test_.Wave_14b`,
          `resp.coronavirus_antibody_test_.Wave_15a`,
          `resp.coronavirus_antibody_test_.Wave_16b`,
-       #  `resp.coronavirus_antibody_test_.Wave_17a`,
          
          `resp.results_antibody_test_.Wave_1a`,
          `resp.results_antibody_test_.Wave_1b`,
@@ -6103,11 +6035,9 @@ ramp.followup.resp.id  <- ramp.followup.resp.id  %>%
 # Check number of rows
 nrow(ramp.followup.resp.id)
 }
-
 ```
 
 # TIMEPOINTS / PHASES - COPING demographics
-
 Create a phase columns in follow up data
 ```{r Identify phase data COPING follow up demographics}
 if (COPING ==TRUE) {
@@ -6245,9 +6175,7 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          dem.health_of_a_relative,
          dem.coronavirus_relative_ill_suspected
          )) 
-  
 }
-
 ```
 
 Select variables for dataset COPING follow up demographics
@@ -6255,8 +6183,6 @@ Select variables for dataset COPING follow up demographics
 if(COPING == TRUE) {
 dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
   select(ID,
-      # `dem.living_situation_.Wave_1a`,
-       #  `dem.living_situation_.Wave_1b`,
          `dem.living_situation_.Wave_2a`,
          `dem.living_situation_.Wave_2b`,
          `dem.living_situation_.Wave_3a`,
@@ -6271,13 +6197,11 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.living_situation_.Wave_10b`,
          `dem.living_situation_.Wave_11a`,
          `dem.living_situation_.Wave_12b`,
-          `dem.living_situation_.Wave_13a`,
+         `dem.living_situation_.Wave_13a`,
          `dem.living_situation_.Wave_14b`,
          `dem.living_situation_.Wave_15a`,
          `dem.living_situation_.Wave_16b`,
 
-        #  `dem.employment_.Wave_1a`,
-        # `dem.employment_.Wave_1b`,
          `dem.employment_.Wave_2a`,
          `dem.employment_.Wave_2b`,
          `dem.employment_.Wave_3a`,
@@ -6297,9 +6221,6 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.employment_.Wave_15a`,
          `dem.employment_.Wave_16b`,
 
-           
-       #  `dem.health_of_a_relative_.Wave_1a`,
-       #  `dem.health_of_a_relative_.Wave_1b`,
          `dem.health_of_a_relative_.Wave_2a`,
          `dem.health_of_a_relative_.Wave_2b`,
          `dem.health_of_a_relative_.Wave_3a`,
@@ -6319,8 +6240,6 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.health_of_a_relative_.Wave_15a`,
          `dem.health_of_a_relative_.Wave_16b`,
 
-         #`dem.household_employment_status_key_.Wave_1a`,
-        # `dem.household_employment_status_key_.Wave_1b`,
          `dem.household_employment_status_key_.Wave_2a`,
          `dem.household_employment_status_key_.Wave_2b`,
          `dem.household_employment_status_key_.Wave_3a`,
@@ -6340,10 +6259,7 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.household_employment_status_key_.Wave_15a`,
          `dem.household_employment_status_key_.Wave_16b`,
 
-          
-        # `dem.unwell_coronavirus_weeks_physical_.Wave_1a`,
-       #  `dem.unwell_coronavirus_weeks_physical_.Wave_1b`,
-         `dem.unwell_coronavirus_weeks_physical_.Wave_2a`,
+        `dem.unwell_coronavirus_weeks_physical_.Wave_2a`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_2b`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_3a`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_3b`,
@@ -6362,9 +6278,6 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.unwell_coronavirus_weeks_physical_.Wave_15a`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_16b`,
 
-     
-        #`dem.coronavirus_relative_previously_ill.1_.Wave_1a`,
-        # `dem.coronavirus_relative_previously_ill.1_.Wave_1b`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_2a`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_2b`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_3a`,
@@ -6384,9 +6297,7 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.coronavirus_relative_previously_ill.1_.Wave_15a`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_16b`, 
      
-      # `dem.coronavirus_relative_ill_suspected_.Wave_1a`,
-      #   `dem.coronavirus_relative_ill_suspected_.Wave_1b`,
-         `dem.coronavirus_relative_ill_suspected_.Wave_2a`,
+          `dem.coronavirus_relative_ill_suspected_.Wave_2a`,
          `dem.coronavirus_relative_ill_suspected_.Wave_2b`,
          `dem.coronavirus_relative_ill_suspected_.Wave_3a`,
          `dem.coronavirus_relative_ill_suspected_.Wave_3b`,
@@ -6406,8 +6317,6 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.coronavirus_relative_ill_suspected_.Wave_16b`, 
      
      # Duplicated entries
-         #  `dem.living_situation_.Wave_1a_dup`,
-        #   `dem.living_situation_.Wave_1b_dup`,
          `dem.living_situation_.Wave_2a_dup`,
          `dem.living_situation_.Wave_2b_dup`,
          `dem.living_situation_.Wave_3a_dup`,
@@ -6422,13 +6331,11 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.living_situation_.Wave_10b_dup`,
          `dem.living_situation_.Wave_11a_dup`,
          `dem.living_situation_.Wave_12b_dup`,
-          `dem.living_situation_.Wave_13a_dup`,
+         `dem.living_situation_.Wave_13a_dup`,
          `dem.living_situation_.Wave_14b_dup`,
          `dem.living_situation_.Wave_15a_dup`,
          `dem.living_situation_.Wave_16b_dup`,
     
-      #  `dem.employment_.Wave_1a_dup`,
-      #   `dem.employment_.Wave_1b_dup`,
          `dem.employment_.Wave_2a_dup`,
          `dem.employment_.Wave_2b_dup`,
          `dem.employment_.Wave_3a_dup`,
@@ -6448,9 +6355,7 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.employment_.Wave_15a_dup`,
          `dem.employment_.Wave_16b_dup`,
 
-       # `dem.health_of_a_relative_.Wave_1a_dup`,
-       #  `dem.health_of_a_relative_.Wave_1b_dup`,
-         `dem.health_of_a_relative_.Wave_2a_dup`,
+          `dem.health_of_a_relative_.Wave_2a_dup`,
          `dem.health_of_a_relative_.Wave_2b_dup`,
          `dem.health_of_a_relative_.Wave_3a_dup`,
          `dem.health_of_a_relative_.Wave_3b_dup`,
@@ -6469,8 +6374,6 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.health_of_a_relative_.Wave_15a_dup`,
          `dem.health_of_a_relative_.Wave_16b_dup`,
 
-        # `dem.household_employment_status_key_.Wave_1a_dup`,
-       #  `dem.household_employment_status_key_.Wave_1b_dup`,
          `dem.household_employment_status_key_.Wave_2a_dup`,
          `dem.household_employment_status_key_.Wave_2b_dup`,
          `dem.household_employment_status_key_.Wave_3a_dup`,
@@ -6490,9 +6393,7 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.household_employment_status_key_.Wave_15a_dup`,
          `dem.household_employment_status_key_.Wave_16b_dup`,
 
-      #   `dem.unwell_coronavirus_weeks_physical_.Wave_1a_dup`,
-      #   `dem.unwell_coronavirus_weeks_physical_.Wave_1b_dup`,
-         `dem.unwell_coronavirus_weeks_physical_.Wave_2a_dup`,
+        `dem.unwell_coronavirus_weeks_physical_.Wave_2a_dup`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_2b_dup`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_3a_dup`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_3b_dup`,
@@ -6511,8 +6412,6 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.unwell_coronavirus_weeks_physical_.Wave_15a_dup`,
          `dem.unwell_coronavirus_weeks_physical_.Wave_16b_dup`,
 
-        # `dem.coronavirus_relative_previously_ill.1_.Wave_1a_dup`,
-        # `dem.coronavirus_relative_previously_ill.1_.Wave_1b_dup`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_2a_dup`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_2b_dup`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_3a_dup`,
@@ -6532,9 +6431,6 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.coronavirus_relative_previously_ill.1_.Wave_15a_dup`,
          `dem.coronavirus_relative_previously_ill.1_.Wave_16b_dup`,
      
-     
-        # `dem.coronavirus_relative_ill_suspected_.Wave_1a_dup`,
-        # `dem.coronavirus_relative_ill_suspected_.Wave_1b_dup`,
          `dem.coronavirus_relative_ill_suspected_.Wave_2a_dup`,
          `dem.coronavirus_relative_ill_suspected_.Wave_2b_dup`,
          `dem.coronavirus_relative_ill_suspected_.Wave_3a_dup`,
@@ -6571,7 +6467,6 @@ dat.raw.dem.coping.followup  <- dat.raw.dem.coping.followup %>%
 # Check number of rows
 nrow(dat.raw.dem.coping.followup)
 }
-
 ```
 
 # TIMEPOINTS / PHASES - COPING TAF
@@ -6603,7 +6498,6 @@ if(COPING == TRUE) {
 dat.raw.taf.coping %>%
   group_by(wave_taf) %>%
   count()
-
 }
 ```
 
@@ -6722,14 +6616,12 @@ Select variables for dataset TAF COPING
 if(COPING == TRUE) {
 dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
   select(ID,
-          #`taf.worth_living_life_people_.Wave_1a`,
-        # `taf.worth_living_life_people_.Wave_1b`,
          `taf.worth_living_life_people_.Wave_2a`,
          `taf.worth_living_life_people_.Wave_2b`,
          `taf.worth_living_life_people_.Wave_3a`,
          `taf.worth_living_life_people_.Wave_3b`,
          `taf.worth_living_life_people_.Wave_4a`,
-        `taf.worth_living_life_people_.Wave_4b`,
+         `taf.worth_living_life_people_.Wave_4b`,
          `taf.worth_living_life_people_.Wave_5a`,
          `taf.worth_living_life_people_.Wave_6b`,
          `taf.worth_living_life_people_.Wave_7a`,
@@ -6742,17 +6634,13 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.worth_living_life_people_.Wave_14b`,
          `taf.worth_living_life_people_.Wave_15a`,
          `taf.worth_living_life_people_.Wave_16b`,
-         `taf.worth_living_life_people_.Wave_17a`,
-         
-         
-       #  `taf.felt_weeks_past_.Wave_1a`,
-        # `taf.felt_weeks_past_.Wave_1b`,
+
          `taf.felt_weeks_past_.Wave_2a`,
          `taf.felt_weeks_past_.Wave_2b`,
          `taf.felt_weeks_past_.Wave_3a`,
          `taf.felt_weeks_past_.Wave_3b`,
          `taf.felt_weeks_past_.Wave_4a`,
-        `taf.felt_weeks_past_.Wave_4b`,
+         `taf.felt_weeks_past_.Wave_4b`,
          `taf.felt_weeks_past_.Wave_5a`,
          `taf.felt_weeks_past_.Wave_6b`,
          `taf.felt_weeks_past_.Wave_7a`,
@@ -6765,11 +6653,8 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.felt_weeks_past_.Wave_14b`,
          `taf.felt_weeks_past_.Wave_15a`,
          `taf.felt_weeks_past_.Wave_16b`,
-         #`taf.felt_weeks_past_.Wave_17b`,
-         
-        # `taf.have_you_contemplated_harming_yourself_.Wave_1a`,
-        # `taf.have_you_contemplated_harming_yourself_.Wave_1b`,
-         `taf.have_you_contemplated_harming_yourself_.Wave_2a`,
+       
+           `taf.have_you_contemplated_harming_yourself_.Wave_2a`,
          `taf.have_you_contemplated_harming_yourself_.Wave_2b`,
          `taf.have_you_contemplated_harming_yourself_.Wave_3a`,
          `taf.have_you_contemplated_harming_yourself_.Wave_3b`,
@@ -6787,10 +6672,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.have_you_contemplated_harming_yourself_.Wave_14b`,
          `taf.have_you_contemplated_harming_yourself_.Wave_15a`,
          `taf.have_you_contemplated_harming_yourself_.Wave_16b`,
-         `taf.have_you_contemplated_harming_yourself_.Wave_17a`,
-         
-        # `taf.felt_weeks_past.1_.Wave_1a`,
-        # `taf.felt_weeks_past.1_.Wave_1b`,
+
          `taf.felt_weeks_past.1_.Wave_2a`,
          `taf.felt_weeks_past.1_.Wave_2b`,
          `taf.felt_weeks_past.1_.Wave_3a`,
@@ -6809,10 +6691,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.felt_weeks_past.1_.Wave_14b`,
          `taf.felt_weeks_past.1_.Wave_15a`,
          `taf.felt_weeks_past.1_.Wave_16b`,
-         `taf.felt_weeks_past.1_.Wave_17a`,
-         
-        # `taf.meant_life_end_weeks_.Wave_1a`,
-        # `taf.meant_life_end_weeks_.Wave_1b`,
+
          `taf.meant_life_end_weeks_.Wave_2a`,
          `taf.meant_life_end_weeks_.Wave_2b`,
          `taf.meant_life_end_weeks_.Wave_3a`,
@@ -6833,14 +6712,12 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.meant_life_end_weeks_.Wave_16b`,
          `taf.meant_life_end_weeks_.Wave_17a`,
        
-            #`taf.worth_living_life_people_.Wave_1a_dup`,
-        # `taf.worth_living_life_people_.Wave_1b_dup`,
          `taf.worth_living_life_people_.Wave_2a_dup`,
          `taf.worth_living_life_people_.Wave_2b_dup`,
          `taf.worth_living_life_people_.Wave_3a_dup`,
          `taf.worth_living_life_people_.Wave_3b_dup`,
          `taf.worth_living_life_people_.Wave_4a_dup`,
-        `taf.worth_living_life_people_.Wave_4b_dup`,
+         `taf.worth_living_life_people_.Wave_4b_dup`,
          `taf.worth_living_life_people_.Wave_5a_dup`,
          `taf.worth_living_life_people_.Wave_6b_dup`,
          `taf.worth_living_life_people_.Wave_7a_dup`,
@@ -6853,17 +6730,13 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.worth_living_life_people_.Wave_14b_dup`,
          `taf.worth_living_life_people_.Wave_15a_dup`,
          `taf.worth_living_life_people_.Wave_16b_dup`,
-      #   `taf.worth_living_life_people_.Wave_17a_dup`,
          
-         
-       #  `taf.felt_weeks_past_.Wave_1a_dup`,
-        # `taf.felt_weeks_past_.Wave_1b_dup`,
          `taf.felt_weeks_past_.Wave_2a_dup`,
          `taf.felt_weeks_past_.Wave_2b_dup`,
          `taf.felt_weeks_past_.Wave_3a_dup`,
          `taf.felt_weeks_past_.Wave_3b_dup`,
          `taf.felt_weeks_past_.Wave_4a_dup`,
-        `taf.felt_weeks_past_.Wave_4b_dup`,
+         `taf.felt_weeks_past_.Wave_4b_dup`,
          `taf.felt_weeks_past_.Wave_5a_dup`,
          `taf.felt_weeks_past_.Wave_6b_dup`,
          `taf.felt_weeks_past_.Wave_7a_dup`,
@@ -6876,10 +6749,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.felt_weeks_past_.Wave_14b_dup`,
          `taf.felt_weeks_past_.Wave_15a_dup`,
          `taf.felt_weeks_past_.Wave_16b_dup`,
-       #   `taf.felt_weeks_past_.Wave_17b_dup`,
-         
-        # `taf.have_you_contemplated_harming_yourself_.Wave_1a_dup`,
-        # `taf.have_you_contemplated_harming_yourself_.Wave_1b_dup`,
+       
          `taf.have_you_contemplated_harming_yourself_.Wave_2a_dup`,
          `taf.have_you_contemplated_harming_yourself_.Wave_2b_dup`,
          `taf.have_you_contemplated_harming_yourself_.Wave_3a_dup`,
@@ -6898,10 +6768,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.have_you_contemplated_harming_yourself_.Wave_14b_dup`,
          `taf.have_you_contemplated_harming_yourself_.Wave_15a_dup`,
          `taf.have_you_contemplated_harming_yourself_.Wave_16b_dup`,
-      #    `taf.have_you_contemplated_harming_yourself_.Wave_17a_dup`,
-         
-        # `taf.felt_weeks_past.1_.Wave_1a_dup`,
-        # `taf.felt_weeks_past.1_.Wave_1b_dup`,
+
          `taf.felt_weeks_past.1_.Wave_2a_dup`,
          `taf.felt_weeks_past.1_.Wave_2b_dup`,
          `taf.felt_weeks_past.1_.Wave_3a_dup`,
@@ -6920,10 +6787,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.felt_weeks_past.1_.Wave_14b_dup`,
          `taf.felt_weeks_past.1_.Wave_15a_dup`,
          `taf.felt_weeks_past.1_.Wave_16b_dup`,
-       #   `taf.felt_weeks_past.1_.Wave_17a_dup`,
-         
-        # `taf.meant_life_end_weeks_.Wave_1a_dup`,
-        # `taf.meant_life_end_weeks_.Wave_1b_dup`,
+       
          `taf.meant_life_end_weeks_.Wave_2a_dup`,
          `taf.meant_life_end_weeks_.Wave_2b_dup`,
          `taf.meant_life_end_weeks_.Wave_3a_dup`,
@@ -6942,7 +6806,6 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.meant_life_end_weeks_.Wave_14b_dup`,
          `taf.meant_life_end_weeks_.Wave_15a_dup`,
          `taf.meant_life_end_weeks_.Wave_16b_dup`
-       #   `taf.meant_life_end_weeks_.Wave_17a_dup`
          )
 }
 ```
@@ -6966,7 +6829,6 @@ nrow(dat.raw.taf.coping)
 
 
 # TIMEPOINTS / PHASES - RESP COPING 
-
 Join COPING resp datasets follow ups
 ```{r Merge COPING resp}
 if(COPING == TRUE) {
@@ -7100,8 +6962,6 @@ Select variables for dataset COPING resp
 if(COPING == TRUE) {
 coping.followup.resp.id <- coping.followup.resp.id  %>%
   select(ID,
-         #`resp.coronavirus_test_nosethroat_swab_.Wave_1a`,
-        # `resp.coronavirus_test_nosethroat_swab_.Wave_1b`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_2a`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_2b` ,
          `resp.coronavirus_test_nosethroat_swab_.Wave_3a`,
@@ -7122,8 +6982,6 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.coronavirus_test_nosethroat_swab_.Wave_16b`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_17a`,
          
-        # `resp.results_nosethroat_swab_test_.Wave_1a`,
-        # `resp.results_nosethroat_swab_test_.Wave_1b`,
          `resp.results_nosethroat_swab_test_.Wave_2a`,
          `resp.results_nosethroat_swab_test_.Wave_2b` ,
          `resp.results_nosethroat_swab_test_.Wave_3a`,
@@ -7144,8 +7002,6 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.results_nosethroat_swab_test_.Wave_16b`,
          `resp.results_nosethroat_swab_test_.Wave_17a`,
          
-        #  `resp.coronavirus_antibody_test_.Wave_1a`,
-        # `resp.coronavirus_antibody_test_.Wave_1b`,
          `resp.coronavirus_antibody_test_.Wave_2a`,
          `resp.coronavirus_antibody_test_.Wave_2b` ,
          `resp.coronavirus_antibody_test_.Wave_3a`,
@@ -7160,14 +7016,12 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.coronavirus_antibody_test_.Wave_10b`,
          `resp.coronavirus_antibody_test_.Wave_11a`,
          `resp.coronavirus_antibody_test_.Wave_12b`,
-        `resp.coronavirus_antibody_test_.Wave_13a`,
+         `resp.coronavirus_antibody_test_.Wave_13a`,
          `resp.coronavirus_antibody_test_.Wave_14b`,
          `resp.coronavirus_antibody_test_.Wave_15a`,
          `resp.coronavirus_antibody_test_.Wave_16b`,
          `resp.coronavirus_antibody_test_.Wave_17a`,
          
-        # `resp.coronavirus_antibody_test_.Wave_1a`,
-       #  `resp.coronavirus_antibody_test_.Wave_1b`,
          `resp.coronavirus_antibody_test_.Wave_2a`,
          `resp.coronavirus_antibody_test_.Wave_2b` ,
          `resp.coronavirus_antibody_test_.Wave_3a`,
@@ -7188,9 +7042,6 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.coronavirus_antibody_test_.Wave_16b`,
          `resp.coronavirus_antibody_test_.Wave_17a`,
        
-       
-          #`resp.coronavirus_test_nosethroat_swab_.Wave_1a_dup`,
-        # `resp.coronavirus_test_nosethroat_swab_.Wave_1b_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_2a_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_2b_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_3a_dup`,
@@ -7205,14 +7056,11 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.coronavirus_test_nosethroat_swab_.Wave_10b_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_11a_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_12b_dup`,
-        `resp.coronavirus_test_nosethroat_swab_.Wave_13a_dup`,
+         `resp.coronavirus_test_nosethroat_swab_.Wave_13a_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_14b_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_15a_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_16b_dup`,
-       #  `resp.coronavirus_test_nosethroat_swab_.Wave_17a_dup`,
-         
-        # `resp.results_nosethroat_swab_test_.Wave_1a_dup`,
-        # `resp.results_nosethroat_swab_test_.Wave_1b_dup`,
+       
          `resp.results_nosethroat_swab_test_.Wave_2a_dup`,
          `resp.results_nosethroat_swab_test_.Wave_2b_dup`,
          `resp.results_nosethroat_swab_test_.Wave_3a_dup`,
@@ -7231,10 +7079,7 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.results_nosethroat_swab_test_.Wave_14b_dup`,
          `resp.results_nosethroat_swab_test_.Wave_15a_dup`,
          `resp.results_nosethroat_swab_test_.Wave_16b_dup`,
-       #  `resp.results_nosethroat_swab_test_.Wave_17a_dup`,
-         
-        #  `resp.coronavirus_antibody_test_.Wave_1a_dup`,
-        # `resp.coronavirus_antibody_test_.Wave_1b_dup`,
+      
          `resp.coronavirus_antibody_test_.Wave_2a_dup`,
          `resp.coronavirus_antibody_test_.Wave_2b_dup`,
          `resp.coronavirus_antibody_test_.Wave_3a_dup`,
@@ -7253,10 +7098,7 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.coronavirus_antibody_test_.Wave_14b_dup`,
          `resp.coronavirus_antibody_test_.Wave_15a_dup`,
          `resp.coronavirus_antibody_test_.Wave_16b_dup`,
-       #  `resp.coronavirus_antibody_test_.Wave_17a_dup`,
-         
-        # `resp.coronavirus_antibody_test_.Wave_1a_dup`,
-       #  `resp.coronavirus_antibody_test_.Wave_1b_dup`,
+       
          `resp.coronavirus_antibody_test_.Wave_2a_dup`,
          `resp.coronavirus_antibody_test_.Wave_2b_dup`,
          `resp.coronavirus_antibody_test_.Wave_3a_dup`,
@@ -7275,7 +7117,6 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.coronavirus_antibody_test_.Wave_14b_dup`,
          `resp.coronavirus_antibody_test_.Wave_15a_dup`,
          `resp.coronavirus_antibody_test_.Wave_16b_dup`
-       #  `resp.coronavirus_antibody_test_.Wave_17a_dup`
        )
 }
 ```
@@ -7425,8 +7266,6 @@ Select variables for dataset loss of a loved one due to COVID COPING
 if(COPING == TRUE) {
 coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>%
   select(ID,
-        # `grief.due_past_month_lost_.Wave_1a`,
-        # `grief.due_past_month_lost_.Wave_1b`,
          `grief.due_past_month_lost_.Wave_2b`,
          `grief.due_past_month_lost_.Wave_3b`,
          `grief.due_past_month_lost_.Wave_4b`,
@@ -7434,11 +7273,9 @@ coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>%
          `grief.due_past_month_lost_.Wave_8b`,
          `grief.due_past_month_lost_.Wave_10b`,
          `grief.due_past_month_lost_.Wave_12b`,
-        `grief.due_past_month_lost_.Wave_14b`,
-        `grief.due_past_month_lost_.Wave_16b`,
+         `grief.due_past_month_lost_.Wave_14b`,
+         `grief.due_past_month_lost_.Wave_16b`,
          
-       #   `grief.suffered_past_month_loss_.Wave_1a`,
-       #  `grief.suffered_past_month_loss_.Wave_1b`,
          `grief.suffered_past_month_loss_.Wave_2b`,
          `grief.suffered_past_month_loss_.Wave_3b`,
          `grief.suffered_past_month_loss_.Wave_4b`,
@@ -7446,12 +7283,10 @@ coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>%
          `grief.suffered_past_month_loss_.Wave_8b`,
          `grief.suffered_past_month_loss_.Wave_10b`,
          `grief.suffered_past_month_loss_.Wave_12b`,
-       `grief.suffered_past_month_loss_.Wave_14b`,
-       `grief.suffered_past_month_loss_.Wave_16b`,
+         `grief.suffered_past_month_loss_.Wave_14b`,
+         `grief.suffered_past_month_loss_.Wave_16b`,
        
        # Duplicated entries
-       # `grief.due_past_month_lost_.Wave_1a_dup`,
-        # `grief.due_past_month_lost_.Wave_1b_dup`,
          `grief.due_past_month_lost_.Wave_2b_dup`,
          `grief.due_past_month_lost_.Wave_3b_dup`,
          `grief.due_past_month_lost_.Wave_4b_dup`,
@@ -7459,11 +7294,9 @@ coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>%
          `grief.due_past_month_lost_.Wave_8b_dup`,
          `grief.due_past_month_lost_.Wave_10b_dup`,
          `grief.due_past_month_lost_.Wave_12b_dup`,
-        `grief.due_past_month_lost_.Wave_14b_dup`,
-        `grief.due_past_month_lost_.Wave_16b_dup`,
+         `grief.due_past_month_lost_.Wave_14b_dup`,
+         `grief.due_past_month_lost_.Wave_16b_dup`,
          
-       #   `grief.suffered_past_month_loss_.Wave_1a_dup`,
-       #  `grief.suffered_past_month_loss_.Wave_1b_dup`,
          `grief.suffered_past_month_loss_.Wave_2b_dup`,
          `grief.suffered_past_month_loss_.Wave_3b_dup`,
          `grief.suffered_past_month_loss_.Wave_4b_dup`,
@@ -7471,9 +7304,9 @@ coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>%
          `grief.suffered_past_month_loss_.Wave_8b_dup`,
          `grief.suffered_past_month_loss_.Wave_10b_dup`,
          `grief.suffered_past_month_loss_.Wave_12b_dup`,
-       `grief.suffered_past_month_loss_.Wave_14b_dup`,
-       `grief.suffered_past_month_loss_.Wave_16b_dup`
-         
+         `grief.suffered_past_month_loss_.Wave_14b_dup`,
+         `grief.suffered_past_month_loss_.Wave_16b_dup`
+          
          )
 }
 ```
@@ -7606,9 +7439,7 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id %
                      ed_scid5.weigh_weighed_past_month,
                      ed_scid5.regular_episodes_eating_binges_numeric,
                      ed_scid5.weigh_weighed_past_month_numeric))
-  
 }
-
 ```
 
 Select variables for dataset EDEQ COPING screener
@@ -7616,7 +7447,6 @@ Select variables for dataset EDEQ COPING screener
 if(COPING == TRUE) {
 edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  %>%
   select(ID,
-         #`ed_scid5.regular_episodes_eating_binges_.Wave_1b`,
          `ed_scid5.regular_episodes_eating_binges_.Wave_2b` ,    
          `ed_scid5.regular_episodes_eating_binges_.Wave_3b` ,       
          `ed_scid5.regular_episodes_eating_binges_.Wave_4b`,
@@ -7627,7 +7457,6 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  
          `ed_scid5.regular_episodes_eating_binges_.Wave_14b`,
          `ed_scid5.regular_episodes_eating_binges_.Wave_16b`,
          
-        # `ed_scid5.weigh_weighed_past_month_.Wave_1b`,
          `ed_scid5.weigh_weighed_past_month_.Wave_2b` ,    
          `ed_scid5.weigh_weighed_past_month_.Wave_3b` ,       
          `ed_scid5.weigh_weighed_past_month_.Wave_4b`,
@@ -7636,9 +7465,8 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  
          `ed_scid5.weigh_weighed_past_month_.Wave_10b`,
          `ed_scid5.weigh_weighed_past_month_.Wave_12b`,
          `ed_scid5.weigh_weighed_past_month_.Wave_14b`,
-        `ed_scid5.weigh_weighed_past_month_.Wave_16b`,
+         `ed_scid5.weigh_weighed_past_month_.Wave_16b`,
          
-         # `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_1b`,
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_2b` ,    
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_3b` ,       
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_4b`,
@@ -7646,10 +7474,9 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_8b`,
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_10b`,
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_12b`,
-        `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_14b`,
-        `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_16b`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_14b`,
+         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_16b`,
          
-        # `ed_scid5.weigh_weighed_past_month_numeric_.Wave_1b`,
          `ed_scid5.weigh_weighed_past_month_numeric_.Wave_2b` ,    
          `ed_scid5.weigh_weighed_past_month_numeric_.Wave_3b` ,       
          `ed_scid5.weigh_weighed_past_month_numeric_.Wave_4b`,
@@ -7661,7 +7488,6 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  
          `ed_scid5.weigh_weighed_past_month_numeric_.Wave_16b`,
         
         # Duplicated entries
-         #`ed_scid5.regular_episodes_eating_binges_.Wave_1b_dup`,
          `ed_scid5.regular_episodes_eating_binges_.Wave_2b_dup`,  
          `ed_scid5.regular_episodes_eating_binges_.Wave_3b_dup`,     
          `ed_scid5.regular_episodes_eating_binges_.Wave_4b_dup`,
@@ -7672,7 +7498,6 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  
          `ed_scid5.regular_episodes_eating_binges_.Wave_14b_dup`,
          `ed_scid5.regular_episodes_eating_binges_.Wave_16b_dup`,
          
-        # `ed_scid5.weigh_weighed_past_month_.Wave_1b_dup`,
          `ed_scid5.weigh_weighed_past_month_.Wave_2b_dup`,  
          `ed_scid5.weigh_weighed_past_month_.Wave_3b_dup`,     
          `ed_scid5.weigh_weighed_past_month_.Wave_4b_dup`,
@@ -7683,7 +7508,6 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  
          `ed_scid5.weigh_weighed_past_month_.Wave_14b_dup`,
         `ed_scid5.weigh_weighed_past_month_.Wave_16b_dup`,
          
-         # `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_1b_dup`,
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_2b_dup`,  
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_3b_dup`,     
          `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_4b_dup`,
@@ -7694,7 +7518,6 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id  
         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_14b_dup`,
         `ed_scid5.regular_episodes_eating_binges_numeric_.Wave_16b_dup`,
          
-        # `ed_scid5.weigh_weighed_past_month_numeric_.Wave_1b_dup`,
          `ed_scid5.weigh_weighed_past_month_numeric_.Wave_2b_dup`,  
          `ed_scid5.weigh_weighed_past_month_numeric_.Wave_3b_dup`,     
          `ed_scid5.weigh_weighed_past_month_numeric_.Wave_4b_dup`,
@@ -7909,8 +7732,7 @@ coping.followupb.virus.id <- coping.followupb.virus.id  %>%
          `virus.back_positive_antibodies_tests_numeric_.Wave_14b_dup`,
          `virus.back_positive_antibodies_tests_numeric_.Wave_16b_dup`,
          
-         
-         `virus.past_surveys_include_covid19_.Wave_2b_dup`,
+          `virus.past_surveys_include_covid19_.Wave_2b_dup`,
          `virus.past_surveys_include_covid19_.Wave_3b_dup`,   
          `virus.past_surveys_include_covid19_.Wave_4b_dup`,
          `virus.past_surveys_include_covid19_.Wave_6b_dup`,
@@ -8118,6 +7940,7 @@ ramp.followupb.virus.id <- ramp.followupb.virus.id %>%
         `virus.past_surveys_include_covid19_numeric_.Wave_14b`,
          `virus.past_surveys_include_covid19_numeric_.Wave_16b`,
         
+        # Duplicated entries
         `virus.back_positive_antibodies_tests_.Wave_1b_dup`,
          `virus.back_positive_antibodies_tests_.Wave_2b_dup`,    
          `virus.back_positive_antibodies_tests_.Wave_3b_dup`,       
@@ -8149,7 +7972,7 @@ ramp.followupb.virus.id <- ramp.followupb.virus.id %>%
          `virus.past_surveys_include_covid19_.Wave_8b_dup`,
          `virus.past_surveys_include_covid19_.Wave_10b_dup`,
          `virus.past_surveys_include_covid19_.Wave_12b_dup`,
-        `virus.past_surveys_include_covid19_.Wave_14b_dup`,
+         `virus.past_surveys_include_covid19_.Wave_14b_dup`,
          `virus.past_surveys_include_covid19_.Wave_16b_dup`,
          
          `virus.past_surveys_include_covid19_numeric_.Wave_1b_dup`,
@@ -8184,39 +8007,31 @@ nrow(ramp.followupb.virus.id)
 ```{r Export follow up data}
 if(COPING == TRUE) {
 
-saveRDS(object = dat.raw.taf.coping, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/TAF_coping", date, ".rds"))
+saveRDS(object = dat.raw.taf.coping, file = paste0(filepath_saved_data, "TAF_coping", date, ".rds"))
   
-  saveRDS(object = edeq.coping.followupb.screener.raw.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/EDEQ_screener_coping", date, ".rds"))
+  saveRDS(object = edeq.coping.followupb.screener.raw.id, file = paste0(filepath_saved_data, "EDEQ_screener_coping", date, ".rds"))
   
-  saveRDS(object = dat.raw.dem.coping.followup, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/DEM_followup_coping", date, ".rds"))
+  saveRDS(object = dat.raw.dem.coping.followup, file = paste0(filepath_saved_data, "DEM_followup_coping", date, ".rds"))
   
-  saveRDS(object = coping.loss.followupb.raw.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/LOSS_coping_followup", date, ".rds"))
+  saveRDS(object = coping.loss.followupb.raw.id, file = paste0(filepath_saved_data, "LOSS_coping_followup", date, ".rds"))
   
-   saveRDS(object = coping.followupb.virus.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/VIRUS_coping_followup", date, ".rds"))
+   saveRDS(object = coping.followupb.virus.id, file = paste0(filepath_saved_data, "VIRUS_coping_followup", date, ".rds"))
 
-     saveRDS(object = coping.followup.resp.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/RESP_coping_followup", date, ".rds"))
+     saveRDS(object = coping.followup.resp.id, file = paste0(filepath_saved_data, "RESP_coping_followup", date, ".rds"))
 }
 
 if(RAMP == TRUE) {
   
-  saveRDS(object = dat.raw.taf.ramp, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/TAF_ramp", date, ".rds"))
+  saveRDS(object = dat.raw.taf.ramp, file = paste0(filepath_saved_data, "TAF_ramp", date, ".rds"))
   
-  saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/EDEQ_screener_ramp", date, ".rds"))
+  saveRDS(object = edeq.ramp.followupb.screener.raw.id, file = paste0(filepath_saved_data, "EDEQ_screener_ramp", date, ".rds"))
   
-   saveRDS(object = dat.raw.dem.ramp.followup, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/DEM_followup_ramp", date, ".rds"))
+   saveRDS(object = dat.raw.dem.ramp.followup, file = paste0(filepath_saved_data, "DEM_followup_ramp", date, ".rds"))
 
-   saveRDS(object = ramp.loss.followupb.raw.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/LOSS_ramp_followup", date, ".rds"))
+   saveRDS(object = ramp.loss.followupb.raw.id, file = paste0(filepath_saved_data, "LOSS_ramp_followup", date, ".rds"))
    
-    saveRDS(object = ramp.followupb.virus.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/VIRUS_ramp_followup", date, ".rds"))
+    saveRDS(object = ramp.followupb.virus.id, file = paste0(filepath_saved_data, "VIRUS_ramp_followup", date, ".rds"))
    
-    saveRDS(object = ramp.followup.resp.id, file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/RESP_ramp_followup", date, ".rds"))
+    saveRDS(object = ramp.followup.resp.id, file = paste0(filepath_saved_data, "RESP_ramp_followup", date, ".rds"))
 }
-
 ```
-
-
-
-
-
-
-

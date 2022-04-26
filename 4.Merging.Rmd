@@ -20,15 +20,20 @@ Clear global environment prior to initiation
 remove(list = ls())
 ```
 
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
 Add the add_numeric function - used to convert character variables into numeric variables
 Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
 Add the sumscores function - used to generate sumscores
 Add the package_check function - used to install and load dependencies
 Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
 source("./functions.R")
 ```
 
@@ -167,7 +172,6 @@ EDEQ <- bind_rows(edeq_ramp_screener,
 # Check
 colnames(EDEQ)
 nrow(EDEQ)
-
 ```
 
 Bind TAF from COPING & RAMP together
@@ -303,7 +307,7 @@ summary(as.factor(all_dat$ID.dup))
 ## Need to remove people who have answered both EDGI and GLAD - am keeping only one of their data points (decided based on ED100K responses). Added 30/11/21.
 ```{r remove one data point of people in both EDGI and GLAD }
 # Read in data with IDs to drop
-IDs_to_drop <- readRDS(file = paste0("/Users/helenadavies/werk/NetAnalEDMan/data/GLAD_EDGI_IDs_to_drop_dat_2021-11-30.rds"))
+IDs_to_drop <- readRDS(file = paste0(filepath_EDGI_GLAD_dups, "GLAD_EDGI_IDs_to_drop_dat_2021-11-30.rds"))
 dim(IDs_to_drop)
 colnames(IDs_to_drop)
 
@@ -334,13 +338,12 @@ nrow(all_dat_no_dup)
 Check final data
 ```{r Skim final data with no dup IDs}
 # Look at the data
-#skimr::skim(all_dat)
+skimr::skim(all_dat)
 ```
 
 Save final dataset
 ```{r Save final dataset}
 saveRDS(object = all_dat,
-        file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/all_dat", date, ".rds"))
-
+        file = paste0(filepath_saved_data, "all_dat", date, ".rds"))
 ```
 

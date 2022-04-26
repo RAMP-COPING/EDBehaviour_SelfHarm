@@ -1,11 +1,13 @@
 ---
-title: "Deriving variables: Harmful ideation"
+title: "Deriving variables: Suicidal and/or self-harm ideation"
 author: "Helena Davies"
 date: "21/02/2022"
 output: html_document
 ---
 
-This script derives variables for the harmful ideation phenotype ready for regression analyses.
+This script derives variables for the suicidal and/or self-harm ideation phenotype ready for regression analyses.
+NB: I first clean 'suicidal ideation' and 'self-harm ideation' separately before combining into a variable called 'harmful ideation' which represents 'suicidal and/or self-harm ideation'. We have merged these two variables because they are highly correlated (>0.8).
+
 Configure global options for all chunks
 ```{r Setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -21,15 +23,20 @@ Clear global environment prior to initiation
 remove(list = ls())
 ```
 
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
 Add the add_numeric function - used to convert character variables into numeric variables
 Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
 Add the sumscores function - used to generate sumscores
 Add the package_check function - used to install and load dependencies
 Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
 source("./functions.R")
 ```
 
@@ -49,7 +56,7 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_no_dup_entries2022-02-21.rds")
+dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-02-21.rds"))
 ```
 
 # Outcome = Passive suicidal ideation
@@ -3085,18 +3092,6 @@ dat %>%
 ```
 
 # EXPOSURES / EXPLANATORY VARIABLES
-[NB: only need to get the below within one script as will not change depending on outcome. These have been derived and saved within the script '6a.Binge_eating_deriving_variables.rds']
-  •	Age
-  •	Gender
-  •	Racialised minority
-  •	Highest education level 
-  •	Psychiatric disorder 
-  • Key worker status 
-  • Loneliness
-  • Pandemic worry
-  • Defined as vulnerable person according to Government 
-  • OCD screeners (for low weight model only)
-  
 [NB: for the below exposures, will need to derive these differently depending on the outcome because they were reported at every/every other phase and we are taking only those reported BEFORE or in the SAME PHASE as the outcome]
   • Positive COVID test or ill due to COVID  
   • Loss of loved one due to COVID
@@ -5031,8 +5026,6 @@ dat <- dat %>%
                       dem.coronavirus_relative_previously_ill.1_.Wave_16b == "No" |
                       grief.due_past_month_lost_.Wave_16b  == "No" )   ~ "Not lost someone" 
                    
-                   
-                   #+++ check who is left over
                        )
          )
 
@@ -8076,13 +8069,13 @@ missing %>%
 final_dat_HI <- dat %>%
   select(ID,
          sample,
-        PREPANDEMIC_passive_suicidal_ideation,
-        PREPANDEMIC_selfharm_ideation,
-         
+        # Save original variables
+        NEW_selfharm_ideation_pandemic,
+        NEW_passive_suicidal_ideation_pandemic,
+          
          # Outcome for self harm regressions 
          NEW_harmful_ideation_pandemic,
 
-        
          # Exposures 
          positive_covid_test_before_HI_final,
         lost_someone_before_HI_final,
@@ -8100,6 +8093,5 @@ Save final dataset (interim analysis)
 Save dataset
 ```{r save dataset}
 saveRDS(object = final_dat_HI,
-       file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_HI", date, ".rds"))
-
+       file = paste0(filepath_saved_data, "final_dat_HI", date, ".rds"))
 ```

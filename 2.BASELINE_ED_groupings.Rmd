@@ -7,13 +7,7 @@ output: html_document
 
 This script identifies whether people have experienced lifetime low weight or lifetime binge eating at baseline.
 
-Due to differences in the available variables, the way in which I have assessed lifetime binge eating and lifetime low weight differ across the datasets. See here for a description of what I have done: https://docs.google.com/document/d/1NlIEts80sh5-S_upnWEL9xn-iZihiYZDrOPj86RGdHs/edit
-
-ORDER OF SCRIPTS
-1. Pre-processing
-2. Baseline ED groupings
-3. Merging
-4. Deriving variables
+Due to differences in the available variables, the way in which I have assessed lifetime binge eating and lifetime low weight differ across the datasets. 
 
 Configure global options for all chunks
 ```{r Setup, include=FALSE}
@@ -30,15 +24,20 @@ Clear global environment prior to initiation
 remove(list = ls())
 ```
 
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
 Add the add_numeric function - used to convert character variables into numeric variables
 Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
 Add the sumscores function - used to generate sumscores
 Add the package_check function - used to install and load dependencies
 Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
 source("./functions.R")
 ```
 
@@ -58,7 +57,7 @@ date
 
 # Read in ED data: GLAD COPING BE
 ```{r Read in data GLAD COPING BE}
-dat.be.coping.glad <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/be_coping_glad.rds")
+dat.be.coping.glad <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/be_coping_glad.rds"))
 # Inspect dimensions
 dim(dat.be.coping.glad)
 # Inspect colnames
@@ -75,7 +74,6 @@ exclude_cols <- c("ID",
 
 Select variables: GLAD COPING BE
 ```{r Select variables GLAD COPING BE}
-
 dat.be.coping.glad.id <- dat.be.coping.glad %>% #new dataset with ID
   drop_na(externalDataReference) %>% # Drop NAs
   remove_duplicates("externalDataReference") %>% 
@@ -112,7 +110,7 @@ dim(dat.be.coping.glad)[1]-dim(dat.be.coping.glad.id )[1]
 
 # Read in ED data: NBR COPING BE
 ```{r Read in data NBR COPING BE}
-dat.be.nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/be_coping_nbr.rds")
+dat.be.nbr <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/be_coping_nbr.rds"))
 
 # Inspect dimensions
 dim(dat.be.nbr)
@@ -120,7 +118,6 @@ dim(dat.be.nbr)
 colnames(dat.be.nbr)
 
 nrow(dat.be.nbr)
-
 ```
 
 Select variables: NBR COPING BE
@@ -160,7 +157,7 @@ dim(dat.be.nbr)[1]-dim(dat.be.nbr.id )[1]
 
 # Read in ED data: GLAD COPING AN SCREENER
 ```{r Read in data GLAD AN screener}
-dat.an.scr.glad.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/an_scr_coping_glad.rds")
+dat.an.scr.glad.coping <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/an_scr_coping_glad.rds"))
 
 # Inspect dimensions
 dim(dat.an.scr.glad.coping)
@@ -205,7 +202,7 @@ dim(dat.an.scr.glad.coping)[1]-dim(dat.an.scr.glad.coping.id )[1]
 
 # Read in ED data: GLAD COPING AN MODULE
 ```{r Read in data GLAD AN screener}
-dat.an.glad.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/an_coping_glad.rds")
+dat.an.glad.coping <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/an_coping_glad.rds"))
 
 # Inspect dimensions
 dim(dat.an.glad.coping)
@@ -250,7 +247,7 @@ dim(dat.an.glad.coping)[1]-dim(dat.an.glad.coping.id )[1]
 
 # Read in ED data: NBR AN SCREENER
 ```{r Read in data NBR AN SCREENER}
-dat.an.scr.nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/an_scr_coping_nbr.rds")
+dat.an.scr.nbr <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/an_scr_coping_nbr.rds"))
 
 # Inspect dimensions
 dim(dat.an.scr.nbr)
@@ -295,7 +292,7 @@ dim(dat.an.scr.nbr)[1]-dim(dat.an.scr.nbr.id)[1]
 
 # Read in ED data: NBR AN MODULE
 ```{r Read in data NBR AN SCREENER}
-dat.an.nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/an_coping_nbr.rds")
+dat.an.nbr <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/an_coping_nbr.rds"))
 
 # Inspect dimensions
 dim(dat.an.nbr)
@@ -335,12 +332,11 @@ dim(dat.an.nbr.id )
 colnames(dat.an.nbr.id )
 #Differences
 dim(dat.an.nbr)[1]-dim(dat.an.nbr.id)[1]
-
 ```
 
 # Read in ED data: GLAD COPING MHD
 ```{r Read in data GLAD COPING mhd data}
-dat.mhd.glad.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_glad/mhd_coping_glad.rds")
+dat.mhd.glad.coping <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/mhd_coping_glad.rds"))
 
 # Inspect dimensions
 dim(dat.mhd.glad.coping)
@@ -406,7 +402,7 @@ dim(dat.mhd.glad.coping)[1]-dim(dat.mhd.glad.coping.id )[1]
 
 # Read in ED data: NBR COPING MHD
 ```{r Read in data NBR COPING mhd data}
-dat.mhd.nbr.coping <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/coping_nbr/mhd_coping_nbr.rds")
+dat.mhd.nbr.coping <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/mhd_coping_nbr.rds"))
 
 # Inspect dimensions
 dim(dat.mhd.nbr.coping)
@@ -467,19 +463,18 @@ dim(dat.mhd.nbr.coping.id )
 colnames(dat.mhd.nbr.coping.id )
 #Differences
 dim(dat.mhd.nbr.coping)[1]-dim(dat.mhd.nbr.coping.id )[1]
-
 ```
 
 # Read in DEM data: NBR COPING AGE
 ```{r Read in data NBR COPING AGE data}
-age_dat_nbr <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_nbr/demographics/age_coping_nbr_clean_INTERNAL_ONLY.rds")
+age_dat_nbr <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_nbr/demographics/age_coping_nbr_clean_INTERNAL_ONLY.rds"))
 dim(age_dat_nbr)
 colnames(age_dat_nbr)
 ```
 
 # Read in DEM data: GLAD COPING AGE
 ```{r Read in data GLAD COPING AGE data}
-age_dat_glad_coping <- readRDS(file =  "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_glad/demographics/age_coping_glad_clean_INTERNAL_ONLY.rds")
+age_dat_glad_coping <- readRDS(file =  paste0(filepath_cleaned_latest_freeze, "coping_glad/demographics/age_coping_glad_clean_INTERNAL_ONLY.rds"))
 dim(age_dat_glad_coping)
 colnames(age_dat_glad_coping)
 ```
@@ -885,8 +880,6 @@ dat.ed.COPING <- dat.ed.COPING %>%
 dat.ed.COPING %>%
   freq(lifetime_binge_eating_baseline_numeric)
 
-# +++ There are ~800 people who have missing data for either the binge eating question or the mhd, what should we do with these people? OR, for example, has said they've never binged but then endorsed a BED diagnosis...
-         
 dat.ed.COPING %>%
   filter(is.na(lifetime_binge_eating_baseline_numeric)) %>%
   select(
@@ -901,10 +894,9 @@ dat.ed.COPING %>%
          
         )
 ```
-
 17/01/22: There were 904 people who we could not classify as lifetime BE at baseline (1 = yes (i.e., prepandemic), 0 = No lifetime BE). 
-33 people have answered "No" to ever binge eating, but then not answered the MHD questionnaire, or said "Yes" but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime binge eating" as it is the symptom we are most interested in rather than if they have had a full eating disorder.
-Now, there are 871 people who we can not classify. Either 'Yes' or missing for the BE question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for BE).
+33 people have answered "No" to ever binge eating, but then not answered the MHD questionnaire, or said "Yes" to suspected eating disorder but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime binge eating" as it is the symptom we are most interested in rather than if they have had any other eating disorder.
+Now, there are 871 people who we can not classify. Either 'Yes' or missing for the BE question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for BE) for suspected eating disorder diagnosis.
 
 # Low weight
 ## How many people have anorexia that may have started during the pandemic? 
@@ -979,7 +971,6 @@ dat.ed.COPING %>%
          age_start_pandemic,
          an.1.how_old_were_you_then.txt)
 ```
-
 17/01/22: There are 193 people who put the same age at start of low weight as their age at the start of the pandemic so we can not work out whether they started before or during the pandemic. Will have to drop. 
 
 ## Now, need to combine all the low weight phenotypes and identify prepan versus pandemic
@@ -1046,7 +1037,6 @@ dat.ed.COPING <- dat.ed.COPING %>%
 dat.ed.COPING %>%
   freq(lifetime_low_weight_baseline_numeric)
 
-# +++ There are 927 people who have missing data for either the low weight question or the mhd, what should we do with these people? 
 dat.ed.COPING %>%
   filter(is.na(lifetime_low_weight_baseline_numeric)) %>%
   select(any_pandemic_low_weight_vs_start_pandemic_age,
@@ -1059,8 +1049,8 @@ dat.ed.COPING %>%
         )
 ```
 17/01/22: There were 929 people who we could not classify as lifetime LW at baseline (1 = yes (i.e., prepandemic), 0 = No lifetime BE). 
-31 people have answered "No" to ever being of low weight, but then not answered the MHD questionnaire, or said "Yes" but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime low weight" as it is the symptom we are most interested in rather than if they have had a full eating disorder.
-Now, there are 898 people who we can not classify. Either 'Yes' or missing for the LW question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for LW).
+31 people have answered "No" to ever being of low weight, but then not answered the MHD questionnaire, or said "Yes" to suspecting an eating disorder but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime low weight" as it is the symptom we are most interested in rather than if they have had any other eating disorder.
+Now, there are 898 people who we can not classify. Either 'Yes' or missing for the LW question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for LW) for the MHD.
 
 
 # GLAD original data
@@ -1071,7 +1061,7 @@ Reminder: I have chosen this date as it is 3 months before the start of the pand
 exclude_cols_glad <- c("ID",
                        "sample_glad") 
 
-glad_ed100k_selfreport_diagnoses <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/glad/eating/selfreported_ed100k_diagnoses_glad_clean.rds")
+glad_ed100k_selfreport_diagnoses <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "glad/eating/selfreported_ed100k_diagnoses_glad_clean.rds"))
 dim(glad_ed100k_selfreport_diagnoses)
 colnames(glad_ed100k_selfreport_diagnoses)
 
@@ -1094,7 +1084,7 @@ colnames(glad_ed100k_selfreport_diagnoses)
 
 ## Import GLAD mhd self-report data
 ```{r Read in data glad mhd data}
-glad_mhd <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/glad/mhd_glad.rds") # 
+glad_mhd <- readRDS(file =   paste0(filepath_raw_latest_freeze, "glad/mhd_glad.rds"))
 dim(glad_mhd)
 colnames(glad_mhd)
 
@@ -1119,7 +1109,7 @@ colnames(glad_mhd)
 ## Import GLAD ED100K self-report symptom data
 AN screener
 ```{r Read in data glad an screener}
-glad_AN_scr <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/glad_ed/an_scr_glad.rds")
+glad_AN_scr <- readRDS(file =   paste0(filepath_raw_latest_freeze, "glad_ed/an_scr_glad.rds"))
 dim(glad_AN_scr)
 colnames(glad_AN_scr)
 
@@ -1154,7 +1144,7 @@ colnames(glad_AN_scr.id )
 dim(glad_AN_scr)[1]-dim(glad_AN_scr.id)[1]
 
 # Read in AN ED100K for age at symptom start question
-glad_AN_age <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/glad_ed/an_glad_ed.rds")
+glad_AN_age <- readRDS(file =   paste0(filepath_raw_latest_freeze, "glad_ed/an_glad_ed.rds"))
 dim(glad_AN_age)
 colnames(glad_AN_age)
 
@@ -1197,7 +1187,7 @@ glad_AN <- dplyr::full_join(glad_AN_scr.id,
 ## Import GLAD ED100K self-report symptom data
 BE symptom data
 ```{r Read in data glad be data}
-glad_BE <- readRDS(file =   "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/glad_ed/be_glad_ed.rds")
+glad_BE <- readRDS(file =   paste0(filepath_raw_latest_freeze, "glad_ed/be_glad_ed.rds"))
 dim(glad_BE)
 colnames(glad_BE)
 
@@ -1594,7 +1584,7 @@ glad_merged %>%
 
 # Import RAMP MHD self-report data
 ```{r Read in data RAMP MHD self-report}
-ramp.mhd.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/ramp/clinical/mhd_ramp_clean.rds")
+ramp.mhd.raw <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "ramp/clinical/mhd_ramp_clean.rds"))
 dim(ramp.mhd.raw)
 colnames(ramp.mhd.raw)
 ```
@@ -1622,7 +1612,7 @@ ramp.mhd.raw.id %>%
 
 # Import RAMP EDEQ baseline screener data
 ```{r Read in data RAMP EDEQ baseline}
-ramp.edeq.scr.baseline <- readRDS(file =  "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/ramp/ed_scid5_ramp.rds")
+ramp.edeq.scr.baseline <- readRDS(file =  paste0(filepath_raw_latest_freeze, "ramp/ed_scid5_ramp.rds"))
 dim(ramp.edeq.scr.baseline)
 colnames(ramp.edeq.scr.baseline)
 ```
@@ -1661,7 +1651,7 @@ ramp.edeq.scr.baseline.id <- ramp.edeq.scr.baseline %>%
 
 # Import RAMP EDEQ baseline data
 ```{r Read in data RAMP EDEQ baseline}
-ramp.edeq.baseline <- readRDS(file =  "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/BASELINE_ramp2022-02-21.rds")
+ramp.edeq.baseline <- readRDS(file =  paste0(filepath_saved_data, "BASELINE_ramp2022-02-21.rds"))
 dim(ramp.edeq.baseline)
 colnames(ramp.edeq.baseline)
 ```
@@ -1770,15 +1760,13 @@ ramp_dat <- ramp_dat %>%
 ramp_dat %>%
   freq(lifetime_low_weight_baseline_numeric)
 ```
-17/01/22: There are 8664 
-
-
+17/01/22: There are 8603 people missing (i.e., have put PNTA/Don't know/Seen but not answered for the MHD anorexia question at RAMP baseline)
 
 # EDGI 
 ## Import EDGI MHD data
 NB: Have read in the raw data because I think the ED100K AN screener is mistakenly in the mhd dataframe.
 ```{r Read in data EDGI MHD}
-edgi.mhd.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/edgi/mhd_edgi.rds")
+edgi.mhd.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "edgi/mhd_edgi.rds"))
 dim(edgi.mhd.raw)
 colnames(edgi.mhd.raw)
 ```
@@ -1830,7 +1818,7 @@ edgi.mhd.raw.id <- edgi.mhd.raw %>%
 ## Import EDGI AN data
 (to get age at symptom start for low weight)
 ```{r Read in data EDGI AN}
-edgi_an <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/edgi/an_edgi.rds")
+edgi_an <- readRDS(file = paste0(filepath_raw_latest_freeze, "edgi/an_edgi.rds"))
 dim(edgi_an)
 colnames(edgi_an)
 ```
@@ -1869,7 +1857,7 @@ edgi_an_id <- edgi_an %>%
 
 ## Import EDGI BE data
 ```{r Read in EDGI BE data}
-be.edgi.raw <- readRDS(file = "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data_raw/latest_freeze/edgi/be_edgi.rds")
+be.edgi.raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "edgi/be_edgi.rds"))
 dim(be.edgi.raw)
 colnames(be.edgi.raw)
 ```
@@ -1933,7 +1921,7 @@ edgi_BE_LW %>%
 # First, work out age at start of pandemic for EDGI participants
 ```{r age at start of pandemic EDGI participants}
 # Read in DOB data for EDGI participants
-age_dat_edgi_coping <- readRDS(file =  "/Users/helenadavies/King's College London/MT-TNG BioResource EDIT - ilovedata - ilovedata/data/latest_freeze/coping_edgi/demographics/age_coping_edgi_clean_INTERNAL_ONLY.rds")
+age_dat_edgi_coping <- readRDS(file =  paste0(filepath_cleaned_latest_freeze, "coping_edgi/demographics/age_coping_edgi_clean_INTERNAL_ONLY.rds"))
 dim(age_dat_edgi_coping)
 colnames(age_dat_edgi_coping)
 
@@ -2298,7 +2286,6 @@ edgi_dat <- edgi_dat %>%
   ) 
 ```
 
-
 # Select variables from each dataset to keep
 ## RAMP
 ```{r Select variables to keep RAMP}
@@ -2387,6 +2374,5 @@ colnames(baseline_ED_groups)
 Save dataset
 ```{r Save final dataset ED baseline groupings}
 saveRDS(object = baseline_ED_groups,
-        file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/ED_BASELINE_groups", date, ".rds"))
-
+        file = paste0(filepath_saved_data, "ED_BASELINE_groups", date, ".rds"))
 ```

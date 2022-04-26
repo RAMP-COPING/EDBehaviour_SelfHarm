@@ -20,15 +20,20 @@ Clear global environment prior to initiation
 remove(list = ls())
 ```
 
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
 Add the add_numeric function - used to convert character variables into numeric variables
 Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
 Add the sumscores function - used to generate sumscores
 Add the package_check function - used to install and load dependencies
 Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
 source("./functions.R")
 ```
 
@@ -48,20 +53,72 @@ date
 
 # Read in data
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/final_dat_merged_2022-02-21.rds")
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-04-26.rds")
+
+# Check
 dim(dat)
-   colnames(dat)
+colnames(dat)
 ```
 
-# CORRELATION MATRICES of outcome variables
-## all outcomes
+# Preprocessing
+## Correlation of ALL outcomes
+```{r correlation matrix of all outcomes}
+# Select items for correlation matrix
+outcome_corr <- dat %>%
+  select(
+   `New onset binge eating` = "NEW_binge_eating_pandemic",
+   `New onset low weight` = "NEW_low_weight_pandemic",
+   `New onset self-harm ideation` = "NEW_selfharm_ideation_pandemic",
+   `New onset passive suicidal ideation` = "NEW_passive_suicidal_ideation_pandemic",
+   `New onset self-harm` = "NEW_selfharm_pandemic"
+ ) 
+
+# Run correlation analyses with continious and dichotomous variables 
+outcome_corr_object <- psych::mixedCor(data=outcome_corr,
+         c= NULL,  # Continuous variables
+         p= NULL,
+         d= 1:5, # Dichotomous variable
+             use="pairwise.complete.obs")
+
+
+# Save correlation matrix in an object
+outcome_corr_object_object_matrix <- outcome_corr_object$rho
+
+# Write file path to save plot
+png(file = paste0(filepath_plots_corr, "all_outcomes_corr_matrix.png"))
+
+# Create correlation matrix with hierarchical clustering
+outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_object_matrix, 
+         method = "color", # objects to represent the correlations on plot
+         type = "lower", # only use the lower triangle of the matrix
+         diag = FALSE, # do not show the correlations on the diagonal
+         addgrid.col = NA,
+         addCoef.col = "black", # colour for the correlation coefficients in the plot
+         tl.cex = 1,
+         cl.cex = 1,
+         order = "original",
+         tl.col = "black",
+         cl.align.text = "c",
+         col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
+         number.font = 0.5,
+         number.cex = 1, # size of co-efficients
+         sig.level = 0.01, # Choose significant level
+         insig = "blank", # Nonsignificant correlations have no colour,
+         bg = "white"
+         )
+
+# Save plot
+dev.off()
+```
+
+## Corelation of all outcomes included in analysis
 ```{r all outcomes correlation matrix}
 # Select items for correlation matrix
 outcome_corr <- dat %>%
   select(
    `New onset binge eating` = "NEW_binge_eating_pandemic",
    `New onset low weight` = "NEW_low_weight_pandemic",
-   `New onset harmful ideation` = "NEW_harmful_ideation_pandemic",
+   `New onset suicidal and/or self-harm ideation` = "NEW_harmful_ideation_pandemic",
    `New onset self-harm` = "NEW_selfharm_pandemic"
  ) 
 
@@ -77,7 +134,7 @@ outcome_corr_object <- psych::mixedCor(data=outcome_corr,
 outcome_corr_object_object_matrix <- outcome_corr_object$rho
 
 # Write file path to save plot
-png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/all_outcomes_corr_matrix.png")
+png(file = paste0(filepath_plots_corr, "analysis_outcomes_corr_matrix.png"))
 
 # Create correlation matrix with hierarchical clustering
 outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_object_matrix, 
@@ -88,22 +145,22 @@ outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_obje
          addCoef.col = "black", # colour for the correlation coefficients in the plot
          tl.cex = 1,
          cl.cex = 1,
-         order = "hclust",
+         order = "original",
          tl.col = "black",
          cl.align.text = "c",
          col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
          number.font = 0.5,
-         number.cex = 0.4,
+          number.cex = 1, # size of co-efficients
          sig.level = 0.01, # Choose significant level
          insig = "blank", # Nonsignificant correlations have no colour,
          bg = "white"
          )
 
+?corrplot
+
 # Save plot
 dev.off()
-
 ```
-
 
 # CORRELATION MATRICES of exposure variables (assessing multicollinearity)
 ## Dummy coding variables
@@ -116,7 +173,6 @@ descriptives.columns.dummy <- c(
   "mental_health_diagnosis",
   "paid_employment_key_worker",
   "vulnerable_group_member",
-  "increased_loneliness_during_pandemic",
   "positive_covid_test_before_BE_final",
   "positive_covid_test_before_LW_final",
   "positive_covid_test_before_HI_final",
@@ -154,40 +210,39 @@ BE_dat_corr_mat <- dat_dummy %>%
   select(
    "Man" = "gender_cleaned_Man",
    "Woman" = "gender_cleaned_Woman",
-   "Minoritised_gender" = "gender_cleaned_Minoritised gender",
-   "16-25" = "age_category_COVID_baseline_16-25",
-   "26-35" = "age_category_COVID_baseline_26-35",
-   "36-45" = "age_category_COVID_baseline_36-45",
-   "46-55" = "age_category_COVID_baseline_46-55",
-   "56-65" = "age_category_COVID_baseline_56-65",
-   "66-70" =  "age_category_COVID_baseline_66-70",
-   "71+" = "age_category_COVID_baseline_71+",
+   "Minoritised gender" = "gender_cleaned_Minoritised gender",
+   "16-25 years" = "age_category_COVID_baseline_16-25",
+   "26-35 years" = "age_category_COVID_baseline_26-35",
+   "36-45 years" = "age_category_COVID_baseline_36-45",
+   "46-55 years" = "age_category_COVID_baseline_46-55",
+   "56-65 years" = "age_category_COVID_baseline_56-65",
+   "66-70 years" =  "age_category_COVID_baseline_66-70",
+   "71+ years" = "age_category_COVID_baseline_71+",
    "White" = "race_binary_White",
-   "No_qual" = "highest_education_No formal qualifications",                    
+   "No qualifications" = "highest_education_No formal qualifications",                    
    "GCSE/CSE" =  "highest_education_GCSE/CSE",                                    
    "NVQ" =  "highest_education_NVQ",                                        
    "A-Levels" =   "highest_education_A-levels",                                    
-   "Uni/Other_prof_qual" = "highest_education_University/Other professional qualifications",
-   "Psych_disorder" ="mental_health_diagnosis_Psychiatric disorder",
-   "Key_worker" ="paid_employment_key_worker_Key worker",
-   "Employed_not_key"  = "paid_employment_key_worker_Paid employment",
+   "Uni/Other prof qual" = "highest_education_University/Other professional qualifications",
+   "Psychiatric disorder" ="mental_health_diagnosis_Psychiatric disorder",
+   "Key worker" ="paid_employment_key_worker_Key worker",
+   "Employed (not key worker)"  = "paid_employment_key_worker_Paid employment",
    "Unemployed" = "paid_employment_key_worker_Not paid employment",
    "Student" = "paid_employment_key_worker_Student",
    "Retired"= "paid_employment_key_worker_Retired",
-   "Vulnerable_group" = "vulnerable_group_member_Yes",
-   "Positive_COVID_test" = "positive_covid_test_before_BE_final_Yes",
-   "Loss" = "lost_someone_before_BE_final_Yes",
-   "Lonelier_during_pandemic" = "increased_loneliness_during_pandemic_Yes",
-   "Change_main_eco" = "main_eco_change_before_BE_final_Yes",
-   "Change_living_sit" ="living_situation_change_before_BE_final_Yes",
-   "pan_worry" = "panworry_total_score"
+   "Vulnerable group member" = "vulnerable_group_member_Yes",
+   "COVID-19 infection" = "positive_covid_test_before_BE_final_Yes",
+   "Loss due to COVID-19" = "lost_someone_before_BE_final_Yes",
+   "Change in main eco" = "main_eco_change_before_BE_final_Yes",
+   "Change in living sit" ="living_situation_change_before_BE_final_Yes",
+   "Pandemic worry score" = "panworry_total_score"
  ) 
 
 # Run correlation analyses with continious and dichotomous variables 
 BE_corr_mat_object <- psych::mixedCor(data=BE_dat_corr_mat,
-         c= 29,  # Continuous variables
+         c= 28,  # Continuous variables
          p= NULL,
-         d= 1:28, # Dichotomous variable
+         d= 1:27, # Dichotomous variable
              use="pairwise.complete.obs")
 
 
@@ -195,7 +250,10 @@ BE_corr_mat_object <- psych::mixedCor(data=BE_dat_corr_mat,
 BE_corr_mat_object_matrix <- BE_corr_mat_object$rho
 
 # Write file path to save plot
-png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/BE_exposures_corr_matrix.png")
+png(height = 900,
+    width = 900,
+    file = paste0(filepath_plots_corr, "BE_exposures_corr_matrix.png")
+)
 
 # Create correlation matrix with hierarchical clustering
 BE_exposures_corr_matrix <- corrplot::corrplot(BE_corr_mat_object_matrix, 
@@ -204,13 +262,13 @@ BE_exposures_corr_matrix <- corrplot::corrplot(BE_corr_mat_object_matrix,
          diag = FALSE, # do not show the correlations on the diagonal
          addgrid.col = NA,
          addCoef.col = "black", # colour for the correlation coefficients in the plot
-         tl.cex = 0.5,
-         order = "hclust",
+         tl.cex = 0.9,
+         order = "original",
          tl.col = "black",
          cl.align.text = "c",
          col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
          number.font = 0.1,
-         number.cex = 0.4,
+         number.cex = 0.8, # size of co-efficients
          sig.level = 0.01, # Choose significant level
          insig = "blank", # Nonsignificant correlations have no colour,
          bg = "white"
@@ -225,42 +283,42 @@ dev.off()
 # Select items for correlation matrix
 LW_dat_corr_mat <- dat_dummy %>%
   select(
-   "Man" = "gender_cleaned_Man",
+     "Man" = "gender_cleaned_Man",
    "Woman" = "gender_cleaned_Woman",
-   "Minoritised_gender" = "gender_cleaned_Minoritised gender",
-   "16-25" = "age_category_COVID_baseline_16-25",
-   "26-35" = "age_category_COVID_baseline_26-35",
-   "36-45" = "age_category_COVID_baseline_36-45",
-   "46-55" = "age_category_COVID_baseline_46-55",
-   "56-65" = "age_category_COVID_baseline_56-65",
-   "66-70" =  "age_category_COVID_baseline_66-70",
-   "71+" = "age_category_COVID_baseline_71+",
+   "Minoritised gender" = "gender_cleaned_Minoritised gender",
+   "16-25 years" = "age_category_COVID_baseline_16-25",
+   "26-35 years" = "age_category_COVID_baseline_26-35",
+   "36-45 years" = "age_category_COVID_baseline_36-45",
+   "46-55 years" = "age_category_COVID_baseline_46-55",
+   "56-65 years" = "age_category_COVID_baseline_56-65",
+   "66-70 years" =  "age_category_COVID_baseline_66-70",
+   "71+ years" = "age_category_COVID_baseline_71+",
    "White" = "race_binary_White",
-   "No_qual" = "highest_education_No formal qualifications",                    
+   "No qualifications" = "highest_education_No formal qualifications",                    
    "GCSE/CSE" =  "highest_education_GCSE/CSE",                                    
    "NVQ" =  "highest_education_NVQ",                                        
    "A-Levels" =   "highest_education_A-levels",                                    
-   "Uni/Other_prof_qual" = "highest_education_University/Other professional qualifications",
-   "Psych_disorder" ="mental_health_diagnosis_Psychiatric disorder",
-   "Key_worker" ="paid_employment_key_worker_Key worker",
-   "Employed_not_key"  = "paid_employment_key_worker_Paid employment",
+   "Uni/Other prof qual" = "highest_education_University/Other professional qualifications",
+   "Psychiatric disorder" ="mental_health_diagnosis_Psychiatric disorder",
+   "Key worker" ="paid_employment_key_worker_Key worker",
+   "Employed (not key worker)"  = "paid_employment_key_worker_Paid employment",
    "Unemployed" = "paid_employment_key_worker_Not paid employment",
    "Student" = "paid_employment_key_worker_Student",
    "Retired"= "paid_employment_key_worker_Retired",
-   "Vulnerable_group" = "vulnerable_group_member_Yes",
-   "Positive_COVID_test" = "positive_covid_test_before_LW_final_Yes",
-   "Loss" = "lost_someone_before_LW_final_Yes",
-   "Lonelier_during_pandemic" = "increased_loneliness_during_pandemic_Yes",
-   "Change_main_eco" = "main_eco_change_before_LW_final_Yes",
-   "Change_living_sit" ="living_situation_change_before_LW_final_Yes",
-   "compulsive_beh_or_acts" = "ocd.compulsive_beh_mental_act_binary_Yes",
-   "repetitive_thoughts" =  "ocd.repetitive_unpleasant_thoughts_binary_Yes",
-   "pan_worry" = "panworry_total_score"
+   "Vulnerable group member" = "vulnerable_group_member_Yes",
+   "COVID-19 infection" = "positive_covid_test_before_LW_final_Yes",
+   "Loss due to COVID-19" = "lost_someone_before_LW_final_Yes",
+   "Change in main eco" = "main_eco_change_before_LW_final_Yes",
+   "Change in living sit" ="living_situation_change_before_LW_final_Yes",
+   "Compulsive beh/mental act" = "ocd.compulsive_beh_mental_act_binary_Yes",
+   "Repetitive thoughts" =  "ocd.repetitive_unpleasant_thoughts_binary_Yes",
+   "Pandemic worry score" = "panworry_total_score"
+
 ) 
 
 # Run correlation analyses with continious and dichotomous variables 
 LW_corr_mat_object <- psych::mixedCor(data=LW_dat_corr_mat,
-         c= 31,  # Continuous variables
+         c= 30,  # Continuous variables
          p= NULL,
          d= 1:29, # Dichotomous variable
              use="pairwise.complete.obs")
@@ -270,7 +328,10 @@ LW_corr_mat_object <- psych::mixedCor(data=LW_dat_corr_mat,
 LW_corr_mat_object_matrix <- LW_corr_mat_object$rho
 
 # Write file path to save plot
-png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/LW_exposures_corr_matrix.png")
+png(height = 900,
+    width = 900,
+    file = paste0(filepath_plots_corr, "LW_exposures_corr_matrix.png")
+)
 
 # Create correlation matrix with hierarchical clustering
 corrplot::corrplot(LW_corr_mat_object_matrix, 
@@ -279,13 +340,13 @@ corrplot::corrplot(LW_corr_mat_object_matrix,
          diag = FALSE, # do not show the correlations on the diagonal
          addgrid.col = NA,
          addCoef.col = "black", # colour for the correlation coefficients in the plot
-         tl.cex = 0.5,
-         order = "hclust",
+         tl.cex = 0.9,
+         order = "original",
          tl.col = "black",
          cl.align.text = "c",
          col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
          number.font = 0.1,
-         number.cex = 0.4,
+         number.cex = 0.8, # size of co-efficients
          sig.level = 0.01, # Choose significant level
          insig = "blank", # Nonsignificant correlations have no colour,
          bg = "white"
@@ -300,50 +361,51 @@ dev.off()
 # Select items for correlation matrix
 HI_dat_corr_mat <- dat_dummy %>%
   select( 
-   "Man" = "gender_cleaned_Man",
+  "Man" = "gender_cleaned_Man",
    "Woman" = "gender_cleaned_Woman",
-   "Minoritised_gender" = "gender_cleaned_Minoritised gender",
-   "16-25" = "age_category_COVID_baseline_16-25",
-   "26-35" = "age_category_COVID_baseline_26-35",
-   "36-45" = "age_category_COVID_baseline_36-45",
-   "46-55" = "age_category_COVID_baseline_46-55",
-   "56-65" = "age_category_COVID_baseline_56-65",
-   "66-70" =  "age_category_COVID_baseline_66-70",
-   "71+" = "age_category_COVID_baseline_71+",
+   "Minoritised gender" = "gender_cleaned_Minoritised gender",
+   "16-25 years" = "age_category_COVID_baseline_16-25",
+   "26-35 years" = "age_category_COVID_baseline_26-35",
+   "36-45 years" = "age_category_COVID_baseline_36-45",
+   "46-55 years" = "age_category_COVID_baseline_46-55",
+   "56-65 years" = "age_category_COVID_baseline_56-65",
+   "66-70 years" =  "age_category_COVID_baseline_66-70",
+   "71+ years" = "age_category_COVID_baseline_71+",
    "White" = "race_binary_White",
-  "No_qual" = "highest_education_No formal qualifications",                    
+   "No qualifications" = "highest_education_No formal qualifications",                    
    "GCSE/CSE" =  "highest_education_GCSE/CSE",                                    
    "NVQ" =  "highest_education_NVQ",                                        
    "A-Levels" =   "highest_education_A-levels",                                    
-   "Uni/Other_prof_qual" = "highest_education_University/Other professional qualifications",
-   "Psych_disorder" ="mental_health_diagnosis_Psychiatric disorder",
-   "Key_worker" ="paid_employment_key_worker_Key worker",
-   "Employed_not_key"  = "paid_employment_key_worker_Paid employment",
+   "Uni/Other prof qual" = "highest_education_University/Other professional qualifications",
+   "Psychiatric disorder" ="mental_health_diagnosis_Psychiatric disorder",
+   "Key worker" ="paid_employment_key_worker_Key worker",
+   "Employed (not key worker)"  = "paid_employment_key_worker_Paid employment",
    "Unemployed" = "paid_employment_key_worker_Not paid employment",
    "Student" = "paid_employment_key_worker_Student",
    "Retired"= "paid_employment_key_worker_Retired",
-   "Vulnerable_group" = "vulnerable_group_member_Yes",
-   "Positive_COVID_test" = "positive_covid_test_before_HI_final_Yes",
-   "Loss" = "lost_someone_before_HI_final_Yes",
-   "Lonelier_during_pandemic" = "increased_loneliness_during_pandemic_Yes",
-   "Change_main_eco" = "main_eco_change_before_HI_final_Yes",
-   "Change_living_sit" ="living_situation_change_before_HI_final_Yes",
-   "pan_worry" = "panworry_total_score"
+   "Vulnerable group member" = "vulnerable_group_member_Yes",
+   "COVID-19 infection" = "positive_covid_test_before_HI_final_Yes",
+   "Loss due to COVID-19" = "lost_someone_before_HI_final_Yes",
+   "Change in main eco" = "main_eco_change_before_HI_final_Yes",
+   "Change in living sit" ="living_situation_change_before_HI_final_Yes",
+   "Pandemic worry score" = "panworry_total_score"
  ) 
 
 # Run correlation analyses with continious and dichotomous variables 
 HI_corr_mat_object <- psych::mixedCor(data=HI_dat_corr_mat,
-         c= 29,  # Continuous variables
+         c= 28,  # Continuous variables
          p= NULL,
-         d= 1:28, # Dichotomous variable
+         d= 1:27, # Dichotomous variable
              use="pairwise.complete.obs")
-
 
 # Save correlation matrix in an object
 HI_corr_mat_object_matrix <- HI_corr_mat_object$rho
 
 # Write file path to save plot
-png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/HI_exposures_corr_matrix.png")
+png(height = 900,
+    width = 900,
+    file = paste0(filepath_plots_corr, "HI_exposures_corr_matrix.png")
+)
 
 # Create correlation matrix with hierarchical clustering
 corrplot::corrplot(HI_corr_mat_object_matrix, 
@@ -352,17 +414,18 @@ corrplot::corrplot(HI_corr_mat_object_matrix,
          diag = FALSE, # do not show the correlations on the diagonal
          addgrid.col = NA,
          addCoef.col = "black", # colour for the correlation coefficients in the plot
-         tl.cex = 0.5,
-         order = "hclust",
+         tl.cex = 0.9,
+         order = "original",
          tl.col = "black",
          cl.align.text = "c",
          col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
          number.font = 0.1,
-         number.cex = 0.4,
+         number.cex = 0.8, # size of co-efficients
          sig.level = 0.01, # Choose significant level
          insig = "blank", # Nonsignificant correlations have no colour,
          bg = "white"
          )
+
 
 # Save plot
 dev.off()
@@ -373,49 +436,51 @@ dev.off()
 # Select items for correlation matrix
 SH_dat_corr_mat <- dat_dummy %>%
   select(
-   "Man" = "gender_cleaned_Man",
+  "Man" = "gender_cleaned_Man",
    "Woman" = "gender_cleaned_Woman",
-   "Minoritised_gender" = "gender_cleaned_Minoritised gender",
-   "16-25" = "age_category_COVID_baseline_16-25",
-   "26-35" = "age_category_COVID_baseline_26-35",
-   "36-45" = "age_category_COVID_baseline_36-45",
-   "46-55" = "age_category_COVID_baseline_46-55",
-   "56-65" = "age_category_COVID_baseline_56-65",
-   "66-70" =  "age_category_COVID_baseline_66-70",
-   "71+" = "age_category_COVID_baseline_71+",
+   "Minoritised gender" = "gender_cleaned_Minoritised gender",
+   "16-25 years" = "age_category_COVID_baseline_16-25",
+   "26-35 years" = "age_category_COVID_baseline_26-35",
+   "36-45 years" = "age_category_COVID_baseline_36-45",
+   "46-55 years" = "age_category_COVID_baseline_46-55",
+   "56-65 years" = "age_category_COVID_baseline_56-65",
+   "66-70 years" =  "age_category_COVID_baseline_66-70",
+   "71+ years" = "age_category_COVID_baseline_71+",
    "White" = "race_binary_White",
-   "No_qual" = "highest_education_No formal qualifications",                    
+   "No qualifications" = "highest_education_No formal qualifications",                    
    "GCSE/CSE" =  "highest_education_GCSE/CSE",                                    
    "NVQ" =  "highest_education_NVQ",                                        
    "A-Levels" =   "highest_education_A-levels",                                    
-   "Uni/Other_prof_qual" = "highest_education_University/Other professional qualifications",
-   "Psych_disorder" ="mental_health_diagnosis_Psychiatric disorder",
-   "Key_worker" ="paid_employment_key_worker_Key worker",
-   "Employed_not_key"  = "paid_employment_key_worker_Paid employment",
+   "Uni/Other prof qual" = "highest_education_University/Other professional qualifications",
+   "Psychiatric disorder" ="mental_health_diagnosis_Psychiatric disorder",
+   "Key worker" ="paid_employment_key_worker_Key worker",
+   "Employed (not key worker)"  = "paid_employment_key_worker_Paid employment",
    "Unemployed" = "paid_employment_key_worker_Not paid employment",
    "Student" = "paid_employment_key_worker_Student",
    "Retired"= "paid_employment_key_worker_Retired",
-   "Vulnerable_group" = "vulnerable_group_member_Yes",
-   "Positive_COVID_test" = "positive_covid_test_before_SH_final_Yes",
-   "Loss" = "lost_someone_before_SH_final_Yes",
-   "Lonelier_during_pandemic" = "increased_loneliness_during_pandemic_Yes",
-   "Change_main_eco" = "main_eco_change_before_SH_final_Yes",
-   "Change_living_sit" ="living_situation_change_before_SH_final_Yes",
-   "pan_worry" = "panworry_total_score"
- ) 
+   "Vulnerable group member" = "vulnerable_group_member_Yes",
+   "COVID-19 infection" = "positive_covid_test_before_SH_final_Yes",
+   "Loss due to COVID-19" = "lost_someone_before_SH_final_Yes",
+   "Change in main eco" = "main_eco_change_before_SH_final_Yes",
+   "Change in living sit" ="living_situation_change_before_SH_final_Yes",
+   "Pandemic worry score" = "panworry_total_score"
+  ) 
 
 # Run correlation analyses with continious and dichotomous variables 
 SH_corr_mat_object <- psych::mixedCor(data=SH_dat_corr_mat,
-         c= 29,  # Continuous variables
+         c= 28,  # Continuous variables
          p= NULL,
-         d= 1:28, # Dichotomous variable
+         d= 1:27, # Dichotomous variable
              use="pairwise.complete.obs")
 
 # Save correlation matrix in an object
 SH_corr_mat_object_matrix <- SH_corr_mat_object$rho
 
 # Write file path to save plot
-png(file = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/correlations/SH_exposures_corr_matrix.png")
+png(height = 900,
+    width = 900,
+    file = paste0(filepath_plots_corr, "SH_exposures_corr_matrix.png")
+    )
 
 # Create correlation matrix with hierarchical clustering
 corrplot::corrplot(SH_corr_mat_object_matrix, 
@@ -424,13 +489,13 @@ corrplot::corrplot(SH_corr_mat_object_matrix,
          diag = FALSE, # do not show the correlations on the diagonal
          addgrid.col = NA,
          addCoef.col = "black", # colour for the correlation coefficients in the plot
-         tl.cex = 0.5,
-         order = "hclust",
+         tl.cex = 0.9,
+         order = "original",
          tl.col = "black",
          cl.align.text = "c",
          col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
          number.font = 0.1,
-         number.cex = 0.4,
+         number.cex = 0.8, # size of co-efficients
          sig.level = 0.01, # Choose significant level
          insig = "blank", # Nonsignificant correlations have no colour,
          bg = "white"

@@ -21,15 +21,21 @@ Clear global environment prior to initiation
 remove(list = ls())
 ```
 
+
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
 Add the add_numeric function - used to convert character variables into numeric variables
 Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
 Add the sumscores function - used to generate sumscores
 Add the package_check function - used to install and load dependencies
 Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
 source("./functions.R")
 ```
 
@@ -49,7 +55,7 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat <- readRDS("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_no_dup_entries2022-02-21.rds")
+dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-02-21.rds"))
 ```
 
 # Outcome = Self-harm 
@@ -2676,8 +2682,6 @@ dat <- dat %>%
                       dem.coronavirus_relative_previously_ill.1_.Wave_16b == "No" |
                       grief.due_past_month_lost_.Wave_16b  == "No" )   ~ "Not lost someone" 
                    
-                   
-                   #+++ check who is left over
                        )
          )
 
@@ -5741,6 +5745,5 @@ Save final dataset (interim analysis)
 Save dataset
 ```{r save dataset}
 saveRDS(object = final_dat_SH,
-       file = paste0("/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/data_cleaned/final_dat_SH", date, ".rds"))
-
+       file = paste0(filepath_saved_data, "final_dat_SH", date, ".rds"))
 ```
