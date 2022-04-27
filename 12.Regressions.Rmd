@@ -53,7 +53,7 @@ date
 
 # Read in data
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/final_dat_merged_2022-02-21.rds")
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-04-26.rds")
 dim(dat)
    colnames(dat)
 ```
@@ -153,7 +153,6 @@ model6 <- glm(NEW_binge_eating_pandemic ~
                  panworry_total_score + 
                  positive_covid_test_before_BE_final +
                  lost_someone_before_BE_final +
-                 increased_loneliness_during_pandemic +
                  main_eco_change_before_BE_final +
                  living_situation_change_before_BE_final,
                  data = dat,
@@ -188,7 +187,6 @@ dat_plot <- dat %>%
          "Pandemic_worry" = "panworry_total_score",
          "Covid_test" = "positive_covid_test_before_BE_final", 
          "Loss" = "lost_someone_before_BE_final", 
-         "Increased_loneliness" = "increased_loneliness_during_pandemic",
          "Main_eco_act_change" = "main_eco_change_before_BE_final", 
          "Living_sit_change" = "living_situation_change_before_BE_final" 
         )
@@ -205,7 +203,6 @@ explanatory <- c("Age",
                  "Pandemic_worry",
                  "Covid_test",
                  "Loss",
-                 "Increased_loneliness",
                  "Main_eco_act_change",
                  "Living_sit_change"
                )
@@ -235,7 +232,9 @@ ggsave(
   height = 20,
   units = "cm"
   )
+version
 ```
+
 
 # Low weight - extended model
 Age, gender, race, education, psych disorder, key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, lonelieness, change in main eco activity, change in living situation
@@ -250,7 +249,6 @@ model7 <- glm(NEW_low_weight_pandemic ~ age_category_COVID_baseline +
                  panworry_total_score + 
                  positive_covid_test_before_LW_final + 
                  lost_someone_before_LW_final + 
-                 increased_loneliness_during_pandemic + 
                  main_eco_change_before_LW_final + 
                  living_situation_change_before_LW_final +
                  ocd.compulsive_beh_mental_act_binary +
@@ -285,7 +283,6 @@ dat_plot <- dat %>%
         "Pandemic_worry" = "panworry_total_score",
          "Covid_test" = "positive_covid_test_before_LW_final",
          "Loss" = "lost_someone_before_LW_final",
-         "Increased_loneliness" = "increased_loneliness_during_pandemic",
          "Main_eco_act_change" = "main_eco_change_before_LW_final",
          "Living_sit_change" = "living_situation_change_before_LW_final",
         "Compulsive_beh_mental_act" = "ocd.compulsive_beh_mental_act_binary",
@@ -303,7 +300,6 @@ explanatory <- c("Age",
                  "Pandemic_worry",
                  "Covid_test",
                  "Loss",
-                 "Increased_loneliness",
                  "Main_eco_act_change",
                  "Living_sit_change",
                 "Compulsive_beh_mental_act",
@@ -349,7 +345,6 @@ model8 <- glm(NEW_harmful_ideation_pandemic ~ age_category_COVID_baseline +
                  panworry_total_score + 
                  positive_covid_test_before_HI_final + 
                  lost_someone_before_HI_final + 
-                 increased_loneliness_during_pandemic +
                  main_eco_change_before_HI_final +
                  living_situation_change_before_HI_final,
                data = dat,
@@ -383,7 +378,6 @@ dat_plot <- dat %>%
          "Pandemic_worry" = "panworry_total_score",
          "Covid_test" = "positive_covid_test_before_HI_final",
          "Loss" = "lost_someone_before_HI_final",
-         "Increased_loneliness" = "increased_loneliness_during_pandemic",
          "Main_eco_act_change" = "main_eco_change_before_HI_final",
          "Living_sit_change" = "living_situation_change_before_HI_final"
          
@@ -400,7 +394,6 @@ explanatory <- c("Age",
                  "Pandemic_worry",
                  "Covid_test",
                  "Loss",
-                 "Increased_loneliness",
                  "Main_eco_act_change",
                  "Living_sit_change")
 
@@ -443,7 +436,6 @@ model10 <- glm(NEW_selfharm_pandemic ~ age_category_COVID_baseline +
                  panworry_total_score + 
                  positive_covid_test_before_SH_final + 
                  lost_someone_before_SH_final + 
-                 increased_loneliness_during_pandemic +
                  main_eco_change_before_SH_final +
                  living_situation_change_before_SH_final,
                data = dat,
@@ -476,7 +468,6 @@ dat_plot <- dat %>%
          "Pandemic_worry" = "panworry_total_score",
          "Covid_test" = "positive_covid_test_before_SH_final",
          "Loss" = "lost_someone_before_SH_final",
-         "Increased_loneliness" = "increased_loneliness_during_pandemic",
          "Main_eco_act_change" = "main_eco_change_before_SH_final",
          "Living_sit_change" = "living_situation_change_before_SH_final"
          
@@ -493,7 +484,6 @@ explanatory <- c("Age",
                  "Pandemic_worry",
                  "Covid_test",
                  "Loss",
-                 "Increased_loneliness",
                  "Main_eco_act_change",
                  "Living_sit_change")
 

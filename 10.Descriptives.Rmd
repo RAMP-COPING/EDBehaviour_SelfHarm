@@ -331,7 +331,7 @@ harmful_ideation_group <- dat_final %>% # 12,677
              !is.na(living_situation_change_before_HI_final)
           ) 
 
-selfharm_group <- dat_final %>% # 14,706
+selfharm_group <- dat_final %>% # 20,310
    filter(!is.na(NEW_selfharm_pandemic) &
              !is.na(age_category_COVID_baseline) & 
              !is.na(gender_cleaned) &
@@ -454,15 +454,15 @@ ggpubr::ggarrange(signup_BMI_whole_sample_qqplot,
           signup_BMI_SH_qqplot,
           signup_BMI_SH_histogram,
           font.label = list(size = 18),
-          labels = c("Whole sample (n = 18,362)",
+          labels = c("Whole sample (n = 25,206)",
                      "",
-                     "Binge eating sub-sample (n = 13,197)",
+                     "Binge eating sub-sample (n = 18,229)",
                      "",
-                     "Low weight sub-sample (n = 12,036)",
+                     "Low weight sub-sample (n = 16,390)",
                      "",
-                     "Suicidal and/or self-harm sub-sample (n = 9,099)",
+                     "Suicidal and/or self-harm sub-sample (n = 12,677)",
                      "",
-                      "Self-harm sub-sample (n = 14,706)"
+                      "Self-harm sub-sample (n = 20,310)"
                      ),
           hjust = 0.001,
           ncol = 2,
@@ -577,15 +577,15 @@ ggpubr::ggarrange(lowest_BMI_whole_sample_qqplot,
           lowest_BMI_SH_qqplot,
           lowest_BMI_SH_histogram,
           font.label = list(size = 18),
-          labels = c("Whole sample (n = 18,362)",
+          labels = c("Whole sample (n = 25,206)",
                      "",
-                     "Binge eating sub-sample (n = 13,197)",
+                     "Binge eating sub-sample (n = 18,229)",
                      "",
-                     "Low weight sub-sample (n = 12,036)",
+                     "Low weight sub-sample (n = 16,390)",
                      "",
-                     "Suicidal and/or self-harm sub-sample (n = 9,099)",
+                     "Suicidal and/or self-harm sub-sample (n = 12,677)",
                      "",
-                      "Self-harm sub-sample (n = 14,706)"
+                      "Self-harm sub-sample (n = 20,310)"
                      ),
           hjust = 0.001,
           ncol = 2,
@@ -700,15 +700,15 @@ ggpubr::ggarrange(highest_BMI_whole_sample_qqplot,
           highest_BMI_SH_qqplot,
           highest_BMI_SH_histogram,
           font.label = list(size = 18),
-          labels = c("Whole sample (n = 18,362)",
+          labels = c("Whole sample (n = 25,206)",
                      "",
-                     "Binge eating sub-sample (n = 13,197)",
+                     "Binge eating sub-sample (n = 18,229)",
                      "",
-                     "Low weight sub-sample (n = 12,036)",
+                     "Low weight sub-sample (n = 16,390)",
                      "",
-                     "Suicidal and/or self-harm sub-sample (n = 9,099)",
+                     "Suicidal and/or self-harm sub-sample (n = 12,677)",
                      "",
-                      "Self-harm sub-sample (n = 14,706)"
+                      "Self-harm sub-sample (n = 20,310)"
                      ),
           hjust = 0.001,
           ncol = 2,
