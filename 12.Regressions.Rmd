@@ -20,15 +20,20 @@ Clear global environment prior to initiation
 remove(list = ls())
 ```
 
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
 Add the add_numeric function - used to convert character variables into numeric variables
 Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
 Add the sumscores function - used to generate sumscores
 Add the package_check function - used to install and load dependencies
 Add the imp_check function - used to check variables for implausible values
 ```{r Read in functions}
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/add_numeric.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/remove_duplicates.R")
-source(file = "/Users/helenadavies/werk/ilovedata/scripts/functions/package_check.R")
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
 source("./functions.R")
 ```
 
@@ -134,15 +139,15 @@ dat %>%
   freq(paid_employment_key_worker)
 ```
 
-# EXTENDED MODELS
+# MAIN ANALYSIS MODELS
 Adding: Key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, lonelieness, change in main eco activity, change in living situation
 
-## Binge eating - extended model
-Age, gender, race, education, psych disorder, key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, lonelieness, change in main eco activity, change in living situation
+## Binge eating
+Age, gender, race, education, psych disorder, key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, change in main eco activity, change in living situation
 
 Pandemic worry: If you include a continuous predictor in your logistic regression, the exponentiated coefficient represents the odds ratio for one unit change in the predictor. Often, one unit isn't meaningful and you want the odds ratio for, say, 10 units. To calculate this, just exponentiate the coefficient multiplied by 10: 𝑂𝑅10=exp(𝛽⋅10). 
 ```{r Binge eating extended model}
-model6 <- glm(NEW_binge_eating_pandemic ~  
+model1 <- glm(NEW_binge_eating_pandemic ~  
                  age_category_COVID_baseline +
                  gender_cleaned +
                  race_binary +
@@ -159,18 +164,17 @@ model6 <- glm(NEW_binge_eating_pandemic ~
                  family = "binomial"
               )
 
-binge_eating_main <- tidy(model6,
+binge_eating_main <- tidy(model1,
      conf.int=TRUE,
      exponentiate=TRUE)
 
-fitted(model6) %>% 
+fitted(model1) %>% 
   length()
 
 # Pseudo R2
-DescTools::PseudoR2(model6, which = "McFadden")
-DescTools::PseudoR2(model6, which = "McFaddenAdj")
-DescTools::PseudoR2(model6, which = "Nagelkerke")
-
+DescTools::PseudoR2(model1, which = "McFadden")
+DescTools::PseudoR2(model1, which = "McFaddenAdj")
+DescTools::PseudoR2(model1, which = "Nagelkerke")
 ```
 
 Plot
@@ -179,16 +183,16 @@ dat_plot <- dat %>%
   select("Age" = "age_category_COVID_baseline",
          "Gender" = "gender_cleaned",
          "Race" = "race_binary",
-         "Pandemic_binge_eating" = "NEW_binge_eating_pandemic",
+         "New_onset_binge_eating" = "NEW_binge_eating_pandemic",
          "Education" = "highest_education",
-         "Psych_disorder" = "psych_disorder_factor",
-         "Employment" = "paid_employment_key_worker",
+         "Psychiatric_disorder" = "psych_disorder_factor",
+         "Employment_status" = "paid_employment_key_worker",
          "Vulnerable_group_member" ="vulnerable_group_member",
-         "Pandemic_worry" = "panworry_total_score",
-         "Covid_test" = "positive_covid_test_before_BE_final", 
-         "Loss" = "lost_someone_before_BE_final", 
-         "Main_eco_act_change" = "main_eco_change_before_BE_final", 
-         "Living_sit_change" = "living_situation_change_before_BE_final" 
+         "Pandemic_worry_score" = "panworry_total_score",
+         "COVID19_infection" = "positive_covid_test_before_BE_final", 
+         "Loss_due_to_COVID19" = "lost_someone_before_BE_final", 
+         "Change_in_main_eco_activity" = "main_eco_change_before_BE_final", 
+         "Change_in_living_situation" = "living_situation_change_before_BE_final" 
         )
 
 
@@ -197,25 +201,25 @@ explanatory <- c("Age",
                  "Gender",
                  "Race",
                  "Education",
-                 "Psych_disorder",
-                 "Employment",
+                 "Psychiatric_disorder",
+                 "Employment_status",
                  "Vulnerable_group_member",
-                 "Pandemic_worry",
-                 "Covid_test",
-                 "Loss",
-                 "Main_eco_act_change",
-                 "Living_sit_change"
+                 "Pandemic_worry_score",
+                 "COVID19_infection",
+                 "Loss_due_to_COVID19",
+                 "Change_in_main_eco_activity",
+                 "Change_in_living_situation"
                )
 
-dependent <- "Pandemic_binge_eating"
+dependent <- "New_onset_binge_eating"
 
 BE_extended_dat_plot <- dat_plot %>%
   finalfit::or_plot(dependent,
                     explanatory, 
           breaks = c(0.5, 1, 5, 10, 20, 30),
-          table_text_size = 3.0,
+          table_text_size = 3.5,
           title_text_size = 15,
-          dependent_label = "New experience binge eating during pandemic",
+          dependent_label = "New onset binge eating during pandemic",
           remove_ref = FALSE) 
 ```
 
@@ -226,20 +230,18 @@ ggsave(
                     ".png"),
   plot = BE_extended_dat_plot,
   device = "png", 
-  path = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/extended", 
+  path = paste0(filepath_plots_main_regressions), 
   scale = 1,
   width = 25,
-  height = 20,
+  height = 25,
   units = "cm"
   )
-version
 ```
 
-
-# Low weight - extended model
-Age, gender, race, education, psych disorder, key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, lonelieness, change in main eco activity, change in living situation
+# Low weight 
+Age, gender, race, education, psych disorder, key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, change in main eco activity, change in living situation, OCD symptoms
 ```{r Low weight extended model}
-model7 <- glm(NEW_low_weight_pandemic ~ age_category_COVID_baseline +
+model2 <- glm(NEW_low_weight_pandemic ~ age_category_COVID_baseline +
                  gender_cleaned +
                  race_binary +
                  highest_education +
@@ -251,22 +253,21 @@ model7 <- glm(NEW_low_weight_pandemic ~ age_category_COVID_baseline +
                  lost_someone_before_LW_final + 
                  main_eco_change_before_LW_final + 
                  living_situation_change_before_LW_final +
-                 ocd.compulsive_beh_mental_act_binary +
-                 ocd.repetitive_unpleasant_thoughts_binary,
+                 OCD_symptoms,
                  data = dat,
                  family = "binomial")
 
-low_weight_main <- tidy(model7,
+low_weight_main <- tidy(model2,
      conf.int=TRUE,
      exponentiate=TRUE)
 
-fitted(model7) %>% 
+fitted(model2) %>% 
   length()
 
 # Pseudo R2
-DescTools::PseudoR2(model7, which = "McFadden")
-DescTools::PseudoR2(model7, which = "McFaddenAdj")
-DescTools::PseudoR2(model7, which = "Nagelkerke")
+DescTools::PseudoR2(model2, which = "McFadden")
+DescTools::PseudoR2(model2, which = "McFaddenAdj")
+DescTools::PseudoR2(model2, which = "Nagelkerke")
 ```
 
 Plot
@@ -275,46 +276,44 @@ dat_plot <- dat %>%
   select("Age" = "age_category_COVID_baseline",
          "Gender" = "gender_cleaned",
          "Race" = "race_binary",
-         "Pandemic_low_weight" = "NEW_low_weight_pandemic",
+         "New_onset_low_weight" = "NEW_low_weight_pandemic",
          "Education" = "highest_education",
-         "Psych_disorder" = "psych_disorder_factor",
-         "Employment" = "paid_employment_key_worker",
+         "Psychiatric_disorder" = "psych_disorder_factor",
+         "Employment_status" = "paid_employment_key_worker",
          "Vulnerable_group_member" ="vulnerable_group_member",
-        "Pandemic_worry" = "panworry_total_score",
-         "Covid_test" = "positive_covid_test_before_LW_final",
-         "Loss" = "lost_someone_before_LW_final",
-         "Main_eco_act_change" = "main_eco_change_before_LW_final",
-         "Living_sit_change" = "living_situation_change_before_LW_final",
-        "Compulsive_beh_mental_act" = "ocd.compulsive_beh_mental_act_binary",
-         "Repetitive_unpleasant_thoughts" = "ocd.repetitive_unpleasant_thoughts_binary"
+         "Pandemic_worry_score" = "panworry_total_score",
+         "COVID19_infection" = "positive_covid_test_before_LW_final",
+         "Loss_due_to_COVID19" = "lost_someone_before_LW_final",
+         "Change_in_main_eco_activity" = "main_eco_change_before_LW_final",
+         "Change_in_living_situation" = "living_situation_change_before_LW_final",
+         "OCD_symptoms"
         )
-
+       
 # 1. Plot
 explanatory <- c("Age",
                  "Gender",
                  "Race",
                  "Education",
-                 "Psych_disorder",
-                 "Employment",
+                 "Psychiatric_disorder",
+                 "Employment_status",
                  "Vulnerable_group_member",
-                 "Pandemic_worry",
-                 "Covid_test",
-                 "Loss",
-                 "Main_eco_act_change",
-                 "Living_sit_change",
-                "Compulsive_beh_mental_act",
-                "Repetitive_unpleasant_thoughts")
+                 "Pandemic_worry_score",
+                 "COVID19_infection",
+                 "Loss_due_to_COVID19",
+                 "Change_in_main_eco_activity",
+                 "Change_in_living_situation",
+                 "OCD_symptoms")
 
-dependent <- "Pandemic_low_weight"
+dependent <- "New_onset_low_weight"
 
 LW_extended_dat_plot <- dat_plot %>%
   finalfit::or_plot(dependent,
                     explanatory, 
           breaks = c(0.5, 1, 5, 10, 20, 30),
-          table_text_size = 3.0,
+          table_text_size = 3.5,
           title_text_size = 15,
           dependent_label = "New onset low weight during pandemic",
-           remove_ref = FALSE) 
+          remove_ref = FALSE) 
 ```
 
 ```{r Save LW extended level plot}
@@ -324,18 +323,18 @@ ggsave(
                     ".png"),
   plot = LW_extended_dat_plot,
   device = "png", 
-  path = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/extended", 
-  scale = 1,
+  path = paste0(filepath_plots_main_regressions), 
+   scale = 1,
   width = 25,
-  height = 20,
+  height = 25,
   units = "cm"
   )
 ```
 
-# Self-harm/suicidal ideation - extended model
-Age, gender, race, education, psych disorder, key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, lonelieness, change in main eco activity, change in living situation
+# Self-harm/suicidal ideation 
+Age, gender, race, education, psych disorder, key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, change in main eco activity, change in living situation
 ```{r Harmful ideation extended model}
-model8 <- glm(NEW_harmful_ideation_pandemic ~ age_category_COVID_baseline + 
+model3 <- glm(NEW_harmful_ideation_pandemic ~ age_category_COVID_baseline + 
                  gender_cleaned + 
                  race_binary + 
                  highest_education + 
@@ -347,22 +346,21 @@ model8 <- glm(NEW_harmful_ideation_pandemic ~ age_category_COVID_baseline +
                  lost_someone_before_HI_final + 
                  main_eco_change_before_HI_final +
                  living_situation_change_before_HI_final,
-               data = dat,
-               family = "binomial")
+                 data = dat,
+                 family = "binomial")
 
-harmful_ideation_main <- tidy(model8,
+harmful_ideation_main <- tidy(model3,
      conf.int=TRUE,
      exponentiate=TRUE)
 
-fitted(model8) %>% 
+fitted(model3) %>% 
   length()
 
 # Psuedo R2
-DescTools::PseudoR2(model8, which = "McFadden")
-DescTools::PseudoR2(model8, which = "McFaddenAdj")
-DescTools::PseudoR2(model8, which = "Nagelkerke")
+DescTools::PseudoR2(model3, which = "McFadden")
+DescTools::PseudoR2(model3, which = "McFaddenAdj")
+DescTools::PseudoR2(model3, which = "Nagelkerke")
 ```
-
 
 Plot
 ```{r Harmful ideation extended model plot}
@@ -370,41 +368,41 @@ dat_plot <- dat %>%
   select("Age" = "age_category_COVID_baseline",
          "Gender" = "gender_cleaned",
          "Race" = "race_binary",
-         "Pandemic_harmful_ideation" = "NEW_harmful_ideation_pandemic",
+         "New_onset_suicidal_selfharm_ideation" = "NEW_harmful_ideation_pandemic",
          "Education" = "highest_education",
-         "Psych_disorder" = "psych_disorder_factor",
-         "Employment" = "paid_employment_key_worker",
+         "Psychiatric_disorder" = "psych_disorder_factor",
+         "Employment_status" = "paid_employment_key_worker",
          "Vulnerable_group_member" ="vulnerable_group_member",
-         "Pandemic_worry" = "panworry_total_score",
-         "Covid_test" = "positive_covid_test_before_HI_final",
-         "Loss" = "lost_someone_before_HI_final",
-         "Main_eco_act_change" = "main_eco_change_before_HI_final",
-         "Living_sit_change" = "living_situation_change_before_HI_final"
+         "Pandemic_worry_score" = "panworry_total_score",
+         "COVID19_infection" = "positive_covid_test_before_HI_final",
+         "Loss_due_to_COVID19" = "lost_someone_before_HI_final",
+         "Change_in_main_eco_activity" = "main_eco_change_before_HI_final",
+         "Change_in_living_situation" = "living_situation_change_before_HI_final"
          
         )
 
 # 1. Plot
 explanatory <- c("Age",
-                "Gender",
+                 "Gender",
                  "Race",
                  "Education",
-                 "Psych_disorder",
-                 "Employment",
+                 "Psychiatric_disorder",
+                 "Employment_status",
                  "Vulnerable_group_member",
-                 "Pandemic_worry",
-                 "Covid_test",
-                 "Loss",
-                 "Main_eco_act_change",
-                 "Living_sit_change")
+                 "Pandemic_worry_score",
+                 "COVID19_infection",
+                 "Loss_due_to_COVID19",
+                 "Change_in_main_eco_activity",
+                 "Change_in_living_situation")
 
-dependent <- "Pandemic_harmful_ideation"
+dependent <- "New_onset_suicidal_selfharm_ideation"
 
 HI_extended_dat_plot <- dat_plot %>%
   finalfit::or_plot(dependent, explanatory, 
           breaks = c(0.5, 1, 5, 10, 20, 30),
-          table_text_size = 3.0,
+           table_text_size = 3.5,
           title_text_size = 13,
-          dependent_label = "New onset self-harm/suicidal ideation during pandemic",
+          dependent_label = "New onset suicidal and/or self-harm ideation during pandemic",
            remove_ref = FALSE) 
 ```
 
@@ -415,18 +413,18 @@ ggsave(
                     ".png"),
   plot = HI_extended_dat_plot,
   device = "png", 
-  path = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/extended", 
+  path = paste0(filepath_plots_main_regressions), 
   scale = 1,
   width = 25,
- height = 20,
+  height = 25,
   units = "cm"
   )
 ```
 
-# Self-harm - extended model
-Age, gender, race, education, psych disorder, key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, lonelieness, change in main eco activity, change in living situation
+# Self-harm
+Age, gender, race, education, psych disorder, key worker/employment status, vulnerable group member, pandemic worry, positive COVID test, loss of loved one, change in main eco activity, change in living situation
 ```{r Self-harm extended model}
-model10 <- glm(NEW_selfharm_pandemic ~ age_category_COVID_baseline + 
+model4 <- glm(NEW_selfharm_pandemic ~ age_category_COVID_baseline + 
                  gender_cleaned + 
                  race_binary + 
                  highest_education + 
@@ -438,20 +436,20 @@ model10 <- glm(NEW_selfharm_pandemic ~ age_category_COVID_baseline +
                  lost_someone_before_SH_final + 
                  main_eco_change_before_SH_final +
                  living_situation_change_before_SH_final,
-               data = dat,
-               family = "binomial")
+                 data = dat,
+                 family = "binomial")
 
-selfharm_main <-  tidy(model10,
+selfharm_main <-  tidy(model4,
      conf.int=TRUE,
      exponentiate=TRUE)
 
-fitted(model10) %>% 
+fitted(model4) %>% 
   length()
 
 # Psuedo R2
-DescTools::PseudoR2(model10, which = "McFadden")
-DescTools::PseudoR2(model10, which = "McFaddenAdj")
-DescTools::PseudoR2(model10, which = "Nagelkerke")
+DescTools::PseudoR2(model4, which = "McFadden")
+DescTools::PseudoR2(model4, which = "McFaddenAdj")
+DescTools::PseudoR2(model4, which = "Nagelkerke")
 ```
 
 Plot 
@@ -460,16 +458,16 @@ dat_plot <- dat %>%
   select("Age" = "age_category_COVID_baseline",
          "Gender" = "gender_cleaned",
          "Race" = "race_binary",
-         "Pandemic_selfharm" = "NEW_selfharm_pandemic",
+         "New_onset_selfharm" = "NEW_selfharm_pandemic",
          "Education" = "highest_education",
-         "Psych_disorder" = "psych_disorder_factor",
-         "Employment" = "paid_employment_key_worker",
+         "Psychiatric_disorder" = "psych_disorder_factor",
+         "Employment_status" = "paid_employment_key_worker",
          "Vulnerable_group_member" ="vulnerable_group_member",
-         "Pandemic_worry" = "panworry_total_score",
-         "Covid_test" = "positive_covid_test_before_SH_final",
-         "Loss" = "lost_someone_before_SH_final",
-         "Main_eco_act_change" = "main_eco_change_before_SH_final",
-         "Living_sit_change" = "living_situation_change_before_SH_final"
+         "Pandemic_worry_score" = "panworry_total_score",
+         "COVID19_infection" = "positive_covid_test_before_SH_final",
+         "Loss_due_to_COVID19" = "lost_someone_before_SH_final",
+         "Change_in_main_eco_activity" = "main_eco_change_before_SH_final",
+         "Change_in_living_situation" = "living_situation_change_before_SH_final"
          
         )
 
@@ -478,21 +476,21 @@ explanatory <- c("Age",
                  "Gender",
                  "Race",
                  "Education",
-                 "Psych_disorder",
-                 "Employment",
+                 "Psychiatric_disorder",
+                 "Employment_status",
                  "Vulnerable_group_member",
-                 "Pandemic_worry",
-                 "Covid_test",
-                 "Loss",
-                 "Main_eco_act_change",
-                 "Living_sit_change")
+                 "Pandemic_worry_score",
+                 "COVID19_infection",
+                 "Loss_due_to_COVID19",
+                 "Change_in_main_eco_activity",
+                 "Change_in_living_situation")
 
-dependent <- "Pandemic_selfharm"
+dependent <- "New_onset_selfharm"
 
 SH_extended_dat_plot <- dat_plot %>%
   finalfit::or_plot(dependent, explanatory, 
           breaks = c(0.5, 1, 5, 10, 20, 30),
-          table_text_size = 3.0,
+          table_text_size = 3.5,
           title_text_size = 13,
           dependent_label = "New onset self-harm during pandemic",
           remove_ref = FALSE)
@@ -505,10 +503,10 @@ ggsave(
                     ".png"),
   plot = SH_extended_dat_plot,
   device = "png", 
-  path = "/Users/helenadavies/werk/EDBEHSELFHARM2/gitEDBEHSELFHARM/plots/extended", 
+  path = paste0(filepath_plots_main_regressions), 
   scale = 1,
   width = 25,
-  height = 20,
+  height = 25,
   units = "cm"
   )
 ```
