@@ -218,7 +218,7 @@ dat <- dat %>%
          )
 
 dat %>%
-  freq(sex_binary_numeric) # NB: Missing data is becuase we are only looking at EDGI AND GLAD COPING and ~7000 NBR participants did not answer the sex question.
+  freq(sex_binary_numeric) # NB: Missing data is because we are only looking at EDGI AND GLAD COPING and ~7000 NBR participants did not answer the sex question.
 
 dat %>%
   filter(is.na(sex_binary_numeric)) %>%
@@ -495,7 +495,7 @@ panworry <- dat %>%
 colMeans(is.na(panworry))*100
 ```
 
-The 'other' item on the pandemic worry measure has higher missigness than all other variables. This is probably because the question asked people to 'Please specify' within a text box. I am going to assume that anyone who answered ALL other questions bar the 'Other' question most likely does not have anything to specify and therefore skipped the question. I will set anyone who is missing for 'Other' to 0.
+The 'other' item on the pandemic worry measure has higher missingness than all other variables. This is probably because the question asked people to 'Please specify' within a text box. I am going to assume that anyone who answered ALL other questions bar the 'Other' question most likely does not have anything to specify and therefore skipped the question. I will set anyone who is missing for 'Other' to 0.
 ```{r set missing for other to 0}
 dat <- dat %>%
   mutate(panworry.other__numeric =
