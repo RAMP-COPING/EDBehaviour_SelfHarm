@@ -111,57 +111,6 @@ outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_obje
 dev.off()
 ```
 
-## Corelation of all outcomes included in analysis
-```{r all outcomes correlation matrix}
-# Select items for correlation matrix
-outcome_corr <- dat %>%
-  select(
-   `New onset binge eating` = "NEW_binge_eating_pandemic",
-   `New onset low weight` = "NEW_low_weight_pandemic",
-   `New onset suicidal and/or self-harm ideation` = "NEW_harmful_ideation_pandemic",
-   `New onset self-harm` = "NEW_selfharm_pandemic"
- ) 
-
-# Run correlation analyses with continious and dichotomous variables 
-outcome_corr_object <- psych::mixedCor(data=outcome_corr,
-         c= NULL,  # Continuous variables
-         p= NULL,
-         d= 1:4, # Dichotomous variable
-             use="pairwise.complete.obs")
-
-
-# Save correlation matrix in an object
-outcome_corr_object_object_matrix <- outcome_corr_object$rho
-
-# Write file path to save plot
-png(file = paste0(filepath_plots_corr, "analysis_outcomes_corr_matrix.png"))
-
-# Create correlation matrix with hierarchical clustering
-outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_object_matrix, 
-         method = "color", # objects to represent the correlations on plot
-         type = "lower", # only use the lower triangle of the matrix
-         diag = FALSE, # do not show the correlations on the diagonal
-         addgrid.col = NA,
-         addCoef.col = "black", # colour for the correlation coefficients in the plot
-         tl.cex = 1,
-         cl.cex = 1,
-         order = "original",
-         tl.col = "black",
-         cl.align.text = "c",
-         col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
-         number.font = 0.5,
-          number.cex = 1, # size of co-efficients
-         sig.level = 0.01, # Choose significant level
-         insig = "blank", # Nonsignificant correlations have no colour,
-         bg = "white"
-         )
-
-?corrplot
-
-# Save plot
-dev.off()
-```
-
 # CORRELATION MATRICES of exposure variables (assessing multicollinearity)
 ## Dummy coding variables
 ```{r Dummy coding categorical variables}
@@ -190,7 +139,8 @@ descriptives.columns.dummy <- c(
   "living_situation_change_before_HI_final",
   "living_situation_change_before_SH_final",
   "ocd.compulsive_beh_mental_act_binary",
-  "ocd.repetitive_unpleasant_thoughts_binary"
+  "ocd.repetitive_unpleasant_thoughts_binary",
+  "OCD_symptoms"
 )
 ```
 
@@ -484,6 +434,133 @@ png(height = 900,
 
 # Create correlation matrix with hierarchical clustering
 corrplot::corrplot(SH_corr_mat_object_matrix, 
+         method = "color", # objects to represent the correlations on plot
+         type = "lower", # only use the lower triangle of the matrix
+         diag = FALSE, # do not show the correlations on the diagonal
+         addgrid.col = NA,
+         addCoef.col = "black", # colour for the correlation coefficients in the plot
+         tl.cex = 0.9,
+         order = "original",
+         tl.col = "black",
+         cl.align.text = "c",
+         col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
+         number.font = 0.1,
+         number.cex = 0.8, # size of co-efficients
+         sig.level = 0.01, # Choose significant level
+         insig = "blank", # Nonsignificant correlations have no colour,
+         bg = "white"
+         )
+
+# Save plot
+dev.off()
+```
+
+# Post pre-processing
+## Corelation of all outcomes included in analysis
+```{r all outcomes correlation matrix}
+# Select items for correlation matrix
+outcome_corr <- dat %>%
+  select(
+   `New onset binge eating` = "NEW_binge_eating_pandemic",
+   `New onset low weight` = "NEW_low_weight_pandemic",
+   `New onset suicidal and/or self-harm ideation` = "NEW_harmful_ideation_pandemic",
+   `New onset self-harm` = "NEW_selfharm_pandemic"
+ ) 
+
+# Run correlation analyses with continious and dichotomous variables 
+outcome_corr_object <- psych::mixedCor(data=outcome_corr,
+         c= NULL,  # Continuous variables
+         p= NULL,
+         d= 1:4, # Dichotomous variable
+             use="pairwise.complete.obs")
+
+
+# Save correlation matrix in an object
+outcome_corr_object_object_matrix <- outcome_corr_object$rho
+
+# Write file path to save plot
+png(file = paste0(filepath_plots_corr, "analysis_outcomes_corr_matrix.png"))
+
+# Create correlation matrix with hierarchical clustering
+outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_object_matrix, 
+         method = "color", # objects to represent the correlations on plot
+         type = "lower", # only use the lower triangle of the matrix
+         diag = FALSE, # do not show the correlations on the diagonal
+         addgrid.col = NA,
+         addCoef.col = "black", # colour for the correlation coefficients in the plot
+         tl.cex = 1,
+         cl.cex = 1,
+         order = "original",
+         tl.col = "black",
+         cl.align.text = "c",
+         col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
+         number.font = 0.5,
+          number.cex = 1, # size of co-efficients
+         sig.level = 0.01, # Choose significant level
+         insig = "blank", # Nonsignificant correlations have no colour,
+         bg = "white"
+         )
+
+# Save plot
+dev.off()
+```
+
+## Low weight
+```{r low weight correlation matrix}
+# Select items for correlation matrix
+LW_dat_corr_mat <- dat_dummy %>%
+  select(
+     "Man" = "gender_cleaned_Man",
+   "Woman" = "gender_cleaned_Woman",
+   "Minoritised gender" = "gender_cleaned_Minoritised gender",
+   "16-25 years" = "age_category_COVID_baseline_16-25",
+   "26-35 years" = "age_category_COVID_baseline_26-35",
+   "36-45 years" = "age_category_COVID_baseline_36-45",
+   "46-55 years" = "age_category_COVID_baseline_46-55",
+   "56-65 years" = "age_category_COVID_baseline_56-65",
+   "66-70 years" =  "age_category_COVID_baseline_66-70",
+   "71+ years" = "age_category_COVID_baseline_71+",
+   "White" = "race_binary_White",
+   "No qualifications" = "highest_education_No formal qualifications",                    
+   "GCSE/CSE" =  "highest_education_GCSE/CSE",                                    
+   "NVQ" =  "highest_education_NVQ",                                        
+   "A-Levels" =   "highest_education_A-levels",                                    
+   "Uni/Other prof qual" = "highest_education_University/Other professional qualifications",
+   "Psychiatric disorder" ="mental_health_diagnosis_Psychiatric disorder",
+   "Key worker" ="paid_employment_key_worker_Key worker",
+   "Employed (not key worker)"  = "paid_employment_key_worker_Paid employment",
+   "Unemployed" = "paid_employment_key_worker_Not paid employment",
+   "Student" = "paid_employment_key_worker_Student",
+   "Retired"= "paid_employment_key_worker_Retired",
+   "Vulnerable group member" = "vulnerable_group_member_Yes",
+   "COVID-19 infection" = "positive_covid_test_before_LW_final_Yes",
+   "Loss due to COVID-19" = "lost_someone_before_LW_final_Yes",
+   "Change in main eco" = "main_eco_change_before_LW_final_Yes",
+   "Change in living sit" ="living_situation_change_before_LW_final_Yes",
+   "OCD symptoms" =  "OCD_symptoms_Yes",
+   "Pandemic worry score" = "panworry_total_score"
+
+) 
+
+# Run correlation analyses with continious and dichotomous variables 
+LW_corr_mat_object <- psych::mixedCor(data=LW_dat_corr_mat,
+         c= 29,  # Continuous variables
+         p= NULL,
+         d= 1:28, # Dichotomous variable
+             use="pairwise.complete.obs")
+
+
+#Save correlation matrix in an object
+LW_corr_mat_object_matrix <- LW_corr_mat_object$rho
+
+# Write file path to save plot
+png(height = 900,
+    width = 900,
+    file = paste0(filepath_plots_corr, "merged_ocd_LW_exposures_corr_matrix.png")
+)
+
+# Create correlation matrix with hierarchical clustering
+corrplot::corrplot(LW_corr_mat_object_matrix, 
          method = "color", # objects to represent the correlations on plot
          type = "lower", # only use the lower triangle of the matrix
          diag = FALSE, # do not show the correlations on the diagonal

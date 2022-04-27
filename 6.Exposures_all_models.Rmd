@@ -546,6 +546,18 @@ dat %>%
 # Check
 dat %>%
   freq(ocd.compulsive_beh_mental_act_binary)
+
+# These variables are highly correlated (0.76). Need to merge.
+dat <- dat %>%
+  mutate(OCD_symptoms =
+           case_when(
+             ocd.repetitive_unpleasant_thoughts_binary == "Yes" |
+             ocd.compulsive_beh_mental_act_binary == "Yes" ~ "Yes", # Any 'Yes'
+             
+             ocd.repetitive_unpleasant_thoughts_binary == "No" &
+             ocd.compulsive_beh_mental_act_binary == "No" ~ "No"  
+             
+           ))
 ```
 
 # Saving dataset
@@ -558,6 +570,7 @@ final_dat <- dat %>%
          # Exposures only in low weight models
          ocd.repetitive_unpleasant_thoughts_binary,
          ocd.compulsive_beh_mental_act_binary,
+         OCD_symptoms,
          
          # Exposures in all models
          age_category_COVID_baseline,
@@ -570,6 +583,7 @@ final_dat <- dat %>%
          vulnerable_group_member,
          increased_loneliness_during_pandemic,
          panworry_total_score,
+         
         
         # Extra variables (more categories - will use if able to)
         highest_education,
