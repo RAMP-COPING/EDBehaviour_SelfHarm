@@ -55,7 +55,7 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-02-21.rds"))
+dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-06-20.rds"))
 ```
 
 # EXPOSURES / EXPLANATORY VARIABLES
@@ -159,27 +159,27 @@ dat %>%
   freq(age_category)
 ```
 
-## Gender
-```{r Gender as exposure variable}
+## Minoritised gender
+```{r minoritised gender as exposure variable}
 # Recode 
 dat <- dat %>%
-  mutate(gender_cleaned = 
-           case_when(transgender == "Yes" ~ "Minoritised gender",
+  mutate(minoritised_gender = 
+           case_when(transgender == "Yes" | 
+                     gender == "Non-binary" |
+                     gender == "Self-define" ~ "Yes",
+            
+                     gender == "Male" |
+                     gender == "Female" ~ "No")
                      
-                     gender == "Male" ~ "Man",
-                     gender == "Female" ~ "Woman",
                      
-                     gender == "Non-binary" ~ "Minoritised gender",
-                     gender == "Self-define" ~ "Minoritised gender"
-            )
          )
 
 # Check
 dat %>%
-  freq(gender_cleaned) # NAs are people who did not answer the gender question (or from GLAD/EDGI signup only)
+  freq(minoritised_gender) # NAs are people who did not answer the gender question (or from GLAD/EDGI signup only)
 
 dat %>%
-  filter(is.na(gender_cleaned)) %>%
+  filter(is.na(minoritised_gender)) %>%
   freq(gender)
 ```
 
@@ -187,41 +187,41 @@ dat %>%
 ```{r Sex as exposure variable}
 # Recode to binary sex
 dat <- dat %>%
-  mutate(sex_binary_numeric = 
-           case_when(sex  == "Male" ~ 0,
+  mutate(sex_binary = 
+           case_when(sex  == "Male" ~ "Male",
                      
-                     sex == "Female" ~ 1,
+                     sex == "Female" ~ "Female",
                      
                      # NB: RAMP does not have sex, but does have whether someone is transgender
                     
                      # Non-transgender male
                       sample == "RAMP" &
                        gender == "Male" &
-                       transgender == "No" ~ 0,
+                       transgender == "No" ~"Male",
                      
                      # Transgender male, assigned female at birth
                      sample == "RAMP" &
                        gender == "Male" &
-                       transgender == "Yes" ~ 1,
+                       transgender == "Yes" ~"Female",
                      
                      # Non-transgender female
                       sample == "RAMP" &
                        gender == "Female" &
-                       transgender == "No" ~ 1,
+                       transgender == "No" ~ "Female",
                      
                      # Transgender female, assigned male at birth
                      sample == "RAMP" &
                        gender == "Female" &
-                       transgender == "Yes" ~ 0
+                       transgender == "Yes" ~ "Male"
                      
             )
          )
 
 dat %>%
-  freq(sex_binary_numeric) # NB: Missing data is becuase we are only looking at EDGI AND GLAD COPING and ~7000 NBR participants did not answer the sex question.
+  freq(sex_binary) # NB: Missing data is because we are only looking at EDGI AND GLAD COPING and ~7000 NBR participants did not answer the sex question.
 
 dat %>%
-  filter(is.na(sex_binary_numeric)) %>%
+  filter(is.na(sex_binary)) %>%
   freq(sample)
 ```
 
@@ -373,6 +373,7 @@ dat %>%
   freq(paid_employment_key_worker)
 ```
 
+
 ## Member of vulnerable group
 This is baseline COPING and RAMP data (this is not asked at follow ups).
 ```{r Member of vulnerable group exposure}
@@ -399,13 +400,12 @@ First, create numeric variable that demonstrates baseline PANDEMIC loneliness sc
 All questions begin with: Over the past two weeks, how often have you felt that the following statements apply to you?
 ```{r Baseline pandemic loneliness score}
 dat <- dat %>%
-  mutate(across(starts_with("lone."),
+  mutate(across(starts_with("lone.felt"),
                 ~case_when(
                   . == "Hardly ever" ~ 0,
                   . == "Some of the time" ~ 1,
                   .  == "Often" ~ 2,
                   TRUE ~ NA_real_)))
-
 ```
 
 Calculate PANDEMIC loneliness score
@@ -443,6 +443,7 @@ Calculate whether they have experienced an increase in loneliness during the pan
 dat <- dat %>%
   mutate(increased_loneliness_during_pandemic =
            case_when(
+             lone.similar_felt_pandemic == "No different" ~ "No", # These people did not get asked about their prepandemic loneliness, becasue they indicated that they're had been no change.
            loneliness_pandemic_count > loneliness_prepandemic_count ~ "Yes", # These people have higher loneliness scores at baseline than retrospective prepandemic loneliness scores
          loneliness_pandemic_count <= loneliness_prepandemic_count ~ "No" # These people have lower or the same loneliness scores at baseline than retrospective prepandemic loneliness scores
          )
@@ -451,6 +452,16 @@ dat <- dat %>%
 # Check
 dat %>%
   freq(increased_loneliness_during_pandemic)
+
+# Check NAs
+dat %>%
+  filter(is.na(increased_loneliness_during_pandemic) &
+          (!is.na(loneliness_prepandemic_count) &
+           !is.na(loneliness_pandemic_count))) # There should not be anyone who has scores for both prepandemic and pandemic loneliness who were not assigned scores
+
+dat %>%
+  filter(is.na(increased_loneliness_during_pandemic))%>%
+         freq(lone.similar_felt_pandemic)  # There should not be anyone who answered "No different" who does not have a value for 'increased loneliness during pandemic'
 ```
 
 ## Pandemic worry at baseline 
@@ -495,15 +506,7 @@ panworry <- dat %>%
 colMeans(is.na(panworry))*100
 ```
 
-The 'other' item on the pandemic worry measure has higher missigness than all other variables. This is probably because the question asked people to 'Please specify' within a text box. I am going to assume that anyone who answered ALL other questions bar the 'Other' question most likely does not have anything to specify and therefore skipped the question. I will set anyone who is missing for 'Other' to 0.
-```{r set missing for other to 0}
-dat <- dat %>%
-  mutate(panworry.other__numeric =
-           case_when(is.na(panworry.other__numeric) ~ 0,
-                     !is.na(panworry.other__numeric) ~ panworry.other__numeric
-                     )
-  )
-```
+The 'other' item on the pandemic worry measure has higher missigness than all other variables. This is probably because the question asked people to 'Please specify' within a text box. I am not going to count this item in the final score.
 
 Sum score of answers (e.g., score of 4 on a question = "Extremely worried")
 ```{r Pandemic worry sum score actual answers}
@@ -527,8 +530,7 @@ dat$panworry_total_score <- rowSums(dat[ ,
                                    "panworry.information_virus_government_accuracy_numeric",
                                    "panworry.the_governments_response_to_the_pandemic_numeric",
                                    "panworry.separation_from_family_members_numeric",
-                                   "panworry.global_recession_economy_longstanding_numeric",
-                                   "panworry.other__numeric"
+                                   "panworry.global_recession_economy_longstanding_numeric"
                                    )],
                                    na.rm = FALSE)
 
@@ -1283,85 +1285,66 @@ dat <- dat %>%
                         
                     # Has a relative that was previously ill with coronavirus or suspected coronavirus passed away?
                          
-                       (dem.coronavirus_relative_previously_ill.1_.Wave_1a == "Prefer not to say" |
+                        (dem.coronavirus_relative_previously_ill.1_.Wave_1a == "Prefer not to say" |
                          is.na(dem.health_of_a_relative_.Wave_1a) # Not answered screener question
                            ) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_1b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_1b ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_1b  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_1b )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_2a == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_2a ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_2a  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_2a )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_2b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_2b ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_2b  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_2b )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_3a == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_3a ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_3a  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_3a )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_3b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_3b ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_3b  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_3b )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_4a == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_4a ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_4a  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_4a )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_4b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_4b ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_4b  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_4b )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_5a == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_5a ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_5a  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_5a )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_6b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_6b) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_6b  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_6b)) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_7a == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_7a) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_7a  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_7a)) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_8b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_8b ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_8b == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_8b )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_9a == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_9a ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_9a  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_9a )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_10b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_10b ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_10b  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_10b )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_11a == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_11a ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_11a  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_11a )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_12b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_12b) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_12b  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_12b)) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_13a == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_13a ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_13a  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_13a )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_14b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_14b ) |# Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_14b  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_14b )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_15a == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_15a ) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_15a  == "Unsure") &
+                         is.na(dem.health_of_a_relative_.Wave_15a )) &
                           
                           (dem.coronavirus_relative_previously_ill.1_.Wave_16b == "Prefer not to say" |
-                         is.na(dem.health_of_a_relative_.Wave_16b) | # Not answered screener question
-                           dem.coronavirus_relative_previously_ill.1_.Wave_16b  == "Unsure")
+                         is.na(dem.health_of_a_relative_.Wave_16b))
                         )  ~ "Not answered or PNTA", 
                        
                        grief.covid_lost_due_close == "Yes" ~ "Baseline",
@@ -1821,15 +1804,16 @@ final_dat <- dat %>%
          
          # Exposures in all models
          age_category_COVID_baseline,
-         gender_cleaned,
-         sex_binary_numeric,
+         minoritised_gender,
+         sex_binary,
          race_binary,
          A_Levels_higher,
          mental_health_diagnosis,
          paid_employment_key_worker,
          vulnerable_group_member,
          panworry_total_score,
-        
+         increased_loneliness_during_pandemic,
+          
          # Phase in which they first experienced the exposure
          exposure_phase_positive_covid_test,
          exposure_phase_losing_someone,

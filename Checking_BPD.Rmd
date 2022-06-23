@@ -1,0 +1,166 @@
+---
+title: "Untitled"
+author: "Helena Davies"
+date: "12/05/2022"
+output: html_document
+---
+
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools",
+              "sjlabelled",
+              "Amelia",
+              "gtsummary",
+              "broom",
+              "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in data
+```{r Read in data}
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-05-11.rds")
+dim(dat)
+   colnames(dat)
+```
+
+# Mental health diagnosis
+```{r read in mental health diagnosis cleaned data}
+# EDGI
+edgi_mhd_dat_id <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "edgi/clinical/mhd_edgi_clean.rds"))
+
+edgi_mhd_dat_id <- edgi_mhd_dat_id %>%
+  select(ID,
+         sample,
+         mhd.personality_disorder_diagnosed_numeric)
+
+# GLAD
+mhd_dat_glad <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "glad/clinical/mhd_glad_clean.rds"))
+
+mhd_dat_glad <- mhd_dat_glad %>%
+  select(ID,
+         sample,
+         mhd.personality_disorder_diagnosed_numeric)
+
+## GLAD COPING 
+mhd_dat_glad_coping  <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_glad/clinical/mhd_coping_glad_clean.rds"))
+
+mhd_dat_glad_coping <- mhd_dat_glad_coping %>%
+  select(ID,
+         sample,
+         mhd.personality_disorder_diagnosed_cop_numeric)
+
+### Merge
+glad_mhd_dat_id <- dplyr::full_join(mhd_dat_glad,
+                               mhd_dat_glad_coping,
+                               by = c("ID",
+                                      "sample"
+                                      )
+                               )
+
+
+# NBR
+nbr_mhd_dat_id <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "coping_nbr/clinical/mhd_coping_nbr_clean.rds"))
+
+nbr_mhd_dat_id <- nbr_mhd_dat_id %>%
+  select(ID,
+         sample,
+         mhd.personality_disorder_diagnosed_cop_numeric)
+
+# RAMP
+ramp_mhd_dat_id <- readRDS(file = paste0(filepath_cleaned_latest_freeze, "ramp/clinical/mhd_ramp_clean.rds"))
+
+ramp_mhd_dat_id <- ramp_mhd_dat_id %>%
+  select(ID,
+         sample,
+         mhd.personality_disorder_diagnosed_cop_numeric)
+
+# Bind
+MHD <- edgi_mhd_dat_id %>%
+  bind_rows(glad_mhd_dat_id,
+            nbr_mhd_dat_id,
+            ramp_mhd_dat_id)
+```
+
+# Merge MHD and original data
+```{r merge MHD with dat}
+dat_merged <- dplyr::left_join(dat,
+                               MHD,
+                               by = c("ID",
+                                      "sample"
+                                      )
+                               )
+
+```
+
+# Check freq of BPD
+```{r}
+# My sample
+dat_merged <- dat_merged %>%
+  mutate(personality_disorder =
+           case_when(mhd.personality_disorder_diagnosed_numeric == 5 |
+                      mhd.personality_disorder_diagnosed_cop_numeric == 5 ~ 1 ))
+
+dat_merged %>%
+  freq(personality_disorder)
+
+(553/25451)*100 # 2.2%
+
+# Overall sample
+MHD <- MHD %>%
+  mutate(personality_disorder =
+           case_when(mhd.personality_disorder_diagnosed_numeric == 5 |
+                      mhd.personality_disorder_diagnosed_cop_numeric == 5 ~ 1 ))
+
+MHD %>%
+  freq(personality_disorder)
+
+(3936/97198)*100 # 4%
+```
+
+
+
+
+
+
+
+

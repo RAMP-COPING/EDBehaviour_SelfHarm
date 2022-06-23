@@ -1,0 +1,287 @@
+---
+title: "Checking missigness in 'Other' item in final dataset"
+author: "Helena Davies"
+date: "20/05/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+
+# Read in data
+```{r read in data}
+dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-05-16.rds"))
+
+dat_raw %>%
+  colnames()
+```
+
+# Incomplete surveys
+Some participants are included in the dataset whose surveys expired and they didn't actually complete the questionnaire. Filter these out based on NAs in age and the first CIDID variable (For EDGI and NBR). These numbers will not be reported in the paper.
+
+GLAD and RAMP participants were not given the CIDI. Therefore, for GLAD participants, I will use age, sex, and change in living situation (dem2.living_situation_change_pandemic). For RAMP participants, I will use gender (they weren't asked sex).
+```{r read in CIDID data for EDGI and NBR participants}
+# EDGI
+cidid_edgi <- readRDS(paste0(filepath_raw_latest_freeze, "coping_edgi/cidid_coping_edgi.rds"))
+
+cidid_edgi <- cidid_edgi %>%
+  select(ID =  externalDataReference,
+         cidid.felt_sad_blue_row)
+
+# NBR
+cidid_nbr <- readRDS(paste0(filepath_raw_latest_freeze, "coping_nbr/cidid_coping_nbr.rds"))
+
+cidid_nbr <- cidid_nbr %>%
+  select(ID =  subjectid,
+         cidid.felt_sad_blue_row)
+
+cidid_edgi_nbr <- cidid_edgi %>%
+  bind_rows(cidid_nbr)
+  
+# Merge
+dat_raw2 <- dplyr::left_join(dat_raw,
+                            cidid_edgi_nbr,
+                            by = "ID")
+```
+
+```{r read in living situation variable for RAMP and GLAD participants}
+# GLAD
+glad_living_situation <- readRDS(paste0(filepath_raw_latest_freeze, "coping_glad/dem2_coping_glad.rds"))
+
+glad_living_situation <- glad_living_situation %>%
+  select(ID =  externalDataReference,
+         dem2.living_situation_change_pandemic)
+
+# RAMP 
+ramp_living_situation <- readRDS(paste0(filepath_raw_latest_freeze, "ramp/dem_ramp.rds"))
+
+ramp_living_situation <- ramp_living_situation %>%
+  select(ID =  `Login ID`,
+         dem2.living_situation_change_pandemic)
+
+living_sit_glad_ramp <- glad_living_situation %>%
+  bind_rows(ramp_living_situation)
+
+# Merge
+dat_raw3 <- dplyr::left_join(dat_raw2,
+                            living_sit_glad_ramp,
+                            by = "ID")
+```
+
+```{r filter out unfinished participants}
+dat_edgi_nbr <- dat_raw3 %>%
+  filter((sample == "EDGI" |
+           sample == "NBR") &
+#  !is.na(age_category_COVID_baseline) &
+  !is.na(sex_binary) &
+   !is.na(cidid.felt_sad_blue_row))
+
+dat_glad <- dat_raw3 %>%
+  filter((sample == "GLAD") &
+  !is.na(age_category_COVID_baseline) &
+  !is.na(sex_binary) &
+   !is.na(dem2.living_situation_change_pandemic))
+
+dat_ramp <- dat_raw3 %>%
+  filter((sample == "RAMP") &
+           !is.na(minoritised_gender))
+
+dat_ramp_glad <- dat_glad %>%
+  bind_rows(dat_ramp)
+
+# Bind rows
+dat_completed <- dat_edgi_nbr %>%
+  bind_rows(dat_ramp_glad)
+```
+
+# Read in data (again)
+```{r read in data}
+dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-05-16.rds"))
+
+# Keep only those with completed COPING or RAMP data
+dat <- dat_raw %>%
+  filter(ID %in% dat_completed$ID)
+
+# Check where participants are from
+dat %>%
+  freq(sample)
+```
+
+# Exclude people counted twice (in NBR and EDGI and/or GLAD)
+```{r check NBR cohort information}
+cohort_info_detailed <- read_csv(paste0(filepath_PhD, "/COPING_cohorts_28.03.2022_hash.csv"))
+
+cohort_info_detailed <- cohort_info_detailed %>%
+  select(ID = hash_id,
+         cohort_detailed = panel
+         )
+
+dat <- dplyr::left_join(dat,
+                        cohort_info_detailed)
+
+
+# Check where people in NBR are from 
+dat %>%
+  filter(sample =="NBR") %>%
+  freq(cohort_detailed)
+
+# Create variable of EDGI and GLAD
+dat <- dat %>%
+  mutate(GLAD_EDGI_NBR_exclude =
+           case_when(
+             (str_detect(cohort_detailed, "GLAD") |
+             str_detect(cohort_detailed, "EDGI")) ~ 1,
+         
+         TRUE ~ 0))
+
+# Check
+dat %>%
+  freq(GLAD_EDGI_NBR_exclude)
+
+# Drop these participants
+dat <- dat %>%
+  filter(GLAD_EDGI_NBR_exclude == 0)
+```
+
+# Check where participants are from before exclusion criteria applied
+```{r cohort info less detail}
+cohort_info <- read_csv(paste0(filepath_nbr_additional_info, "DEPRECATED_coping_participants_export_20200730_hashed.csv"))
+
+cohort_info <- cohort_info %>%
+  select(ID = "NBR ID",
+         cohort 
+         )
+
+dat <- dplyr::left_join(dat,
+                        cohort_info)
+
+# Check overall sample
+dat %>%
+  freq(sample)
+
+# Check cohorts within NBR sample
+dat %>%
+  filter(sample == "NBR") %>%
+  freq(cohort)
+
+# Check N of total NBR
+dat %>%
+  filter(sample != "RAMP") %>%
+  nrow()
+```
+
+
+# Read in data
+```{r Read in dataset}
+pan_worry_items <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-05-16.rds"))
+
+pan_worry_items <- pan_worry_items %>%
+  select("ID",
+         "panworry.impact_on_your_employment_status_numeric",
+                                   "panworry.household_employment_status_key_numeric",
+                                   "panworry.impact_on_your_education_or_exams_numeric",
+                                   "panworry.exams_impact_education_children_numeric",
+                                   "panworry.financial_impact_numeric",
+                                   "panworry.contracting_the_virus_numeric",
+                                   "panworry.people_you_know_contracting_the_virus_numeric",
+                                   "panworry.people_you_dont_know_contracting_the_virus_numeric",
+                                   "panworry.impact_mental_health_wellbeing_numeric",
+                                   "panworry.childrens_mental_health_impact_numeric",
+                                   "panworry.relatives_impact_mental_health_numeric",
+                                   "panworry.being_socially_isolated_numeric",
+                                   "panworry.people_you_know_being_socially_isolated_numeric",
+                                   "panworry.shortage_of_essential_supplies_numeric",
+                                   "panworry.shortage_of_medication_or_access_to_healthcare_numeric",
+                                   "panworry.healthcare_people_essential_supplies_numeric",
+                                   "panworry.information_virus_government_accuracy_numeric",
+                                   "panworry.the_governments_response_to_the_pandemic_numeric",
+                                   "panworry.separation_from_family_members_numeric",
+                                   "panworry.global_recession_economy_longstanding_numeric",
+                                   "panworry.other__numeric")
+```
+
+```{r merge dat and pan worry items}
+dat_merged <- dplyr::left_join(dat,
+                               pan_worry_items,
+                               by = "ID"
+)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+panworry <- dat_merged %>%
+  select("panworry.impact_on_your_employment_status_numeric",
+                                   "panworry.household_employment_status_key_numeric",
+                                   "panworry.impact_on_your_education_or_exams_numeric",
+                                   "panworry.exams_impact_education_children_numeric",
+                                   "panworry.financial_impact_numeric",
+                                   "panworry.contracting_the_virus_numeric",
+                                   "panworry.people_you_know_contracting_the_virus_numeric",
+                                   "panworry.people_you_dont_know_contracting_the_virus_numeric",
+                                   "panworry.impact_mental_health_wellbeing_numeric",
+                                   "panworry.childrens_mental_health_impact_numeric",
+                                   "panworry.relatives_impact_mental_health_numeric",
+                                   "panworry.being_socially_isolated_numeric",
+                                   "panworry.people_you_know_being_socially_isolated_numeric",
+                                   "panworry.shortage_of_essential_supplies_numeric",
+                                   "panworry.shortage_of_medication_or_access_to_healthcare_numeric",
+                                   "panworry.healthcare_people_essential_supplies_numeric",
+                                   "panworry.information_virus_government_accuracy_numeric",
+                                   "panworry.the_governments_response_to_the_pandemic_numeric",
+                                   "panworry.separation_from_family_members_numeric",
+                                   "panworry.global_recession_economy_longstanding_numeric",
+                                   "panworry.other__numeric")
+
+
+
+colMeans(is.na(panworry))*100
+```
+

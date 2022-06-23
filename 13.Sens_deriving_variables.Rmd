@@ -57,7 +57,7 @@ date
 # Read in data
 ```{r Read in data}
 # Need these data for re-deriving the outcome variables with no baseline 
-additional_dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-02-21.rds")) 
+additional_dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-06-20.rds")) 
 
 additional_dat <- additional_dat %>%
   select(contains("ID"),
@@ -69,7 +69,7 @@ additional_dat <- additional_dat %>%
           )
 
 # Also need these data for variables I'm not changing
-final_dat_merged <- readRDS(paste0(filepath_saved_data, "final_dat_merged_exclusions_2022-04-28.rds"))
+final_dat_merged <- readRDS(paste0(filepath_saved_data, "final_dat_merged_exclusions_2022-06-21.rds"))
 
 final_dat_merged <- final_dat_merged %>%
   select(ID,
@@ -79,17 +79,15 @@ final_dat_merged <- final_dat_merged %>%
          
          # Exposures in all models
          age_category_COVID_baseline,
-         gender_cleaned,
-         sex_binary_numeric,
+         minoritised_gender,
+         sex_binary,
          race_binary,
          highest_education,
          mental_health_diagnosis,
+         increased_loneliness_during_pandemic,
          paid_employment_key_worker,
          vulnerable_group_member,
          panworry_total_score,
-         
-         # Exposure in low weight model
-         OCD_symptoms,
          
          # Time at which participants first experienced each outcome
          outcome_phase_binge_eating,
@@ -14598,17 +14596,15 @@ final_dat <- dat %>%
        
          # Exposures in all models
          age_category_COVID_baseline,
-         gender_cleaned,
-         sex_binary_numeric,
+         minoritised_gender,
+         sex_binary,
          race_binary,
          highest_education,
          mental_health_diagnosis,
+         increased_loneliness_during_pandemic,
          paid_employment_key_worker,
          vulnerable_group_member,
          panworry_total_score,
-         
-         # Exposure in low weight model
-         OCD_symptoms,
         
          # Exposures now changed for sensitivity analysis
          positive_covid_test_before_BE_final,

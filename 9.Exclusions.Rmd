@@ -54,7 +54,7 @@ date
 
 # Read in data
 ```{r read in data}
-dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-04-28.rds"))
+dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-06-20.rds"))
 
 dat_raw %>%
   colnames()
@@ -117,18 +117,18 @@ dat_edgi_nbr <- dat_raw3 %>%
   filter((sample == "EDGI" |
            sample == "NBR") &
 #  !is.na(age_category_COVID_baseline) &
-  !is.na(sex_binary_numeric) &
+  !is.na(sex_binary) &
    !is.na(cidid.felt_sad_blue_row))
 
 dat_glad <- dat_raw3 %>%
   filter((sample == "GLAD") &
   !is.na(age_category_COVID_baseline) &
-  !is.na(sex_binary_numeric) &
+  !is.na(sex_binary) &
    !is.na(dem2.living_situation_change_pandemic))
 
 dat_ramp <- dat_raw3 %>%
   filter((sample == "RAMP") &
-           !is.na(gender_cleaned))
+           !is.na(minoritised_gender))
 
 dat_ramp_glad <- dat_glad %>%
   bind_rows(dat_ramp)
@@ -140,7 +140,7 @@ dat_completed <- dat_edgi_nbr %>%
 
 # Read in data (again)
 ```{r read in data}
-dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-04-28.rds"))
+dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-06-20.rds"))
 
 # Keep only those with completed COPING or RAMP data
 dat <- dat_raw %>%
@@ -203,6 +203,11 @@ dat <- dplyr::left_join(dat,
 dat %>%
   freq(sample)
 
+# Check RAMP
+dat %>%
+  filter(sample == "RAMP") %>%
+  nrow()
+
 # Check cohorts within NBR sample
 dat %>%
   filter(sample == "NBR") %>%
@@ -210,24 +215,34 @@ dat %>%
 
 # Check N of total NBR
 dat %>%
-  filter(sample != "RAMP") %>%
+  filter(sample == "GLAD" |
+         sample == "EDGI" |
+           sample == "NBR") %>%
   nrow()
+```
+# EXCLUDE NAFLD (too small)
+```{r exclude NAFLD}
+dat <- dat %>%
+  filter((sample == "GLAD" |
+         sample == "EDGI" |
+           sample == "RAMP") |
+         cohort != "NAFLD")
 ```
 
 # Exclude for missing data on ANY exposure
-## Gender
+## Minoritised gender
 Exclude participants with missing gender
-```{r gender missing diagnosis data}
+```{r gender missing data}
 dim(dat)
 dat_excl_gen <- dat %>%
-  drop_na(gender_cleaned)
+  drop_na(minoritised_gender)
 nrow(dat_excl_gen)-nrow(dat)
 ```
 103 participants did not report their gender
 
 ## Age
 Exclude participants with missing age
-```{r age missing diagnosis data}
+```{r age missing data}
 dat_excl_gen_age <- dat_excl_gen %>%
   drop_na(age_category_COVID_baseline)
 nrow(dat_excl_gen_age)-nrow(dat_excl_gen)
@@ -240,7 +255,7 @@ nrow(dat_excl_age)-nrow(dat)
 
 ## Race
 Exclude participants with missing race
-```{r race missing diagnosis data}
+```{r race missing data}
 dat_excl_gen_age_race <- dat_excl_gen_age %>%
   drop_na(race_binary)
 nrow(dat_excl_gen_age_race)-nrow(dat_excl_gen_age)
@@ -249,82 +264,256 @@ dat_excl_race <- dat %>%
   drop_na(race_binary)
 nrow(dat_excl_race)-nrow(dat)
 ```
-1086 did not report their race
-
-## Education level
-Exclude participants with missing education level
-```{r education missing diagnosis data}
-dat_excl_gen_age_race_edu <- dat_excl_gen_age_race %>%
-  drop_na(highest_education)
-nrow(dat_excl_gen_age_race_edu)-nrow(dat_excl_gen_age_race)
-
-dat_excl_edu <- dat %>%
-  drop_na(highest_education)
-nrow(dat_excl_edu)-nrow(dat)
-```
-474 did not report their education level
+912 did not report their race
 
 ## Mental health diagnosis
-Exclude participants with missing education level
-```{r mental health diagnosis missing diagnosis data}
-dat_excl_gen_age_race_edu_psych <- dat_excl_gen_age_race_edu %>%
+Exclude participants with missing mental health diagnosis 
+```{r mental health diagnosis missing data}
+dat_excl_gen_age_race_psych <- dat_excl_gen_age_race %>%
   drop_na(mental_health_diagnosis)
-nrow(dat_excl_gen_age_race_edu_psych)-nrow(dat_excl_gen_age_race_edu)
+nrow(dat_excl_gen_age_race_psych)-nrow(dat_excl_gen_age_race)
 
 dat_excl_psych <- dat %>%
   drop_na(mental_health_diagnosis)
 nrow(dat_excl_psych)-nrow(dat)
 ```
-1278 did not report their mental health diagnosis
+1274 did not report their mental health diagnosis
 
-## Employment status
-Exclude participants with missing employment level
-```{r employment missing diagnosis data}
-dat_excl_gen_age_race_edu_psych_emp <- dat_excl_gen_age_race_edu_psych %>%
+## Employment status 
+Exclude participants with missing employment level 
+```{r employment missing data}
+dat_excl_gen_age_race_psych_emp <- dat_excl_gen_age_race_psych %>%
   drop_na(paid_employment_key_worker)
-nrow(dat_excl_gen_age_race_edu_psych_emp)-nrow(dat_excl_gen_age_race_edu_psych)
+nrow(dat_excl_gen_age_race_psych_emp)-nrow(dat_excl_gen_age_race_psych)
 
 dat_excl_emp <- dat %>%
   drop_na(paid_employment_key_worker)
 nrow(dat_excl_emp)-nrow(dat)
 ```
-563 did not report their employment status
+562 did not report their employment status
+
+## Sex
+Exclude participants with missing sex
+```{r employment missing data}
+dat_excl_gen_age_race_psych_emp_sex <- dat_excl_gen_age_race_psych_emp %>%
+  drop_na(sex_binary)
+nrow(dat_excl_gen_age_race_psych_emp_sex)-nrow(dat_excl_gen_age_race_psych_emp)
+
+dat_excl_sex <- dat %>%
+  drop_na(sex_binary)
+nrow(dat_excl_sex)-nrow(dat)
+```
+155 did not report their sex
 
 ## Being a vulnerable group member
 Exclude participants with missing vulnerable member data
-```{r vulnerable member missing diagnosis data}
-dat_excl_gen_age_race_edu_psych_emp_vuln <- dat_excl_gen_age_race_edu_psych_emp %>%
+```{r vulnerable member missing data}
+dat_excl_gen_age_race_psych_emp_sex_vuln <- dat_excl_gen_age_race_psych_emp_sex %>%
   drop_na(vulnerable_group_member)
-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln)-nrow(dat_excl_gen_age_race_edu_psych)
+nrow(dat_excl_gen_age_race_psych_emp_sex_vuln)-nrow(dat_excl_gen_age_race_psych_emp_sex)
 
 dat_excl_vuln <- dat %>%
   drop_na(vulnerable_group_member)
 nrow(dat_excl_vuln)-nrow(dat)
 ```
-908 did not report being a vulnerable group member
+906 did not report being a vulnerable group member
 
 ## Pandemic worry score
 Exclude participants with missing pandemic worry
-```{r pandemic worry missing diagnosis data}
-dat_excl_gen_age_race_edu_psych_emp_vuln_pan <- dat_excl_gen_age_race_edu_psych_emp_vuln %>%
+```{r pandemic worry missing data}
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan <- dat_excl_gen_age_race_psych_emp_sex_vuln %>%
   drop_na(panworry_total_score)
-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan)-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln)
+nrow(dat_excl_gen_age_race_psych_emp_sex_vuln_pan)-nrow(dat_excl_gen_age_race_psych_emp_sex_vuln)
 
 dat_excl_pan <- dat %>%
   drop_na(panworry_total_score)
 nrow(dat_excl_pan)-nrow(dat)
 ```
-5,464 did not report a pandemic worry score at baseline
+5,353 did not report a pandemic worry score at baseline
+
+## Increased loneliness
+```{r increased loneliness}
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone <- dat_excl_gen_age_race_psych_emp_sex_vuln_pan %>%
+  drop_na(increased_loneliness_during_pandemic)
+nrow(dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone)-nrow(dat_excl_gen_age_race_psych_emp_sex_vuln_pan)
+
+dat_excl_lone <- dat %>%
+  drop_na(increased_loneliness_during_pandemic)
+nrow(dat_excl_lone)-nrow(dat)
+```
+
+5,338 did not report loneliness score
 
 ### How many excluded so far?
 ```{r excluded so far}
-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan)-nrow(dat)
+nrow(dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone)-nrow(dat)
 ```
+7,531 excluded so far.
+
 # The remaining variables are specific to each outcome variable.
 As long as someone has all the exposure variables for ONE of the outcome variables AND the relevant outcome variable, then we would like to 'keep' them.
-```{r}
+### Binge eating outcome
+```{r binge eating specific variables outcome}
+dat_excl_BE_out <- dat %>%
+  drop_na(NEW_binge_eating_pandemic)
+nrow(dat_excl_BE_out)-nrow(dat)
+```
+20,829 are missing for BE outcome.
+
+### Low weight outcome
+```{r low weight specific variables outcome}
+dat_excl_LW_out <- dat %>%
+  drop_na(NEW_low_weight_pandemic)
+nrow(dat_excl_LW_out)-nrow(dat)
+```
+### Suicidal and/or self-harm ideation
+```{r Suicidal and/or self-harm ideation specific variables outcome}
+dat_excl_HI_out <- dat %>%
+  drop_na(NEW_harmful_ideation_pandemic)
+nrow(dat_excl_HI_out)-nrow(dat)
+```
+### Self-harm
+```{r self-harm variables outcome}
+dat_excl_SH_out <- dat %>%
+  drop_na(NEW_selfharm_pandemic)
+nrow(dat_excl_SH_out)-nrow(dat)
+```
+## Binge eating specific exposure variables 
+### BE - COVID infection
+```{r binge eating specific variables covid infection}
+dat_excl_BE_covid <- dat_excl_BE_out %>%
+  drop_na(positive_covid_test_before_BE_final)
+nrow(dat_excl_BE_covid)-nrow(dat_excl_BE_out)
+```
+416 are missing for BE COVID infection.
+
+### BE - Loss
+```{r binge eating specific variables loss}
+dat_excl_BE_loss <- dat_excl_BE_out %>%
+  drop_na(lost_someone_before_BE_final)
+nrow(dat_excl_BE_loss)-nrow(dat_excl_BE_out)
+```
+323 are missing for BE losing someone.
+
+### BE - Change in main eco activity
+```{r binge eating specific variables change in main eco activity}
+dat_excl_BE_eco <- dat_excl_BE_out %>%
+  drop_na(main_eco_change_before_BE_final)
+nrow(dat_excl_BE_eco)-nrow(dat_excl_BE_out)
+```
+490 are missing for BE - change in main eco activity.
+
+### BE - Change in living situation
+```{r binge eating specific variables change in living situation}
+dat_excl_BE_liv <- dat_excl_BE_out %>%
+  drop_na(living_situation_change_before_BE_final) 
+nrow(dat_excl_BE_liv)-nrow(dat_excl_BE_out)
+```
+452 are missing for BE - change in living situation.
+
+## Low weight specific exposure variables
+### LW - COVID infection
+```{r low weight specific variables covid infection}
+dat_excl_LW_covid <- dat_excl_LW_out %>%
+  drop_na(positive_covid_test_before_LW_final)
+nrow(dat_excl_LW_covid)-nrow(dat_excl_LW_out)
+```
+4490 are missing for LW COVID infection.
+
+### LW - Loss
+```{r low weight specific variables loss}
+dat_excl_LW_loss <- dat_excl_LW_out %>%
+  drop_na(lost_someone_before_LW_final)
+nrow(dat_excl_LW_loss)-nrow(dat_excl_LW_out)
+```
+225 are missing for LW losing someone.
+
+### LW - Change in main eco activity
+```{r low weightspecific variables change in main eco activity}
+dat_excl_LW_eco <- dat_excl_LW_out %>%
+  drop_na(main_eco_change_before_LW_final)
+nrow(dat_excl_LW_eco)-nrow(dat_excl_LW_out)
+```
+338 are missing for LW - change in main eco activity.
+
+### LW - Change in living situation
+```{r low weight specific variables change in living situation}
+dat_excl_LW_liv <- dat_excl_LW_out %>%
+  drop_na(living_situation_change_before_LW_final) 
+nrow(dat_excl_LW_liv)-nrow(dat_excl_LW_out)
+```
+248 are missing for LW - change in living situation.
+
+## Suicidal and/or self-harm ideation specific exposure variables
+### HI - COVID infection
+```{r suicidal and/or self-harm ideation specific variables covid infection}
+dat_excl_HI_covid <- dat_excl_HI_out %>%
+  drop_na(positive_covid_test_before_HI_final)
+nrow(dat_excl_HI_covid)-nrow(dat_excl_HI_out)
+```
+5672 are missing for HI COVID infection.
+
+### HI - Loss
+```{r suicidal and/or self-harm ideation specific variables loss}
+dat_excl_HI_loss <- dat_excl_HI_out %>%
+  drop_na(lost_someone_before_HI_final)
+nrow(dat_excl_HI_loss)-nrow(dat_excl_HI_out)
+```
+1,284 are missing for HI losing someone.
+
+### HI - Change in main eco activity
+```{r suicidal and/or self-harm ideationspecific variables change in main eco activity}
+dat_excl_HI_eco <- dat_excl_HI_out %>%
+  drop_na(main_eco_change_before_HI_final)
+nrow(dat_excl_HI_eco)-nrow(dat_excl_HI_out)
+```
+1,244 are missing for HI - change in main eco activity.
+
+### HI - Change in living situation
+```{r suicidal and/or self-harm ideation specific variables change in living situation}
+dat_excl_HI_liv <- dat_excl_HI_out %>%
+  drop_na(living_situation_change_before_HI_final) 
+nrow(dat_excl_HI_liv)-nrow(dat_excl_HI_out)
+```
+780 are missing for HI - change in living situation.
+
+## Self-harm specific exposure variables
+### SH - COVID infection
+```{r self-harm specific variables covid infection}
+dat_excl_SH_covid <- dat_excl_SH_out %>%
+  drop_na(positive_covid_test_before_SH_final)
+nrow(dat_excl_SH_covid)-nrow(dat_excl_SH_out)
+```
+8219 are missing for SH COVID infection.
+
+### SH - Loss
+```{r self-harm specific variables loss}
+dat_excl_SH_loss <- dat_excl_SH_out %>%
+  drop_na(lost_someone_before_SH_final)
+nrow(dat_excl_SH_loss)-nrow(dat_excl_SH_out)
+```
+1720 are missing for SH losing someone.
+
+### SH - Change in main eco activity
+```{r self-harmspecific variables change in main eco activity}
+dat_excl_SH_eco <- dat_excl_SH_out %>%
+  drop_na(main_eco_change_before_SH_final)
+nrow(dat_excl_SH_eco)-nrow(dat_excl_SH_out)
+```
+1009 are missing for SH - change in main eco activity.
+
+### SH - Change in living situation
+```{r self-harm specific variables change in living situation}
+dat_excl_SH_liv <- dat_excl_SH_out %>%
+  drop_na(living_situation_change_before_SH_final) 
+nrow(dat_excl_SH_liv)-nrow(dat_excl_SH_out)
+```
+89 are missing for SH - change in living situation.
+
+# Now, exclude in final dataset
+```{r exclude exposure-specific variables in dataset}
 # Binge eating
-dat_excl_gen_age_race_edu_psych_emp_vuln_pan <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone <- dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone %>%
   mutate(BE_data_for_model = 
            case_when(
              (!is.na(positive_covid_test_before_BE_final) &
@@ -337,32 +526,30 @@ dat_excl_gen_age_race_edu_psych_emp_vuln_pan <- dat_excl_gen_age_race_edu_psych_
   )
 
 # Check
-dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone %>%
   freq(BE_data_for_model)
 
 # Low weight
-dat_excl_gen_age_race_edu_psych_emp_vuln_pan <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone <- dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone %>%
   mutate(LW_data_for_model = 
            case_when(
              (!is.na(positive_covid_test_before_LW_final) &
                  !is.na(lost_someone_before_LW_final) &
                  !is.na(main_eco_change_before_LW_final) &
                  !is.na(living_situation_change_before_LW_final) &
-                 !is.na(NEW_low_weight_pandemic) &
-                 !is.na(ocd.compulsive_beh_mental_act_binary) &
-                 !is.na(ocd.repetitive_unpleasant_thoughts_binary)
-                ) ~ 1,
+                 !is.na(NEW_low_weight_pandemic)
+               ) ~ 1,
          
                 TRUE ~ 0)
   )
 
 # Check
-dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone %>%
   freq(LW_data_for_model)
 
 
 # Suicidal and/or self-harm ideation
-dat_excl_gen_age_race_edu_psych_emp_vuln_pan <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone <- dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone %>%
   mutate(HI_data_for_model = 
            case_when(
              (!is.na(positive_covid_test_before_HI_final) &
@@ -375,11 +562,11 @@ dat_excl_gen_age_race_edu_psych_emp_vuln_pan <- dat_excl_gen_age_race_edu_psych_
   )
 
 # Check
-dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone %>%
   freq(HI_data_for_model)
 
 # Self-harm
-dat_excl_gen_age_race_edu_psych_emp_vuln_pan <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone <- dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone %>%
   mutate(SH_data_for_model = 
            case_when(
              (!is.na(positive_covid_test_before_SH_final) &
@@ -392,17 +579,26 @@ dat_excl_gen_age_race_edu_psych_emp_vuln_pan <- dat_excl_gen_age_race_edu_psych_
   )
 
 # Check
-dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone %>%
   freq(SH_data_for_model)
 
 # How many have NO full data for ANY of the models?
-dat_final <- dat_excl_gen_age_race_edu_psych_emp_vuln_pan %>%
+dat_final <- dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone %>%
   filter(SH_data_for_model == 1 |
          HI_data_for_model== 1 |
            LW_data_for_model == 1 |
            BE_data_for_model == 1)
 
-nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan)-nrow(dat_final)
+nrow(dat_excl_gen_age_race_psych_emp_sex_vuln_pan_lone)-nrow(dat_final)
+
+# How many additional people are excluded because of missing data: OCD symptoms?
+#dat_excl_gen_age_race_psych_emp_vuln_pan_lone_LW <- dat_excl_gen_age_race_psych_emp_vuln_pan_lone %>%
+#  filter(LW_data_for_model == 1)
+
+# dat_excl_gen_age_race_psych_emp_vuln_pan_lone_LW_OCD <- dat_excl_gen_age_race_psych_emp_vuln_pan_lone_LW %>%
+#   drop_na(ocd.compulsive_beh_mental_act_binary) %>%
+#   drop_na(ocd.repetitive_unpleasant_thoughts_binary)
+# nrow(dat_excl_gen_age_race_psych_emp_vuln_pan_lone_LW_OCD)-nrow(dat_excl_gen_age_race_psych_emp_vuln_pan_lone_LW)   
 ```
 
 # Double check that all participants are included in at least one of the models
@@ -410,15 +606,16 @@ nrow(dat_excl_gen_age_race_edu_psych_emp_vuln_pan)-nrow(dat_final)
 dat_NA_BE_model <- dat_final %>%
   filter(is.na(NEW_binge_eating_pandemic) |
                  is.na(age_category_COVID_baseline) |
-                 is.na(gender_cleaned) |
+                 is.na(sex_binary) |
+                 is.na(minoritised_gender) |
                  is.na(race_binary) |
-                 is.na(highest_education) |
                  is.na(mental_health_diagnosis)|
                  is.na(paid_employment_key_worker) |
                  is.na(vulnerable_group_member) |
                  is.na(panworry_total_score) |
                  is.na(positive_covid_test_before_BE_final) |
                  is.na(lost_someone_before_BE_final) |
+                 is.na(increased_loneliness_during_pandemic) |
                  is.na(main_eco_change_before_BE_final) |
                  is.na(living_situation_change_before_BE_final))
 
@@ -426,15 +623,16 @@ dat_final <- dat_final %>%
   mutate(BE_model_included = 
            case_when(!is.na(NEW_binge_eating_pandemic) &
                  !is.na(age_category_COVID_baseline) &
-                 !is.na(gender_cleaned) &
+                 !is.na(minoritised_gender) &
+                 !is.na(sex_binary) &
                  !is.na(race_binary) &
-                 !is.na(highest_education) &
-                 !is.na(mental_health_diagnosis)&
+                 !is.na(mental_health_diagnosis) &
                  !is.na(paid_employment_key_worker) &
                  !is.na(vulnerable_group_member) &
                  !is.na(panworry_total_score) &
                  !is.na(positive_covid_test_before_BE_final) &
                  !is.na(lost_someone_before_BE_final) &
+                 !is.na(increased_loneliness_during_pandemic) &
                  !is.na(main_eco_change_before_BE_final) &
                  !is.na(living_situation_change_before_BE_final) ~ 1,
                  TRUE ~ 0))
@@ -442,9 +640,9 @@ dat_final <- dat_final %>%
 dat_NA_LW_model <- dat_NA_BE_model %>%
   filter(is.na(NEW_low_weight_pandemic) |
                  is.na(age_category_COVID_baseline) |
-                 is.na(gender_cleaned) |
+                 is.na(minoritised_gender) |
+                 is.na(sex_binary) |
                  is.na(race_binary) |
-                 is.na(highest_education) |
                  is.na(mental_health_diagnosis)|
                  is.na(paid_employment_key_worker) |
                  is.na(vulnerable_group_member) |
@@ -452,40 +650,46 @@ dat_NA_LW_model <- dat_NA_BE_model %>%
                  is.na(positive_covid_test_before_LW_final) |
                  is.na(lost_someone_before_LW_final) |
                  is.na(main_eco_change_before_LW_final) |
-                 is.na(living_situation_change_before_LW_final) |
-                 is.na(ocd.compulsive_beh_mental_act_binary) |
-                 is.na(ocd.repetitive_unpleasant_thoughts_binary))
+                 is.na(increased_loneliness_during_pandemic) |
+                 is.na(living_situation_change_before_LW_final) 
+               #  is.na(ocd.compulsive_beh_mental_act_binary) |
+               #  is.na(ocd.repetitive_unpleasant_thoughts_binary)
+           )
 
 dat_final <- dat_final %>%
   mutate(LW_model_included = 
            case_when(!is.na(NEW_low_weight_pandemic) &
                  !is.na(age_category_COVID_baseline) &
-                 !is.na(gender_cleaned) &
+                 !is.na(minoritised_gender) &
+                   !is.na(sex_binary) &
                  !is.na(race_binary) &
-                 !is.na(highest_education) &
                  !is.na(mental_health_diagnosis)&
-                 !is.na(paid_employment_key_worker) &
+                  !is.na(paid_employment_key_worker) &
                  !is.na(vulnerable_group_member) &
                  !is.na(panworry_total_score) &
                  !is.na(positive_covid_test_before_LW_final) &
                  !is.na(lost_someone_before_LW_final) &
                  !is.na(main_eco_change_before_LW_final) &
-                 !is.na(living_situation_change_before_LW_final) &
-                 !is.na(ocd.compulsive_beh_mental_act_binary) &
-                 !is.na(ocd.repetitive_unpleasant_thoughts_binary) ~ 1,
+                 !is.na(increased_loneliness_during_pandemic) &
+                 !is.na(living_situation_change_before_LW_final) 
+              #   !is.na(ocd.compulsive_beh_mental_act_binary) &
+               #  !is.na(ocd.repetitive_unpleasant_thoughts_binary) 
+                 ~ 1,
                  TRUE ~ 0))
 
 
 dat_NA_HI_model <- dat_NA_LW_model %>%
   filter(is.na(NEW_harmful_ideation_pandemic) |
                  is.na(age_category_COVID_baseline) |
-                 is.na(gender_cleaned) |
+                 is.na(minoritised_gender) |
+           
+           is.na(sex_binary) |
                  is.na(race_binary) |
-                 is.na(highest_education) |
                  is.na(mental_health_diagnosis)|
-                 is.na(paid_employment_key_worker) |
+                  is.na(paid_employment_key_worker) |
                  is.na(vulnerable_group_member) |
                  is.na(panworry_total_score) |
+                 is.na(increased_loneliness_during_pandemic) |
                  is.na(positive_covid_test_before_HI_final) |
                  is.na(lost_someone_before_HI_final) |
                  is.na(main_eco_change_before_HI_final) |
@@ -495,13 +699,14 @@ dat_final <- dat_final %>%
   mutate(HI_model_included = 
            case_when(!is.na(NEW_harmful_ideation_pandemic) &
                  !is.na(age_category_COVID_baseline) &
-                 !is.na(gender_cleaned) &
+                 !is.na(minoritised_gender) &
+                   !is.na(sex_binary) &
                  !is.na(race_binary) &
-                 !is.na(highest_education) &
                  !is.na(mental_health_diagnosis)&
-                 !is.na(paid_employment_key_worker) &
+                  !is.na(paid_employment_key_worker) &
                  !is.na(vulnerable_group_member) &
                  !is.na(panworry_total_score) &
+                 !is.na(increased_loneliness_during_pandemic) &
                  !is.na(positive_covid_test_before_HI_final) &
                  !is.na(lost_someone_before_HI_final) &
                  !is.na(main_eco_change_before_HI_final) &
@@ -512,13 +717,14 @@ dat_final <- dat_final %>%
 dat_NA_SH_model <- dat_NA_HI_model %>%
   filter(is.na(NEW_selfharm_pandemic) |
                  is.na(age_category_COVID_baseline) |
-                 is.na(gender_cleaned) |
+                 is.na(minoritised_gender) |
+                  is.na(sex_binary) |
                  is.na(race_binary) |
-                 is.na(highest_education) |
                  is.na(mental_health_diagnosis)|
-                 is.na(paid_employment_key_worker) |
+                  is.na(paid_employment_key_worker) |
                  is.na(vulnerable_group_member) |
                  is.na(panworry_total_score) |
+                 is.na(increased_loneliness_during_pandemic) |
                  is.na(positive_covid_test_before_SH_final) |
                  is.na(lost_someone_before_SH_final) |
                  is.na(main_eco_change_before_SH_final) |
@@ -528,18 +734,25 @@ dat_final <- dat_final %>%
   mutate(SH_model_included = 
            case_when(!is.na(NEW_selfharm_pandemic) &
                  !is.na(age_category_COVID_baseline) &
-                 !is.na(gender_cleaned) &
+                 !is.na(minoritised_gender) &
+                   !is.na(sex_binary) &
                  !is.na(race_binary) &
-                 !is.na(highest_education) &
                  !is.na(mental_health_diagnosis)&
-                 !is.na(paid_employment_key_worker) &
+                  !is.na(paid_employment_key_worker) &
                  !is.na(vulnerable_group_member) &
                  !is.na(panworry_total_score) &
+                 !is.na(increased_loneliness_during_pandemic) &
                  !is.na(positive_covid_test_before_SH_final) &
                  !is.na(lost_someone_before_SH_final) &
                  !is.na(main_eco_change_before_SH_final) &
                  !is.na(living_situation_change_before_SH_final) ~ 1,
                  TRUE ~ 0))
+```
+
+
+# TOTAL EXCLUDED
+```{r}
+nrow(dat)-nrow(dat_final)
 ```
 
 # Final dataset - cohort info

@@ -54,8 +54,8 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-04-28.rds"))
-dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-02-21.rds"))
+dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-06-20.rds"))
+dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-06-20.rds"))
 
 # Merge
 dat <- dplyr::full_join(dat_all_info,

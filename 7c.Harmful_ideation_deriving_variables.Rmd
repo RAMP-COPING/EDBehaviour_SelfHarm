@@ -56,8 +56,8 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-04-28.rds"))
-dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-02-21.rds"))
+dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-05-16.rds"))
+dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-05-16.rds"))
 
 # Merge
 dat <- dplyr::full_join(dat_all_info,
@@ -891,7 +891,7 @@ dat <- dat %>%
   )
 
 dat %>%
-  freq(NEW_passive_suicidal_ideation_pandemic) # NAs are because the sample is restricted to those who did NOT report binge eating at baseline
+  freq(NEW_passive_suicidal_ideation_pandemic) # NAs are because the sample is restricted to those who did NOT report suicidal ideation at baseline
 
 # Check NAs (should all be NA)
 dat %>%

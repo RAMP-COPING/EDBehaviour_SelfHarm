@@ -575,7 +575,7 @@ colnames(dat.ed.COPING)
 nrow(dat.ed.COPING)
 ```
 
-## How many people have a binge-type ED or binge eating that might have started during the pandemic?
+## How many people have binge eating that might have started during the pandemic?
 ### First, work out age at beginning of pandemic
 ```{r age at beginning of pandemic GLAD and NBR}
 # First, need to calculate age at the beginning of the pandemic (23rd March 2020)
@@ -600,171 +600,6 @@ dat.ed.COPING <- dat.ed.COPING %>%
              )
          )
 ```
-
-### Binge-eating disorder
-```{r working out if during the pandemic or before binge-eating disorder}
-# Work out if during pandemic - binge-eating disorder
-dat.ed.COPING <- dat.ed.COPING %>%
-  mutate(pandemic_BED_vs_start_pandemic_age =
-           case_when(
-            
-             # Capture first people who have turned the age at which they get diagnosed within the first three months of the pandemic 
-             mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
-             mhd.bingeeating_disorder == "Binge-eating disorder" &
-             age_start_pandemic < mhd.bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
-          
-          # This should then be people who turned the age at which they got diagnosed AFTER the first three months of the pandemic
-          mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
-          mhd.bingeeating_disorder == "Binge-eating disorder" &
-          age_start_pandemic < mhd.bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pandemic binge eating", #...they've turned that age since the pandemic started and accounted for diagnostic delays, possibly started during the pandemic
-             
-           mhd.bingeeating_disorder == "Binge-eating disorder" &
-           age_start_pandemic > mhd.bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", # ...but they got diagnosed with binge-eating disorder at an age younger than their age at the beginning of the pandemic
-            
-            mhd.bingeeating_disorder == "Binge-eating disorder" &
-             age_start_pandemic == mhd.bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Probably pre-pandemic binge eating", #...same age at start of pandemic as age at diagnosis, difficult to tell when symptoms started EXACTLY
-         
-         mhd.bingeeating_disorder == "Binge-eating disorder" ~ "Missing age data" #   People left over
-             ) 
-         )
-
-
-# Check 
-dat.ed.COPING %>%
-  freq(pandemic_BED_vs_start_pandemic_age)
-
-# For people who are probably pre-pandemic binge eating...look at date of filling survey and current or past
-dat.ed.COPING %>%
-  filter(pandemic_BED_vs_start_pandemic_age == "Probably pre-pandemic binge eating") %>%
-  select(mhd_EndDate,
-         age_start_pandemic,
-         mhd.bingeeating_disorder.2_age_at_diagnosis_numeric,
-         mhd.bingeeating_disorder.1_current_past)
-```
-17/01/22: There are 39 people who have said they have current binge-eating disorder and their age at diagnosis is the same as their age at start of the pandemic. Many answered COPING in the first 3 months of the pandemic. There are 3 people who have said they have past binge-eating disorder and their age at diagnosis is the same as their age at start of the pandemic. We will drop these people and effectively categorise them as 'pre-pandemic binge eating' as it is likely symptoms started before the pandemic.
-
-### Atypical binge-eating disorder
-```{r working out if during the pandemic or before atypical binge-eating disorder}
-# Work out if during pandemic - atypical binge-eating disorder
-dat.ed.COPING <- dat.ed.COPING %>%
-  mutate(pandemic_atypical_BED_vs_start_pandemic_age =
-           case_when(
-             
-            mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
-              mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" &
-             age_start_pandemic < mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
-          
-            mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
-              mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" &
-             age_start_pandemic < mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pandemic binge eating", #...they've turned that age since the pandemic started and accounted for diagnostic delays
-             
-              mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" &
-             age_start_pandemic > mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
-            
-           mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" &
-             age_start_pandemic == mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric ~ "Probably pre-pandemic binge eating", #...same age, difficult to tell when they started EXACTLY
-          
-           mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" ~ "Missing age data" #   People left over
-
-             ) 
-         )
-
-# Check 
-dat.ed.COPING %>%
-  freq(pandemic_atypical_BED_vs_start_pandemic_age)
-
-# For people who are probably pre-pandemic binge eating...look at date of filling survey and current or past
-dat.ed.COPING %>%
-  filter(pandemic_atypical_BED_vs_start_pandemic_age == "Probably pre-pandemic binge eating") %>%
-  select(mhd_EndDate,
-         age_start_pandemic,
-         mhd.atypical_bingeeating_disorder.2_age_at_diagnosis_numeric,
-         mhd.atypical_bingeeating_disorder.1_current_past)
-
-```
-17/01/22: There are five people who have said they have current atypical binge-eating disorder and their age at diagnosis is the same as their age at the start of the pandemic. We will drop these people and effectively categorise them as 'pre-pandemic binge eating' as it is likely symptoms started before the pandemic.
-
-### Bulimia
-```{r working out if during the pandemic or before bulimia}
-# Work out if during pandemic - bulimia nervosa
-dat.ed.COPING <- dat.ed.COPING %>%
-  mutate(pandemic_BN_vs_start_pandemic_age =
-           case_when(
-             
-             mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
-            mhd.bulimia_nervosa == "Bulimia nervosa" &
-             age_start_pandemic < mhd.bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
-           
-           mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
-            mhd.bulimia_nervosa == "Bulimia nervosa" &
-             age_start_pandemic < mhd.bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pandemic binge eating", #...they've turned that age since the pandemic started and accounted for diagnostic delays
-           
-             mhd.bulimia_nervosa == "Bulimia nervosa" &
-             age_start_pandemic > mhd.bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
-            
-           mhd.bulimia_nervosa == "Bulimia nervosa" &
-             age_start_pandemic == mhd.bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Probably pre-pandemic binge eating", #...same age, difficult to tell when they started EXACTLY
-             
-            mhd.bulimia_nervosa == "Bulimia nervosa" ~ "Missing age data" # People left over
-             ) 
-         )
-
-
-# Check 
-dat.ed.COPING %>%
-  freq(pandemic_BN_vs_start_pandemic_age)
-
-# For people who are probably pre-pandemic binge eating...look at date of filling survey and current or past
-dat.ed.COPING %>%
-  filter(pandemic_BN_vs_start_pandemic_age == "Probably pre-pandemic binge eating") %>%
-  select(mhd_EndDate,
-         age_start_pandemic,
-         mhd.bulimia_nervosa.2_age_at_diagnosis_numeric,
-         mhd.bulimia_nervosa.1_current_past,
-         mhd.bulimia_nervosa)
-```
-17/01/22: There are nine people who have said they have current bulimia nervosa and got diagnosed at the same age that they were at the start of the pandemic. We will drop these people and effectively categorise them as 'pre-pandemic binge eating'.
-
-### Atypical bulimia
-```{r working out if during the pandemic or before atypical bulimia}
-# Work out if during pandemic - bulimia nervosa
-dat.ed.COPING <- dat.ed.COPING %>%
-  mutate(pandemic_atypical_BN_vs_start_pandemic_age =
-           case_when(
-             
-            mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
-             mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" &
-             age_start_pandemic < mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
-          
-             
-             mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
-              mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" &
-             age_start_pandemic < mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pandemic binge eating", #...they've turned that age since the pandemic started and accounted for diagnostic delays
-            
-            
-             mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" &
-             age_start_pandemic > mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Pre-pandemic binge eating", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
-            
-             mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" &
-             age_start_pandemic == mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric ~ "Probably pre-pandemic binge eating", #...same age, difficult to tell when they started EXACTLY
-             
-               mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa" ~ "Missing age data" # People left over
-             ) 
-         )
-
-# Check 
-dat.ed.COPING %>%
-  freq(pandemic_atypical_BN_vs_start_pandemic_age)
-
-# For people who are probably pre-pandemic binge eating...look at date of filling survey and current or past
-dat.ed.COPING %>%
-  filter(pandemic_atypical_BN_vs_start_pandemic_age == "Probably pre-pandemic binge eating") %>%
-  select(mhd_EndDate,
-         age_start_pandemic,
-         mhd.atypical_bulimia_nervosa.2_age_at_diagnosis_numeric,
-         mhd.atypical_bulimia_nervosa.1_current_past)
-```
-17/01/22: There is one person who has said they have current atypical bulimia and got diagnosed at the same age that they were at the start of the pandemic; they are also NA for mhd end date. We will drop this person and effectively categorise them as 'pre-pandemic binge eating'.
 
 ### Binge eating
 ```{r working out if during the pandemic or before binge eating}
@@ -805,35 +640,24 @@ dat.ed.COPING %>%
 ```{r identify people we are unsure about} 
 dat.ed.COPING <- dat.ed.COPING %>%
   mutate(any_pandemic_binge_eating_vs_start_pandemic_age =
-           case_when(   # People who indicated an age at symptom or diagnosis YOUNGER than their age at the start of the pandemic
+           case_when(   # People who indicated an age at symptom YOUNGER than their age at the start of the pandemic, or ANY diagnosis (given diagnostic delays, very likely symptoms started before the pandemic)
                        pandemic_BE_vs_start_pandemic_age == "Pre-pandemic binge eating" |
-                       pandemic_BED_vs_start_pandemic_age == "Pre-pandemic binge eating" |
-                       pandemic_atypical_BED_vs_start_pandemic_age == "Pre-pandemic binge eating" |
-                       pandemic_BN_vs_start_pandemic_age == "Pre-pandemic binge eating" |
-                       pandemic_atypical_BN_vs_start_pandemic_age == "Pre-pandemic binge eating" ~ "Pre-pandemic binge eating",
+                       mhd.bingeeating_disorder == "Binge-eating disorder"  |
+                       mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" |
+                        mhd.bulimia_nervosa == "Bulimia nervosa" |
+                        mhd.atypical_bulimia_nervosa == "Atypical bulimia nervosa"  ~ "Pre-pandemic binge eating",
                      
-                         # People who indicated an age at symptom or diagnosis OLDER than their age at the start of the pandemic
-                       pandemic_BE_vs_start_pandemic_age == "Pandemic binge eating" |
-                       pandemic_BED_vs_start_pandemic_age == "Pandemic binge eating" |
-                       pandemic_atypical_BED_vs_start_pandemic_age == "Pandemic binge eating" |
-                       pandemic_BN_vs_start_pandemic_age == "Pandemic binge eating" |
-                       pandemic_atypical_BN_vs_start_pandemic_age == "Pandemic binge eating" ~ "Pandemic binge eating",
-                     
-                        # People who are missing either age at start of pandemic and/or diagnosis/symptom start (NB: ~2,000 NBR participants have not provided DOB)
-                       pandemic_BE_vs_start_pandemic_age == "Missing age data" |
-                       pandemic_BED_vs_start_pandemic_age == "Missing age data" |
-                       pandemic_atypical_BED_vs_start_pandemic_age == "Missing age data" |
-                       pandemic_BN_vs_start_pandemic_age == "Missing age data" |
-                       pandemic_atypical_BN_vs_start_pandemic_age == "Missing age data" ~ "Missing age data"
-                     
-                    # The rest may have indicated that they have never binged or the same age
+                         # People who indicated an age at symptom OLDER than their age at the start of the pandemic
+                       pandemic_BE_vs_start_pandemic_age == "Pandemic binge eating"  ~ "Pandemic binge eating",
+                    
+                        # The rest may have indicated that they have never binged, or no age info, or reported the same age
                      
                      )
          )
 dat.ed.COPING %>%
   freq(any_pandemic_binge_eating_vs_start_pandemic_age)
 ```
-17/01/22: There are 14 people who we have been able to identify as having pandemic binge eating (i.e., binge eating that started during the pandemic).
+17/01/22: There are 11 people who we have been able to identify as having pandemic binge eating (i.e., binge eating that started during the pandemic).
 
 ## COPING GLAD & NBR: Lifetime binge eating at baseline
 ```{r Lifetime binge eating at baseline GLAD & NBR}
@@ -844,7 +668,7 @@ dat.ed.COPING <- dat.ed.COPING %>%
             # People who, for any binge-type ED or binge eating, indicated prepandemic (taking into account age at pandemic start etc)
               any_pandemic_binge_eating_vs_start_pandemic_age ==  "Pre-pandemic binge eating"  ~ 1,
               
-           # People who, for any binge-type ED or binge eating, indicated pandemic start and therefore, before the pandemic had NOT experienced binge eating (taking into account birthdays etc) *will need to code these people as baseline binge eating*
+           # People who, for binge eating, indicated pandemic start and therefore, before the pandemic had NOT experienced binge eating  *will need to code these people as baseline binge eating*
             any_pandemic_binge_eating_vs_start_pandemic_age ==  "Pandemic binge eating"  ~ 0,
       
            # Never binged and never suspected eating disorder
@@ -898,47 +722,6 @@ dat.ed.COPING %>%
 33 people have answered "No" to ever binge eating, but then not answered the MHD questionnaire, or said "Yes" to suspected eating disorder but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime binge eating" as it is the symptom we are most interested in rather than if they have had any other eating disorder.
 Now, there are 871 people who we can not classify. Either 'Yes' or missing for the BE question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for BE) for suspected eating disorder diagnosis.
 
-# Low weight
-## How many people have anorexia that may have started during the pandemic? 
-```{r working out if during the pandemic or before anorexia}
-# Work out if during pandemic - anorexia
-dat.ed.COPING <- dat.ed.COPING %>%
-  mutate(pandemic_AN_vs_start_pandemic_age =
-           case_when(
-             
-              mhd_EndDate < as.Date("2020-06-23") & # Answered in first three months of pandemic
-              mhd.anorexia_nervosa == "Anorexia nervosa" &
-             age_start_pandemic < mhd.anorexia_age_at_diagnosis_numeric ~ "Pre-pandemic low weight", #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
-            
-            mhd_EndDate >= as.Date("2020-06-23") & # Answered after first three months of pandemic
-            mhd.anorexia_nervosa == "Anorexia nervosa" &
-           age_start_pandemic < mhd.anorexia_age_at_diagnosis_numeric  ~ "Pandemic low weight", #...they've turned that age since the pandemic started and accounted for diagnostic delays
-            
-             
-               mhd.anorexia_nervosa == "Anorexia nervosa" &
-             age_start_pandemic > mhd.anorexia_age_at_diagnosis_numeric ~ "Pre-pandemic low weight", # ...low weight at an age younger than their age at the beginning of the pandemic
-            
-              mhd.anorexia_nervosa == "Anorexia nervosa" &
-             age_start_pandemic == mhd.anorexia_age_at_diagnosis_numeric ~ "Probably pre-pandemic low weight", #...same age, difficult to tell when they started EXACTLY
-             
-               mhd.anorexia_nervosa == "Anorexia nervosa" ~ "Missing age data" # People left over
-             )  
-         )
-
-# Check 
-dat.ed.COPING %>%
-  freq(pandemic_AN_vs_start_pandemic_age)
-
-# For people who are probably pre-pandemic low weight...look at date of filling survey and current or past
-dat.ed.COPING %>%
-  filter(pandemic_AN_vs_start_pandemic_age == "Probably pre-pandemic low weight") %>%
-  select(mhd_EndDate,
-         age_start_pandemic,
-         mhd.anorexia_age_at_diagnosis_numeric,
-         mhd.anorexia_nervosa_current_past)
-```
-17/01/22: There are 5 people who have said they have current anorexia and their age at diagnosis is the same as their age at start of the pandemic (and all answered COPING early on in pandemic). There are 3 people who have said it's in the past but have a diagnosis age the same as their age at the start of the pandemic. We will drop these people and effectively categorise them as 'pre-pandemic low weight' as it is likely symptoms started before the pandemic.
-
 ## How many people have low weight that may have started during the pandemic? 
 ```{r working out if during the pandemic or before low weight}
 # Work out if during pandemic - low weight
@@ -978,19 +761,10 @@ dat.ed.COPING %>%
 dat.ed.COPING <- dat.ed.COPING %>%
   mutate(any_pandemic_low_weight_vs_start_pandemic_age =
            case_when(   # People who indicated an age at symptom or diagnosis YOUNGER than their age at the start of the pandemic
-                       pandemic_LW_vs_start_pandemic_age == "Pre-pandemic low weight" |
-                       pandemic_AN_vs_start_pandemic_age == "Pre-pandemic low weight"  ~ "Pre-pandemic low weight",
+                       pandemic_LW_vs_start_pandemic_age == "Pre-pandemic low weight"  ~ "Pre-pandemic low weight",
                      
                          # People who indicated an age at symptom or diagnosis OLDER than their age at the start of the pandemic
-                       pandemic_LW_vs_start_pandemic_age == "Pandemic low weight" |
-                       pandemic_AN_vs_start_pandemic_age == "Pandemic low weight"  ~ "Pandemic low weight",
-                     
-                        # People who are missing either age at start of pandemic and/or diagnosis/symptom start (NB: ~2,000 NBR participants have not provided DOB)
-                       pandemic_LW_vs_start_pandemic_age == "Missing age data" |
-                       pandemic_AN_vs_start_pandemic_age == "Missing age data"  ~ "Missing age data"
-                     
-                    # The rest may have indicated that they have never had low weight 
-                     
+                       pandemic_LW_vs_start_pandemic_age == "Pandemic low weight"   ~ "Pandemic low weight" 
                      )
          )
 dat.ed.COPING %>%
@@ -1003,10 +777,10 @@ dat.ed.COPING <- dat.ed.COPING %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when(
             # (See code above)
-            # People who, for any binge-type ED or low weight, indicated prepandemic (taking into account age at pandemic start etc)
+            # People who, for low weight, indicated prepandemic (taking into account age at pandemic start etc)
               any_pandemic_low_weight_vs_start_pandemic_age ==  "Pre-pandemic low weight"  ~ 1,
               
-           # People who, for any binge-type ED or low weight, indicated pandemic start and therefore, before the pandemic, had NOT experienced low weight (taking into account birthdays etc) *will need to code these people as baseline low weight*
+           # People who, for low weight, indicated pandemic start and therefore, before the pandemic, had NOT experienced low weight *will need to code these people as baseline low weight*
             any_pandemic_low_weight_vs_start_pandemic_age ==  "Pandemic low weight"  ~ 0,
       
        # Never low weight and never suspected eating disorder
@@ -1263,7 +1037,7 @@ glad_dat <- glad_dat %>%
   mutate(lifetime_binge_eating_baseline_GLAD_numeric =
            case_when(
              
-            # DIAGNOSIS LEVEL - NO AGE DATA (NB: here we are likely to capture people who actually had pandemic experiences but there is no age data to check this with)
+            # DIAGNOSIS LEVEL - NO AGE DATA (NB: this is fine because anyone with a diagnosis during the pandemic is likely to have had pre-pandemic symptoms given diagnostic delays)
             
               # Self-reported binge-type ED in optional ED100K 
              an.1.bingeeating_disorder == "Binge-eating disorder" | # GLAD ED100K self-report diagnosis BED
@@ -1403,7 +1177,7 @@ glad_dat <- glad_dat %>%
   mutate(lifetime_low_weight_baseline_GLAD_numeric =
            case_when(
              
-             # DIAGNOSIS LEVEL - NO AGE DATA (NB: here we are likely to capture people who actually had pandemic experiences but there is no age data to check this with)
+             # DIAGNOSIS LEVEL - (NO AGE DATA NB: this is fine because anyone with a diagnosis during the pandemic is likely to have had pre-pandemic symptoms given diagnostic delays)
              # Self-reported anorexia in optional ED100K
              an.1.anorexia_nervosa == "Anorexia nervosa" | # GLAD ED100K self-report diagnosis AN
              
@@ -1951,8 +1725,7 @@ edgi_dat <- edgi_dat %>%
            endDate_BE < as.Date("2020-03-23") & # Answered BE questionnaire before the pandemic
            be.short_period_ate_regard == "Yes" ~ 1, # Prepandemic binge eating
            
-           # Binge-type eating disorder before the pandemic
-            endDate_mhd < as.Date("2020-03-23") & # Answered mhd questionnaire before the pandemic
+           # ANY Binge-type eating disorder (NB: Doesn't matter age at diagnosis because symptoms likely to have started before the pandemic given diagnostic delays)
              (mhd.bingeeating_disorder == "Binge-eating disorder" |
              mhd.bulimia_nervosa == "Bulimia nervosa" |
              mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder" |
@@ -1976,61 +1749,17 @@ edgi_dat <- edgi_dat %>%
               
     # Capture those who answered EDGI DURING the pandemic 
          
-           # Binge eating DURING the pandemic
+           # Binge eating BEFORE the pandemic
              endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire DURING the pandemic
              be.short_period_ate_regard == "Yes" &
              age_start_pandemic >= BE_symptom_start_numeric ~ 1, # Symptoms started before the pandemic (drop from analyses)
-    
-           # Binge-type eating disorder DURING the pandemic
-            (endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire DURING the pandemic
-      
-            ((mhd.bingeeating_disorder == "Binge-eating disorder" &
-               age_start_pandemic >= BED_age_at_diagnosis_numeric) |
-      
-              (mhd.bulimia_nervosa == "Bulimia nervosa" &
-               age_start_pandemic >= BN_age_at_diagnosis_numeric) |
-      
-              (mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder"  &
-               age_start_pandemic >= atypical_BED_age_at_diagnosis_numeric) |
-      
-            (mhd.atypical_bulimia_nervosa  == "Atypical bulimia nervosa"  &
-               age_start_pandemic >= atypical_BN_age_at_diagnosis_numeric))) ~ 1, # Binge-type ED diagnosed before pandemic (drop from analyses)
-            
-            # Newly experienced binge eating DURING the pandemic - first three months diagnosis
+          
+           # Newly experienced binge eating DURING the pandemic 
             endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire DURING the pandemic
             be.short_period_ate_regard == "Yes" &
             age_start_pandemic < BE_symptom_start_numeric ~ 9,  # Want to keep these people as having a pandemic experience of binge eating
-    
-           # Newly experienced binge-type eating disorder DURING the pandemic - diagnosed in first three months
-             ((endDate_BE >= as.Date("2020-03-23") &
-               endDate_BE < as.Date("2020-06-23")) & # Answered BE questionnaire DURING the pandemic in first 3 months
-              ((mhd.bingeeating_disorder == "Binge-eating disorder" &
-               age_start_pandemic < BED_age_at_diagnosis_numeric) |
-      
-              (mhd.bulimia_nervosa == "Bulimia nervosa" &
-               age_start_pandemic < BN_age_at_diagnosis_numeric) |
-      
-              (mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder"  &
-               age_start_pandemic < atypical_BED_age_at_diagnosis_numeric) |
-      
-            (mhd.atypical_bulimia_nervosa  == "Atypical bulimia nervosa"  &
-               age_start_pandemic < atypical_BN_age_at_diagnosis_numeric))) ~ 1, #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
-            
-          # Newly experienced binge-type eating disorder DURING the pandemic - diagnosed after first three months
-             (endDate_BE >= as.Date("2020-06-23") & # Answered BE questionnaire DURING the pandemic AFTER the first three months
-              ((mhd.bingeeating_disorder == "Binge-eating disorder" &
-               age_start_pandemic < BED_age_at_diagnosis_numeric) |
-      
-              (mhd.bulimia_nervosa == "Bulimia nervosa" &
-               age_start_pandemic < BN_age_at_diagnosis_numeric) |
-      
-              (mhd.atypical_bingeeating_disorder == "Atypical binge-eating disorder"  &
-               age_start_pandemic < atypical_BED_age_at_diagnosis_numeric) |
-      
-            (mhd.atypical_bulimia_nervosa  == "Atypical bulimia nervosa"  &
-               age_start_pandemic < atypical_BN_age_at_diagnosis_numeric))) ~ 9, # Want to keep these people as having a pandemic experience of binge eating
-    
-        # No binge eating and no suspected ED at baseline (answered during pandemic; may go on to experience it during pandemic)
+         
+          # No binge eating and no suspected ED at baseline (answered during pandemic; may go on to experience it during pandemic)
            endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire during the pandemic
            
              (be.short_period_ate_regard == "No" & # No binge eating
@@ -2108,8 +1837,7 @@ edgi_dat <- edgi_dat %>%
              endDate_AN < as.Date("2020-03-23") & # Answered AN questionnaire before the pandemic
            mhd.people_thought_weigh_weighed == "Yes" ~ 1, # Prepandemic low weight
            
-           # Anorexia diagnosis before the pandemic
-           endDate_mhd < as.Date("2020-03-23") & # Answered mhd questionnaire before the pandemic
+           # ANY Anorexia diagnosis (NB: Doesn't matter age at diagnosis because symptoms likely to have started before the pandemic given diagnostic delays)
            mhd.anorexia_nervosa == "Anorexia nervosa"  ~ 1, 
               
           # No low weight or suspected ED before the pandemic
@@ -2132,28 +1860,12 @@ edgi_dat <- edgi_dat %>%
               mhd.people_thought_weigh_weighed == "Yes" &
              age_start_pandemic >= an.how_old_were_you_then.txt_numeric ~ 1, 
           
-            # Anorexia BEFORE the pandemic
-             endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
-              mhd.anorexia_nervosa == "Anorexia nervosa" &
-             age_start_pandemic >= AN_age_at_diagnosis_numeric ~ 1, 
-           
-           # Newly experienced low weight DURING the pandemic
+         # Newly experienced low weight DURING the pandemic
               endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
              mhd.people_thought_weigh_weighed == "Yes" &
              age_start_pandemic < an.how_old_were_you_then.txt_numeric ~ 9, # Want to keep these people (they should be counted as no prepan experience as their experience was DURING the pandemic)
            
-           # Newly experienced anorexia DURING the pandemic - diagnosed in first three 3 months
-             (endDate_AN >= as.Date("2020-03-23") & 
-                endDate_AN < as.Date("2020-06-23")) & # Answered AN questionnaire during the pandemic, in first three months
-             mhd.anorexia_nervosa == "Anorexia nervosa" &
-             age_start_pandemic < an.how_old_were_you_then.txt_numeric ~ 1, #...they've turned that age since the pandemic started BUT given diagnostic delays, likely their symptoms started before the pandemic
-           
-          # Newly experienced anorexia DURING the pandemic - diagnosed after first three 3 months
-             endDate_AN >= as.Date("2020-06-23") & # Answered AN questionnaire during the pandemic, AFTER first three months
-             mhd.anorexia_nervosa == "Anorexia nervosa" &
-             age_start_pandemic < an.how_old_were_you_then.txt_numeric ~ 9, # Want to keep these people (they should be counted as no prepan experience as their experience was DURING the pandemic)
-           
-        # No low weight and no suspected ED at baseline (answered during pandemic; may go on to experience it during pandemic)
+           # No low weight and no suspected ED at baseline (answered during pandemic; may go on to experience it during pandemic)
             endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
               mhd.people_thought_weigh_weighed == "No" & # No low weight
               mhd.suspected_eating_disorder_diagnosed == "No" ~ 0, # No suspected ED at baseline
