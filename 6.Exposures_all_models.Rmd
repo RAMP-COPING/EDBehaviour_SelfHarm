@@ -218,7 +218,7 @@ dat <- dat %>%
          )
 
 dat %>%
-  freq(sex_binary) # NB: Missing data is because we are only looking at EDGI AND GLAD COPING and ~7000 NBR participants did not answer the sex question.
+ freq(sex_binary) # NB: Missing data is because we are only looking at EDGI AND GLAD COPING and ~7000 NBR participants did not answer the sex question.
 
 dat %>%
   filter(is.na(sex_binary)) %>%
@@ -506,7 +506,16 @@ panworry <- dat %>%
 colMeans(is.na(panworry))*100
 ```
 
+
 The 'other' item on the pandemic worry measure has higher missigness than all other variables. This is probably because the question asked people to 'Please specify' within a text box. I am not going to count this item in the final score.
+```{r set missing for other to 0}
+dat <- dat %>%
+  mutate(panworry.other__numeric =
+           case_when(is.na(panworry.other__numeric) ~ 0,
+                     !is.na(panworry.other__numeric) ~ panworry.other__numeric
+                     )
+  )
+```
 
 Sum score of answers (e.g., score of 4 on a question = "Extremely worried")
 ```{r Pandemic worry sum score actual answers}

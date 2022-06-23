@@ -64,7 +64,7 @@ Then, at least one "No" (and either missing or "No" for the other phase) will co
 Missing for both phases for the relevant variables = NA
 ## Demographics
 ```{r living situation creating single variables from duplicated IDs}
-# Living sitation 
+# Living situation 
 dat <- dat %>%
   mutate(dem.living_situation_.Wave_1a =
            case_when(dem.living_situation_.Wave_1a == "Living situation" |

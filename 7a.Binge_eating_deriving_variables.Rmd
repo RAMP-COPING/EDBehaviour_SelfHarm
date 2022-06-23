@@ -207,7 +207,7 @@ dat <- dat %>%
            case_when(
              lifetime_binge_eating_baseline_numeric == 0 & # No lifetime binge eating at baseline...
                
-               #...but occured at least once during the pandemic
+               #...but occurred at least once during the pandemic
                      (pandemic_binge_eating == 1  | # as identified above
                      pandemic_binge_eating_derived == 1)  # as identified in the script "2.Baseline_ED_groupings"
                      ~ 1,
@@ -233,7 +233,7 @@ dat <- dat %>%
            case_when(
              lifetime_binge_eating_baseline_numeric == 0 & # No lifetime binge eating at baseline...
                
-               #...but occured at least once during the pandemic
+               #...but occurred at least once during the pandemic
                      (pandemic_binge_eating_every_phase == 1  | # as identified above
                       pandemic_binge_eating_derived == 1)  # as identified in the script "2.Baseline_ED_groupings"
                      ~ 1,
@@ -770,7 +770,7 @@ dat <- dat %>%
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
-                    (outcome_phase_binge_eating == "6b" | # Co-occuring symptom and exposure
+                    (outcome_phase_binge_eating == "6b" | # Co-occurring symptom and exposure
                      outcome_phase_binge_eating == "8b" |
                      outcome_phase_binge_eating == "10b" |
                        outcome_phase_binge_eating == "12b"|
@@ -827,7 +827,7 @@ dat <- dat %>%
                    outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
-                    (outcome_phase_binge_eating == "8b" |  # Co-occuring symptom and exposure
+                    (outcome_phase_binge_eating == "8b" |  # Co-occurring symptom and exposure
                      outcome_phase_binge_eating == "10b" |
                        outcome_phase_binge_eating == "12b"|
                          outcome_phase_binge_eating == "14b" |
@@ -885,7 +885,7 @@ dat <- dat %>%
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b
-                    (outcome_phase_binge_eating == "10b" | # Co-occuring symptom and exposure
+                    (outcome_phase_binge_eating == "10b" | # Co-occurring symptom and exposure
                        outcome_phase_binge_eating == "12b"|
                          outcome_phase_binge_eating == "14b" |
                        outcome_phase_binge_eating == "16b") ~ "Yes" 
@@ -944,7 +944,7 @@ dat <- dat %>%
                      exposure_phase_positive_covid_test == "12b" & # First positive COVID test at phase 12b
                    (outcome_phase_binge_eating == "12b"|
                          outcome_phase_binge_eating == "14b" |
-                       outcome_phase_binge_eating == "16b") ~ "Yes" # Co-occuring symptom and exposure
+                       outcome_phase_binge_eating == "16b") ~ "Yes" # Co-occurring symptom and exposure
                          
          ) 
   )
@@ -1003,7 +1003,7 @@ dat <- dat %>%
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "14b" & # First positive COVID test at phase 14b
-                   (outcome_phase_binge_eating == "14b" | # Co-occuring symptom and exposure
+                   (outcome_phase_binge_eating == "14b" | # Co-occurring symptom and exposure
                        outcome_phase_binge_eating == "16b") ~ "Yes" 
                          
          ) 
@@ -1063,7 +1063,7 @@ dat <- dat %>%
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "16b" & # First positive COVID test at phase 16b
-                   outcome_phase_binge_eating == "16b" ~ "Yes" # Co-occuring symptom and exposure
+                   outcome_phase_binge_eating == "16b" ~ "Yes" # Co-occurring symptom and exposure
                          
          ) 
   )
@@ -2227,7 +2227,7 @@ dat <- dat %>%
                      outcome_phase_binge_eating == "2b" |
                      outcome_phase_binge_eating == "3b" |
                      outcome_phase_binge_eating == "4b"|
-                          outcome_phase_binge_eating == "Baseline")  ~ "To drop", # First experience of outcome occurred before first expeirence of exposure
+                          outcome_phase_binge_eating == "Baseline")  ~ "To drop", # First experience of outcome occurred before first experience of exposure
                      
                      exposure_phase_main_eco_change == "6b" & # First exposure at phase 6b
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
@@ -2255,7 +2255,7 @@ dat <- dat %>%
                      outcome_phase_binge_eating == "3b" |
                      outcome_phase_binge_eating == "4b" |
                        outcome_phase_binge_eating == "6b"|
-                          outcome_phase_binge_eating == "Baseline")  ~ "To drop", # First experience of outcome occurred before first expeirence of exposure
+                          outcome_phase_binge_eating == "Baseline")  ~ "To drop", # First experience of outcome occurred before first experience of exposure
                      
                      exposure_phase_main_eco_change == "7a" & # First exposure at phase 7a
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
@@ -2936,7 +2936,7 @@ dat <- dat %>%
                      outcome_phase_binge_eating == "2b" |
                      outcome_phase_binge_eating == "3b" |
                      outcome_phase_binge_eating == "4b"|
-                        outcome_phase_binge_eating == "Baseline")  ~ "To drop", # First experience of outcome occurred before first expeirence of exposure
+                        outcome_phase_binge_eating == "Baseline")  ~ "To drop", # First experience of outcome occurred before first experience of exposure
                      
                      exposure_phase_living_situation_change == "6b" & # First exposure at phase 6b
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
@@ -2964,7 +2964,7 @@ dat <- dat %>%
                      outcome_phase_binge_eating == "3b" |
                      outcome_phase_binge_eating == "4b" |
                        outcome_phase_binge_eating == "6b"|
-                        outcome_phase_binge_eating == "Baseline")  ~ "To drop", # First experience of outcome occurred before first expeirence of exposure
+                        outcome_phase_binge_eating == "Baseline")  ~ "To drop", # First experience of outcome occurred before first experience of exposure
                      
                      exposure_phase_living_situation_change == "7a" & # First exposure at phase 7a
                     outcome_phase_binge_eating == "Not experienced" ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")

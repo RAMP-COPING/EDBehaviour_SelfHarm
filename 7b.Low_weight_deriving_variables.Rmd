@@ -777,7 +777,7 @@ dat <- dat %>%
                     outcome_phase_low_weight == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "6b" & # First positive COVID test at phase 6b
-                    (outcome_phase_low_weight == "6b" | # Co-occuring symptom and exposure
+                    (outcome_phase_low_weight == "6b" | # Co-occurring symptom and exposure
                      outcome_phase_low_weight == "8b" |
                      outcome_phase_low_weight == "10b" |
                        outcome_phase_low_weight == "12b"|
@@ -834,7 +834,7 @@ dat <- dat %>%
                     outcome_phase_low_weight == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "8b" & # First positive COVID test at phase 8b
-                    (outcome_phase_low_weight == "8b" |  # Co-occuring symptom and exposure
+                    (outcome_phase_low_weight == "8b" |  # Co-occurring symptom and exposure
                      outcome_phase_low_weight == "10b" |
                        outcome_phase_low_weight == "12b"|
                          outcome_phase_low_weight == "14b" |
@@ -892,7 +892,7 @@ dat <- dat %>%
                     outcome_phase_low_weight == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
                      exposure_phase_positive_covid_test == "10b" & # First positive COVID test at phase 10b
-                    (outcome_phase_low_weight == "10b" | # Co-occuring symptom and exposure
+                    (outcome_phase_low_weight == "10b" | # Co-occurring symptom and exposure
                        outcome_phase_low_weight == "12b"|
                          outcome_phase_low_weight == "14b" |
                        outcome_phase_low_weight == "16b") ~ "Yes" 
@@ -2222,7 +2222,7 @@ dat <- dat %>%
                      outcome_phase_low_weight == "2b" |
                      outcome_phase_low_weight == "3b" |
                      outcome_phase_low_weight == "4b"|
-                          outcome_phase_low_weight == "Baseline")  ~ "To drop", # First experience of outcome occurred before first expeirence of exposure
+                          outcome_phase_low_weight == "Baseline")  ~ "To drop", # First experience of outcome occurred before first experience of exposure
                      
                      exposure_phase_main_eco_change == "6b" & # First exposure at phase 6b
                     outcome_phase_low_weight == "Not experienced" ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
@@ -2250,7 +2250,7 @@ dat <- dat %>%
                      outcome_phase_low_weight == "3b" |
                      outcome_phase_low_weight == "4b" |
                        outcome_phase_low_weight == "6b"|
-                          outcome_phase_low_weight == "Baseline")  ~ "To drop", # First experience of outcome occurred before first expeirence of exposure
+                          outcome_phase_low_weight == "Baseline")  ~ "To drop", # First experience of outcome occurred before first experience of exposure
                      
                      exposure_phase_main_eco_change == "7a" & # First exposure at phase 7a
                    outcome_phase_low_weight == "Not experienced" ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
@@ -2933,7 +2933,7 @@ dat <- dat %>%
                      outcome_phase_low_weight == "2b" |
                      outcome_phase_low_weight == "3b" |
                      outcome_phase_low_weight == "4b" |
-                        outcome_phase_low_weight == "Baseline")  ~ "To drop", # First experience of outcome occurred before first expeirence of exposure
+                        outcome_phase_low_weight == "Baseline")  ~ "To drop", # First experience of outcome occurred before first experience of exposure
                      
                      exposure_phase_living_situation_change == "6b" & # First exposure at phase 6b
                     outcome_phase_low_weight == "Not experienced" ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
@@ -2961,7 +2961,7 @@ dat <- dat %>%
                      outcome_phase_low_weight == "3b" |
                      outcome_phase_low_weight == "4b" |
                        outcome_phase_low_weight == "6b" |
-                        outcome_phase_low_weight == "Baseline")  ~ "To drop", # First experience of outcome occurred before first expeirence of exposure
+                        outcome_phase_low_weight == "Baseline")  ~ "To drop", # First experience of outcome occurred before first experience of exposure
                      
                      exposure_phase_living_situation_change == "7a" & # First exposure at phase 7a
                     outcome_phase_low_weight == "Not experienced" ~ "No outcome", # Never experienced outcome (people who are all NA are coded as "Not answered")
