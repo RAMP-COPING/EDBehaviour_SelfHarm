@@ -3,7 +3,7 @@ if(EDGI == TRUE) {
   ## EDGI 
   ### These individuals have either a self-reported diagnosis or an algorithm-derived diagnosis.
   
- # Merge all diagnostics data +++ need to add CIDI-D and CIDI-A
+ # Merge all diagnostics data 
 edgi_diagnostics <- dplyr::full_join(ed_algorithms_edgi,
                                        mhd_dat_id,
                                        by = c("ID",
@@ -16,9 +16,6 @@ edgi_diagnostics <- edgi_diagnostics %>%
     mutate(
       mental_health_diagnosis =
         case_when(
-          # ++ Algorithm-derived depression
-          # ++ Algorithm-derived anxiety
-          
           # Algorithm-derived ED
           ed.DSM5_AN_binary_numeric == 1 |                                        
             ed.DSM5_AN_restricting_binary_numeric  == 1 |                                

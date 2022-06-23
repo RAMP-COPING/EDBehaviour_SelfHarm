@@ -1,0 +1,287 @@
+---
+title: "Untitled"
+author: "Helena Davies"
+date: "21/06/2022"
+output: html_document
+---
+
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  ) 
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools", "sjlabelled", "Amelia", "gtsummary", "naniar",
+              "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Highest education
+NB: highest education AT COVID ASSESSMENT (i.e., EDGI and GLAD COPING baseline questionnaire NOT GLAD/EDGI signup)
+## Read in EDGI highest education data
+```{r read in highest education cleaned data EDGI}
+# EDGI
+highest_education_edgi_coping_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_edgi/employ_coping_edgi.rds"))
+dim(highest_education_edgi_coping_raw)
+colnames(highest_education_edgi_coping_raw)
+
+highest_education_edgi_coping <- highest_education_edgi_coping_raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  remove_duplicates("externalDataReference") %>% # Remove duplicates based on ID
+  add_column(sample = "EDGI", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         sample, # Sample
+         employ.phd,
+         employ.masters_degree_or_equivalent,
+         employ.postgraduate_degree_or_equivalent,   
+         employ.bachelors_degree_or_equivalent,
+         employ.a_levelsas_levels_or_equivalent,
+         employ.o_levelsgcses_or_equivalent, 
+         employ.cses_or_equivalent,
+         employ.nvq_or_hnd_or_hnc_or_equivalent,
+         employ.other_professional_qualifications_,        
+         employ.other_professional_qualifications_text.txt,
+employ.none_of_the_above
+         ) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(highest_education_edgi_coping)
+# Inspect colnames
+colnames(highest_education_edgi_coping)
+#Differences
+dim(highest_education_edgi_coping)[1]-dim(highest_education_edgi_coping_raw)[1]
+```
+
+## Read in GLAD highest education data
+```{r read in highest education cleaned data GLAD}
+# GLAD
+highest_education_glad_coping_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad/employ_coping_glad.rds"))
+dim(highest_education_glad_coping_raw)
+colnames(highest_education_glad_coping_raw)
+
+highest_education_glad_coping <- highest_education_glad_coping_raw %>% #new dataset with ID
+  drop_na(externalDataReference) %>% # Drop NAs
+  remove_duplicates("externalDataReference") %>% # Remove duplicates based on ID
+  add_column(sample = "GLAD", .before = "startDate") %>% #create new column 
+  select(
+         ID = externalDataReference, # ID
+         sample, # Sample
+      employ.phd,                                        
+      employ.masters_degree_or_equivalent,            
+      employ.postgraduate_degree_or_equivalent,          
+      employ.bachelors_degree_or_equivalent,             
+      employ.a_levelsas_levels_or_equivalent,          
+      employ.o_levelsgcses_or_equivalent,                
+      employ.cses_or_equivalent,                        
+      employ.nvq_or_hnd_or_hnc_or_equivalent,          
+      employ.other_professional_qualifications_,        
+      employ.other_professional_qualifications_text.txt,
+      employ.none_of_the_above
+         ) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(highest_education_glad_coping)
+# Inspect colnames
+colnames(highest_education_glad_coping)
+#Differences
+dim(highest_education_glad_coping)[1]-dim(highest_education_glad_coping_raw)[1]
+```
+
+## Read in NBR highest education data
+```{r read in highest education cleaned data NBR}
+# NBR
+highest_education_nbr_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_nbr/employ_coping_nbr.rds"))
+dim(highest_education_nbr_raw)
+colnames(highest_education_nbr_raw)
+
+highest_education_nbr <- highest_education_nbr_raw%>% #new dataset with ID
+  drop_na(subjectid) %>% # Drop NAs
+  remove_duplicates("subjectid") %>% # Remove duplicates based on ID
+  add_column(sample = "NBR", .before = "startDate") %>% #create new column 
+  select(
+         ID = subjectid, # ID
+         sample, # Sample
+         employ.phd,
+         employ.masters_degree_or_equivalent,
+         employ.postgraduate_degree_or_equivalent,
+         employ.bachelors_degree_or_equivalent,            
+         employ.a_levelsas_levels_or_equivalent,
+         employ.o_levelsgcses_or_equivalent,
+         employ.cses_or_equivalent, 
+         employ.nvq_or_hnd_or_hnc_or_equivalent,
+         employ.other_professional_qualifications_,
+         employ.other_professional_qualifications_text.txt,
+         employ.none_of_the_above    
+         ) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(highest_education_nbr)
+# Inspect colnames
+colnames(highest_education_nbr)
+#Differences
+dim(highest_education_nbr)[1]-dim(highest_education_nbr_raw)[1]
+```
+
+## Read in RAMP highest education data
+```{r read in highest education cleaned data RAMP}
+# RAMP
+highest_education_ramp_raw <- readRDS(file = paste0(filepath_raw_latest_freeze, "ramp/employ_ramp.rds"))
+dim(highest_education_ramp_raw)
+colnames(highest_education_ramp_raw)
+
+highest_education_ramp <- highest_education_ramp_raw %>% #new dataset with ID
+  drop_na(`Login ID`) %>% # Drop NAs
+  remove_duplicates("Login ID") %>% # Remove duplicates based on ID
+  add_column(sample = "RAMP", .before = "startDate") %>% #create new column 
+  select(
+         ID = `Login ID`, # ID
+         sample, # Sample
+         employ.what_is_your_highest_level_of_education
+         ) %>%
+  mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
+  mutate_if(is.numeric, ~na_if(., -99)) %>%
+  mutate_if(is.numeric, ~na_if(., -77)) %>%
+  mutate_if(is.factor, ~na_if(., "Seen but not answered")) %>% # Recode missing values to NAs in factor variables
+  mutate_if(is.factor, ~na_if(., "Don't know")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to say")) %>%
+  mutate_if(is.factor, ~na_if(., "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Seen but not answered")) %>% # Drop empty factor levels
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Don't know")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to answer")) %>%
+  mutate_if(is.factor, ~forcats::fct_drop(., only = "Prefer not to say"))
+
+# Inspect dimensions
+dim(highest_education_ramp)
+# Inspect colnames
+colnames(highest_education_ramp)
+#Differences
+dim(highest_education_ramp)[1]-dim(highest_education_ramp_raw)[1]
+```
+# Bind data
+```{r bind data}
+highest_education <- highest_education_ramp %>%
+  bind_rows(highest_education_nbr,
+            highest_education_glad_coping,
+            highest_education_edgi_coping)
+
+highest_education %>%
+  colnames()
+```
+# Recode categories and combine
+NB: Order matters here!
+```{r recode and combine categories}
+highest_education <- highest_education %>%
+  mutate(merged_highest_education =
+           case_when(
+             employ.what_is_your_highest_level_of_education == 6 |
+             employ.phd == 1 ~ "PhD",
+             
+             employ.what_is_your_highest_level_of_education == 5 |
+             employ.postgraduate_degree_or_equivalent == 1 ~ "Postgraduate degree or equivalent",
+            
+             employ.what_is_your_highest_level_of_education == 4 |
+             employ.masters_degree_or_equivalent == 1 ~ "Masters degree or equivalent",
+             
+             employ.what_is_your_highest_level_of_education == 3 |
+             employ.bachelors_degree_or_equivalent == 1 ~ "Bachelors degree or equivalent",
+            
+              employ.other_professional_qualifications_ == 1 ~ "Other professional qualification",
+             
+             
+             employ.what_is_your_highest_level_of_education == 2 |
+              employ.a_levelsas_levels_or_equivalent == 1 ~ "A levels or equivalent",
+             
+             employ.nvq_or_hnd_or_hnc_or_equivalent == 1 ~ "NVQ, HND, or HNC or equivalent",
+            
+            
+              employ.what_is_your_highest_level_of_education == 1 |
+              employ.o_levelsgcses_or_equivalent == 1 |
+              employ.cses_or_equivalent == 1 ~ "GCSEs/CSEs or equivalent",
+            
+              
+             employ.what_is_your_highest_level_of_education == 0 |
+             employ.none_of_the_above == 1 ~ "No formal qualifications"
+             
+           ))
+
+# Check
+highest_education %>%
+  freq(merged_highest_education)
+```
+
+# Save data
+```{r save data}
+highest_education %>%
+  saveRDS(paste(filepath_saved_data, "highest_education_refined.rds"))
+```
+

@@ -55,19 +55,19 @@ date
 # Read in data
 ```{r Read in dataset}
 # Exposures
-dat_exposures <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-04-26.rds"))
+dat_exposures <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-06-20.rds"))
 
-# Outcome: Binge eating (& outcome-specific variables)
-dat_BE <- readRDS(paste0(filepath_saved_data, "final_dat_BE2022-04-26.rds"))
+# Outcome: Binge eating (& outcome-specific exposure variables)
+dat_BE <- readRDS(paste0(filepath_saved_data, "final_dat_BE2022-06-20.rds"))
 
-# Outcome:Low weight (& outcome-specific variables)
-dat_LW <- readRDS(paste0(filepath_saved_data, "final_dat_LW2022-03-24.rds"))
+# Outcome:Low weight (& outcome-specific exposure variables)
+dat_LW <- readRDS(paste0(filepath_saved_data, "final_dat_LW2022-06-20.rds"))
 
-# Outcome:Harmful ideation (& outcome-specific variables)
-dat_HI <- readRDS(paste0(filepath_saved_data, "final_dat_HI2022-04-25.rds"))
+# Outcome:Harmful ideation (& outcome-specific exposure variables)
+dat_HI <- readRDS(paste0(filepath_saved_data, "final_dat_HI2022-05-16.rds"))
 
-# Outcome: Self-harm (& outcome-specific variables)
-dat_SH <- readRDS(paste0(filepath_saved_data, "final_dat_SH2022-03-24.rds"))
+# Outcome: Self-harm (& outcome-specific exposure variables)
+dat_SH <- readRDS(paste0(filepath_saved_data, "final_dat_SH2022-05-16.rds"))
 ```
 
 # Merge data
@@ -80,24 +80,18 @@ dat_BE_LW <- dplyr::left_join(dat_BE,
 
 dat_BE_LW_HI <- dplyr::left_join(dat_BE_LW,
                               dat_HI,
-                              by = c("ID",
-                                     "sample"
-                                     )
+                              by = c("ID")
 )
 
 
 dat_BE_LW_HI_SH <- dplyr::left_join(dat_BE_LW_HI,
                               dat_SH,
-                              by = c("ID",
-                                     "sample"
-                                     )
+                              by = c("ID")
 )
 
 dat_BE_LW_HI_SH_exp <- dplyr::left_join(dat_BE_LW_HI_SH,
                               dat_exposures,
-                              by = c("ID",
-                                     "sample"
-                                     )
+                              by = c("ID")
 )
 ```
 
