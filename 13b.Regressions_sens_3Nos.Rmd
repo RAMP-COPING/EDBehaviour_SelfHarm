@@ -317,7 +317,11 @@ BE_sens_3_nos_dat_plot <- dat_plot %>%
           table_text_size = 3.5,
           title_text_size = 15,
           dependent_label = "Sensitivity analysis (3 nos): New onset binge eating during pandemic",
-          remove_ref = FALSE) 
+          remove_ref = FALSE,
+          plot_opts=list(geom_point(aes(size = Total), shape=22, fill="white"),
+                   geom_errorbarh(height=0.2)
+    )
+  )  
 ```
 
 ```{r Save BE sens_3_nos level plot}
@@ -412,7 +416,11 @@ LW_sens_3_nos_dat_plot <- dat_plot %>%
           table_text_size = 3.5,
           title_text_size = 15,
           dependent_label = "Sensitivity analysis (3 nos): New onset low weight during pandemic",
-          remove_ref = FALSE) 
+          remove_ref = FALSE,
+          plot_opts=list(geom_point(aes(size = Total), shape=22, fill="white"),
+                   geom_errorbarh(height=0.2)
+    )
+  )  
 ```
 
 ```{r Save LW sens_3_nos level plot}
@@ -505,7 +513,11 @@ HI_sens_3_nos_dat_plot <- dat_plot %>%
            table_text_size = 3.5,
           title_text_size = 13,
           dependent_label = "Sensitivity analysis (3 nos): New onset suicidal and/or self-harm ideation during pandemic",
-           remove_ref = FALSE) 
+           remove_ref = FALSE,
+          plot_opts=list(geom_point(aes(size = Total), shape=22, fill="white"),
+                   geom_errorbarh(height=0.2)
+    )
+  ) 
 ```
 
 ```{r Save HI sens_3_nos level plot}
@@ -598,7 +610,11 @@ SH_sens_3_nos_dat_plot <- dat_plot %>%
           table_text_size = 3.5,
           title_text_size = 13,
           dependent_label = "Sensitivity analysis (3 nos): New onset self-harm during pandemic",
-          remove_ref = FALSE)
+          remove_ref = FALSE,
+          plot_opts=list(geom_point(aes(size = Total), shape=22, fill="white"),
+                   geom_errorbarh(height=0.2)
+    )
+  ) 
 ```
 
 ```{r Save SH sens_3_nos level plot}

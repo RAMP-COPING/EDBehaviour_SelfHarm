@@ -408,7 +408,11 @@ BE_extended_dat_plot <- dat_plot %>%
           table_text_size = 3.5,
           title_text_size = 15,
           dependent_label = "New onset binge eating during pandemic",
-          remove_ref = FALSE) 
+          remove_ref = FALSE,
+          plot_opts=list(geom_point(aes(size = Total), shape=22, fill="white"),
+                   geom_errorbarh(height=0.2)
+    )
+  ) 
 ```
 
 ```{r Save BE extended level plot}
@@ -508,7 +512,11 @@ LW_extended_dat_plot <- dat_plot %>%
           table_text_size = 3.5,
           title_text_size = 15,
           dependent_label = "New onset low weight during pandemic",
-          remove_ref = FALSE) 
+          remove_ref = FALSE,
+          plot_opts=list(geom_point(aes(size = Total), shape=22, fill="white"),
+                   geom_errorbarh(height=0.2)
+    )
+  ) 
 ```
 
 ```{r Save LW extended level plot}
@@ -607,7 +615,11 @@ HI_extended_dat_plot <- dat_plot %>%
            table_text_size = 3.5,
           title_text_size = 13,
           dependent_label = "New onset suicidal and/or self-harm ideation during pandemic",
-           remove_ref = FALSE) 
+           remove_ref = FALSE,
+          plot_opts=list(geom_point(aes(size = Total), shape=22, fill="white"),
+                   geom_errorbarh(height=0.2)
+    )
+  ) 
 ```
 
 ```{r Save HI extended level plot}
@@ -706,7 +718,11 @@ SH_extended_dat_plot <- dat_plot %>%
           table_text_size = 3.5,
           title_text_size = 13,
           dependent_label = "New onset self-harm during pandemic",
-          remove_ref = FALSE)
+          remove_ref = FALSE,
+          plot_opts=list(geom_point(aes(size = Total), shape=22, fill="white"),
+                   geom_errorbarh(height=0.2)
+    )
+  ) 
 ```
 
 ```{r Save SH extended level plot}

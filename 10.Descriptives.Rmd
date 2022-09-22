@@ -924,7 +924,7 @@ binge_eating_group %>%
   group_by(panworry_factor) %>%
   freq(NEW_binge_eating_pandemic)
 
-16# Loss of loved due to COVID
+# Loss of loved due to COVID
 binge_eating_group %>% 
   group_by(lost_someone_before_BE_final) %>%
   freq(NEW_binge_eating_pandemic)
