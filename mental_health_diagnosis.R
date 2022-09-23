@@ -91,8 +91,8 @@ edgi_diagnostics <- edgi_diagnostics %>%
 ### These individuals have either a self-reported diagnosis or an algorithm-derived diagnosis.
 
 if(GLAD == TRUE) {
-  # Merge all diagnostics data +++ need to add CIDI-D and CIDI-A
-  glad_mhd_and_ED100K <- dplyr::full_join(ed_algorithms_glad,
+# Merge all diagnostics data 
+glad_mhd_and_ED100K <- dplyr::full_join(ed_algorithms_glad,
                                           mhd_dat_id,
                                           by = c("ID",
                                                  "sample"
@@ -107,8 +107,8 @@ glad_diagnostics <- dplyr::full_join(glad_mhd_and_ED100K,
   )
   
   
-  # Create numeric version of responses from ED100K (these are from the quali text responses)
-  glad_diagnostics <- glad_diagnostics %>%
+# Create numeric version of responses from ED100K (these are from the quali text responses)
+glad_diagnostics <- glad_diagnostics %>%
     mutate(
       ED100K_selfreported_ED =
         case_when(
@@ -128,10 +128,7 @@ glad_diagnostics <- dplyr::full_join(glad_mhd_and_ED100K,
     mutate(
       mental_health_diagnosis =
         case_when(
-          # ++ Algorithm-derived depression
-          # ++ Algorithm-derived anxiety
-          
-          # ED100K self-report diagnosis from GLAD sign-up (optional questionnaire, AN screener)                  
+           # ED100K self-report diagnosis from GLAD sign-up (optional questionnaire, AN screener)                  
           an.1.diagnosed_suspected_eating_disorder_numeric == 1 |   
             an.1.eating_disorder_received_treatment_numeric == 1 |      
             an.1.anorexia_nervosa_numeric == 1 |                        
@@ -239,8 +236,8 @@ glad_diagnostics <- dplyr::full_join(glad_mhd_and_ED100K,
             mhd.other_eating_disorder_cop_numeric== 1 ~ "Psychiatric disorder",                                  
         
             # No psychiatric disorder 
-          mhd.suspected_eating_disorder_diagnosed_numeric != 1 & # (NB: 'mhd.suspected_eating_disorder_diagnosed' was, for GLAD, in the optional ED100K so not everyone will have answered it. Therefore someone can be NA for this [as long as they are not 1] and that can count as not having an ED) 
-            mhd.suspected_eating_disorder_diagnosed_cop_numeric == 0 &
+          mhd.suspected_eating_disorder_diagnosed_numeric != 1 & # (NB: 'mhd.suspected_eating_disorder_diagnosed' was, for GLAD sign-up, in the optional ED100K so not everyone will have answered it. Therefore someone can be NA for this [as long as they are not 1] and that can count as not having an ED) 
+            mhd.suspected_eating_disorder_diagnosed_cop_numeric == 0 & # This version (i.e., in the COPING baseline) was given to everyone
             mhd.none_eds_cop_numeric == 1 &
             mhd.none_neuro_eds_numeric == 1 & 
             mhd.none_neuro_cop_numeric == 1 &
@@ -289,9 +286,6 @@ if(NBR == TRUE) {
     mutate(
       mental_health_diagnosis =
         case_when(
-          # ++ Algorithm-derived depression
-          # ++ Algorithm-derived anxiety
-          
           # Algorithm-derived ED - COPING
           ed.DSM5_AN_binary_numeric_cop == 1 |                                        
             ed.DSM5_AN_restricting_binary_numeric_cop  == 1 |                                
@@ -299,7 +293,7 @@ if(NBR == TRUE) {
             ed.DSM5_BED_binary_numeric_cop == 1 |                                           
             ed.DSM5_BN_binary_numeric_cop == 1 | 
             
-            # Self-reported psych disorder - COPING MHD
+          # Self-reported psych disorder - COPING MHD
             mhd.mdd_cop_numeric== 1 |                                                      
             mhd.perinatal_depression_cop_numeric== 1 |                                     
             mhd.pmdd_cop_numeric== 1 |                                                     
@@ -340,7 +334,7 @@ if(NBR == TRUE) {
           
           # No psychiatric disorder
           (mhd.suspected_eating_disorder_diagnosed_cop_numeric == 0 | # Either never suspected an ED (and wasn't shown list of EDs) or...
-             mhd.none_eds_cop_numeric == 1) & #...clicked none of the above when presented with list of EDs (may have endorsed previous question by mistake?)
+             mhd.none_eds_cop_numeric == 1) & #...clicked none of the above when presented with list of EDs (e.g., may have endorsed previous question by mistake)
             
             mhd.none_neuro_cop_numeric == 1 &
             mhd.none_dep_anx_ocd_ptsd_cop_numeric == 1 ~ "No psychiatric disorder",                                   
@@ -374,9 +368,6 @@ if(RAMP == TRUE) {
     mutate(
       mental_health_diagnosis =
         case_when(
-          # ++ Algorithm-derived depression?
-          # ++ Algorithm-derived anxiety?
-          
           # Self-reported psych disorder - COPING MHD
            mhd.mdd_cop_numeric== 1 |                                                      
             mhd.perinatal_depression_cop_numeric== 1 |                                     
@@ -397,7 +388,7 @@ if(RAMP == TRUE) {
             mhd.bn_cop_numeric== 1 |                                                       
             mhd.bed_cop_numeric== 1 |                                                      
             mhd.schizophrenia_cop_numeric== 1 |                                            
-            #      mhd.schizoaffective_cop_numeric== 1 |     # Not in RAMP                                     
+            # mhd.schizoaffective_cop_numeric== 1 |     # Not in RAMP                                     
             mhd.psychosis_cop_numeric== 1 |                                                
             mhd.personality_disorder_cop_numeric== 1 |                                     
             mhd.asd_cop_numeric == 1 |                                                      
@@ -418,10 +409,9 @@ if(RAMP == TRUE) {
           
           # No psychiatric disorder
           mhd.none_dep_anx_ocd_ptsd_cop_numeric == 1 &
-            mhd.none_neuro_eds_cop_numeric == 1~ "No psychiatric disorder",                                   
+            mhd.none_neuro_eds_cop_numeric == 1 ~ "No psychiatric disorder",                                   
           
-      
-          # Answered PNTA or Don't know at least once               
+        # Answered PNTA or Don't know at least once               
           mhd.dont_know_dep_anx_ocd_ptsd_cop_numeric == 1 |
           mhd.pnta_dep_anx_ocd_ptsd_cop_numeric == 1 |
           

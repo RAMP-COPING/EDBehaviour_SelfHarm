@@ -54,10 +54,10 @@ date
 # Read in data
 ## Baseline data (generated from the script 1.Preprocessing_EDBeh_SelfHarm)
 ```{r Read in baseline data of all datasets}
-glad_baseline <- readRDS(file = "../data_cleaned/BASELINE_glad2022-02-21.rds")
+glad_baseline <- readRDS(file = "../data_cleaned/BASELINE_glad2022-09-22.rds")
 dim(glad_baseline)
 
-edgi_baseline <- readRDS(file = "../data_cleaned/BASELINE_edgi2022-02-21.rds")
+edgi_baseline <- readRDS(file = "../data_cleaned/BASELINE_edgi2022-09-22.rds")
 dim(edgi_baseline)
 
 nbr_baseline <- readRDS(file = "../data_cleaned/BASELINE_nbr2022-02-21.rds")

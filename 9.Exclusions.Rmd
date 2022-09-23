@@ -54,7 +54,7 @@ date
 
 # Read in data
 ```{r read in data}
-dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-06-20.rds"))
+dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-09-22.rds"))
 
 dat_raw %>%
   colnames()
@@ -140,7 +140,7 @@ dat_completed <- dat_edgi_nbr %>%
 
 # Read in data (again)
 ```{r read in data}
-dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-06-20.rds"))
+dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-09-22.rds"))
 
 # Keep only those with completed COPING or RAMP data
 dat <- dat_raw %>%

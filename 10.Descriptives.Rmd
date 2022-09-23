@@ -55,7 +55,7 @@ date
 # Read in data
 ## Final cleaned data
 ```{r Read in data}
-dat_cleaned <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-06-21.rds")
+dat_cleaned <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-09-22.rds")
 
 # Check
 dim(dat_cleaned)
@@ -781,7 +781,9 @@ IQR(na.omit(dat_final$dem.bmi_signup_cop))
 dat_final %>%
   select(age_category_COVID_baseline,
          sex_binary,
-         minoritised_gender,
+       # minoritised_gender,
+         gender,
+         transgender,
          race_categories,
          merged_highest_education,
          highest_education
@@ -803,7 +805,9 @@ IQR(na.omit(binge_eating_group$dem.bmi_signup_cop))
 binge_eating_group %>%
   select(age_category_COVID_baseline,
          sex_binary,
-         minoritised_gender,
+          minoritised_gender,
+         gender,
+         transgender,
          race_categories,
          merged_highest_education
          
@@ -825,6 +829,8 @@ low_weight_group %>%
   select(age_category_COVID_baseline,
          sex_binary,
          minoritised_gender,
+         gender,
+         transgender,
          race_categories,
          merged_highest_education
          ) %>%
@@ -844,7 +850,9 @@ IQR(na.omit(harmful_ideation_group$dem.bmi_signup_cop))
 harmful_ideation_group %>%
   select(age_category_COVID_baseline,
          sex_binary,
-         minoritised_gender,
+           minoritised_gender,
+         gender,
+         transgender,
          race_categories,
          merged_highest_education
          ) %>%
@@ -864,7 +872,9 @@ IQR(na.omit(selfharm_group$dem.bmi_signup_cop))
 selfharm_group %>%
   select(age_category_COVID_baseline,
          sex_binary,
-         minoritised_gender,
+          minoritised_gender,
+         gender,
+         transgender,
          race_categories,
          merged_highest_education
          ) %>%

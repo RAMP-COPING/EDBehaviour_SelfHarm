@@ -55,7 +55,7 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-06-20.rds"))
+dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-09-22.rds"))
 ```
 
 # EXPOSURES / EXPLANATORY VARIABLES
