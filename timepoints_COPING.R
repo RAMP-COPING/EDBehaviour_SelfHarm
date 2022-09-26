@@ -148,9 +148,7 @@ taf.coping.followupa.raw.id <-  taf.coping.followupa.raw.id %>%
                                
                                startDate_waves >= start19 & startDate_waves < end19 ~ ".Wave_15a",
                                
-                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
-                               
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
+                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
   ))
 
 taf.coping.followupb.raw.id <- taf.coping.followupb.raw.id %>%
@@ -189,9 +187,7 @@ taf.coping.followupb.raw.id <- taf.coping.followupb.raw.id %>%
                                
                                startDate_waves >= start19 & startDate_waves < end19 ~ ".Wave_15a",
                                
-                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
-                               
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
+                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
   ))
 
 # NB The EDEQ questionnaire is only in follow up B
@@ -215,7 +211,7 @@ edeq.coping.followupb.screener.raw.id <- edeq.coping.followupb.screener.raw.id %
                              
                              startDate_waves >= start18 & startDate_waves < end19 ~ ".Wave_14b",
                              
-                             startDate_waves >= start20 & startDate_waves < end21 ~ ".Wave_16b"
+                             startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
                             
                              ))
 
@@ -240,7 +236,7 @@ coping.followupb.virus.id <- coping.followupb.virus.id %>%
     
     startDate_waves >= start18 & startDate_waves < end19 ~ ".Wave_14b",
     
-    startDate_waves >= start20 & startDate_waves < end21 ~ ".Wave_16b"
+    startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
     
     ))
 
@@ -282,9 +278,7 @@ coping.dem.followupa.raw.id <-  coping.dem.followupa.raw.id %>%
                                
                                startDate_waves >= start19 & startDate_waves < end19 ~ ".Wave_15a",
                                
-                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
-                               
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
+                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
   ))
 
 coping.dem.followupb.raw.id <- coping.dem.followupb.raw.id %>%
@@ -323,9 +317,7 @@ coping.dem.followupb.raw.id <- coping.dem.followupb.raw.id %>%
                                
                                startDate_waves >= start19 & startDate_waves < end19 ~ ".Wave_15a",
                                
-                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
-                               
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
+                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
   ))
 
 # NB The LOSS questionnaire is only in follow up B
@@ -348,7 +340,7 @@ coping.loss.followupb.raw.id <- coping.loss.followupb.raw.id %>%
     
     startDate_waves >= start18 & startDate_waves < end19 ~ ".Wave_14b",
     
-    startDate_waves >= start20 & startDate_waves < end21 ~ ".Wave_16b"
+    startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
     ))
 
 
@@ -389,9 +381,7 @@ coping.followupa.resp.id <-  coping.followupa.resp.id %>%
                                
                                startDate_waves >= start19 & startDate_waves < end19 ~ ".Wave_15a",
                                
-                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
-                               
-                               startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
+                               startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
   ))
 
 
@@ -431,7 +421,5 @@ coping.followupb.resp.id <-  coping.followupb.resp.id %>%
                                 
                                 startDate_waves >= start19 & startDate_waves < end19 ~ ".Wave_15a",
                                 
-                                startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b",
-                                
-                                startDate_waves >= start21 & startDate_waves < end21 ~ ".Wave_17a"
+                                startDate_waves >= start20 & startDate_waves < end20 ~ ".Wave_16b"
   ))

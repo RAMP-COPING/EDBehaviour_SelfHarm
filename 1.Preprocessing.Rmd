@@ -55,8 +55,8 @@ Specify cohort
 I have added this for my own ease of running the script, i.e., I can run and troubleshoot one cohort at a time.
 ```{r Specify cohort}
 GLAD = FALSE
-EDGI = TRUE
-RAMP = FALSE
+EDGI = FALSE
+RAMP = TRUE
 NBR = FALSE
 COPING = FALSE
 ```
@@ -1322,7 +1322,8 @@ glad_baseline_resp_id <- glad_baseline_resp_raw %>% #new dataset with ID
   add_column(sample = "GLAD", .before = "startDate") %>% #create new column 
   select(
          ID = externalDataReference, # ID
-         sample, # Sample
+         sample, # Sample,
+         resp.screener_baseline = resp.symptoms_loss_breath_experienced ,
          startDate_baseline = startDate,
          resp.coronavirus_test_nosethroat_swab,
          resp.results_nosethroat_swab_test,
@@ -1371,6 +1372,7 @@ edgi_baseline_resp_id <- edgi_baseline_resp_raw %>% #new dataset with ID
          ID = externalDataReference, # ID
          sample, # Sample
          startDate_baseline = startDate,
+         resp.screener_baseline =resp.taste_fever_unusual_shortness,
          resp.coronavirus_test_nosethroat_swab,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test,
@@ -1417,6 +1419,7 @@ nbr_baseline_resp_id <- nbr_baseline_resp_raw %>% #new dataset with ID
          ID = subjectid, # ID
          sample, # Sample
          startDate_baseline = startDate,
+         resp.screener_baseline = resp.taste_fever_unusual_shortness,
          resp.coronavirus_test_nosethroat_swab,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test,
@@ -1464,6 +1467,7 @@ ramp_baseline_resp_id <- ramp_baseline_resp_raw %>% #new dataset with ID
          ID = `Login ID`, # ID
          sample, # Sample
          startDate_baseline = startDate,
+         resp.screener_baseline =resp.fever_unusual_shortness_smell ,
          resp.coronavirus_test_nosethroat_swab = resp.coronavirus_test_week_nosethroat,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test = resp.coronavirus_week_antibody_test,
@@ -1509,6 +1513,7 @@ coping.followupa1.resp.id <- coping.followupa1.resp %>% #new dataset with ID
          ID = externalDataReference, # ID
          sample, # Sample
          startDate_waves = startDate,
+         resp.screener_followup = resp.breath_smell_weeks_experienced,
          resp.coronavirus_test_nosethroat_swab = resp.test_coronavirus_week_nosethroat,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test = resp.coronavirus_week_antibody_test,
@@ -1554,6 +1559,7 @@ coping.followupa2.resp.id <- coping.followupa2.resp %>% #new dataset with ID
          ID = externalDataReference, # ID
          sample, # Sample
          startDate_waves = startDate,
+          resp.screener_followup =resp.smell_breath_weeks_experienced,
          resp.coronavirus_test_nosethroat_swab = resp.test_coronavirus_week_nosethroat,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test = resp.coronavirus_week_antibody_test,
@@ -1613,6 +1619,7 @@ coping.followupb.resp.id <- coping.followupb.resp %>% #new dataset with ID
          ID = externalDataReference, # ID
          sample, # Sample
          startDate_waves = startDate,
+         resp.screener_followup = resp.fever_unusual_shortness_smell,
          resp.coronavirus_test_nosethroat_swab = resp.coronavirus_test_week_nosethroat,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test = resp.antibody_test_coronavirus_week,
@@ -1658,6 +1665,7 @@ ramp.followupa.resp.id <- ramp.followupa.resp %>% #new dataset with ID
          ID = externalDataReference, # ID
          sample, # Sample
          startDate_waves = startDate,
+         resp.screener_followup =resp.breath_smell_weeks_experienced,
          resp.coronavirus_test_nosethroat_swab = resp.test_coronavirus_weeks_nosethroat,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test = resp.coronavirus_weeks_antibody_test,
@@ -1703,6 +1711,7 @@ ramp.followupb.resp.id <- ramp.followupb.resp %>% #new dataset with ID
          ID = externalDataReference, # ID
          sample, # Sample
          startDate_waves = startDate,
+         resp.screener_followup = resp.fever_unusual_shortness_smell,
          resp.coronavirus_test_nosethroat_swab = resp.coronavirus_test_weeks_nosethroat,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test = resp.antibody_test_coronavirus_weeks,
@@ -3223,6 +3232,7 @@ edgi.11 <- edgi_loss_baseline_id %>%
 edgi.12 <- edgi_baseline_resp_id %>%
   select(ID, 
          sample,
+         resp.screener_baseline,
          resp.coronavirus_test_nosethroat_swab,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test,
@@ -3242,7 +3252,6 @@ edgi_F <- dplyr::full_join(edgi.11,
 Join all EDGI
 ```{r Join all EDGI questionnaires}
 if(EDGI == TRUE) {
-  
 dat_edgi_merged <- list(edgi_A,
                 edgi_B,
                 edgi_C,
@@ -3463,6 +3472,7 @@ glad.11 <- glad_loss_baseline_id %>%
 glad.12 <- glad_baseline_resp_id %>%
   select(ID, 
          sample,
+         resp.screener_baseline,
          resp.coronavirus_test_nosethroat_swab,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test,
@@ -3703,6 +3713,7 @@ nbr.11 <- nbr_loss_baseline_id %>%
 nbr.12 <- nbr_baseline_resp_id %>%
   select(ID, 
          sample,
+         resp.screener_baseline,
          resp.coronavirus_test_nosethroat_swab,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test,
@@ -4009,6 +4020,7 @@ ramp.11 <- ramp_loss_baseline_id %>%
 ramp.12 <- ramp_baseline_resp_id %>%
   select(ID, 
          sample,
+         resp.screener_baseline,
          resp.coronavirus_test_nosethroat_swab,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test,
@@ -4040,7 +4052,8 @@ dat_ramp_merged <- list(ramp_A,
                 ramp_C,
                 ramp_D,
                 ramp_E,
-                ramp_F
+                ramp_F, 
+                ramp.13
                 ) %>%
 reduce(full_join,
          by = c("ID",
@@ -4216,12 +4229,13 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
     names_from = wave_dem, 
                      values_from = c(
          dem.living_situation,
+         dem.physical_health,
+         dem.health_of_a_relative,
          dem.employment,
          dem.household_employment_status_key,
          dem.unwell_coronavirus_weeks_physical,
          dem.coronavirus_relative_previously_ill.1,
-         dem.health_of_a_relative,
-         dem.coronavirus_relative_ill_suspected
+        dem.coronavirus_relative_ill_suspected
          
          )
     ) 
@@ -4254,7 +4268,28 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.living_situation_.Wave_14b`,
          `dem.living_situation_.Wave_15a`,
          `dem.living_situation_.Wave_16b`,
-
+         
+         `dem.physical_health_.Wave_1a`,
+         `dem.physical_health_.Wave_1b`,
+         `dem.physical_health_.Wave_2a`,
+         `dem.physical_health_.Wave_2b`,
+         `dem.physical_health_.Wave_3a`,
+         `dem.physical_health_.Wave_3b`,
+         `dem.physical_health_.Wave_4a`,
+         `dem.physical_health_.Wave_4b`,
+         `dem.physical_health_.Wave_5a`,
+         `dem.physical_health_.Wave_6b`,
+         `dem.physical_health_.Wave_7a`,
+         `dem.physical_health_.Wave_8b`,
+         `dem.physical_health_.Wave_9a`,
+         `dem.physical_health_.Wave_10b`,
+         `dem.physical_health_.Wave_11a`,
+         `dem.physical_health_.Wave_12b`,
+         `dem.physical_health_.Wave_13a`,
+         `dem.physical_health_.Wave_14b`,
+         `dem.physical_health_.Wave_15a`,
+         `dem.physical_health_.Wave_16b`,
+         
           `dem.employment_.Wave_1a`,
          `dem.employment_.Wave_1b`,
          `dem.employment_.Wave_2a`,
@@ -4402,6 +4437,27 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.living_situation_.Wave_14b_dup`,
          `dem.living_situation_.Wave_15a_dup`,
          `dem.living_situation_.Wave_16b_dup`,
+     
+     `dem.physical_health_.Wave_1a_dup`,
+         `dem.physical_health_.Wave_1b_dup`,
+         `dem.physical_health_.Wave_2a_dup`,
+         `dem.physical_health_.Wave_2b_dup`,
+         `dem.physical_health_.Wave_3a_dup`,
+         `dem.physical_health_.Wave_3b_dup`,
+         `dem.physical_health_.Wave_4a_dup`,
+         `dem.physical_health_.Wave_4b_dup`,
+         `dem.physical_health_.Wave_5a_dup`,
+         `dem.physical_health_.Wave_6b_dup`,
+         `dem.physical_health_.Wave_7a_dup`,
+         `dem.physical_health_.Wave_8b_dup`,
+         `dem.physical_health_.Wave_9a_dup`,
+         `dem.physical_health_.Wave_10b_dup`,
+         `dem.physical_health_.Wave_11a_dup`,
+         `dem.physical_health_.Wave_12b_dup`,
+         `dem.physical_health_.Wave_13a_dup`,
+         `dem.physical_health_.Wave_14b_dup`,
+         `dem.physical_health_.Wave_15a_dup`,
+         `dem.physical_health_.Wave_16b_dup`,
          
          `dem.employment_.Wave_1a_dup`,
          `dem.employment_.Wave_1b_dup`,
@@ -5476,7 +5532,8 @@ ramp.followup.resp.id <- ramp.followup.resp.id %>%
                      values_from = c(resp.coronavirus_test_nosethroat_swab,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test,
-         resp.results_antibody_test
+         resp.results_antibody_test,
+         resp.screener_followup
          )
     ) 
   
@@ -5508,6 +5565,27 @@ ramp.followup.resp.id <- ramp.followup.resp.id  %>%
          `resp.coronavirus_test_nosethroat_swab_.Wave_14b`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_15a`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_16b`,
+         
+         `resp.screener_followup_.Wave_1a`,
+         `resp.screener_followup_.Wave_1b`,
+         `resp.screener_followup_.Wave_2a`,
+         `resp.screener_followup_.Wave_2b` ,
+         `resp.screener_followup_.Wave_3a`,
+         `resp.screener_followup_.Wave_3b` , 
+         `resp.screener_followup_.Wave_4a`,
+         `resp.screener_followup_.Wave_4b`,
+         `resp.screener_followup_.Wave_5a`,
+         `resp.screener_followup_.Wave_6b`,
+         `resp.screener_followup_.Wave_7a`,
+         `resp.screener_followup_.Wave_8b`,
+         `resp.screener_followup_.Wave_9a`,
+         `resp.screener_followup_.Wave_10b`,
+         `resp.screener_followup_.Wave_11a`,
+         `resp.screener_followup_.Wave_12b`,
+         `resp.screener_followup_.Wave_13a`,
+         `resp.screener_followup_.Wave_14b`,
+         `resp.screener_followup_.Wave_15a`,
+         `resp.screener_followup_.Wave_16b`,
          
          `resp.results_nosethroat_swab_test_.Wave_1a`,
          `resp.results_nosethroat_swab_test_.Wave_1b`,
@@ -5807,6 +5885,7 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
     names_from = wave_dem, 
                      values_from = c(
                         dem.living_situation,
+                        dem.physical_health,
          dem.employment,
          dem.household_employment_status_key,
          dem.unwell_coronavirus_weeks_physical,
@@ -5840,6 +5919,25 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.living_situation_.Wave_14b`,
          `dem.living_situation_.Wave_15a`,
          `dem.living_situation_.Wave_16b`,
+         
+         `dem.physical_health_.Wave_2a`,
+         `dem.physical_health_.Wave_2b`,
+         `dem.physical_health_.Wave_3a`,
+         `dem.physical_health_.Wave_3b`,
+         `dem.physical_health_.Wave_4a`,
+         `dem.physical_health_.Wave_4b`,
+         `dem.physical_health_.Wave_5a`,
+         `dem.physical_health_.Wave_6b`,
+         `dem.physical_health_.Wave_7a`,
+         `dem.physical_health_.Wave_8b`,
+         `dem.physical_health_.Wave_9a`,
+         `dem.physical_health_.Wave_10b`,
+         `dem.physical_health_.Wave_11a`,
+         `dem.physical_health_.Wave_12b`,
+         `dem.physical_health_.Wave_13a`,
+         `dem.physical_health_.Wave_14b`,
+         `dem.physical_health_.Wave_15a`,
+         `dem.physical_health_.Wave_16b`,
 
          `dem.employment_.Wave_2a`,
          `dem.employment_.Wave_2b`,
@@ -5974,6 +6072,25 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.living_situation_.Wave_14b_dup`,
          `dem.living_situation_.Wave_15a_dup`,
          `dem.living_situation_.Wave_16b_dup`,
+     
+     `dem.physical_health_.Wave_2a_dup`,
+         `dem.physical_health_.Wave_2b_dup`,
+         `dem.physical_health_.Wave_3a_dup`,
+         `dem.physical_health_.Wave_3b_dup`,
+         `dem.physical_health_.Wave_4a_dup`,
+         `dem.physical_health_.Wave_4b_dup`,
+         `dem.physical_health_.Wave_5a_dup`,
+         `dem.physical_health_.Wave_6b_dup`,
+         `dem.physical_health_.Wave_7a_dup`,
+         `dem.physical_health_.Wave_8b_dup`,
+         `dem.physical_health_.Wave_9a_dup`,
+         `dem.physical_health_.Wave_10b_dup`,
+         `dem.physical_health_.Wave_11a_dup`,
+         `dem.physical_health_.Wave_12b_dup`,
+         `dem.physical_health_.Wave_13a_dup`,
+         `dem.physical_health_.Wave_14b_dup`,
+         `dem.physical_health_.Wave_15a_dup`,
+         `dem.physical_health_.Wave_16b_dup`,
     
          `dem.employment_.Wave_2a_dup`,
          `dem.employment_.Wave_2b_dup`,
@@ -6349,8 +6466,7 @@ dat.raw.taf.coping <- dat.raw.taf.coping.wide %>%
          `taf.meant_life_end_weeks_.Wave_14b`,
          `taf.meant_life_end_weeks_.Wave_15a`,
          `taf.meant_life_end_weeks_.Wave_16b`,
-         `taf.meant_life_end_weeks_.Wave_17a`,
-       
+
          `taf.worth_living_life_people_.Wave_2a_dup`,
          `taf.worth_living_life_people_.Wave_2b_dup`,
          `taf.worth_living_life_people_.Wave_3a_dup`,
@@ -6591,7 +6707,8 @@ coping.followup.resp.id <- coping.followup.resp.id %>%
                        resp.coronavirus_test_nosethroat_swab,
          resp.results_nosethroat_swab_test,
          resp.coronavirus_antibody_test,
-         resp.results_nosethroat_swab_test)) 
+         resp.results_nosethroat_swab_test,
+         resp.screener_followup)) 
   
 } 
 ```
@@ -6619,8 +6736,26 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.coronavirus_test_nosethroat_swab_.Wave_14b`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_15a`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_16b`,
-         `resp.coronavirus_test_nosethroat_swab_.Wave_17a`,
-         
+        
+        `resp.screener_followup_.Wave_2a`,
+         `resp.screener_followup_.Wave_2b` ,
+         `resp.screener_followup_.Wave_3a`,
+         `resp.screener_followup_.Wave_3b` , 
+         `resp.screener_followup_.Wave_4a`,
+         `resp.screener_followup_.Wave_4b`,
+         `resp.screener_followup_.Wave_5a`,
+         `resp.screener_followup_.Wave_6b`,
+         `resp.screener_followup_.Wave_7a`,
+         `resp.screener_followup_.Wave_8b`,
+         `resp.screener_followup_.Wave_9a`,
+         `resp.screener_followup_.Wave_10b`,
+         `resp.screener_followup_.Wave_11a`,
+         `resp.screener_followup_.Wave_12b`,
+         `resp.screener_followup_.Wave_13a`,
+         `resp.screener_followup_.Wave_14b`,
+         `resp.screener_followup_.Wave_15a`,
+         `resp.screener_followup_.Wave_16b`,
+
          `resp.results_nosethroat_swab_test_.Wave_2a`,
          `resp.results_nosethroat_swab_test_.Wave_2b` ,
          `resp.results_nosethroat_swab_test_.Wave_3a`,
@@ -6639,8 +6774,7 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.results_nosethroat_swab_test_.Wave_14b`,
          `resp.results_nosethroat_swab_test_.Wave_15a`,
          `resp.results_nosethroat_swab_test_.Wave_16b`,
-         `resp.results_nosethroat_swab_test_.Wave_17a`,
-         
+
          `resp.coronavirus_antibody_test_.Wave_2a`,
          `resp.coronavirus_antibody_test_.Wave_2b` ,
          `resp.coronavirus_antibody_test_.Wave_3a`,
@@ -6659,8 +6793,7 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.coronavirus_antibody_test_.Wave_14b`,
          `resp.coronavirus_antibody_test_.Wave_15a`,
          `resp.coronavirus_antibody_test_.Wave_16b`,
-         `resp.coronavirus_antibody_test_.Wave_17a`,
-         
+
          `resp.coronavirus_antibody_test_.Wave_2a`,
          `resp.coronavirus_antibody_test_.Wave_2b` ,
          `resp.coronavirus_antibody_test_.Wave_3a`,
@@ -6679,8 +6812,7 @@ coping.followup.resp.id <- coping.followup.resp.id  %>%
          `resp.coronavirus_antibody_test_.Wave_14b`,
          `resp.coronavirus_antibody_test_.Wave_15a`,
          `resp.coronavirus_antibody_test_.Wave_16b`,
-         `resp.coronavirus_antibody_test_.Wave_17a`,
-       
+
          `resp.coronavirus_test_nosethroat_swab_.Wave_2a_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_2b_dup`,
          `resp.coronavirus_test_nosethroat_swab_.Wave_3a_dup`,

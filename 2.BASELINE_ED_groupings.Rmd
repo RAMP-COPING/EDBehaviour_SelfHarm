@@ -81,7 +81,7 @@ dat.be.coping.glad.id <- dat.be.coping.glad %>% #new dataset with ID
   select(
          ID = externalDataReference,# ID
        sample, # Sample
-      be.ate_regard_eating_binges =  be.ate_regard_short_period, #rename to same as NBR
+      be.ate_regard_eating_binges =  be.ate_regard_short_period, # rename to same as NBR
       be.roughly_binge_eating_regular.txt,
       be.current = be.regularly_occurring_overeating_episodes,
       be.age_when_stopped = be.binge_eating_stopped_regular.txt
@@ -197,7 +197,6 @@ dim(dat.an.scr.glad.coping.id )
 colnames(dat.an.scr.glad.coping.id )
 #Differences
 dim(dat.an.scr.glad.coping)[1]-dim(dat.an.scr.glad.coping.id )[1]
-
 ```
 
 # Read in ED data: GLAD COPING AN MODULE
@@ -287,7 +286,6 @@ dim(dat.an.scr.nbr.id )
 colnames(dat.an.scr.nbr.id )
 #Differences
 dim(dat.an.scr.nbr)[1]-dim(dat.an.scr.nbr.id)[1]
-
 ```
 
 # Read in ED data: NBR AN MODULE
@@ -376,7 +374,7 @@ dat.mhd.glad.coping.id <- dat.mhd.glad.coping %>% #new dataset with ID
         mhd.atypical_bulimia_nervosa,
         mhd.bingeeating_disorder,
         mhd.atypical_bingeeating_disorder,
-       mhd.suspected_eating_disorder_diagnosed
+        mhd.suspected_eating_disorder_diagnosed
          ) %>%
   add_numeric(., exclude = exclude_cols) %>%
   mutate_if(is.numeric, ~na_if(., -88)) %>% # Recode missing values to NAs in numeric variables
@@ -397,7 +395,6 @@ dim(dat.mhd.glad.coping.id )
 colnames(dat.mhd.glad.coping.id )
 #Differences
 dim(dat.mhd.glad.coping)[1]-dim(dat.mhd.glad.coping.id )[1]
-
 ```
 
 # Read in ED data: NBR COPING MHD
@@ -482,36 +479,15 @@ colnames(age_dat_glad_coping)
 # Merge data
 ## GLAD COPING
 ```{r Merge GLAD data}
-# Merge
-dat_glad1 <- dplyr::full_join(dat.be.coping.glad.id,
-                              dat.an.scr.glad.coping.id,
-                              by = c("ID",
-                                     "sample"
-                                     )
-                              )
-
-dat_glad2 <- dplyr::full_join(dat.mhd.glad.coping.id,
-                              dat.an.glad.coping.id,
-                              by = c("ID",
-                                     "sample"
-                                     )
-                              )
-
-
-dat_glad3 <- dplyr::full_join(dat_glad1,
-                              age_dat_glad_coping,
-                              by = c("ID",
-                                     "sample"
-                                     )
-                              )
-
-dat.ed.GLAD.COPING <- dplyr::full_join(dat_glad3,
-                              dat_glad2,
-                              by = c("ID",
-                                     "sample"
-                                     )
-                              )
-
+dat.ed.GLAD.COPING <- list(dat.be.coping.glad.id,
+                           dat.an.scr.glad.coping.id,
+                           dat.mhd.glad.coping.id,
+                           dat.an.glad.coping.id,
+                           age_dat_glad_coping
+                ) %>%
+reduce(full_join,
+         by = c("ID",
+         "sample"))
 
 # Check rows
 nrow(dat.ed.GLAD.COPING)
@@ -523,34 +499,16 @@ colnames(dat.ed.GLAD.COPING)
 # Merge data
 ## NBR
 ```{r Merge NBR data}
-# Merge
-dat_nbr1 <- dplyr::full_join(dat.be.nbr.id,
-                              dat.an.scr.nbr.id,
-                              by = c("ID",
-                                     "sample"
-                                     )
-                              )
+dat.ed.NBR <- list(dat.be.nbr.id,
+                           dat.an.scr.nbr.id,
+                           dat.mhd.nbr.coping.id,
+                           dat.an.nbr.id,
+                           age_dat_nbr
+                ) %>%
+reduce(full_join,
+         by = c("ID",
+         "sample"))
 
-dat_nbr2 <- dplyr::full_join(dat.mhd.nbr.coping.id,
-                              dat.an.nbr.id,
-                              by = c("ID",
-                                     "sample"
-                                     )
-                              )
-
-dat_nbr3 <- dplyr::full_join(dat_nbr1,
-                              age_dat_nbr,
-                              by = c("ID",
-                                     "sample"
-                                     )
-                            )
-
-dat.ed.NBR <- dplyr::full_join(dat_nbr3,
-                              dat_nbr2,
-                              by = c("ID",
-                                     "sample"
-                                     )
-                            )
 
 # Check rows
 nrow(dat.ed.NBR)
@@ -564,8 +522,7 @@ colnames(dat.ed.NBR)
 ```{r Bind data GLAD & NBR}
 # Bind
 dat.ed.COPING <- dat.ed.NBR %>%
-  bind_rows(
-                   dat.ed.GLAD.COPING
+  bind_rows(dat.ed.GLAD.COPING
                 )
 
 # Check colnames 
@@ -595,26 +552,27 @@ dat.ed.COPING$age_start_pandemic_glad <- lubridate::interval(
 dat.ed.COPING <- dat.ed.COPING %>%
   mutate(age_start_pandemic =
            case_when(
-             !is.na(age_start_pandemic_cop) ~ age_start_pandemic_cop,
-             !is.na(age_start_pandemic_glad) ~ age_start_pandemic_glad
+             !is.na(age_start_pandemic_cop) ~ age_start_pandemic_cop, # if DOB available in COPING use COPING
+             !is.na(age_start_pandemic_glad) ~ age_start_pandemic_glad  # if DOB not available in COPING, use GLAD
              )
          )
 ```
 
 ### Binge eating
+NB: People will get routed to the ED100K if they 1) endorse the screener, 2) enodrse an AN diagnosis, 3) have a BMI lower than 18.5 as calculcated from the demographics. Therefore, we do not need to include the question about low weight "an.weigh_weighed_people_thought" as some people may not have endorsed this but will have still answered the questions about low weight.
 ```{r working out if during the pandemic or before binge eating}
 # Work out if during pandemic - binge eating
 dat.ed.COPING <- dat.ed.COPING %>%
   mutate(pandemic_BE_vs_start_pandemic_age =
            case_when(
              
-            be.ate_regard_eating_binges == "Yes" & 
-             age_start_pandemic < be.roughly_binge_eating_regular.txt ~ "Pandemic binge eating", #...but they've turned that age since the pandemic started (i.e., started binge eating during the pandemic)
+            # be.ate_regard_eating_binges == "Yes" & 
+             age_start_pandemic < be.roughly_binge_eating_regular.txt ~ "Pandemic binge eating", # they've turned that age since the pandemic started (i.e., started binge eating during the pandemic)
              
-              be.ate_regard_eating_binges == "Yes" & 
-             age_start_pandemic > be.roughly_binge_eating_regular.txt ~ "Pre-pandemic binge eating", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
+            #  be.ate_regard_eating_binges == "Yes" & 
+             age_start_pandemic > be.roughly_binge_eating_regular.txt ~ "Pre-pandemic binge eating", # they started binge eating at an age younger than their age at the beginning of the pandemic (i.e., started binge eating BEFORE the pandemic)
             
-             be.ate_regard_eating_binges == "Yes" & 
+          #   be.ate_regard_eating_binges == "Yes" & 
              age_start_pandemic == be.roughly_binge_eating_regular.txt ~ "Probably pre-pandemic binge eating", #...same age, difficult to tell when they started EXACTLY
              
                be.ate_regard_eating_binges == "Yes"  ~ "Missing age data" # People left over
@@ -633,7 +591,7 @@ dat.ed.COPING %>%
          age_start_pandemic,
          be.roughly_binge_eating_regular.txt)
 ```
-17/01/22: There are 109 people who were the same age at the start of the pandemic as their age when they started binge eating so we can not work out whether they started before or during the pandemic. Will have to drop. 
+17/01/22: There are 116 people who were the same age at the start of the pandemic as their age when they started binge eating so we can not work out whether they started before or during the pandemic. Will have to drop. 
 
 
 ## Now, need to combine all the binge phenotypes and identify prepan versus pandemic
@@ -657,7 +615,7 @@ dat.ed.COPING <- dat.ed.COPING %>%
 dat.ed.COPING %>%
   freq(any_pandemic_binge_eating_vs_start_pandemic_age)
 ```
-17/01/22: There are 11 people who we have been able to identify as having pandemic binge eating (i.e., binge eating that started during the pandemic).
+17/01/22: There are 12 people who we have been able to identify as having pandemic binge eating (i.e., binge eating that started during the pandemic).
 
 ## COPING GLAD & NBR: Lifetime binge eating at baseline
 ```{r Lifetime binge eating at baseline GLAD & NBR}
@@ -707,35 +665,36 @@ dat.ed.COPING %>%
 dat.ed.COPING %>%
   filter(is.na(lifetime_binge_eating_baseline_numeric)) %>%
   select(
-           be.ate_regard_eating_binges,
+           sample,
+         be.ate_regard_eating_binges,
+           be.roughly_binge_eating_regular.txt,
+           age_start_pandemic,
            mhd.suspected_eating_disorder_diagnosed,
            mhd.bulimia_nervosa,
            mhd.atypical_bulimia_nervosa,
            mhd.bingeeating_disorder,
            mhd.atypical_bingeeating_disorder,
-           age_start_pandemic,
-           be.roughly_binge_eating_regular.txt
-         
-        )
+)
 ```
-17/01/22: There were 904 people who we could not classify as lifetime BE at baseline (1 = yes (i.e., prepandemic), 0 = No lifetime BE). 
-33 people have answered "No" to ever binge eating, but then not answered the MHD questionnaire, or said "Yes" to suspected eating disorder but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime binge eating" as it is the symptom we are most interested in rather than if they have had any other eating disorder.
-Now, there are 871 people who we can not classify. Either 'Yes' or missing for the BE question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for BE) for suspected eating disorder diagnosis.
+17/01/22: 33 people had answered "No" to ever binge eating, but then not answered the MHD questionnaire, or said "Yes" to suspected eating disorder but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime binge eating" as it is the symptom we are most interested in rather than if they have had any other eating disorder.
+
+Now, there are 3,133 people who we can not classify. Either 'Yes' or missing for the BE question. If "Yes" for BE questions, we've been unable to work out when they started, e.g., included age at start of pandemic but not age at which they started binge eating. And all are either "no" or 'Not sure' for suspected ED, or "Yes" but then "Not bulimia nervosa", "Not Atypical bulimia nervosa", "Not Binge-eating disorder", "Not Atypical binge-eating disorder".
 
 ## How many people have low weight that may have started during the pandemic? 
+NB: People will get routed to the ED100K if they 1) endorse the screener, 2) enodrse an AN diagnosis, 3) have a BMI lower than 18.5 as calculcated from the demographics. Therefore, we do not need to include the question about low weight "an.weigh_weighed_people_thought" as some people may not have endorsed this but will have still answered the questions about low weight.
 ```{r working out if during the pandemic or before low weight}
 # Work out if during pandemic - low weight
 dat.ed.COPING <- dat.ed.COPING %>%
   mutate(pandemic_LW_vs_start_pandemic_age =
            case_when(
              
-           an.weigh_weighed_people_thought == "Yes"  & # Had lifetime low weight
-             age_start_pandemic < an.1.how_old_were_you_then.txt ~ "Pandemic low weight", #...but they've turned that age since the pandemic started (i.e., started binge eating during the pandemic)
+         #  an.weigh_weighed_people_thought == "Yes"  & # Had lifetime low weight
+             age_start_pandemic < an.1.how_old_were_you_then.txt ~ "Pandemic low weight", # they've turned that age since the pandemic started (i.e., low weight started during the pandemic)
              
-              an.weigh_weighed_people_thought == "Yes"  & # Had lifetime low weight
-             age_start_pandemic > an.1.how_old_were_you_then.txt ~ "Pre-pandemic low weight", # ...but they started binge eating at an age younger than their age at the beginning of the pandemic
+          #    an.weigh_weighed_people_thought == "Yes"  & # Had lifetime low weight
+             age_start_pandemic > an.1.how_old_were_you_then.txt ~ "Pre-pandemic low weight", #  started low weight at an age younger than their age at the beginning of the pandemic
             
-             an.weigh_weighed_people_thought == "Yes"  & # Had lifetime low weight
+         #    an.weigh_weighed_people_thought == "Yes"  & # Had lifetime low weight
              age_start_pandemic == an.1.how_old_were_you_then.txt ~ "Probably pre-pandemic low weight", #...same age, difficult to tell when they started EXACTLY
              
               an.weigh_weighed_people_thought == "Yes" ~ "Missing age data"   # People left over
@@ -754,16 +713,16 @@ dat.ed.COPING %>%
          age_start_pandemic,
          an.1.how_old_were_you_then.txt)
 ```
-17/01/22: There are 193 people who put the same age at start of low weight as their age at the start of the pandemic so we can not work out whether they started before or during the pandemic. Will have to drop. 
+17/01/22: There are 234 people who put the same age at start of low weight as their age at the start of the pandemic so we can not work out whether they started before or during the pandemic. Will have to drop. 
 
 ## Now, need to combine all the low weight phenotypes and identify prepan versus pandemic
 ```{r combine low weight phenotypes} 
 dat.ed.COPING <- dat.ed.COPING %>%
   mutate(any_pandemic_low_weight_vs_start_pandemic_age =
-           case_when(   # People who indicated an age at symptom or diagnosis YOUNGER than their age at the start of the pandemic
+           case_when(   # People who indicated an age at symptom start YOUNGER than their age at the start of the pandemic
                        pandemic_LW_vs_start_pandemic_age == "Pre-pandemic low weight"  ~ "Pre-pandemic low weight",
                      
-                         # People who indicated an age at symptom or diagnosis OLDER than their age at the start of the pandemic
+                         # People who indicated an age at symptom start OLDER than their age at the start of the pandemic
                        pandemic_LW_vs_start_pandemic_age == "Pandemic low weight"   ~ "Pandemic low weight" 
                      )
          )
@@ -803,6 +762,7 @@ dat.ed.COPING <- dat.ed.COPING %>%
         
         # Missing age data
           any_pandemic_low_weight_vs_start_pandemic_age == "Missing age data" ~ 2
+       
         )
       )
            
@@ -813,19 +773,21 @@ dat.ed.COPING %>%
 
 dat.ed.COPING %>%
   filter(is.na(lifetime_low_weight_baseline_numeric)) %>%
-  select(any_pandemic_low_weight_vs_start_pandemic_age,
+  select(
+    sample,
+    any_pandemic_low_weight_vs_start_pandemic_age,
            an.weigh_weighed_people_thought,
+           an.1.how_old_were_you_then.txt,
+           age_start_pandemic,
            mhd.suspected_eating_disorder_diagnosed,
            mhd.anorexia_nervosa,
-           age_start_pandemic,
            mhd.anorexia_age_at_diagnosis_numeric,
-           an.1.how_old_were_you_then.txt
+        
         )
 ```
-17/01/22: There were 929 people who we could not classify as lifetime LW at baseline (1 = yes (i.e., prepandemic), 0 = No lifetime BE). 
-31 people have answered "No" to ever being of low weight, but then not answered the MHD questionnaire, or said "Yes" to suspecting an eating disorder but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime low weight" as it is the symptom we are most interested in rather than if they have had any other eating disorder.
-Now, there are 898 people who we can not classify. Either 'Yes' or missing for the LW question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for LW) for the MHD.
+17/01/22: 31 people have answered "No" to ever being of low weight, but then not answered the MHD questionnaire, or said "Yes" to suspecting an eating disorder but then not indicated which ED they suspected they have had, or put "Not sure". For these people, have decided to count them as "Not lifetime low weight" as it is the symptom we are most interested in rather than if they have had any other eating disorder.
 
+Now, there are 1,076 people who we can not classify. Either 'Yes' or missing for the LW question. And 'Not sure', 'Yes' (but not indicated which EDs), 'No' (but 'Yes' or NA for LW) for the MHD.
 
 # GLAD original data
 ## ED100K AFTER 23RD JAN
@@ -999,21 +961,14 @@ dim(glad_BE)[1]-dim(glad_BE.id)[1]
 
 Merge GLAD original data
 ```{r merge glad and glad coping}
-glad1 <- dplyr::full_join(glad_BE.id,
-                          glad_AN,
-                          by = c("ID",
-                                 "sample_glad"))
-
-
-glad2 <- dplyr::full_join(glad_mhd,
-                          glad_ed100k_selfreport_diagnoses,
-                          by = c("ID",
-                                 "sample_glad"))
-
-glad3 <- dplyr::full_join(glad1,
-                          glad2,
-                          by = c("ID",
-                                 "sample_glad"))
+glad1 <- list(glad_BE.id,
+                           glad_AN,
+                           glad_mhd,
+                           glad_ed100k_selfreport_diagnoses
+                ) %>%
+reduce(full_join,
+         by = c("ID",
+         "sample_glad"))
 
 # Get age at start of pandemic from COPING data
 age_at_pandemic_start <- dat.ed.COPING %>%
@@ -1021,7 +976,7 @@ age_at_pandemic_start <- dat.ed.COPING %>%
          age_start_pandemic)
 
 
-glad_dat <- dplyr::left_join(glad3,
+glad_dat <- dplyr::left_join(glad1,
                           age_at_pandemic_start,
                           by = "ID")        
 
@@ -1061,7 +1016,7 @@ glad_dat <- glad_dat %>%
            endDate_ED100K_BE < as.Date("2020-03-23") &  # Answered questionnaire before the pandemic
             
           # Self-reported binge eating ED100K 
-             be.short_period_ate_regard == "Yes" ~ 1, # Prepandemic binge eating (all people with a binge-type ED are captured above)
+             be.short_period_ate_regard == "Yes" ~ 1, # Pre-pandemic binge eating (all people with a binge-type ED are captured above)
            
           # No binge eating BEFORE the pandemic
            (((endDate_ED100K_BE > as.Date("2020-01-23") &  # Answered BE ED100K between Jan 23rd and March 23rd 2020 
@@ -1077,19 +1032,19 @@ glad_dat <- glad_dat %>%
        
       # Capture people who answered DURING the pandemic (so need to check ages)    
             
-           #  Binge eating DURING pandemic (started before)
-            (endDate_ED100K_BE >= as.Date("2020-03-23") & 
-             be.short_period_ate_regard == "Yes" &
-            age_start_pandemic >= be.began_roughly_regular_episodes.txt ~ 1), 
-             
-           # Newly experienced binge eating DURING pandemic (started during)
-             (endDate_ED100K_BE >= as.Date("2020-03-23") & 
-             be.short_period_ate_regard == "Yes" &
+           #  Pre-pandemic binge eating
+            (endDate_ED100K_BE >= as.Date("2020-03-23") &  # answered during pandemic
+             be.short_period_ate_regard == "Yes" & # endorsed binge eating
+            age_start_pandemic >= be.began_roughly_regular_episodes.txt ~ 1), # started binge eating before the pandemic, need to drop
+           
+           # Newly experienced binge eating DURING pandemic
+             (endDate_ED100K_BE >= as.Date("2020-03-23") & # answered during pandemic
+             be.short_period_ate_regard == "Yes" & # endorsed binge eating
              age_start_pandemic <  be.began_roughly_regular_episodes.txt ~ 9), # PANDEMIC experience of binge eating ( we need to count these people as baseline experience of binge eating)
            
           # No binge eating or binge-type ED at baseline (answered during pandemic; may go on to experience it during)
-             endDate_ED100K_BE >= as.Date("2020-03-23") & 
-             be.short_period_ate_regard == "No" &
+             endDate_ED100K_BE >= as.Date("2020-03-23") &  # answered during pandemic
+             be.short_period_ate_regard == "No" & # No binge eating
              mhd.bn == 0 & # No self-report diagnosis of a binge-type ED
              mhd.bed == 0 ~ 0,  # No BE at baseline
            
@@ -1120,7 +1075,8 @@ glad_dat <- glad_dat %>%
          # Added 17/01/22: Capture those with symptom-only data
       
             # No pre-pandemic binge eating
-                 # Answered questionnaire after the 23rd Jan but before the pandemic
+                 
+               # Answered questionnaire after the 23rd Jan but before the pandemic
            ((endDate_ED100K_BE > as.Date("2020-01-23") &
            endDate_ED100K_BE < as.Date("2020-03-23")) &  
             # No self-reported binge eating ED100K 
@@ -1169,6 +1125,7 @@ glad_dat %>%
   )
 ```
 17/01/22: Captured another 32 people who otherwise would have been dropped as 'No lifetime binge eating' as they answered the questionnaire after the 23rd Jan 2020 and endorsed no lifetime binge eating but did not answer the MHD question about diagnosis.
+
 There are 232 people who answered the GLAD MHD or ED100K BE after the 23rd Jan 2020 and could not be categorised. All bar one are "Yes" or NA for binge eating. One is "No" for binge eating BUT answered the BE ED100K in 2019 but the MHD in 2020. Some have not answered the BE question but then put an age at which they started binge eating. Some have answered during the pandemic and indicated 'Yes' to BE question but are missing for either their age at the start of the pandemic or the age at which BE began so we can not be sure when the BE started. Will drop all. 
 
 ## Identify lifetime low weight at GLAD sign-up AFTER 23RD JANUARY 2020
@@ -1193,7 +1150,7 @@ glad_dat <- glad_dat %>%
               
           # Low weight BEFORE the pandemic
           endDate_ED100K_AN < as.Date("2020-03-23") &  # Answered questionnaire before the pandemic
-          an.1.people_thought_weigh_weighed == "Yes" ~ 1, # Also prepandemic low weight
+          an.1.people_thought_weigh_weighed == "Yes" ~ 1, # Endorsed low weight = prepandemic low weight
            
            # No low weight BEFORE the pandemic
            ((endDate_ED100K_AN > as.Date("2020-01-23") &  # Answered between Jan 23rd and March 23rd 2020 
@@ -1201,24 +1158,24 @@ glad_dat <- glad_dat %>%
             
             an.1.people_thought_weigh_weighed == "No" &  # No self-reported low weight ED100K 
             mhd.an == 0 & # No self-report diagnosis of anorexia
-            an.1.anorexia_nervosa == "Not Anorexia nervosa") ~ 0,  
+            an.1.anorexia_nervosa == "Not Anorexia nervosa") ~ 0,  # No pre-pandemic experience of low weight
           
           
     # Capture people who answered DURING the pandemic (so need to check ages)    
             
-           # Low weight DURING pandemic (started before)
-            (endDate_ED100K_AN >= as.Date("2020-03-23") & 
-             an.1.people_thought_weigh_weighed == "Yes" &
-           age_start_pandemic >= an.how_old_were_you_then ~ 1), 
+           # Pre-pandemic low weight
+            (endDate_ED100K_AN >= as.Date("2020-03-23") &  # answered during pandemic
+             an.1.people_thought_weigh_weighed == "Yes" & # endorsed low weight
+           age_start_pandemic >= an.how_old_were_you_then ~ 1), # low weight occurred before pandemic = pre-pandemic low weight (need to drop)
           
-          # Newly experienced low weight DURING pandemic (started during)
-             (endDate_ED100K_AN >= as.Date("2020-03-23") & 
-             an.1.people_thought_weigh_weighed == "Yes" &
-             age_start_pandemic <  an.how_old_were_you_then ~ 9), 
+          # Newly experienced low weight DURING pandemic 
+             (endDate_ED100K_AN >= as.Date("2020-03-23") &  # answered during pandemic
+             an.1.people_thought_weigh_weighed == "Yes" & # endorsed low weight
+             age_start_pandemic <  an.how_old_were_you_then ~ 9), # low weight occurred after start of pandemic = pandemic low weight 
            
          # No low weight or anorexia at baseline (answered during pandemic; may go on to experience it during)
-             endDate_ED100K_AN >= as.Date("2020-03-23") & 
-            an.1.people_thought_weigh_weighed == "No" &
+             endDate_ED100K_AN >= as.Date("2020-03-23") &  # answered during pandemic
+            an.1.people_thought_weigh_weighed == "No" & # no low weight
             mhd.an == 0 & # No self-report diagnosis of anorexia
             an.1.anorexia_nervosa == "Not Anorexia nervosa" ~ 0, 
            
@@ -1245,12 +1202,12 @@ glad_dat <- glad_dat %>%
                  # Answered questionnaire after the 23rd Jan but before the pandemic
            ((endDate_ED100K_AN > as.Date("2020-01-23") &
            endDate_ED100K_AN < as.Date("2020-03-23")) &  
-            # No self-reported binge eating ED100K 
+            # No self-reported low weight ED100K 
              an.1.people_thought_weigh_weighed == "No") ~ 0, # No prepandemic low weight
       
                  # Answered questionnaire DURING the pandemic
              endDate_ED100K_AN >= as.Date("2020-03-23") &  
-            # No self-reported binge eating ED100K 
+            # No self-reported low weight ED100K 
              an.1.people_thought_weigh_weighed == "No" ~ 0, # No lifetime pandemic low weight (& therefore no prepan)
       
            # Missing all low weight data 
@@ -1280,7 +1237,8 @@ glad_dat %>%
   )
 ```
 17/01/22: Captured another 240 people who otherwise would have been dropped as 'No lifetime low weight' as they answered the questionnaire after the 23rd Jan 2020 and endorsed no lifetime low weight but either did not answer the MHD question about diagnosis or the optional 'an.1.anorexia_nervosa' question.
-There are 640 people who answered the GLAD MHD or ED100K BE after the 23rd Jan 2020 and could not be categorised. All bar one are "Yes" or NA for low weight symptom question. One is "No" for low weight symptom question BUT answered the AN ED100K in 2019 but the MHD in 2020. Some have not answered the LW question but then put an age at which they first experienced low weight. Some have answered during the pandemic and indicated 'Yes' to LW question but are missing for either their age at the start of the pandemic or the age at which LW began so we can not be sure when the LW started. Will drop all. 
+
+There are now 640 people who answered the GLAD MHD or ED100K BE after the 23rd Jan 2020 and could not be categorised. All bar one are "Yes" or NA for low weight symptom question. One is "No" for low weight symptom question BUT answered the AN ED100K in 2019 but the MHD in 2020. Some have not answered the LW question but then put an age at which they first experienced low weight. Some have answered during the pandemic and indicated 'Yes' to LW question but are missing for either their age at the start of the pandemic or the age at which LW began so we can not be sure when the LW started. Will drop all. 
 
 Combine GLAD sign-up self-reported lifetime BE and lifetime low weight with GLAD COPING baseline self-reported lifetime BE and low weight
 ```{r bing GLAD self-report BE lifetime}
@@ -1321,6 +1279,7 @@ glad_merged <- glad_merged %>%
             lifetime_binge_eating_baseline_GLAD_numeric == 0 ~ 0,
             
             lifetime_binge_eating_baseline_GLAD_numeric == 9 ~ 0, # Those identified as having a pandemic experience (GLAD only) need to be set to 0 for pre-pandemic experience
+            
             any_pandemic_binge_eating_vs_start_pandemic_age ==  "Pandemic binge eating" ~ 0 # Those identified as having a pandemic experience (GLAD COPING) need to be set to 0 for pre-pandemic experience
             )
     
@@ -1425,7 +1384,7 @@ ramp.edeq.scr.baseline.id <- ramp.edeq.scr.baseline %>%
 
 # Import RAMP EDEQ baseline data
 ```{r Read in data RAMP EDEQ baseline}
-ramp.edeq.baseline <- readRDS(file =  paste0(filepath_saved_data, "BASELINE_ramp2022-02-21.rds"))
+ramp.edeq.baseline <- readRDS(file =  paste0(filepath_saved_data, "BASELINE_ramp2022-09-23.rds"))
 dim(ramp.edeq.baseline)
 colnames(ramp.edeq.baseline)
 ```
@@ -1449,18 +1408,12 @@ ramp.edeq.baseline.id <- ramp.edeq.baseline %>%
 
 Merge RAMP MHD and EDEQ BASELINE and EDEQ SCREENER data
 ```{r bind ramp edeq and mhd data}
-ramp_mhd_and_edeq <- dplyr::full_join(ramp.mhd.raw.id,
-                          ramp.edeq.baseline.id,
-                          by = c("ID",
-                                  "sample")
-)
-
-
-ramp_dat <- dplyr::full_join(ramp_mhd_and_edeq,
-                          ramp.edeq.scr.baseline.id,
-                          by = c("ID",
-                                  "sample")
-)
+ramp_dat <- list(ramp.mhd.raw.id,
+                           ramp.edeq.baseline.id,
+                           ramp.edeq.scr.baseline.id) %>%
+reduce(full_join,
+         by = c("ID",
+         "sample"))
 
 # Check
 ramp_dat %>%
@@ -1476,7 +1429,7 @@ ramp_dat <- ramp_dat %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
               mhd.bn_cop_numeric == 1 |   #...diagnosis of BN or BED                                                
-              mhd.bed_cop_numeric == 1 ~ 1, # Likely BE before the pandemic although will capture people with pandemic-starting binge eating but no age data available to check this)
+              mhd.bed_cop_numeric == 1 ~ 1, # Likely BE before the pandemic although this will capture people with pandemic-starting binge eating but no age data available to check this)
              
              # If indicated they have binged in the 28 days before the pandemic, this would also count as BE pre-pandemic
                edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric > 0 ~ 1, 
@@ -1484,8 +1437,8 @@ ramp_dat <- ramp_dat %>%
              # No binge eating
              mhd.bn_cop_numeric == 0 &  # Never had a binge-type ED
              mhd.bed_cop_numeric ==  0 &                                                    
-            (edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric == 0 |
-            is.na(edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric)) # Did not get shown question because they did not pass the screener
+            (edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric == 0 | # Indicated they had binged in the past month BUT not in the 28 days before the pandemic (so assuming this has occurred during the pandemic - will be captured by outcome code)
+            is.na(edeq.regard_lost_control_eaten.1_.Wavebaseline_numeric)) # ...did not get shown question about binge eating before the pandemic because they did not pass the screener
                ~  0,
            
            # Missing all binge data
@@ -1512,11 +1465,12 @@ ramp_dat %>%
           startDate_mhd
   )
 ```
-17/01/22: There are 1151 RAMP participants who we can not classify. Most of these people have either not answered the BN or BED diagnosis question (NA/Don't know/PNTA). 129 of these people have put 0 for both mhd.bn and mhd.bed BUT have 'Seen but not answered' the pre-pandemic BE question (i.e., passed the screener which is either low weight or BE over the past month).
-NB: 16 passed the screener because of their answers to the low weight screener rather than the BE screener.
+17/01/22: There are 755 RAMP participants who we can not classify. Most of these people have either not answered the BN or BED diagnosis question (NA/Don't know/PNTA). 129 of these people have put 0 for both mhd.bn and mhd.bed BUT have 'Seen but not answered' the pre-pandemic BE question (i.e., passed the screener which is either low weight or BE over the past month).
+NB: A number of participants passed the screener because of their answers to the low weight screener rather than the BE screener.
 
 
 # RAMP -  Lifetime low weight baseline
+NB: The only question we have available to assess this in RAMP is this question about anorexia nervosa diagnosis.
 ```{r Lifetime low weight baseline RAMP}
 ramp_dat <- ramp_dat %>%
   mutate(lifetime_low_weight_baseline_numeric =
@@ -1534,7 +1488,7 @@ ramp_dat <- ramp_dat %>%
 ramp_dat %>%
   freq(lifetime_low_weight_baseline_numeric)
 ```
-17/01/22: There are 8603 people missing (i.e., have put PNTA/Don't know/Seen but not answered for the MHD anorexia question at RAMP baseline)
+17/01/22: There are 8591 people missing (i.e., have put PNTA/Don't know/Seen but not answered for the MHD anorexia question at RAMP baseline)
 
 # EDGI 
 ## Import EDGI MHD data
@@ -1713,7 +1667,7 @@ edgi_dat <- dplyr::full_join(edgi_BE_LW,
 ```
 
 # EDGI sign-up - Lifetime binge eating at baseline
-All 1s (i.e., prepandemic experience of binge eating are derived first where applicable)
+All 1s (i.e., prepandemic experience of binge eating) are derived first where applicable
 ```{r Lifetime binge eating baseline EDGI}
 edgi_dat <- edgi_dat %>%
   mutate(lifetime_binge_eating_baseline_numeric =
@@ -1742,6 +1696,7 @@ edgi_dat <- edgi_dat %>%
            
              (be.short_period_ate_regard == "No" & # No pre-pandemic binge eating
            
+                # Suspected eating disorder but not a binge-type one
              mhd.bingeeating_disorder == "Not Binge-eating disorder" & # No binge-type eating disorder before the pandemic
              mhd.bulimia_nervosa == "Not Bulimia nervosa" &
              mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" &
@@ -1749,14 +1704,14 @@ edgi_dat <- edgi_dat %>%
               
     # Capture those who answered EDGI DURING the pandemic 
          
-           # Binge eating BEFORE the pandemic
+           # Pre-pandemic binge eating
              endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire DURING the pandemic
-             be.short_period_ate_regard == "Yes" &
+             be.short_period_ate_regard == "Yes" & # endorsed binge eating
              age_start_pandemic >= BE_symptom_start_numeric ~ 1, # Symptoms started before the pandemic (drop from analyses)
           
            # Newly experienced binge eating DURING the pandemic 
             endDate_BE >= as.Date("2020-03-23") & # Answered BE questionnaire DURING the pandemic
-            be.short_period_ate_regard == "Yes" &
+            be.short_period_ate_regard == "Yes" & # endorsed binge eating
             age_start_pandemic < BE_symptom_start_numeric ~ 9,  # Want to keep these people as having a pandemic experience of binge eating
          
           # No binge eating and no suspected ED at baseline (answered during pandemic; may go on to experience it during pandemic)
@@ -1770,6 +1725,7 @@ edgi_dat <- edgi_dat %>%
            
              (be.short_period_ate_regard == "No" & # No binge eating
            
+                # Suspected eating disorder but not a binge-type one
              mhd.bingeeating_disorder == "Not Binge-eating disorder" & # No binge-type eating disorder 
              mhd.bulimia_nervosa == "Not Bulimia nervosa" &
              mhd.atypical_bingeeating_disorder == "Not Atypical binge-eating disorder" &
@@ -1821,8 +1777,7 @@ edgi_dat %>%
          age_start_pandemic
            )
 ```
-17/01/22: There are 2,966 people in EDGI who we can not classify. 185 have not answered BE questions. Other have put "Yes"
-and answered it during the pandemic BUT are missing 'age at start of pandemic' data (only have this for people who answered COPING; only using data from COPING participants anyway) or BE symptom start data.
+17/01/22: There are 1,544 people in EDGI who we can not classify. 185 have not answered BE questions. Other have put "Yes" and answered it during the pandemic BUT are missing 'age at start of pandemic' data (only have this for people who answered COPING; only using data from COPING participants anyway) or BE symptom start data.
 
 # EDGI sign-up -Lifetime low weight at baseline
 ```{r Lifetime low weight baseline EDGI}
@@ -1850,19 +1805,19 @@ edgi_dat <- edgi_dat %>%
            endDate_AN < as.Date("2020-03-23") & # Answered AN questionnaire before the pandemic
            
              (mhd.people_thought_weigh_weighed == "No" & # No pre-pandemic low weight or suspected ED
-            mhd.anorexia_nervosa == "Not Anorexia nervosa") ~ 0, 
+             mhd.anorexia_nervosa == "Not Anorexia nervosa") ~ 0, 
           
           
       # Capture those who answered EDGI DURING the pandemic: need to check ages
      
-          # Low weight BEFORE the pandemic
+          # Pre-pandemic low weight
              endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
-              mhd.people_thought_weigh_weighed == "Yes" &
-             age_start_pandemic >= an.how_old_were_you_then.txt_numeric ~ 1, 
+              mhd.people_thought_weigh_weighed == "Yes" & # endorsed low weight
+             age_start_pandemic >= an.how_old_were_you_then.txt_numeric ~ 1,  # started before the pandemic (need to drop)
           
          # Newly experienced low weight DURING the pandemic
               endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
-             mhd.people_thought_weigh_weighed == "Yes" &
+             mhd.people_thought_weigh_weighed == "Yes" & # endorsed low eight
              age_start_pandemic < an.how_old_were_you_then.txt_numeric ~ 9, # Want to keep these people (they should be counted as no prepan experience as their experience was DURING the pandemic)
            
            # No low weight and no suspected ED at baseline (answered during pandemic; may go on to experience it during pandemic)
@@ -1873,7 +1828,7 @@ edgi_dat <- edgi_dat %>%
             # No low weight and no anorexia at baseline (answered during pandemic; may go on to experience it during)
            endDate_AN >= as.Date("2020-03-23") & # Answered AN questionnaire during the pandemic
            mhd.people_thought_weigh_weighed == "No" & # No low weight
-           mhd.anorexia_nervosa == "Not Anorexia nervosa" ~ 0, 
+           mhd.anorexia_nervosa == "Not Anorexia nervosa" ~ 0,  # i.e., has suspected ED but not anorexia nervosa
     
            # Just in case, capture anyone left over (doesn't really matter when they answered it if they put No, because we are interested in whether they then go on to experience it during the pandemic)
       
@@ -1908,8 +1863,7 @@ edgi_dat %>%
          an.how_old_were_you_then.txt_numeric
            )
 ```
-17/01/22: There are 2,667 people in EDGI who we can not classify. 246 have not answered LW questions. Other have put "Yes"
-and answered it during the pandemic BUT are missing 'age at start of pandemic' data (only have this for people who answered COPING; only using data from COPING participants anyway) or LW symptom start data. 
+17/01/22: There are 1,016 people in EDGI who we can not classify. 214 have not answered LW questions. Other have put "Yes" and answered it during the pandemic BUT are missing 'age at start of pandemic' data (only have this for people who answered COPING; only using data from COPING participants anyway) or LW symptom start data. 
 
 
 # Create new variable identifying those with pandemic experiences of phenotypes
@@ -1984,7 +1938,7 @@ edgi_dat <- edgi_dat %>%
 edgi_dat <- edgi_dat %>%
   mutate(lifetime_binge_eating_baseline_numeric =
            case_when(
-             lifetime_binge_eating_baseline_numeric == 9  ~ 0,
+             pandemic_binge_eating_derived == 1 ~ 0,
              TRUE ~ lifetime_binge_eating_baseline_numeric
            )
   )
@@ -1992,7 +1946,7 @@ edgi_dat <- edgi_dat %>%
 edgi_dat <- edgi_dat %>%
   mutate(lifetime_low_weight_baseline_numeric =
            case_when(
-             lifetime_low_weight_baseline_numeric == 9  ~ 0,
+             pandemic_low_weight_derived == 1  ~ 0,
              TRUE ~ lifetime_low_weight_baseline_numeric
            )
   ) 
@@ -2009,7 +1963,7 @@ ramp_dat <- ramp_dat %>%
          
    )
 
-
+# Check
 ramp_dat %>%
   colnames()
 ```
@@ -2071,11 +2025,11 @@ edgi_dat %>%
 
 # MERGE ALL DATA
 ```{r Merge all data}
-baseline_ED_groups <- ramp_dat %>%
+baseline_ED_groups <- ramp_dat %>% # RAMP data
   bind_rows(
-      edgi_dat,
-      glad_merged,
-      nbr_dat)
+      edgi_dat,  # Only EDGI sign-up (no ED100K in EDGI COPING)
+      glad_merged, # Includes sign-up and GLAD COPING data (ED100K in both)
+      nbr_dat) # NBR COPING
 
 
 # Check 

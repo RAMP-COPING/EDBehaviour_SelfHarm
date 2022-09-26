@@ -19,7 +19,6 @@ Clear global environment prior to initiation
 ```{r Clear global environment}
 remove(list = ls())
 ```
-
 Read in file with path to data channel
 ```{r Read in file with path to data channel}
 source(file = "../credentials/paths.R")
@@ -54,7 +53,7 @@ date
 # Read in the data: OCD screener 
 ## GLAD data
 ```{r GLAD read in data}
-glad_dat <- readRDS(file = passte0(filepath_raw_latest_freeze, "coping_glad_opt/ocd_coping_glad_opt.rds"))
+glad_dat <- readRDS(file = paste0(filepath_raw_latest_freeze, "coping_glad_opt/ocd_coping_glad_opt.rds"))
 # Check
 glad_dat %>%
   colnames()
@@ -254,6 +253,6 @@ dat_final <- dat %>%
 
 # Save dataset
 ```{r Save dataset}
-saveRDS(object = dat_final, file = paste0(filepath_saved_data, "OCD_screener", date, ".rds")))
+saveRDS(object = dat_final, file = paste0(filepath_saved_data, "OCD_screener", date, ".rds"))
 ```
 

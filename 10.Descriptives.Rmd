@@ -55,7 +55,7 @@ date
 # Read in data
 ## Final cleaned data
 ```{r Read in data}
-dat_cleaned <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-09-22.rds")
+dat_cleaned <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-09-23.rds")
 
 # Check
 dim(dat_cleaned)
