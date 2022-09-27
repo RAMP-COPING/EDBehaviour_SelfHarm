@@ -51,7 +51,7 @@ date
 # Read in data
 ## data.final is generated from the "4.Merging" script
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/all_dat2022-09-23.rds")
+dat <- readRDS(file = paste0(filepath_saved_data, "all_dat2022-09-27.rds"))
 
 # Check
 dim(dat)
@@ -1030,7 +1030,7 @@ dem.coronavirus_relative_previously_ill.1 = Has a relative that was previously i
 # Relative died of COVID of key earner in household
 dat <- dat %>%
   mutate(dem.coronavirus_relative_previously_ill.1_.Wave_1a =
-           case_when(# ADD
+           case_when(
              dem.coronavirus_relative_previously_ill.1_.Wave_1a == "Yes" |
                       dem.coronavirus_relative_previously_ill.1_.Wave_1a_dup == "Yes" ~ "Yes",
                      
@@ -1281,342 +1281,6 @@ dat <- dat %>%
                    dem.health_of_a_relative_.Wave_16b_dup == "Not Health of a relative" |
                    dem.coronavirus_relative_previously_ill.1_.Wave_16b == "No" |  # ...or said Yes to screener but "No" to relative passing away
                    dem.coronavirus_relative_previously_ill.1_.Wave_16b_dup == "No" ~ "No"   
-                     
-                     )
-         )
-```
-
-Screener question: Has anything changed in the following domains in the last two weeks: Health of a relative
-dem.coronavirus_relative_previously_ill.1 = Has a relative become ill with coronavirus or suspected coronavirus?
-```{r relative ill with covid single variables from duplicated IDs}
-# Relative ill with COVID 
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_1a =
-           case_when(## ADD 
-             dem.coronavirus_relative_ill_suspected_.Wave_1a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_1a_dup == "Yes" ~ "Yes",
-                     
-                   
-                   dem.health_of_a_relative_.Wave_1a   == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_1a_dup == "Not Health of a relative" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_1a == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_1a_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_1a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_1a_dup == "Unsure" ~ "Unsure",
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_1b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_1b == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_1b_dup == "Yes" ~ "Yes",
-                     
-                     dem.health_of_a_relative_.Wave_1b   == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_1b_dup == "Not Health of a relative" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_1b == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_1b_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_1b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_1b_dup == "Unsure" ~ "Unsure",
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_2a =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_2a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_2a_dup == "Yes" ~ "Yes",
-                    
-                     dem.health_of_a_relative_.Wave_2a   == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_2a_dup == "Not Health of a relative" | 
-                   dem.coronavirus_relative_ill_suspected_.Wave_2a == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_2a_dup == "No" ~ "No",
-                   
-                     dem.coronavirus_relative_ill_suspected_.Wave_2a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_2a_dup == "Unsure" ~ "Unsure"
-                     
-                     
-                     )
-         )
-
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_2b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_2b == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_2b_dup == "Yes" ~ "Yes",
-                     
-                     dem.health_of_a_relative_.Wave_2b   == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_2b_dup == "Not Health of a relative" | 
-                   dem.coronavirus_relative_ill_suspected_.Wave_2b == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_2b_dup == "No" ~ "No",
-                   
-                      dem.coronavirus_relative_ill_suspected_.Wave_2b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_2b_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_3a =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_3a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_3a_dup == "Yes" ~ "Yes",
-                       
-                     dem.health_of_a_relative_.Wave_3a  == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_3a_dup == "Not Health of a relative" | 
-                   dem.coronavirus_relative_ill_suspected_.Wave_3a == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_3a_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_3a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_3a_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_3b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_3b == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_3b_dup == "Yes" ~ "Yes",
-                     
-                   dem.health_of_a_relative_.Wave_3b  == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_3b_dup == "Not Health of a relative" | 
-                    dem.coronavirus_relative_ill_suspected_.Wave_3b == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_3b_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_3b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_3b_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_4a =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_4a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_4a_dup == "Yes" ~ "Yes",
-                   
-                     dem.health_of_a_relative_.Wave_4a  == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_4a_dup == "Not Health of a relative" |   
-                   dem.coronavirus_relative_ill_suspected_.Wave_4a == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_4a_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_4a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_4a_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_4b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_4b == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_4b_dup == "Yes" ~ "Yes",
-                    
-                       dem.health_of_a_relative_.Wave_4b  == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_4b_dup == "Not Health of a relative" |   
-                   dem.coronavirus_relative_ill_suspected_.Wave_4b == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_4b_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_4b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_4b_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_5a =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_5a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_5a_dup == "Yes" ~ "Yes",
-                   
-                      dem.health_of_a_relative_.Wave_5a  == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_5a_dup == "Not Health of a relative" |   
-                   dem.coronavirus_relative_ill_suspected_.Wave_5a == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_5a_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_5a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_5a_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_6b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_6b== "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_6b_dup == "Yes" ~ "Yes",
-                     
-                      dem.health_of_a_relative_.Wave_6b == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_6b_dup == "Not Health of a relative" |  
-                   dem.coronavirus_relative_ill_suspected_.Wave_6b == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_6b_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_6b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_6b_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_7a =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_7a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_7a_dup == "Yes" ~ "Yes",
-                   
-                     dem.health_of_a_relative_.Wave_7a == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_7a_dup == "Not Health of a relative" |    
-                   dem.coronavirus_relative_ill_suspected_.Wave_7a == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_7a_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_7a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_7a_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_8b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_8b == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_8b_dup == "Yes" ~ "Yes",
-                   
-                     dem.health_of_a_relative_.Wave_8b == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_8b_dup == "Not Health of a relative" |     
-                   dem.coronavirus_relative_ill_suspected_.Wave_8b == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_8b_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_8b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_8b_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_9a =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_9a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_9a_dup == "Yes" ~ "Yes",
-                  
-                     dem.health_of_a_relative_.Wave_9a == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_9a_dup == "Not Health of a relative" |       
-                   dem.coronavirus_relative_ill_suspected_.Wave_9a == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_9a_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_9a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_9a_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_10b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_10b == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_10b_dup == "Yes" ~ "Yes",
-                   
-                     dem.health_of_a_relative_.Wave_10b == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_10b_dup == "Not Health of a relative" |   
-                   dem.coronavirus_relative_ill_suspected_.Wave_10b == "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_10b_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_10b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_10b_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_11a =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_11a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_11a_dup == "Yes" ~ "Yes",
-                    
-                     dem.health_of_a_relative_.Wave_11a == "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_11a_dup == "Not Health of a relative" |   
-                   dem.coronavirus_relative_ill_suspected_.Wave_11a== "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_11a_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_11a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_11a_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_12b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_12b == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_12b_dup == "Yes" ~ "Yes",
-                   
-                     dem.health_of_a_relative_.Wave_12b== "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_12b_dup == "Not Health of a relative" |   
-                   dem.coronavirus_relative_ill_suspected_.Wave_12b== "No" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_12b_dup == "No" ~ "No",
-                   
-                   dem.coronavirus_relative_ill_suspected_.Wave_12b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_12b_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_13a =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_13a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_13a_dup == "Yes" ~ "Yes",
-                     
-                  
-                     dem.health_of_a_relative_.Wave_13a== "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_13a_dup == "Not Health of a relative" |  
-                     dem.coronavirus_relative_ill_suspected_.Wave_13a== "No" |
-                  dem.coronavirus_relative_ill_suspected_.Wave_13a_dup == "No" ~ "No",
-                  
-                  dem.coronavirus_relative_ill_suspected_.Wave_13a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_13a_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_14b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_14b == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_14b_dup == "Yes" ~ "Yes",
-                     
-                     dem.health_of_a_relative_.Wave_14b== "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_14b_dup == "Not Health of a relative" |  
-                   dem.coronavirus_relative_ill_suspected_.Wave_14b== "No" |
-                 dem.coronavirus_relative_ill_suspected_.Wave_14b_dup == "No" ~ "No",
-                 
-                 dem.coronavirus_relative_ill_suspected_.Wave_14b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_14b_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_15a =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_15a == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_15a_dup == "Yes" ~ "Yes",
-                   
-                     dem.health_of_a_relative_.Wave_15a== "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_15a_dup == "Not Health of a relative" |    
-                   dem.coronavirus_relative_ill_suspected_.Wave_15a== "No" |
-                 dem.coronavirus_relative_ill_suspected_.Wave_15a_dup == "No" ~ "No",
-                 
-                 dem.coronavirus_relative_ill_suspected_.Wave_15a == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_15a_dup == "Unsure" ~ "Unsure"
-                     
-                     )
-         )
-
-dat <- dat %>%
-  mutate(dem.coronavirus_relative_ill_suspected_.Wave_16b =
-           case_when(dem.coronavirus_relative_ill_suspected_.Wave_16b == "Yes" |
-                      dem.coronavirus_relative_ill_suspected_.Wave_16b_dup == "Yes" ~ "Yes",
-                    
-                     dem.health_of_a_relative_.Wave_16b== "Not Health of a relative" | # Said no to screener...
-                   dem.health_of_a_relative_.Wave_16b_dup == "Not Health of a relative" |  
-                   dem.coronavirus_relative_ill_suspected_.Wave_16b== "No" |
-                  dem.coronavirus_relative_ill_suspected_.Wave_16b_dup == "No" ~ "No",
-                
-                dem.coronavirus_relative_ill_suspected_.Wave_16b == "Unsure" |
-                   dem.coronavirus_relative_ill_suspected_.Wave_16b_dup == "Unsure" ~ "Unsure"
                      
                      )
          )
@@ -3271,7 +2935,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_1a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_1a_dup == "Yes" ~ "Yes",
                      
-                    resp.screener_followup_.Wave_1a != "No" |
+                    resp.screener_followup_.Wave_1a == "No" | # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_1a == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_1a_dup == "No" ~ "No",
                      
@@ -3283,7 +2947,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_1b == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_1b_dup == "Yes" ~ "Yes",
                      
-                     resp.screener_followup_.Wave_1b != "No" |
+                     resp.screener_followup_.Wave_1b == "No" | # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_1b == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_1b_dup == "No" ~ "No",
                      
@@ -3295,7 +2959,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_2a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_2a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_2a != "No" | 
+                     resp.screener_followup_.Wave_2a == "No" | # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_2a == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_2a_dup == "No" ~ "No",
                      
@@ -3308,7 +2972,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_2b == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_2b_dup == "Yes" ~ "Yes",
                      
-                     resp.screener_followup_.Wave_2b != "No" |
+                     resp.screener_followup_.Wave_2b == "No" | # Not passed screener
                     resp.coronavirus_test_nosethroat_swab_.Wave_2b == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_2b_dup == "No" ~ "No",
                      
@@ -3320,7 +2984,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_3a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_3a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_3a != "No" | 
+                     resp.screener_followup_.Wave_3a == "No" |  # Not passed screener
                     resp.coronavirus_test_nosethroat_swab_.Wave_3a == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_3a_dup == "No" ~ "No",
                      
@@ -3333,7 +2997,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_3b == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_3b_dup == "Yes" ~ "Yes",
                    
-                     resp.screener_followup_.Wave_3b != "No" | 
+                     resp.screener_followup_.Wave_3b == "No" |  # Not passed screener
                      resp.coronavirus_test_nosethroat_swab_.Wave_3b == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_3b_dup == "No" ~ "No",
                      
@@ -3345,7 +3009,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_4a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_4a_dup == "Yes" ~ "Yes",
                       
-                     resp.screener_followup_.Wave_4a != "No" | 
+                     resp.screener_followup_.Wave_4a == "No" |  # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_4a == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_4a_dup == "No" ~ "No",
                      
@@ -3357,7 +3021,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_4b == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_4b_dup == "Yes" ~ "Yes",
                      
-                     resp.screener_followup_.Wave_4b != "No" | 
+                     resp.screener_followup_.Wave_4b == "No" |  # Not passed screener
                      resp.coronavirus_test_nosethroat_swab_.Wave_4b == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_4b_dup == "No" ~ "No",
                      
@@ -3369,7 +3033,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_5a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_5a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_5a != "No" |  
+                     resp.screener_followup_.Wave_5a == "No" |   # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_5a == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_5a_dup == "No" ~ "No",
                      
@@ -3382,7 +3046,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_6b== "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_6b_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_6b != "No" |  
+                     resp.screener_followup_.Wave_6b == "No" |   # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_6b == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_6b_dup == "No" ~ "No",
                      
@@ -3394,7 +3058,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_7a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_7a_dup == "Yes" ~ "Yes",
                    
-                     resp.screener_followup_.Wave_7a != "No" |   
+                     resp.screener_followup_.Wave_7a == "No" |    # Not passed screener
                     resp.coronavirus_test_nosethroat_swab_.Wave_7a == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_7a_dup == "No" ~ "No",
                      
@@ -3406,7 +3070,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_8b == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_8b_dup == "Yes" ~ "Yes",
                      
-                     resp.screener_followup_.Wave_8b != "No" | 
+                     resp.screener_followup_.Wave_8b == "No" | # Not passed screener
                      resp.coronavirus_test_nosethroat_swab_.Wave_8b == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_8b_dup == "No" ~ "No",
                      
@@ -3419,7 +3083,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_9a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_9a_dup == "Yes" ~ "Yes",
                      
-                     resp.screener_followup_.Wave_9a != "No" | 
+                     resp.screener_followup_.Wave_9a == "No" | # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_9a == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_9a_dup == "No" ~ "No",
                      
@@ -3432,7 +3096,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_10b == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_10b_dup == "Yes" ~ "Yes",
                  
-                     resp.screener_followup_.Wave_10b != "No" |     
+                     resp.screener_followup_.Wave_10b == "No" |  # Not passed screener   
                    resp.coronavirus_test_nosethroat_swab_.Wave_10b == "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_10b_dup == "No" ~ "No",
                      
@@ -3444,7 +3108,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_11a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_11a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_11a != "No" |  
+                     resp.screener_followup_.Wave_11a == "No" |  # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_11a== "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_11a_dup == "No" ~ "No",
                      
@@ -3456,7 +3120,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_12b == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_12b_dup == "Yes" ~ "Yes",
                   
-                     resp.screener_followup_.Wave_12b != "No" |    
+                     resp.screener_followup_.Wave_12b == "No" |    # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_12b== "No" |
                    resp.coronavirus_test_nosethroat_swab_.Wave_12b_dup == "No" ~ "No",
                      
@@ -3468,7 +3132,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_13a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_13a_dup == "Yes" ~ "Yes",
                      
-                     resp.screener_followup_.Wave_13a != "No" | 
+                     resp.screener_followup_.Wave_13a == "No" | # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_13a== "No" |
                   resp.coronavirus_test_nosethroat_swab_.Wave_13a_dup == "No" ~ "No",
                      
@@ -3481,7 +3145,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_14b == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_14b_dup == "Yes" ~ "Yes",
                      
-                   resp.screener_followup_.Wave_14b != "No" | 
+                   resp.screener_followup_.Wave_14b == "No" | # Not passed screener
                      resp.coronavirus_test_nosethroat_swab_.Wave_14b== "No" |
                  resp.coronavirus_test_nosethroat_swab_.Wave_14b_dup == "No" ~ "No",
                      
@@ -3494,7 +3158,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_15a == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_15a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_15a != "No" |  
+                     resp.screener_followup_.Wave_15a == "No" |    # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_15a== "No" |
                  resp.coronavirus_test_nosethroat_swab_.Wave_15a_dup == "No" ~ "No",
                      
@@ -3506,7 +3170,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_test_nosethroat_swab_.Wave_16b == "Yes" |
                       resp.coronavirus_test_nosethroat_swab_.Wave_16b_dup == "Yes" ~ "Yes",
                      
-                     resp.screener_followup_.Wave_16b != "No" | 
+                     resp.screener_followup_.Wave_16b == "No" |   # Not passed screener
                    resp.coronavirus_test_nosethroat_swab_.Wave_16b== "No" |
                   resp.coronavirus_test_nosethroat_swab_.Wave_16b_dup == "No" ~ "No",
                      
@@ -3520,7 +3184,7 @@ Screener = In the last two weeks, have you experienced persistent loss of smell,
 # Result covid test (nose/throat swab)
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_1a =
-           case_when(resp.screener_followup_.Wave_1a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_1a == "No" ~ "Not passed screener",
              
                     resp.results_nosethroat_swab_test_.Wave_1a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_1a_dup == "Positive" ~ "Positive",
@@ -3537,7 +3201,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_1b =
-           case_when(resp.screener_followup_.Wave_1b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_1b == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_1b == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_1b_dup == "Positive" ~ "Positive",
@@ -3553,7 +3217,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_2a =
-           case_when(resp.screener_followup_.Wave_2a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_2a == "No" ~ "Not passed screener",
                      
              resp.results_nosethroat_swab_test_.Wave_2a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_2a_dup == "Positive" ~ "Positive",
@@ -3570,7 +3234,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_2b =
-           case_when(resp.screener_followup_.Wave_2b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_2b == "No" ~ "Not passed screener",
                      
              resp.results_nosethroat_swab_test_.Wave_2b == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_2b_dup == "Positive" ~ "Positive",
@@ -3586,7 +3250,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_3a =
-           case_when(resp.screener_followup_.Wave_3a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_3a == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_3a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_3a_dup == "Positive" ~ "Positive",
@@ -3603,7 +3267,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_3b =
-           case_when(resp.screener_followup_.Wave_3b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_3b == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_3b == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_3b_dup == "Positive" ~ "Positive",
@@ -3619,7 +3283,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_4a =
-           case_when(resp.screener_followup_.Wave_4a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_4a == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_4a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_4a_dup == "Positive" ~ "Positive",
@@ -3635,7 +3299,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_4b =
-           case_when(resp.screener_followup_.Wave_4b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_4b == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_4b == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_4b_dup == "Positive" ~ "Positive",
@@ -3651,7 +3315,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_5a =
-           case_when(resp.screener_followup_.Wave_5a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_5a == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_5a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_5a_dup == "Positive" ~ "Positive",
@@ -3668,7 +3332,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_6b =
-           case_when(resp.screener_followup_.Wave_6b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_6b == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_6b== "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_6b_dup == "Positive" ~ "Positive",
@@ -3684,7 +3348,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_7a =
-           case_when(resp.screener_followup_.Wave_7a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_7a == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_7a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_7a_dup == "Positive" ~ "Positive",
@@ -3700,7 +3364,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_8b =
-           case_when(resp.screener_followup_.Wave_8b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_8b == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_8b == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_8b_dup == "Positive" ~ "Positive",
@@ -3717,7 +3381,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_9a =
-           case_when(resp.screener_followup_.Wave_9a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_9a == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_9a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_9a_dup == "Positive" ~ "Positive",
@@ -3734,7 +3398,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_10b =
-           case_when(resp.screener_followup_.Wave_10b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_10b == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_10b == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_10b_dup == "Positive" ~ "Positive",
@@ -3750,7 +3414,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_11a =
-           case_when(resp.screener_followup_.Wave_11a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_11a == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_11a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_11a_dup == "Positive" ~ "Positive",
@@ -3766,7 +3430,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_12b =
-           case_when(resp.screener_followup_.Wave_12b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_12b == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_12b == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_12b_dup == "Positive" ~ "Positive",
@@ -3782,7 +3446,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_13a =
-           case_when(resp.screener_followup_.Wave_13a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_13a == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_13a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_13a_dup == "Positive" ~ "Positive",
@@ -3799,7 +3463,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_14b =
-           case_when(resp.screener_followup_.Wave_14b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_14b == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_14b == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_14b_dup == "Positive" ~ "Positive",
@@ -3816,7 +3480,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_15a =
-           case_when(resp.screener_followup_.Wave_15a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_15a == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_15a == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_15a_dup == "Positive" ~ "Positive",
@@ -3832,7 +3496,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_nosethroat_swab_test_.Wave_16b =
-           case_when(resp.screener_followup_.Wave_16b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_16b == "No" ~ "Not passed screener",
              
              resp.results_nosethroat_swab_test_.Wave_16b == "Positive" |
                       resp.results_nosethroat_swab_test_.Wave_16b_dup == "Positive" ~ "Positive",
@@ -3853,11 +3517,11 @@ Screener = In the last two weeks, have you experienced persistent loss of smell,
 # Done covid test (antibody)
 dat <- dat %>%
   mutate(resp.coronavirus_antibody_test_.Wave_1a =
-           case_when(## add
+           case_when(
              resp.coronavirus_antibody_test_.Wave_1a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_1a_dup == "Yes" ~ "Yes",
                      
-                  resp.screener_followup_.Wave_1a != "No" |
+                  resp.screener_followup_.Wave_1a == "No" | # not passed screener
                    resp.coronavirus_antibody_test_.Wave_1a == "No" |
                    resp.coronavirus_antibody_test_.Wave_1a_dup == "No" ~ "No"   
                      )
@@ -3868,7 +3532,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_1b == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_1b_dup == "Yes" ~ "Yes",
                    
-                     resp.screener_followup_.Wave_1b != "No" |  
+                     resp.screener_followup_.Wave_1b == "No" |  # not passed screener
                    resp.coronavirus_antibody_test_.Wave_1b == "No" |
                    resp.coronavirus_antibody_test_.Wave_1b_dup == "No" ~ "No"
                      
@@ -3880,7 +3544,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_2a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_2a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_2a != "No" | 
+                     resp.screener_followup_.Wave_2a == "No" |  # not passed screener
                    resp.coronavirus_antibody_test_.Wave_2a == "No" |
                    resp.coronavirus_antibody_test_.Wave_2a_dup == "No" ~ "No"
                      )
@@ -3892,7 +3556,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_2b == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_2b_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_2b != "No" | 
+                     resp.screener_followup_.Wave_2b == "No" |  # not passed screener
                     resp.coronavirus_antibody_test_.Wave_2b == "No" |
                    resp.coronavirus_antibody_test_.Wave_2b_dup == "No" ~ "No"
                   
@@ -3905,7 +3569,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_3a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_3a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_3a != "No" | 
+                     resp.screener_followup_.Wave_3a == "No" |  # not passed screener
                     resp.coronavirus_antibody_test_.Wave_3a == "No" |
                    resp.coronavirus_antibody_test_.Wave_3a_dup == "No" ~ "No"
                      
@@ -3918,7 +3582,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_3b == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_3b_dup == "Yes" ~ "Yes",
                    
-                     resp.screener_followup_.Wave_3b != "No" |
+                     resp.screener_followup_.Wave_3b == "No" | # not passed screener
                      resp.coronavirus_antibody_test_.Wave_3b == "No" |
                    resp.coronavirus_antibody_test_.Wave_3b_dup == "No" ~ "No"
                      )
@@ -3929,7 +3593,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_4a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_4a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_4a != "No" |  
+                     resp.screener_followup_.Wave_4a == "No" |   # not passed screener
                    resp.coronavirus_antibody_test_.Wave_4a == "No" |
                    resp.coronavirus_antibody_test_.Wave_4a_dup == "No" ~ "No"
                      
@@ -3941,7 +3605,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_4b == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_4b_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_4b != "No" | 
+                     resp.screener_followup_.Wave_4b == "No" |  # not passed screener
                      resp.coronavirus_antibody_test_.Wave_4b == "No" |
                    resp.coronavirus_antibody_test_.Wave_4b_dup == "No" ~ "No"
                      )
@@ -3952,7 +3616,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_5a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_5a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_5a != "No" | 
+                     resp.screener_followup_.Wave_5a == "No" |  # not passed screener
                    resp.coronavirus_antibody_test_.Wave_5a == "No" |
                    resp.coronavirus_antibody_test_.Wave_5a_dup == "No" ~ "No"
                      
@@ -3965,7 +3629,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_6b== "Yes" |
                       resp.coronavirus_antibody_test_.Wave_6b_dup == "Yes" ~ "Yes",
                      
-                     resp.screener_followup_.Wave_6b != "No" |
+                     resp.screener_followup_.Wave_6b == "No" | # not passed screener
                    resp.coronavirus_antibody_test_.Wave_6b == "No" |
                    resp.coronavirus_antibody_test_.Wave_6b_dup == "No" ~ "No"
                      
@@ -3977,7 +3641,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_7a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_7a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_7a != "No" | 
+                     resp.screener_followup_.Wave_7a == "No" |   # not passed screener
                     resp.coronavirus_antibody_test_.Wave_7a == "No" |
                    resp.coronavirus_antibody_test_.Wave_7a_dup == "No" ~ "No"
                      
@@ -3989,7 +3653,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_8b == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_8b_dup == "Yes" ~ "Yes",
                      
-                     resp.screener_followup_.Wave_8b != "No" |
+                     resp.screener_followup_.Wave_8b == "No" |   # not passed screener
                      resp.coronavirus_antibody_test_.Wave_8b == "No" |
                    resp.coronavirus_antibody_test_.Wave_8b_dup == "No" ~ "No"
                      
@@ -4002,7 +3666,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_9a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_9a_dup == "Yes" ~ "Yes",
                    
-                     resp.screener_followup_.Wave_9a != "No" |  
+                     resp.screener_followup_.Wave_9a == "No" |   # not passed screener
                    resp.coronavirus_antibody_test_.Wave_9a == "No" |
                    resp.coronavirus_antibody_test_.Wave_9a_dup == "No" ~ "No"
                      
@@ -4015,7 +3679,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_10b == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_10b_dup == "Yes" ~ "Yes",
                    
-                     resp.screener_followup_.Wave_10b != "No" |  
+                     resp.screener_followup_.Wave_10b == "No" |   # not passed screener
                    resp.coronavirus_antibody_test_.Wave_10b == "No" |
                    resp.coronavirus_antibody_test_.Wave_10b_dup == "No" ~ "No"
                      
@@ -4027,7 +3691,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_11a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_11a_dup == "Yes" ~ "Yes",
                    
-                     resp.screener_followup_.Wave_11a != "No" |  
+                     resp.screener_followup_.Wave_11a == "No" |   # not passed screener
                    resp.coronavirus_antibody_test_.Wave_11a== "No" |
                    resp.coronavirus_antibody_test_.Wave_11a_dup == "No" ~ "No"
                      
@@ -4039,7 +3703,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_12b == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_12b_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_12b != "No" | 
+                     resp.screener_followup_.Wave_12b == "No" |   # not passed screener
                    resp.coronavirus_antibody_test_.Wave_12b== "No" |
                    resp.coronavirus_antibody_test_.Wave_12b_dup == "No" ~ "No"
                      
@@ -4051,7 +3715,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_13a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_13a_dup == "Yes" ~ "Yes",
                     
-                     resp.screener_followup_.Wave_13a != "No" | 
+                     resp.screener_followup_.Wave_13a == "No" |   # not passed screener
                    resp.coronavirus_antibody_test_.Wave_13a== "No" |
                   resp.coronavirus_antibody_test_.Wave_13a_dup == "No" ~ "No"
                      
@@ -4064,7 +3728,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_14b == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_14b_dup == "Yes" ~ "Yes",
                    
-                     resp.screener_followup_.Wave_14b != "No" |  
+                     resp.screener_followup_.Wave_14b == "No" |    # not passed screener
                    resp.coronavirus_antibody_test_.Wave_14b== "No" |
                  resp.coronavirus_antibody_test_.Wave_14b_dup == "No" ~ "No"
                      
@@ -4077,7 +3741,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_15a == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_15a_dup == "Yes" ~ "Yes",
                   
-                     resp.screener_followup_.Wave_15a != "No" |   
+                     resp.screener_followup_.Wave_15a == "No" |     # not passed screener
                    resp.coronavirus_antibody_test_.Wave_15a== "No" |
                  resp.coronavirus_antibody_test_.Wave_15a_dup == "No" ~ "No"
                      
@@ -4089,7 +3753,7 @@ dat <- dat %>%
            case_when(resp.coronavirus_antibody_test_.Wave_16b == "Yes" |
                       resp.coronavirus_antibody_test_.Wave_16b_dup == "Yes" ~ "Yes",
                    
-                     resp.screener_followup_.Wave_16b != "No" |  
+                     resp.screener_followup_.Wave_16b == "No" |   # not passed screener
                    resp.coronavirus_antibody_test_.Wave_16b== "No" |
                     resp.coronavirus_antibody_test_.Wave_16b_dup == "No" ~ "No"
                      
@@ -4103,7 +3767,7 @@ Screener = In the last two weeks, have you experienced persistent loss of smell,
 # Result covid test (antibody)
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_1a =
-           case_when(resp.screener_followup_.Wave_1a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_1a == "No" ~ "Not passed screener",
                       
                      resp.results_antibody_test_.Wave_1a == "Positive" |
                       resp.results_antibody_test_.Wave_1a_dup == "Positive" ~ "Positive",
@@ -4120,7 +3784,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_1b =
-           case_when(resp.screener_followup_.Wave_1b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_1b == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_1b == "Positive" |
                       resp.results_antibody_test_.Wave_1b_dup == "Positive" ~ "Positive",
@@ -4136,7 +3800,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_2a =
-           case_when(resp.screener_followup_.Wave_2a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_2a == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_2a == "Positive" |
                       resp.results_antibody_test_.Wave_2a_dup == "Positive" ~ "Positive",
@@ -4153,7 +3817,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_2b =
-           case_when(resp.screener_followup_.Wave_2b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_2b == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_2b == "Positive" |
                       resp.results_antibody_test_.Wave_2b_dup == "Positive" ~ "Positive",
@@ -4169,7 +3833,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_3a =
-           case_when(resp.screener_followup_.Wave_3a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_3a == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_3a == "Positive" |
                       resp.results_antibody_test_.Wave_3a_dup == "Positive" ~ "Positive",
@@ -4186,7 +3850,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_3b =
-           case_when(resp.screener_followup_.Wave_3b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_3b == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_3b == "Positive" |
                       resp.results_antibody_test_.Wave_3b_dup == "Positive" ~ "Positive",
@@ -4202,7 +3866,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_4a =
-           case_when(resp.screener_followup_.Wave_4a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_4a == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_4a == "Positive" |
                       resp.results_antibody_test_.Wave_4a_dup == "Positive" ~ "Positive",
@@ -4218,7 +3882,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_4b =
-           case_when(resp.screener_followup_.Wave_4b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_4b == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_4b == "Positive" |
                       resp.results_antibody_test_.Wave_4b_dup == "Positive" ~ "Positive",
@@ -4234,7 +3898,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_5a =
-           case_when(resp.screener_followup_.Wave_5a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_5a == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_5a == "Positive" |
                       resp.results_antibody_test_.Wave_5a_dup == "Positive" ~ "Positive",
@@ -4251,7 +3915,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_6b =
-           case_when(resp.screener_followup_.Wave_6b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_6b == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_6b== "Positive" |
                       resp.results_antibody_test_.Wave_6b_dup == "Positive" ~ "Positive",
@@ -4267,7 +3931,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_7a =
-           case_when(resp.screener_followup_.Wave_7a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_7a == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_7a == "Positive" |
                       resp.results_antibody_test_.Wave_7a_dup == "Positive" ~ "Positive",
@@ -4283,7 +3947,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_8b =
-           case_when(resp.screener_followup_.Wave_8b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_8b == "No" ~ "Not passed screener",
              
                    resp.results_antibody_test_.Wave_8b == "Positive" |
                       resp.results_antibody_test_.Wave_8b_dup == "Positive" ~ "Positive",
@@ -4300,7 +3964,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_9a =
-           case_when(resp.screener_followup_.Wave_9a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_9a == "No" ~ "Not passed screener",
              
                   resp.results_antibody_test_.Wave_9a == "Positive" |
                       resp.results_antibody_test_.Wave_9a_dup == "Positive" ~ "Positive",
@@ -4317,7 +3981,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_10b =
-           case_when(resp.screener_followup_.Wave_10b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_10b == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_10b == "Positive" |
                       resp.results_antibody_test_.Wave_10b_dup == "Positive" ~ "Positive",
@@ -4333,7 +3997,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_11a =
-           case_when(resp.screener_followup_.Wave_11a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_11a == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_11a == "Positive" |
                       resp.results_antibody_test_.Wave_11a_dup == "Positive" ~ "Positive",
@@ -4349,7 +4013,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_12b =
-           case_when(resp.screener_followup_.Wave_12b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_12b == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_12b == "Positive" |
                       resp.results_antibody_test_.Wave_12b_dup == "Positive" ~ "Positive",
@@ -4365,7 +4029,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_13a =
-           case_when(resp.screener_followup_.Wave_13a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_13a == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_13a == "Positive" |
                       resp.results_antibody_test_.Wave_13a_dup == "Positive" ~ "Positive",
@@ -4382,7 +4046,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_14b =
-           case_when(resp.screener_followup_.Wave_14b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_14b == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_14b == "Positive" |
                       resp.results_antibody_test_.Wave_14b_dup == "Positive" ~ "Positive",
@@ -4399,7 +4063,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_15a =
-           case_when(resp.screener_followup_.Wave_15a != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_15a == "No" ~ "Not passed screener",
                      
              resp.results_antibody_test_.Wave_15a == "Positive" |
                       resp.results_antibody_test_.Wave_15a_dup == "Positive" ~ "Positive",
@@ -4415,7 +4079,7 @@ dat <- dat %>%
 
 dat <- dat %>%
   mutate(resp.results_antibody_test_.Wave_16b =
-           case_when(resp.screener_followup_.Wave_16b != "No" ~ "Not passed screener",
+           case_when(resp.screener_followup_.Wave_16b == "No" ~ "Not passed screener",
              
              resp.results_antibody_test_.Wave_16b == "Positive" |
                       resp.results_antibody_test_.Wave_16b_dup == "Positive" ~ "Positive",

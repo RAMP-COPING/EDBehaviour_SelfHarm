@@ -518,7 +518,7 @@ colnames(dat.ed.NBR)
 ```
 
 # Bind data 
-# GLAD + NBR
+## GLAD + NBR
 ```{r Bind data GLAD & NBR}
 # Bind
 dat.ed.COPING <- dat.ed.NBR %>%
@@ -654,7 +654,7 @@ dat.ed.COPING <- dat.ed.COPING %>%
         ) |
         
         # Missing age data
-          any_pandemic_binge_eating_vs_start_pandemic_age == "Missing age data" ~ 2
+          any_pandemic_binge_eating_vs_start_pandemic_age == "Missing data" ~ 2
         )
       )
 
@@ -761,7 +761,7 @@ dat.ed.COPING <- dat.ed.COPING %>%
         ) |
         
         # Missing age data
-          any_pandemic_low_weight_vs_start_pandemic_age == "Missing age data" ~ 2
+          any_pandemic_low_weight_vs_start_pandemic_age == "Missing data" ~ 2
        
         )
       )
@@ -1384,7 +1384,7 @@ ramp.edeq.scr.baseline.id <- ramp.edeq.scr.baseline %>%
 
 # Import RAMP EDEQ baseline data
 ```{r Read in data RAMP EDEQ baseline}
-ramp.edeq.baseline <- readRDS(file =  paste0(filepath_saved_data, "BASELINE_ramp2022-09-23.rds"))
+ramp.edeq.baseline <- readRDS(file =  paste0(filepath_saved_data, "BASELINE_ramp2022-09-27.rds"))
 dim(ramp.edeq.baseline)
 colnames(ramp.edeq.baseline)
 ```

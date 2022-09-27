@@ -50,7 +50,7 @@ edgi_diagnostics <- edgi_diagnostics %>%
             mhd.addadhd_numeric== 1 |                                                  
             mhd.other_numeric == 1 |                                                    
             mhd.personality_disorder_diagnosed_numeric== 1 |  
-            mhd.suspected_eating_disorder_diagnosed_numeric == 1 | # Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?   
+           # mhd.suspected_eating_disorder_diagnosed_numeric == 1 | # Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?   
             mhd.eating_disorder_received_treatment_numeric == 1 | # Have you ever received treatment for an eating disorder?                   
             mhd.atypical_bn_numeric== 1 |                                              
             mhd.atypical_bed_numeric== 1 |                                             
@@ -223,7 +223,7 @@ glad_diagnostics <- glad_diagnostics %>%
             mhd.addadhd_cop_numeric== 1 |                                                  
             mhd.other_cop_numeric == 1 |                                                    
             mhd.personality_disorder_diagnosed_cop_numeric== 1 |  
-            mhd.suspected_eating_disorder_diagnosed_cop_numeric == 1 | # Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?   
+           # mhd.suspected_eating_disorder_diagnosed_cop_numeric == 1 | # Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?   
             mhd.eating_disorder_received_treatment_cop_numeric == 1 | # Have you ever received treatment for an eating disorder?                   
             mhd.atypical_bn_cop_numeric== 1 |                                              
             mhd.atypical_bed_cop_numeric== 1 |                                             
@@ -395,7 +395,7 @@ if(RAMP == TRUE) {
             mhd.addadhd_cop_numeric== 1 |                                                  
             mhd.other_cop_numeric == 1 |                                                    
             mhd.personality_disorder_diagnosed_cop_numeric== 1 |  
-            mhd.suspected_eating_disorder_diagnosed_cop_numeric == 1 | # Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?   
+           # mhd.suspected_eating_disorder_diagnosed_cop_numeric == 1 | # Have you ever suspected that you may have an eating disorder, whether or not you were ever diagnosed?   
             mhd.eating_disorder_received_treatment_cop_numeric == 1 | # Have you ever received treatment for an eating disorder?                   
             mhd.atypical_bn_cop_numeric== 1 |                                              
             mhd.atypical_bed_cop_numeric== 1 |                                             

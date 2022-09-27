@@ -56,9 +56,9 @@ I have added this for my own ease of running the script, i.e., I can run and tro
 ```{r Specify cohort}
 GLAD = FALSE
 EDGI = FALSE
-RAMP = TRUE
+RAMP = FALSE
 NBR = FALSE
-COPING = FALSE
+COPING = TRUE
 ```
 
 # Read in cleaned data 
@@ -2276,6 +2276,7 @@ colnames(dem.ramp.followupb.raw)
 Select variables RAMP follow up B demographics
 ```{r Select variables RAMP follow up B demographics}
 if(RAMP == TRUE){
+
 exclude_cols_dem <- c("ID",
                   "sample",
                   "startDate_waves",
@@ -4229,6 +4230,7 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
     names_from = wave_dem, 
                      values_from = c(
          dem.living_situation,
+         dem.nothing_has_changed,
          dem.physical_health,
          dem.health_of_a_relative,
          dem.employment,
@@ -4268,6 +4270,27 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.living_situation_.Wave_14b`,
          `dem.living_situation_.Wave_15a`,
          `dem.living_situation_.Wave_16b`,
+         
+          `dem.nothing_has_changed_.Wave_1a`,
+         `dem.nothing_has_changed_.Wave_1b`,
+         `dem.nothing_has_changed_.Wave_2a`,
+         `dem.nothing_has_changed_.Wave_2b`,
+         `dem.nothing_has_changed_.Wave_3a`,
+         `dem.nothing_has_changed_.Wave_3b`,
+         `dem.nothing_has_changed_.Wave_4a`,
+         `dem.nothing_has_changed_.Wave_4b`,
+         `dem.nothing_has_changed_.Wave_5a`,
+         `dem.nothing_has_changed_.Wave_6b`,
+         `dem.nothing_has_changed_.Wave_7a`,
+         `dem.nothing_has_changed_.Wave_8b`,
+         `dem.nothing_has_changed_.Wave_9a`,
+         `dem.nothing_has_changed_.Wave_10b`,
+         `dem.nothing_has_changed_.Wave_11a`,
+         `dem.nothing_has_changed_.Wave_12b`,
+          `dem.nothing_has_changed_.Wave_13a`,
+         `dem.nothing_has_changed_.Wave_14b`,
+         `dem.nothing_has_changed_.Wave_15a`,
+         `dem.nothing_has_changed_.Wave_16b`,
          
          `dem.physical_health_.Wave_1a`,
          `dem.physical_health_.Wave_1b`,
@@ -4437,6 +4460,27 @@ dat.raw.dem.ramp.followup <- dat.raw.dem.ramp.followup %>%
          `dem.living_situation_.Wave_14b_dup`,
          `dem.living_situation_.Wave_15a_dup`,
          `dem.living_situation_.Wave_16b_dup`,
+     
+     `dem.nothing_has_changed_.Wave_1a_dup`,
+         `dem.nothing_has_changed_.Wave_1b_dup`,
+         `dem.nothing_has_changed_.Wave_2a_dup`,
+         `dem.nothing_has_changed_.Wave_2b_dup`,
+         `dem.nothing_has_changed_.Wave_3a_dup`,
+         `dem.nothing_has_changed_.Wave_3b_dup`,
+         `dem.nothing_has_changed_.Wave_4a_dup`,
+         `dem.nothing_has_changed_.Wave_4b_dup`,
+         `dem.nothing_has_changed_.Wave_5a_dup`,
+         `dem.nothing_has_changed_.Wave_6b_dup`,
+         `dem.nothing_has_changed_.Wave_7a_dup`,
+         `dem.nothing_has_changed_.Wave_8b_dup`,
+         `dem.nothing_has_changed_.Wave_9a_dup`,
+         `dem.nothing_has_changed_.Wave_10b_dup`,
+         `dem.nothing_has_changed_.Wave_11a_dup`,
+         `dem.nothing_has_changed_.Wave_12b_dup`,
+         `dem.nothing_has_changed_.Wave_13a_dup`,
+         `dem.nothing_has_changed_.Wave_14b_dup`,
+         `dem.nothing_has_changed_.Wave_15a_dup`,
+         `dem.nothing_has_changed_.Wave_16b_dup`,
      
      `dem.physical_health_.Wave_1a_dup`,
          `dem.physical_health_.Wave_1b_dup`,
@@ -5886,6 +5930,7 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
                      values_from = c(
                         dem.living_situation,
                         dem.physical_health,
+                        dem.nothing_has_changed,
          dem.employment,
          dem.household_employment_status_key,
          dem.unwell_coronavirus_weeks_physical,
@@ -5919,6 +5964,25 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.living_situation_.Wave_14b`,
          `dem.living_situation_.Wave_15a`,
          `dem.living_situation_.Wave_16b`,
+         
+         `dem.nothing_has_changed_.Wave_2a`,
+         `dem.nothing_has_changed_.Wave_2b`,
+         `dem.nothing_has_changed_.Wave_3a`,
+         `dem.nothing_has_changed_.Wave_3b`,
+         `dem.nothing_has_changed_.Wave_4a`,
+         `dem.nothing_has_changed_.Wave_4b`,
+         `dem.nothing_has_changed_.Wave_5a`,
+         `dem.nothing_has_changed_.Wave_6b`,
+         `dem.nothing_has_changed_.Wave_7a`,
+         `dem.nothing_has_changed_.Wave_8b`,
+         `dem.nothing_has_changed_.Wave_9a`,
+         `dem.nothing_has_changed_.Wave_10b`,
+         `dem.nothing_has_changed_.Wave_11a`,
+         `dem.nothing_has_changed_.Wave_12b`,
+         `dem.nothing_has_changed_.Wave_13a`,
+         `dem.nothing_has_changed_.Wave_14b`,
+         `dem.nothing_has_changed_.Wave_15a`,
+         `dem.nothing_has_changed_.Wave_16b`,
          
          `dem.physical_health_.Wave_2a`,
          `dem.physical_health_.Wave_2b`,
@@ -6073,7 +6137,7 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.living_situation_.Wave_15a_dup`,
          `dem.living_situation_.Wave_16b_dup`,
      
-     `dem.physical_health_.Wave_2a_dup`,
+         `dem.physical_health_.Wave_2a_dup`,
          `dem.physical_health_.Wave_2b_dup`,
          `dem.physical_health_.Wave_3a_dup`,
          `dem.physical_health_.Wave_3b_dup`,
@@ -6091,6 +6155,25 @@ dat.raw.dem.coping.followup <- dat.raw.dem.coping.followup %>%
          `dem.physical_health_.Wave_14b_dup`,
          `dem.physical_health_.Wave_15a_dup`,
          `dem.physical_health_.Wave_16b_dup`,
+         
+         `dem.nothing_has_changed_.Wave_2a_dup`,
+         `dem.nothing_has_changed_.Wave_2b_dup`,
+         `dem.nothing_has_changed_.Wave_3a_dup`,
+         `dem.nothing_has_changed_.Wave_3b_dup`,
+         `dem.nothing_has_changed_.Wave_4a_dup`,
+         `dem.nothing_has_changed_.Wave_4b_dup`,
+         `dem.nothing_has_changed_.Wave_5a_dup`,
+         `dem.nothing_has_changed_.Wave_6b_dup`,
+         `dem.nothing_has_changed_.Wave_7a_dup`,
+         `dem.nothing_has_changed_.Wave_8b_dup`,
+         `dem.nothing_has_changed_.Wave_9a_dup`,
+         `dem.nothing_has_changed_.Wave_10b_dup`,
+         `dem.nothing_has_changed_.Wave_11a_dup`,
+         `dem.nothing_has_changed_.Wave_12b_dup`,
+         `dem.nothing_has_changed_.Wave_13a_dup`,
+         `dem.nothing_has_changed_.Wave_14b_dup`,
+         `dem.nothing_has_changed_.Wave_15a_dup`,
+         `dem.nothing_has_changed_.Wave_16b_dup`,
     
          `dem.employment_.Wave_2a_dup`,
          `dem.employment_.Wave_2b_dup`,
