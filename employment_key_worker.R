@@ -89,7 +89,7 @@ if(GLAD == TRUE) {
                
                # TO COVER PEOPLE WHO DID NOT ANSWER FOLLOW-UP QUESTION
                
-               # Anyone who indicates they were previously employed and... 
+               # Anyone who indicates they were previously employed and didn't answer follow-up question 
                ((employ.fulltime_employed_numeric == "1"  |
                    employ.parttime_employed_numeric == "1"  |
                    employ.zerohours_contract_numeric == "1"|
@@ -99,7 +99,7 @@ if(GLAD == TRUE) {
                   is.na(employ.my_employment_status_has_not_changed)) ~ "Paid employment",
                
                
-               # Previously indicated not in paid employment and...
+               # Previously indicated not in paid employment and didn't answer follow-up question 
                ((employ.unemployed_numeric == "1" |
                    employ.receiving_state_income_numeric == "1" |
                    employ.stayathome_parent_or_carer_numeric == "1") &
@@ -108,10 +108,7 @@ if(GLAD == TRUE) {
                # TO COVER PERSON WHO DID ANSWER FOLLOW-UP QUESTION (but answer didn't really make sense)
                employ.receiving_state_income_numeric == "1" &
                  employ.increased_hours_numeric == "1" ~ "Not in paid employment"
-               
-               
-               
-             )
+               )
            
     )
   
@@ -161,7 +158,8 @@ if(EDGI == TRUE) {
                  employ.furloughed_or_paid_leave_ == "Furloughed or paid leave (Government funded)" |
                  employ.furloughed_or_paid_leave_.1 == "Furloughed or paid leave (Company funded)" |
                  employ.paid_leave_furloughed == "Furloughed or paid leave (Government funded with company supplement)"~ "Paid employment",
-               # Anyone who indicates they were previously employed and... 
+              
+                # Anyone who indicates they were previously employed and... 
                ( ( employ.fulltime_employed_numeric == "1"  |
                      employ.parttime_employed_numeric == "1"  |
                      employ.zerohours_contract_numeric == "1"|
@@ -213,7 +211,7 @@ if(EDGI == TRUE) {
                
                # TO COVER PEOPLE WHO DID NOT ANSWER FOLLOW-UP QUESTION
                
-               # Anyone who indicates they were previously employed and... 
+               # Anyone who indicates they were previously employed and didn't answer follow-up question  
                ((employ.fulltime_employed_numeric == "1"  |
                    employ.parttime_employed_numeric == "1"  |
                    employ.zerohours_contract_numeric == "1"|
@@ -223,7 +221,7 @@ if(EDGI == TRUE) {
                   is.na(employ.my_employment_status_has_not_changed)) ~ "Paid employment",
                
                
-               # Previously indicated not in paid employment and...
+               # Previously indicated not in paid employment and didn't answer follow-up question 
                ((employ.unemployed_numeric == "1" |
                    employ.receiving_state_income_numeric == "1" |
                    employ.stayathome_parent_or_carer_numeric == "1") &
@@ -276,6 +274,7 @@ if(NBR == TRUE) {
                  employ.furloughed_or_paid_leave_ == "Furloughed or paid leave (Government funded)" |
                  employ.furloughed_or_paid_leave_.1 == "Furloughed or paid leave (Company funded)" |
                  employ.paid_leave_furloughed == "Furloughed or paid leave (Government funded with company supplement)"~ "Paid employment",
+               
                # Anyone who indicates they were previously employed and... 
                ( ( employ.fulltime_employed_numeric == "1"  |
                      employ.parttime_employed_numeric == "1"  |
@@ -328,7 +327,7 @@ if(NBR == TRUE) {
                
                # TO COVER PEOPLE WHO DID NOT ANSWER FOLLOW-UP QUESTION
                
-               # Anyone who indicates they were previously employed and... 
+               # Anyone who indicates they were previously employed and didn't answer follow-up question 
                ((employ.fulltime_employed_numeric == "1"  |
                    employ.parttime_employed_numeric == "1"  |
                    employ.zerohours_contract_numeric == "1"|
@@ -338,7 +337,7 @@ if(NBR == TRUE) {
                   is.na(employ.my_employment_status_has_not_changed)) ~ "Paid employment",
                
                
-               # Previously indicated not in paid employment and...
+               # Previously indicated not in paid employment and didn't answer follow-up question 
                ((employ.unemployed_numeric == "1" |
                    employ.receiving_state_income_numeric == "1" |
                    employ.stayathome_parent_or_carer_numeric == "1") &
@@ -384,7 +383,8 @@ if(RAMP == TRUE) {
     freq(key_worker)
   
   # NB: Only those who answer 'Full time employed', 'Part-time employed', Unemployed, Zero-hours, Stay at home parent, Self-employed, Contract/freelance work, Small business owner, or Receiving state income get asked the follow-up question.
-  # Working out if still in paid employment at COPING baseline
+ 
+# Working out if still in paid employment at RAMP baseline
   ramp_dem_employ_raw_id <- ramp_dem_employ_raw_id %>%
     mutate(baseline_paid_employment =
              case_when(
@@ -434,7 +434,7 @@ if(RAMP == TRUE) {
                     employ.increased_hours_numeric == "1") ~ "Not in paid employment",
                
                # Taking unpaid leave
-               #   employ.taking_unpaid_leave_numeric == "1" ~ "Not in paid employment",
+               # employ.taking_unpaid_leave_numeric == "1" ~ "Not in paid employment", # Not in RAMP
                
                # Became unemployed
                employ.became_unemployed_numeric == "1"  ~ "Not in paid employment",
@@ -449,7 +449,7 @@ if(RAMP == TRUE) {
                
                # TO COVER PEOPLE WHO DID NOT ANSWER FOLLOW-UP QUESTION
                
-               # Anyone who indicates they were previously employed and... 
+               # Anyone who indicates they were previously employed and didn't answer follow-up question
                ((employ.fulltime_employed_numeric == "1"  |
                    employ.parttime_employed_numeric == "1"  |
                    employ.zerohours_contract_numeric == "1"|
@@ -459,7 +459,7 @@ if(RAMP == TRUE) {
                   is.na(employ.my_employment_status_has_not_changed)) ~ "Paid employment",
                
                
-               # Previously indicated not in paid employment and...
+               # Previously indicated not in paid employment and didn't answer follow-up question
                ((employ.unemployed_numeric == "1" |
                    employ.receiving_state_income_numeric == "1" |
                    employ.stayathome_parent_or_carer_numeric == "1") &

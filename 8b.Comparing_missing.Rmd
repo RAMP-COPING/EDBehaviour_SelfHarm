@@ -1,0 +1,379 @@
+---
+title: "Comparing those excluded"
+author: "Helena Davies"
+date: "30/09/2022"
+output: html_document
+---
+
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools",
+              "sjlabelled",
+              "Amelia",
+              "gtsummary",
+              "broom",
+              "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in data
+```{r read in data with missing}
+dat_NA <- readRDS(paste0(filepath_saved_data, "final_dat_merged_FIRST_exclusions_2022-09-30.rds"))
+
+dat_NA %>%
+  colnames()
+```
+
+```{r Read in data complete}
+dat_complete <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-09-27.rds")
+dim(dat_complete)
+colnames(dat_complete)
+
+dat_complete <- dat_complete %>%
+  select(ID,
+         sample,
+         BE_data_for_model,
+         LW_data_for_model,
+         SH_data_for_model,
+         HI_data_for_model)
+```
+
+## More refined education data
+```{r more refined education data}
+edu_dat <- readRDS(file = paste(filepath_saved_data, "highest_education_refined.rds"))
+
+edu_dat <- edu_dat %>%
+  select(ID,
+         sample,
+         merged_highest_education)
+# Check
+dim(edu_dat)
+```
+
+### Merge complete data with refined education data
+```{r merge complete data with refined education data}
+# Merge complete with education
+dat_complete_edu <- dplyr::left_join(dat_complete,
+                   edu_dat,
+                   by = c("ID",
+                          "sample"))
+
+
+# Check
+dim(dat_complete_edu)
+colnames(dat_complete_edu)
+
+# Merge complete + edu with missing data
+dat <- dplyr::left_join(dat_NA,
+                   dat_complete_edu,
+                   by = c("ID",
+                          "sample"))
+
+# Check
+dim(dat)
+colnames(dat)
+```
+
+## BMI data
+### BMI (at time of assessment) 
+Merged: GLAD sign-up, EDGI sign-up, NBR COPING (not assessed in RAMP)
+Read in data
+```{r Read in data bmi}
+# GLAD & EDGI
+bmi_edgi_glad_signup <- readRDS(file =paste0(filepath_cleaned_latest_freeze, "glad_edgi/demographics/signup_bmi_height_weight_glad_edgi_clean.rds"))
+
+bmi_edgi_glad_signup %>%
+  colnames()
+
+bmi_edgi_glad_signup %>%
+  dim()
+
+bmi_edgi_glad_signup <- bmi_edgi_glad_signup %>%
+  select(ID,
+         sample, 
+         dem.bmi_signup
+         )
+
+# GLAD COPING, EDGI COPING, & NBR
+bmi_coping <- readRDS(file =paste0(filepath_cleaned_latest_freeze, "coping_glad_edgi_nbr/demographics/signup_bmi_height_weight_coping_glad_edgi_nbr_clean.rds"))
+
+bmi_coping %>%
+  colnames()
+
+bmi_coping %>%
+  dim()
+
+bmi_coping <- bmi_coping %>%
+  select(ID,
+         sample, 
+         dem.bmi_signup_cop
+         )
+
+# Merge GLAD COPING, EDGI COPING, & NBR with GLAD & EDGI
+bmi_at_assessment <- dplyr::full_join(bmi_coping,
+                          bmi_edgi_glad_signup,
+                          by = c("ID",
+                                  "sample"
+                                  )
+)
+
+# Check
+bmi_at_assessment %>%
+  dim()
+
+# Check
+bmi_at_assessment %>%
+  nrow()
+
+# Set BMIs of less than 0 (e.g., -666) to NA
+bmi_at_assessment <- bmi_at_assessment %>%
+  mutate(dem.bmi_signup_cop =
+           case_when(dem.bmi_signup_cop < 0 ~ NA_real_,
+                     TRUE ~ as.numeric(dem.bmi_signup_cop)
+                     )
+         )
+```
+
+```{r merge data with BMI data}
+dat <- dplyr::left_join(dat,
+                         bmi_at_assessment,
+                         by = c("ID",
+                                "sample")
+)
+
+# Check
+dim(dat)
+colnames(dat)
+```
+
+# Create variable for included vs not included
+```{r included vs not included}
+dat <- dat %>% 
+  mutate(included =
+           case_when(BE_data_for_model == 1 |
+                       LW_data_for_model == 1 |
+                       HI_data_for_model == 1 |
+                       SH_data_for_model == 1  ~ "Yes",
+                     
+                     TRUE ~ "No"
+                    ))
+
+# Check
+dat %>%
+  freq(included)
+```
+
+# Compare: Categorical variables 
+```{r list categorical dummy variables symptom}
+descriptives.columns <- c(
+  "included",
+  "sex_binary",
+  "minoritised_gender",
+         "age_category_COVID_baseline",
+         "race_binary",
+         "A_Levels_higher"
+)
+
+descriptives.columns.dummy <- c(
+        "sex_binary",
+  "minoritised_gender",
+         "age_category_COVID_baseline",
+         "race_binary",
+         "A_Levels_higher"
+)
+```
+
+Dummy coding for categorical variables
+```{r dummy coding categorical variables}
+# Create dataset
+descriptives_df <- dat %>%
+  select(descriptives.columns)
+
+# Dummy coding
+descriptives_dummy <- fastDummies::dummy_cols(descriptives_df,
+                                              select_columns = descriptives.columns.dummy
+                                              )
+# Check
+colnames(descriptives_dummy)
+```
+
+## Age
+```{r chi-squared age}
+# Aged 16-25 years
+dat %>%
+  group_by(included) %>%
+  freq(age_category_COVID_baseline)
+
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`age_category_COVID_baseline_16-25` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+
+# Aged 26-35 years
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`age_category_COVID_baseline_26-35` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+
+# Aged 36-45 years
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`age_category_COVID_baseline_36-45` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+
+# Aged 46-55 years
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`age_category_COVID_baseline_46-55` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+
+# Aged 56-65 years
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`age_category_COVID_baseline_56-65` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+
+# Aged 66-70 years
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`age_category_COVID_baseline_66-70` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+
+# Aged 71+ years
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`age_category_COVID_baseline_71+` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+```
+## Female
+```{r chi-squared female}
+dat %>%
+  group_by(included) %>%
+  freq(sex_binary)
+
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`sex_binary_Female` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+```
+## Racially minoritised
+```{r chi-squared racially minoritised}
+dat %>%
+  group_by(included) %>%
+  freq(race_binary)
+
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`race_binary_Racially minoritised` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+```
+
+## Minoritised gender
+```{r chi-squared minoritised gender}
+dat %>%
+  group_by(included) %>%
+  freq(minoritised_gender)
+
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`minoritised_gender_Yes` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+```
+
+## Highest education
+```{r chi-squared A levels higher}
+dat <- dat %>%
+  mutate(A_Levels_higher =
+           case_when(A_Levels_higher == "Yes" ~ "Yes",
+                     TRUE ~ "No"
+                     )
+  )
+
+dat %>%
+  group_by(included) %>%
+  freq(A_Levels_higher)
+
+test <-RVAideMemoire::chisq.bintest(descriptives_dummy$`A_Levels_higher_Yes` ~ descriptives_dummy$included ,
+                                     alpha = 0.001,
+                             correct = F,
+                             p.method ="fdr")
+test$p.value
+```
+# Continous variables
+## Table: Comparison of BMI
+```{r table compare continuous variables symptom}
+# Create table
+numeric_table <- dat %>% 
+  group_by(included) %>%
+  summarise_at(vars(dem.bmi_signup_cop),
+    .funs =
+      list(
+        ~IQR(., na.rm=T),
+        ~median(., na.rm = T)
+      )
+  )
+
+numeric_table
+```
+
+Both assumptions violated; so performed the non-parametric equivalent of t-test: Mann-Whitney
+```{r independent 2-group Mann-Whitney U test bmi}
+bmi_wilcox <- wilcox.test(dat$dem.bmi_signup_cop ~ dat$included
+                          ,
+            correct = FALSE,
+            exact = FALSE,
+            p.adjust.methods = "fdr")
+
+bmi_wilcox$p.value
+print(age_wilcox)
+```

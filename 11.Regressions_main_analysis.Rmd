@@ -1,7 +1,7 @@
 ---
-title: "Sensitivity analysis: Excluding GLAD and EDGI"
+title: "Regressions"
 author: "Helena Davies"
-date: "17/05/2022"
+date: "24/05/2021"
 output: html_document
 ---
 
@@ -60,14 +60,12 @@ date
 ```{r Read in data}
 dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-09-27.rds")
 dim(dat)
-colnames(dat)
-```
-
-# Exclude EDGI and GLAD
-```{r exclude EDGI and GLAD}
-dat <- dat %>%
-  filter(sample == "NBR" |
-           sample == "RAMP")
+   colnames(dat)
+   
+   
+dat %>% 
+     group_by(ID) %>%
+     filter(n()>1)
 ```
 
 ```{r change panworry to factor}
@@ -86,6 +84,38 @@ dat <- dat %>%
                       panworry_total_score <= 80 ~ "61-80"
                      )
          )
+```
+
+### Re-ordering variables / converting to factors
+First, re-order all variables to get desired reference category for plotting - put largest category as reference
+Age
+```{r Re-order age levels}
+dat <- dat %>%
+  mutate(age_category_COVID_baseline = factor(age_category_COVID_baseline,
+                       levels = c("46-55", # Mid-life
+                                   "16-25",
+                                  "26-35",
+                                  "36-45",
+                                  "56-65", 
+                                   "66-70",
+                                   "71+")
+                       )
+         )
+
+# Check
+dat %>%
+  freq(age_category_COVID_baseline)
+```
+
+Race
+```{r Re-order race levels}
+dat <- dat %>%
+  mutate(race_binary = factor(race_binary,
+                       levels = c("White", # Largest category
+                                  "Racially minoritised"
+                                  )))
+dat %>%
+  freq(race_binary)
 ```
 
 Psychiatric disorder
@@ -112,6 +142,24 @@ dat <- dat %>%
 # Check again
 dat %>%
   freq(psych_disorder_factor)
+```
+
+Employment
+```{r Re-order employment levels}
+dat <- dat%>%
+  mutate(paid_employment_key_worker = factor(paid_employment_key_worker,
+                       levels = c("Paid employment",  
+                                  "Key worker",
+                                  "Not paid employment",
+                                  "Retired",
+                                  "Student"
+                                  )
+                       )
+         )
+
+# Check
+dat %>%
+  freq(paid_employment_key_worker)
 ```
 
 # REGRESSION MODELS
@@ -493,8 +541,6 @@ binge_eating_COVID19_illness <- tidy(model_COVID19_illness,
 
 fitted(model_COVID19_illness) %>% 
   length()
-
-binge_eating_COVID19_illness
 ```
 
 Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
@@ -531,80 +577,79 @@ df <- data.frame(labels = c("Age: 16-25 years",
               "Change in main economic activity",
               "Change in living situation",
               "COVID-19 illness and/or positive test"),
-                 boxOdds = c(1.3288588 ,
-                             1.1260216,
-                             1.068638,
-                             0.8265308,
-                             0.6510262,
-                             0.5349699,
-                             1.6920134,
-                             1.7246679,
-                             1.362266,
-                             1.9217164,
-                             1.2641042,
-                             1.4319989,
-                             1.1662393,
-                             0.9295945,
-                             1.3465727,
-                             1.51319089,
-                             2.64890229,
-                             3.15545401,
-                             1.15306837,
-                             0.932602,
-                             1.0205044,
-                             0.76694433,
-                             0.3862309),
-                 boxCILow = c(1.1414514 ,
-                              0.9762356,
-                              0.931357,
-                              0.7440186,
-                              0.5688207,
-                              0.4637712,
-                              1.5608586,
-                              1.4253654,
-                              0.9433666,
-                              1.7695689,
-                              1.1423059,
-                              1.2363095,
-                              0.908393,
-                              0.8126845,
-                              1.2281964,
-                              1.3667858,
-                              2.32239065,
-                              2.07619389,
-                              1.05311217,
-                              0.8016209,
-                              0.9312008,
-                              0.68919719,
-                              0.29311592),
-                 boxCIHigh = c(1.5448035 ,
-                               1.2972,
-                               1.2248974,
-                               0.9184731,
-                               0.7441616,
-                               0.6159321,
-                               1.8354466,
-                               2.0774881,
-                               1.9346184,
-                               2.0871873,
-                               1.3995093,
-                               1.6567624,
-                               1.4931091,
-                               1.0635715,
-                               1.4755122,
-                               1.6770484,
-                               3.022141,
-                               4.756927,
-                               1.2622058,
-                               1.0806862,
-                               1.1183581,
-                               0.8521965,
-                               0.4995394
+                 boxOdds = c(0.9965588,
+                             0.9488022,
+                             1.0084248,
+                             0.8173021,
+                             0.6191922,
+                             0.5265286,
+                             1.546624,
+                             1.4848656,
+                             1.2710775,
+                             1.8699917,
+                             1.2892438,
+                             1.4578472,
+                             0.9693344,
+                             1.2011027,
+                             1.3528379,
+                             1.4588812,
+                             2.2921423,
+                             2.9719076,
+                             1.1359036,
+                             0.9297841,
+                             1.0119891,
+                             0.7931211,
+                             0.3808807),
+                 boxCILow = c(0.8762611,
+                              0.8467316,
+                              0.9046767,
+                              0.7478543,
+                              0.5494629,
+                              0.4639614,
+                              1.4423048,
+                              1.261959,
+                              0.9720519,
+                              1.7375315,
+                              1.1837228,
+                              1.2974512,
+                              0.8609434,
+                              0.9755838,
+                              1.2504911,
+                              1.33543696,
+                              2.052895,
+                              2.1611357,
+                              1.05274397,
+                              0.8201154,
+                              0.9379548,
+                              0.7271914,
+                              0.3048686),
+                 boxCIHigh = c(1.1318566,
+                               1.062368,
+                               1.1234824,
+                               0.8932878,
+                               0.6968718,
+                               0.5964766,
+                               1.6593601,
+                               1.7410669,
+                               1.6457648,
+                               2.0132927,
+                               1.4046875,
+                               1.6372447,
+                               1.091481,
+                               1.4748948,
+                               1.4629432,
+                               1.5950503,
+                               2.5600712,
+                               4.0660066,
+                               1.2254443,
+                               1.0513484,
+                               1.0918919,
+                               0.864255,
+                               0.47012
                                ))
 
 ## Significant results
-df_sig <- data.frame(labels_sig = c("Age: 16-25 years", # New
-                                    "Age: 56-65 years",
+df_sig <- data.frame(labels_sig = c("Age: 56-65 years",
                   "Age: 66-70 years",
                   "Age: 71+ years",
                   "Female",
@@ -619,56 +664,51 @@ df_sig <- data.frame(labels_sig = c("Age: 16-25 years", # New
                   "Increased loneliness during pandemic",
                   "Change in living situation",
                   "COVID-19 illness and/or positive test"),
-                 boxOdds_sig = c(1.3288588  ,
-                                 0.8265308,
-                                 0.6510262,
-                                 0.5349699,
-                                 1.6920134,
-                                 1.7246679,
-                                 1.9217164,
-                                 1.2641042,
-                                 1.4319989,
-                                 1.3465727,
-                                 1.51319089,
-                                 2.64890229,
-                                 3.15545401,
-                                 1.15306837,
-                                 0.76694433,
-                                 0.3862309
-                                 ),
-                 boxCILow_sig = c(1.1414514 ,
-                                  0.7440186,
-                                  0.5688207,
-                                  0.4637712,
-                                  1.5608586,
-                                  1.4253654,
-                                  1.7695689,
-                                  1.1423059,
-                                  1.2363095,
-                                  1.2281964,
-                                  1.3667858,
-                                  2.32239065,
-                                  2.07619389,
-                                  1.05311217,
-                                  0.68919719,
-                                  0.29311592
-                                  ),
-                 boxCIHigh_sig = c(1.5448035 ,
-                                   0.9184731,
-                                   0.7441616,
-                                   0.6159321,
-                                   1.8354466,
-                                   2.0774881,
-                                   2.0871873,
-                                   1.3995093,
-                                   1.6567624,
-                                   1.4755122,
-                                   1.6770484,
-                                   3.022141,
-                                   4.756927,
-                                   1.2622058,
-                                   0.8521965,
-                                   0.4995394
+                 boxOdds_sig = c(0.8173021,
+                                 0.6191922,
+                                 0.5265286,
+                                 1.546624,
+                                 1.4848656,
+                                 1.8699917,
+                                 1.2892438,
+                                 1.4578472,
+                                 1.3528379,
+                                 1.4588812,
+                                 2.2921423,
+                                 2.9719076,
+                                 1.1359036,
+                                 0.7931211,
+                                 0.3808807),
+                 boxCILow_sig = c(0.7478543,
+                                  0.5494629,
+                                  0.4639614,
+                                  1.4423048,
+                                  1.261959,
+                                  1.7375315,
+                                  1.1837228,
+                                  1.2974512,
+                                  1.2504911,
+                                  1.33543696,
+                                  2.052895,
+                                  2.1611357,
+                                  1.05274397,
+                                  0.7271914,
+                                  0.3048686),
+                 boxCIHigh_sig = c(0.8932878,
+                                   0.6968718,
+                                   0.5964766,
+                                   1.6593601,
+                                   1.7410669,
+                                   2.0132927,
+                                   1.4046875,
+                                   1.6372447,
+                                   1.4629432,
+                                   1.5950503,
+                                   2.5600712,
+                                   4.0660066,
+                                   1.2254443,
+                                   0.864255,
+                                   0.47012
                                ))
 
 # Lock in factor level order
@@ -699,18 +739,18 @@ BE_plot <- ggplot(df,
              color='#86cfe2', # significant
              size=2) +
     scale_x_continuous(breaks = seq(from = 0.2,
-                                         to = 4.8,
+                                         to = 4.2,
                                          by = 0.2), 
                        labels = seq(0.2,
-                                    4.8,
+                                    4.2,
                                     0.2),
                        limits = c(0.2,
-                                  4.8)) +
+                                  4.2)) +
     theme_bw()+
     theme(panel.grid.minor = element_blank()) +
     ylab("") +
     xlab("Odds ratio") + 
-    ggtitle("New onset binge eating during the pandemic (sensitivity analysis A)") 
+    ggtitle("New onset binge eating during the pandemic") 
 
 BE_plot # colour sig ones differently!
 
@@ -720,124 +760,12 @@ ggsave(
                     ".png"),
   plot = BE_plot,
   device = "png", 
-  path = paste0(filepath_plots_sensitivity_excl_EDGI_GLAD), 
+  path = paste0(filepath_plots_main_regressions), 
   scale = 1,
   width = 30,
   height = 15,
   units = "cm"
   )
-```
-
-### Correlation with main analysis 
-```{r correlation with main analysis}
-## All results
-df_BE_main_analysis <- data.frame(labels = c("Age: 16-25 years",
-              "Age: 26-35 years",
-              "Age: 36-45 years",
-              "Age: 56-65 years",
-              "Age: 66-70 years",
-              "Age: 71+ years",
-              "Female",
-              "Racially minoritised",
-              "Minoritised gender",
-              "Psychiatric disorder",
-              "Employment: Key worker",
-              "Employment: Not in paid employment",
-              "Employment: Retired",
-              "Employment: Student",
-              "Vulnerable group member",
-              "Pandemic worry score: 21-40",
-              "Pandemic worry score: 41-60",
-              "Pandemic worry score: 61-80",
-              "Increased loneliness during pandemic",
-              "Lost someone due to COVID-19",
-              "Change in main economic activity",
-              "Change in living situation",
-              "COVID-19 illness and/or positive test"),
-                 odds_ratios_main = c(0.9965588,
-                             0.9488022,
-                             1.0084248,
-                             0.8173021,
-                             0.6191922,
-                             0.5265286,
-                             1.546624,
-                             1.4848656,
-                             1.2710775,
-                             1.8699917,
-                             1.2892438,
-                             1.4578472,
-                             0.9693344,
-                             1.2011027,
-                             1.3528379,
-                             1.4588812,
-                             2.2921423,
-                             2.9719076,
-                             1.1359036,
-                             0.9297841,
-                             1.0119891,
-                             0.7931211,
-                             0.3808807))
-
-df_BE_sens_analysis <- data.frame(labels = c("Age: 16-25 years",
-              "Age: 26-35 years",
-              "Age: 36-45 years",
-              "Age: 56-65 years",
-              "Age: 66-70 years",
-              "Age: 71+ years",
-              "Female",
-              "Racially minoritised",
-              "Minoritised gender",
-              "Psychiatric disorder",
-              "Employment: Key worker",
-              "Employment: Not in paid employment",
-              "Employment: Retired",
-              "Employment: Student",
-              "Vulnerable group member",
-              "Pandemic worry score: 21-40",
-              "Pandemic worry score: 41-60",
-              "Pandemic worry score: 61-80",
-              "Increased loneliness during pandemic",
-              "Lost someone due to COVID-19",
-              "Change in main economic activity",
-              "Change in living situation",
-              "COVID-19 illness and/or positive test"),
-                 odds_ratios_sens = c(1.3288588 ,
-                             1.1260216,
-                             1.068638,
-                             0.8265308,
-                             0.6510262,
-                             0.5349699,
-                             1.6920134,
-                             1.7246679,
-                             1.362266,
-                             1.9217164,
-                             1.2641042,
-                             1.4319989,
-                             1.1662393,
-                             0.9295945,
-                             1.3465727,
-                             1.51319089,
-                             2.64890229,
-                             3.15545401,
-                             1.15306837,
-                             0.932602,
-                             1.0205044,
-                             0.76694433,
-                             0.3862309))
-
-BE_joined <- merge(x = df_BE_main_analysis,
-                         y = df_BE_sens_analysis,
-                         by = "labels")
-
-# Correlation
-BE_cor <- psych::corr.test(BE_joined$odds_ratios_main,
-          BE_joined$odds_ratios_sens,
-          ci = TRUE)
-
-BE_cor$r
-
-print(BE_cor,
-      short=F)
 ```
 
 ## Low weight
@@ -1253,125 +1181,126 @@ df <- data.frame(labels = c("Age: 16-25 years",
               "Change in main economic activity",
               "Change in living situation",
               "COVID-19 illness and/or positive test"),
-                 boxOdds = c(1.7146222  ,
-                             0.8089928,
-                             0.9796515,
-                             1.0396455,
-                             0.8730841,
-                             1.0226601,
-                             0.9469087,
-                             1.6181762,
-                             1.4164361,
-                             1.68930125,
-                             1.25160767,
-                             1.75040267,
-                             1.81175513,
-                             1.09413078,
-                             1.7128852,
-                             1.42357861,
-                             2.23671478,
-                             3.32242802,
-                             1.03985695,
-                             0.9440707,
-                             1.06148711,
-                             0.90621069,
-                             0.43157767),
-                 boxCILow = c(1.430209  ,
-                              0.6585409,
-                              0.8102878,
-                              0.9041463,
-                              0.7302885,
-                              0.8597673,
-                              0.8580571,
-                              1.2823976,
-                              0.9237323,
-                              1.51605281,
-                              1.08909697,
-                              1.45888446,
-                              1.36077673,
-                              0.91866389,
-                              1.524078,
-                              1.24562042,
-                              1.89082123,
-                              2.16492608,
-                              0.92499714,
-                              0.77915954,
-                              0.9406011,
-                              0.79389085,
-                              0.30045291),
-                 boxCIHigh = c(2.0519504  ,
-                               0.9889767,
-                               1.1807591,
-                               1.1967794,
-                               1.0415795,
-                               1.214503,
-                               1.045705,
-                               2.020259,
-                               2.0992629,
-                               1.8829049,
-                               1.44008731,
-                               2.09672912,
-                               2.40552973,
-                               1.30444387,
-                               1.9228523,
-                               1.63030173,
-                               2.64717329,
-                               4.98684284,
-                               1.16844652,
-                               1.1349107,
-                               1.19802102,
-                               1.03182864,
-                               0.5992494
+                 boxOdds = c(1.3394079 ,
+                             0.6887391,
+                             0.8732472,
+                             0.9875482,
+                             0.8196809,
+                             0.9519125,
+                             0.9200172,
+                             1.4292487,
+                             1.2153364,
+                             1.61746504,
+                             1.22657646,
+                             1.56143674,
+                             1.01984592,
+                             1.7535185,
+                             1.8091301,
+                             1.34292619,
+                             2.05688225,
+                             3.29340385,
+                             1.0313678,
+                             1.013092,
+                             1.04676969,
+                             0.88605109,
+                             0.54224548),
+                 boxCILow = c(1.1468279 ,
+                              0.5871836,
+                              0.7530902,
+                              0.8786303,
+                              0.7003305,
+                              0.8162086,
+                              0.8441379,
+                              1.1653078,
+                              0.8765628,
+                              1.46688453,
+                              1.09170166,
+                              1.34691917,
+                              0.87330448,
+                              1.37237729,
+                              1.6400031,
+                              1.19401005,
+                              1.78489636,
+                              2.35822254,
+                              0.93403934,
+                              0.8677661,
+                              0.9465749,
+                              0.7933089,
+                              0.4185315),
+                 boxCIHigh = c(1.561275,
+                               0.805625,
+                               1.0108321,
+                               1.1104146,
+                               0.956989,
+                               1.1078389,
+                               1.0033835,
+                               1.73796,
+                               1.6482688,
+                               1.7848713,
+                               1.3794825,
+                               1.8087584,
+                               1.1915287,
+                               2.2331741,
+                               1.9940835,
+                               1.51298411,
+                               2.37209323,
+                               4.5392589,
+                               1.13847829,
+                               1.1769106,
+                               1.15769933,
+                               0.9879675,
+                               0.69069576
                                ))
 
 ## Significant results
 df_sig <- data.frame(labels_sig = c("Age: 16-25 years",
-                                    # "Age: 26-35 years", # no longer significant
+                                    "Age: 26-35 years",
                                     "Racially minoritised",
                                     "Psychiatric disorder",
                                     "Employment: Key worker",
                                     "Employment: Not in paid employment",
-                                 #   "Employment: Student",
-                                  "Employment: Retired", # new
+                                    "Employment: Student",
                                     "Vulnerable group member",
                                     "Pandemic worry score: 21-40",
                                     "Pandemic worry score: 41-60",
                                     "Pandemic worry score: 61-80",
                                     "COVID-19 illness and/or positive test"),
-                 boxOdds_sig = c(1.7146222  ,
-                                 1.6181762,
-                                 1.68930125,
-                                 1.25160767,
-                                 1.75040267,
-                                 1.81175513,
-                                 1.7128852,
-                                 1.42357861,
-                                 2.23671478,
-                                 3.32242802,
-                                 0.43157767
-                                 ),
-                 boxCILow_sig = c(1.430209,
-                                  1.2823976,
-                                  1.51605281 ,
-                                  1.08909697,
-                                  1.45888446,
-                                  1.36077673,
-                                  1.524078,
-                                  1.24562042,
-                                  1.89082123,
-                                  2.16492608,
-                                  0.30045291),
-                 boxCIHigh_sig = c(2.0519504 ,
-                                   2.020259,
-                                   1.8829049,
-                                   1.44008731,
-                                   2.09672912,
-                                   2.40552973,
-                                   1.9228523,
-                                   1.63030173,
-                                   2.64717329,
-                                   4.98684284,
-                                   0.5992494
+                 boxOdds_sig = c(1.3394079 ,
+                                 0.6887391,
+                                 1.4292487,
+                                 1.61746504,
+                                 1.22657646,
+                                 1.56143674,
+                                 1.7535185,
+                                 1.8091301,
+                                 1.34292619,
+                                 2.05688225,
+                                 3.29340385,
+                                 0.54224548),
+                 boxCILow_sig = c(1.1468279,
+                                  0.5871836,
+                                  1.1653078,
+                                  1.46688453,
+                                  1.09170166,
+                                  1.34691917,
+                                  1.37237729,
+                                  1.6400031,
+                                  1.19401005,
+                                  1.78489636,
+                                  2.35822254,
+                                  0.4185315),
+                 boxCIHigh_sig = c(1.561275,
+                                   0.805625,
+                                   1.73796,
+                                   1.7848713,
+                                   1.3794825,
+                                   1.8087584,
+                                   2.2331741,
+                                   1.9940835,
+                                   1.51298411,
+                                   2.37209323,
+                                   4.5392589,
+                                   0.69069576
                                ))
 
 # Lock in factor level order
@@ -1402,18 +1331,18 @@ LW_plot <- ggplot(df,
              color='#86cfe2', # significant
              size=2) +
     scale_x_continuous(breaks = seq(from = 0.2,
-                                         to = 5,
+                                         to = 4.6,
                                          by = 0.2), 
                        labels = seq(0.2,
-                                    5,
+                                    4.6,
                                     0.2),
                        limits = c(0.2,
-                                  5)) +
+                                  4.6)) +
     theme_bw()+
     theme(panel.grid.minor = element_blank()) +
     ylab("") +
     xlab("Odds ratio") + 
-    ggtitle("New onset low weight during the pandemic (sensitivity analysis A)") 
+    ggtitle("New onset low weight during the pandemic") 
 
 LW_plot # colour sig ones differently!
 
@@ -1423,7 +1352,7 @@ ggsave(
                     ".png"),
   plot = LW_plot,
   device = "png", 
-  path = paste0(filepath_plots_sensitivity_excl_EDGI_GLAD), 
+  path = paste0(filepath_plots_main_regressions), 
   scale = 1,
   width = 30,
   height = 15,
@@ -1431,128 +1360,12 @@ ggsave(
   )
 ```
 
-### Correlation with main analysis 
-```{r correlation with main analysis}
-## All results
-df_LW_main_analysis <- data.frame(labels = c("Age: 16-25 years",
-              "Age: 26-35 years",
-              "Age: 36-45 years",
-              "Age: 56-65 years",
-              "Age: 66-70 years",
-              "Age: 71+ years",
-              "Female",
-              "Racially minoritised",
-              "Minoritised gender",
-              "Psychiatric disorder",
-              "Employment: Key worker",
-              "Employment: Not in paid employment",
-              "Employment: Retired",
-              "Employment: Student",
-              "Vulnerable group member",
-              "Pandemic worry score: 21-40",
-              "Pandemic worry score: 41-60",
-              "Pandemic worry score: 61-80",
-              "Increased loneliness during pandemic",
-              "Lost someone due to COVID-19",
-              "Change in main economic activity",
-              "Change in living situation",
-              "COVID-19 illness and/or positive test"),
-                 odds_ratios_main = c(1.3394079 ,
-                                      0.6887391,
-                                      0.8732472,
-                                      0.9875482,
-                                      0.8196809,
-                                      0.9519125,
-                                      0.9200172,
-                                      1.4292487,
-                                      1.2153364,
-                                      1.61746504,
-                                      1.22657646,
-                                      1.56143674,
-                                      1.01984592,
-                                      1.7535185,
-                                      1.8091301,
-                                      1.34292619,
-                                      2.05688225,
-                                      3.29340385,
-                                      1.0313678,
-                                      1.013092,
-                                      1.04676969,
-                                      0.88605109,
-                                      0.54224548))
-
-df_LW_sens_analysis <- data.frame(labels = c("Age: 16-25 years",
-              "Age: 26-35 years",
-              "Age: 36-45 years",
-              "Age: 56-65 years",
-              "Age: 66-70 years",
-              "Age: 71+ years",
-              "Female",
-              "Racially minoritised",
-              "Minoritised gender",
-              "Psychiatric disorder",
-              "Employment: Key worker",
-              "Employment: Not in paid employment",
-              "Employment: Retired",
-              "Employment: Student",
-              "Vulnerable group member",
-              "Pandemic worry score: 21-40",
-              "Pandemic worry score: 41-60",
-              "Pandemic worry score: 61-80",
-              "Increased loneliness during pandemic",
-              "Lost someone due to COVID-19",
-              "Change in main economic activity",
-              "Change in living situation",
-              "COVID-19 illness and/or positive test"),
-                 odds_ratios_sens = c(1.7146222  ,
-                             0.8089928,
-                             0.9796515,
-                             1.0396455,
-                             0.8730841,
-                             1.0226601,
-                             0.9469087,
-                             1.6181762,
-                             1.4164361,
-                             1.68930125,
-                             1.25160767,
-                             1.75040267,
-                             1.81175513,
-                             1.09413078,
-                             1.7128852,
-                             1.42357861,
-                             2.23671478,
-                             3.32242802,
-                             1.03985695,
-                             0.9440707,
-                             1.06148711,
-                             0.90621069,
-                             0.43157767))
-
-LW_joined <- merge(x = df_LW_main_analysis,
-                         y = df_LW_sens_analysis,
-                         by = "labels")
-
-# Correlation
-LW_cor <- psych::corr.test(LW_joined$odds_ratios_main,
-          LW_joined$odds_ratios_sens,
-          ci = TRUE)
-
-LW_cor$r
-
-print(LW_cor,
-      short=F)
-```
-
-
-
-
-
 ## Suicidal and/or self-harm ideation
 ```{r Suicidal and/or self-harm ideation age model}
 # Create harmful ideation data
 dat_HI <- dat %>%
   filter(HI_data_for_model == 1)
-  
+
 # Reference category
 dat_HI <- within(dat_HI,
               age_category_COVID_baseline <- relevel(age_category_COVID_baseline,
@@ -1641,7 +1454,7 @@ fitted(model_gender) %>%
 harmful_ideation_gender
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_gender)
 ```
@@ -1674,7 +1487,7 @@ fitted(model_psych_disorder) %>%
 harmful_ideation_psych_disorder
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_psych_disorder)
 ```
@@ -1707,7 +1520,7 @@ fitted(model_employment) %>%
 harmful_ideation_employment
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_employment)
 ```
@@ -1735,7 +1548,7 @@ fitted(model_vulnerable_group_member) %>%
 harmful_ideation_vulnerable_group_member
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_vulnerable_group_member)
 ```
@@ -1768,7 +1581,7 @@ fitted(model_panworry) %>%
 harmful_ideation_panworry
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_panworry)
 ```
@@ -1804,7 +1617,7 @@ fitted(model_loneliness) %>%
 harmful_ideation_loneliness
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_loneliness)
 ```
@@ -1834,7 +1647,7 @@ fitted(model_loss) %>%
 harmful_ideation_loss
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_loss)
 ```
@@ -1867,7 +1680,7 @@ fitted(model_main_eco_change) %>%
 harmful_ideation_main_eco_change
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_main_eco_change)
 ```
@@ -1901,7 +1714,7 @@ fitted(model_living_sit_change) %>%
 harmful_ideation_living_sit_change
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_living_sit_change)
 ```
@@ -1930,7 +1743,7 @@ fitted(model_COVID19_illness) %>%
 harmful_ideation_COVID19_illness
 ```
 
-Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in data
+Check for Variance inflation factor estimate (VIF) - direct estimate of collinearity in dat_HIa
 ```{r check VIF Suicidal and/or self-harm ideation}
 car::vif(model_COVID19_illness)
 ```
@@ -1964,82 +1777,82 @@ df <- data.frame(labels = c("Age: 16-25 years",
               "Change in main economic activity",
               "Change in living situation",
               "COVID-19 illness and/or positive test"),
-                 boxOdds = c(2.0527305 ,
-                             1.1985785,
-                             1.0098448,
-                             1.0019706,
-                             0.7642839,
-                             0.8182002,
-                             1.745069,
-                             1.682272,
-                             3.0771391,
-                             3.5300957,
-                             0.9811022,
-                             1.3918798,
-                             1.1474677,
-                             0.9462198,
-                             1.2512579,
-                             1.67561084,
-                             3.06758696,
-                             4.76987549,
-                             1.40105033,
-                             0.7196811,
-                             1.20286985,
-                             0.76427257,
-                             0.25265305),
-                 boxCILow = c(1.715422  ,
-                              1.0219487,
-                              0.8614303,
-                              0.889647,
-                              0.6572632,
-                              0.7043224,
-                              1.5974146,
-                              1.3620268,
-                              1.7510418,
-                              3.20299912,
-                              0.87370744,
-                              1.1622936,
-                              0.83593771,
-                              0.81447658,
-                              1.1300426,
-                              1.49240768,
-                              2.61583644,
-                              2.81268983,
-                              1.25604002,
-                              0.5928218,
-                              1.07975498,
-                              0.66872686,
-                              0.16810853),
-                 boxCIHigh = c(2.4525077 ,
-                               1.403669,
-                               1.1818927,
-                               1.1291639,
-                               0.8875298,
-                               0.9493142,
-                               1.907871,
-                               2.0655511,
-                               5.3444137,
-                               3.8915438,
-                               1.1020997,
-                               1.6635572,
-                               1.5670175,
-                               1.0997573,
-                               1.3844451,
-                               1.88369969,
-                               3.5974974,
-                               8.08196299,
-                               1.56239483,
-                               0.8671451,
-                               1.3400058,
-                               0.87136973,
-                               0.36391444
+                 boxOdds = c(1.9024189 ,
+                             1.3262505 ,
+                             1.0652464 ,
+                             0.9082296 ,
+                             0.6455501 ,
+                             0.6679875 ,
+                             1.9513268 ,
+                             1.663737 ,
+                             3.6607133 ,
+                             4.611234 ,
+                             0.9715412 ,
+                             1.398475,
+                             0.9955501,
+                             1.0313477,
+                             1.1742402,
+                             1.58315859,
+                             2.55200157,
+                             3.84364618,
+                             1.29425594,
+                             0.7030271,
+                             1.16745834,
+                             0.7079266,
+                             0.2447691),
+                 boxCILow = c(1.6356095 ,
+                              1.1692475 ,
+                              0.9397251 ,
+                              0.8212002 ,
+                              0.5653978 ,
+                              0.5847655 ,
+                              1.8056117 ,
+                              1.3903722 ,
+                              2.4300825 ,
+                              4.2311885 ,
+                              0.8803647,
+                              1.2017025,
+                              0.8696674,
+                              0.7915089,
+                              1.0751058,
+                              1.43221367,
+                              2.22804482,
+                              2.51963995,
+                              1.1784766,
+                              0.5978125,
+                              1.06539463,
+                              0.63074242,
+                              0.17424411),
+                 boxCIHigh = c(2.2110687  ,
+                               1.5035999,
+                               1.206754,
+                               1.0047036,
+                               0.7360596,
+                               0.7620113,
+                               2.1101834,
+                               1.984573,
+                               5.5481494,
+                               5.0283814,
+                               1.072409,
+                               1.6262449,
+                               1.1399522,
+                               1.3403691,
+                               1.2818872,
+                               1.75142699,
+                               2.92356376,
+                               5.89873099,
+                               1.42111361,
+                               0.8228782,
+                               1.2792855,
+                               0.79329648,
+                               0.3339375
                                ))
 
 ## Significant results
 df_sig <- data.frame(labels_sig = c("Age: 16-25 years",
-            #  "Age: 26-35 years",
+              "Age: 26-35 years",
               "Age: 66-70 years",
-            #  "Age: 71+ years",
+              "Age: 71+ years",
               "Female",
               "Racially minoritised",
               "Minoritised gender",
@@ -2055,54 +1868,60 @@ df_sig <- data.frame(labels_sig = c("Age: 16-25 years",
               "Change in living situation",
               "COVID-19 illness and/or positive test"
               ),
-                 boxOdds_sig = c(2.0527305 ,
-                                 0.7642839,
-                                 1.745069,
-                                 1.682272,
-                                 3.0771391,
-                                 3.5300957,
-                                 1.3918798,
-                                 1.2512579,
-                                 1.67561084,
-                                 3.06758696,
-                                 4.76987549,
-                                 1.40105033,
-                                 0.7196811,
-                                 1.20286985,
-                                 0.76427257,
-                                 0.25265305),
-                 boxCILow_sig = c(1.715422  ,
-                                  0.6572632,
-                                  1.5974146,
-                                  1.3620268,
-                                  1.7510418,
-                                  3.20299912,
-                                  1.1622936,
-                                  1.1300426,
-                                  1.49240768,
-                                  2.61583644,
-                                  2.81268983,
-                                  1.25604002,
-                                  0.5928218,
-                                  1.07975498,
-                                  0.66872686,
-                                  0.16810853),
-                 boxCIHigh_sig = c(2.4525077 ,
-                                   0.8875298,
-                                   1.907871,
-                                   2.0655511,
-                                   5.3444137,
-                                   3.8915438,
-                                   1.6635572,
-                                   1.3844451,
-                                   1.88369969,
-                                   3.5974974,
-                                   8.08196299,
-                                   1.56239483,
-                                   0.8671451,
-                                   1.3400058,
-                                   0.87136973,
-                                   0.36391444
+                 boxOdds_sig = c(1.9024189 ,
+                                 1.3262505,
+                                 0.6455501,
+                                 0.6679875,
+                                 1.9513268,
+                                 1.663737,
+                                 3.6607133,
+                                 4.611234,
+                                 1.398475,
+                                 1.1742402,
+                                 1.58315859,
+                                 2.55200157,
+                                 3.84364618,
+                                 1.29425594,
+                                 0.7030271,
+                                 1.16745834,
+                                 0.7079266,
+                                 0.2447691),
+                 boxCILow_sig = c(1.6356095  ,
+                                  1.1692475,
+                                  0.5653978,
+                                  0.5847655,
+                                  1.8056117,
+                                  1.3903722,
+                                  2.4300825,
+                                  4.2311885,
+                                  1.2017025,
+                                  1.0751058,
+                                  1.43221367,
+                                  2.22804482,
+                                  2.51963995,
+                                  1.1784766,
+                                  0.5978125,
+                                  1.06539463,
+                                  0.63074242,
+                                  0.17424411),
+                 boxCIHigh_sig = c(2.2110687  ,
+                                   1.5035999,
+                                   0.7360596,
+                                   0.7620113,
+                                   2.1101834,
+                                   1.984573,
+                                   5.5481494,
+                                   5.0283814,
+                                   1.6262449,
+                                   1.2818872,
+                                   1.75142699,
+                                   2.92356376,
+                                   5.89873099,
+                                   1.42111361,
+                                   0.8228782,
+                                   1.2792855,
+                                   0.79329648,
+                                   0.3339375
                                ))
 
 # Lock in factor level order
@@ -2133,18 +1952,18 @@ HI_plot <- ggplot(df,
              color='#86cfe2', # significant
              size=2) +
     scale_x_continuous(breaks = seq(from = 0.1,
-                                         to = 8.1,
+                                         to = 6.5,
                                          by = 0.2), 
                        labels = seq(0.1,
-                                    8.1,
+                                    6.5,
                                     0.2),
                        limits = c(0.1,
-                                  8.1)) +
+                                  6.5)) +
     theme_bw()+
     theme(panel.grid.minor = element_blank()) +
     ylab("") +
     xlab("Odds ratio") + 
-    ggtitle("New onset suicidal and/or self-harm ideation during the pandemic (sensitivity analysis A)") 
+    ggtitle("New onset suicidal and/or self-harm ideation during the pandemic") 
 
 HI_plot # colour sig ones differently!
 
@@ -2154,123 +1973,12 @@ ggsave(
                     ".png"),
   plot = HI_plot,
   device = "png", 
-  path = paste0(filepath_plots_sensitivity_excl_EDGI_GLAD), 
+  path = paste0(filepath_plots_main_regressions), 
   scale = 1,
   width = 30,
   height = 15,
   units = "cm"
   )
-```
-### Correlation with main analysis 
-```{r correlation with main analysis}
-## All results
-df_HI_main_analysis <- data.frame(labels = c("Age: 16-25 years",
-              "Age: 26-35 years",
-              "Age: 36-45 years",
-              "Age: 56-65 years",
-              "Age: 66-70 years",
-              "Age: 71+ years",
-              "Female",
-              "Racially minoritised",
-              "Minoritised gender",
-              "Psychiatric disorder",
-              "Employment: Key worker",
-              "Employment: Not in paid employment",
-              "Employment: Retired",
-              "Employment: Student",
-              "Vulnerable group member",
-              "Pandemic worry score: 21-40",
-              "Pandemic worry score: 41-60",
-              "Pandemic worry score: 61-80",
-              "Increased loneliness during pandemic",
-              "Lost someone due to COVID-19",
-              "Change in main economic activity",
-              "Change in living situation",
-              "COVID-19 illness and/or positive test"),
-                 odds_ratios_main = c(1.9024189 ,
-                             1.3262505 ,
-                             1.0652464 ,
-                             0.9082296 ,
-                             0.6455501 ,
-                             0.6679875 ,
-                             1.9513268 ,
-                             1.663737 ,
-                             3.6607133 ,
-                             4.611234 ,
-                             0.9715412 ,
-                             1.398475,
-                             0.9955501,
-                             1.0313477,
-                             1.1742402,
-                             1.58315859,
-                             2.55200157,
-                             3.84364618,
-                             1.29425594,
-                             0.7030271,
-                             1.16745834,
-                             0.7079266,
-                             0.2447691))
-
-df_HI_sens_analysis <- data.frame(labels = c("Age: 16-25 years",
-              "Age: 26-35 years",
-              "Age: 36-45 years",
-              "Age: 56-65 years",
-              "Age: 66-70 years",
-              "Age: 71+ years",
-              "Female",
-              "Racially minoritised",
-              "Minoritised gender",
-              "Psychiatric disorder",
-              "Employment: Key worker",
-              "Employment: Not in paid employment",
-              "Employment: Retired",
-              "Employment: Student",
-              "Vulnerable group member",
-              "Pandemic worry score: 21-40",
-              "Pandemic worry score: 41-60",
-              "Pandemic worry score: 61-80",
-              "Increased loneliness during pandemic",
-              "Lost someone due to COVID-19",
-              "Change in main economic activity",
-              "Change in living situation",
-              "COVID-19 illness and/or positive test"),
-                 odds_ratios_sens = c(2.0527305 ,
-                                      1.1985785,
-                                      1.0098448,
-                                      1.0019706,
-                                      0.7642839,
-                                      0.8182002,
-                                      1.745069,
-                                      1.682272,
-                                      3.0771391,
-                                      3.5300957,
-                                      0.9811022,
-                                      1.3918798,
-                                      1.1474677,
-                                      0.9462198,
-                                      1.2512579,
-                                      1.67561084,
-                                      3.06758696,
-                                      4.76987549,
-                                      1.40105033,
-                                      0.7196811,
-                                      1.20286985,
-                                      0.76427257,
-                                      0.25265305))
-
-HI_joined <- merge(x = df_HI_main_analysis,
-                         y = df_HI_sens_analysis,
-                         by = "labels")
-
-# Correlation
-HI_cor <- psych::corr.test(HI_joined$odds_ratios_main,
-          HI_joined$odds_ratios_sens,
-          ci = TRUE)
-
-HI_cor$r
-
-print(HI_cor,
-      short=F)
 ```
 
 ## Self-harm
@@ -2685,75 +2393,75 @@ df <- data.frame(labels = c("Age: 16-25 years",
               "Change in main economic activity",
               "Change in living situation",
               "COVID-19 illness and/or positive test"),
-                 boxOdds = c(2.55728866,
-                             1.77313364,
-                             1.09264171,
-                             0.68154991,
-                             0.56424201,
-                             0.56851528,
-                             1.32422983,
-                             1.25849218,
-                             2.31907657,
-                             2.23,
-                             1.11815899,
-                             1.70327475,
-                             1.36350906,
-                             1.21801736,
-                             1.13413817,
-                             1.08603987,
-                             1.76231443,
-                             2.23863092,
-                             1.23397762,
-                             1.23035324,
-                             1.15617161,
-                             1.11900378,
-                             0.59807022),
-                 boxCILow = c(1.90490227,
-                              1.33984188,
-                              0.80211533,
-                              0.5266987,
-                              0.39503876,
-                              0.39676505,
-                              1.10602103,
-                              0.80086445,
-                              1.0785241,
-                              1.83,
-                              0.88882989,
-                              1.2427603,
-                              0.83123747,
-                              0.86569197,
-                              0.9192271,
-                              0.85584061,
-                              1.31379922,
-                              0.97023993,
-                              1.001102809,
-                              0.8816931,
-                              0.94254532,
-                              0.89021271,
-                              0.3327768),
-                 boxCIHigh = c(3.41669844,
-                               2.33984713,
-                               1.47659054,
-                               0.8821627,
-                               0.79212499,
-                               0.80015975,
-                               1.59200505,
-                               1.87777373,
-                               4.390422,
-                               2.725540513,
-                               1.4113766,
-                               2.31474135,
-                               2.1911608,
-                               1.71548341,
-                               1.39059925,
-                               1.38730272,
-                               2.36609349,
-                               4.51697568,
-                               1.51995887,
-                               1.67314549,
-                               1.4189983,
-                               1.395631,
-                               0.98520792
+                 boxOdds = c(2.641201  ,
+                             1.92692041,
+                             1.21426285,
+                             0.66020448,
+                             0.50049175,
+                             0.42883885,
+                             1.50347086,
+                             1.40229773,
+                             2.07629202,
+                             2.66629642,
+                             1.03461507,
+                             1.54226727,
+                             0.99062059,
+                             1.34303705,
+                             1.2588142,
+                             1.23914124,
+                             1.77201665,
+                             2.75688316,
+                             1.18220342,
+                             1.20694897,
+                             1.2155411,
+                             1.06669158,
+                             0.61387184),
+                 boxCILow = c(2.13267361  ,
+                              1.58645704,
+                              0.9837557,
+                              0.54133227,
+                              0.37190418,
+                              0.31031853,
+                              1.30449128,
+                              1.0322114,
+                              1.30268689,
+                              2.25019244,
+                              0.87776934,
+                              1.2437948,
+                              0.7490269,
+                              0.96357734,
+                              1.07844767,
+                              1.0242675,
+                              1.4200628,
+                              1.7074609,
+                              1.014894773,
+                              0.94655754,
+                              1.05091377,
+                              0.90296488,
+                              0.40270193),
+                 boxCIHigh = c(3.26395629,
+                               2.34003926,
+                               1.49549559,
+                               0.80444411,
+                               0.66338877,
+                               0.58092385,
+                               1.7384979,
+                               1.86054471,
+                               3.15460782,
+                               3.17463867,
+                               1.221608,
+                               1.9067175,
+                               1.3076114,
+                               1.8529976,
+                               1.46427271,
+                               1.50765124,
+                               2.21794459,
+                               4.29364683,
+                               1.37665056,
+                               1.51809616,
+                               1.40688164,
+                               1.2552246,
+                               0.89340949
                                ))
 
 ## Significant results
@@ -2763,41 +2471,50 @@ df_sig <- data.frame(labels_sig = c("Age: 16-25 years",
               "Age: 66-70 years",
               "Age: 71+ years",
               "Female",
-            #  "Minoritised gender", # no longer significant
+              "Minoritised gender",
               "Psychiatric disorder",
               "Employment: Not in paid employment",
-            #  "Vulnerable group member", # no longer significant
-              "Pandemic worry score: 41-60"
-            #  "Pandemic worry score: 61-80" # no longer significant
+              "Vulnerable group member",
+              "Pandemic worry score: 41-60",
+              "Pandemic worry score: 61-80"
               ),
-                 boxOdds_sig = c(2.55728866,
-                                 1.77313364,
-                                 0.68154991,
-                                 0.56424201,
-                                 0.56851528,
-                                 1.32422983,
-                                 2.23,
-                                 1.70327475,
-                                 1.76231443
+                 boxOdds_sig = c(2.641201  ,
+                                 1.92692041,
+                                 0.66020448,
+                                 0.50049175,
+                                 0.42883885,
+                                 1.50347086,
+                                 2.07629202,
+                                 2.66629642,
+                                 1.54226727,
+                                 1.2588142,
+                                 1.77201665,
+                                 2.75688316
                                  ),
-                 boxCILow_sig = c(1.90490227,
-                                  1.33984188,
-                                  0.5266987,
-                                  0.39503876,
-                                  0.39676505,
-                                  1.10602103,
-                                  1.83,
-                                  1.2427603,
-                                  1.31379922),
-              boxCIHigh_sig = c(3.41669844 ,
-                                2.33984713,
-                                0.8821627,
-                                0.79212499,
-                                0.80015975,
-                                1.59200505,
-                                2.725540513,
-                                2.31474135,
-                                2.36609349
+                 boxCILow_sig = c(2.13267361 ,
+                                  1.58645704,
+                                  0.54133227,
+                                  0.37190418,
+                                  0.31031853,
+                                  1.30449128,
+                                  1.30268689,
+                                  2.25019244,
+                                  1.2437948,
+                                  1.07844767,
+                                  1.4200628,
+                                  1.7074609),
+              boxCIHigh_sig = c(3.26395629,
+                                2.34003926,
+                                0.80444411,
+                                0.66338877,
+                                0.58092385,
+                                1.7384979,
+                                3.15460782,
+                                3.17463867,
+                                1.9067175,
+                                1.46427271,
+                                2.21794459,
+                                4.29364683
                                ))
 
 # Lock in factor level order
@@ -2828,18 +2545,18 @@ SH_plot <- ggplot(df,
              color='#86cfe2', # significant
              size=2) +
     scale_x_continuous(breaks = seq(from = 0.2,
-                                         to = 5.2,
+                                         to = 6.5,
                                          by = 0.2), 
                        labels = seq(0.2,
-                                    5.2,
+                                    6.5,
                                     0.2),
                        limits = c(0.2,
-                                  5.2)) +
+                                  6.5)) +
     theme_bw()+
     theme(panel.grid.minor = element_blank()) +
     ylab("") +
     xlab("Odds ratio") + 
-    ggtitle("New onset self-harm during the pandemic (sensitivity analysis A)") 
+    ggtitle("New onset self-harm during the pandemic") 
 
 SH_plot # colour sig ones differently!
 
@@ -2849,123 +2566,12 @@ ggsave(
                     ".png"),
   plot = SH_plot,
   device = "png", 
-  path = paste0(filepath_plots_sensitivity_excl_EDGI_GLAD), 
+  path = paste0(filepath_plots_main_regressions), 
   scale = 1,
   width = 30,
   height = 15,
   units = "cm"
   )
-```
-### Correlation with main analysis 
-```{r correlation with main analysis}
-## All results
-df_SH_main_analysis <- data.frame(labels = c("Age: 16-25 years",
-              "Age: 26-35 years",
-              "Age: 36-45 years",
-              "Age: 56-65 years",
-              "Age: 66-70 years",
-              "Age: 71+ years",
-              "Female",
-              "Racially minoritised",
-              "Minoritised gender",
-              "Psychiatric disorder",
-              "Employment: Key worker",
-              "Employment: Not in paid employment",
-              "Employment: Retired",
-              "Employment: Student",
-              "Vulnerable group member",
-              "Pandemic worry score: 21-40",
-              "Pandemic worry score: 41-60",
-              "Pandemic worry score: 61-80",
-              "Increased loneliness during pandemic",
-              "Lost someone due to COVID-19",
-              "Change in main economic activity",
-              "Change in living situation",
-              "COVID-19 illness and/or positive test"),
-                 odds_ratios_main = c(2.641201,
-                                      1.92692041,
-                                      1.21426285,
-                                      0.66020448,
-                                      0.50049175,
-                                      0.42883885,
-                                      1.50347086,
-                                      1.40229773,
-                                      2.07629202,
-                                      2.66629642,
-                                      1.03461507,
-                                      1.54226727,
-                                      0.99062059,
-                                      1.34303705,
-                                      1.2588142,
-                                      1.23914124,
-                                      1.77201665,
-                                      2.75688316,
-                                      1.18220342,
-                                      1.20694897,
-                                      1.2155411,
-                                      1.06669158,
-                                      0.61387184))
-
-df_SH_sens_analysis <- data.frame(labels = c("Age: 16-25 years",
-              "Age: 26-35 years",
-              "Age: 36-45 years",
-              "Age: 56-65 years",
-              "Age: 66-70 years",
-              "Age: 71+ years",
-              "Female",
-              "Racially minoritised",
-              "Minoritised gender",
-              "Psychiatric disorder",
-              "Employment: Key worker",
-              "Employment: Not in paid employment",
-              "Employment: Retired",
-              "Employment: Student",
-              "Vulnerable group member",
-              "Pandemic worry score: 21-40",
-              "Pandemic worry score: 41-60",
-              "Pandemic worry score: 61-80",
-              "Increased loneliness during pandemic",
-              "Lost someone due to COVID-19",
-              "Change in main economic activity",
-              "Change in living situation",
-              "COVID-19 illness and/or positive test"),
-                 odds_ratios_sens = c(2.55728866,
-                                      1.77313364,
-                                      1.09264171,
-                                      0.68154991,
-                                      0.56424201,
-                                      0.56851528,
-                                      1.32422983,
-                                      1.25849218,
-                                      2.31907657,
-                                      2.23,
-                                      1.11815899,
-                                      1.70327475,
-                                      1.36350906,
-                                      1.21801736,
-                                      1.13413817,
-                                      1.08603987,
-                                      1.76231443,
-                                      2.23863092,
-                                      1.23397762,
-                                      1.23035324,
-                                      1.15617161,
-                                      1.11900378,
-                                      0.59807022))
-
-SH_joined <- merge(x = df_SH_main_analysis,
-                         y = df_SH_sens_analysis,
-                         by = "labels")
-
-# Correlation
-SH_cor <- psych::corr.test(SH_joined$odds_ratios_main,
-          SH_joined$odds_ratios_sens,
-          ci = TRUE)
-
-SH_cor$r
-
-print(SH_cor,
-      short=F)
 ```
 
 
@@ -2974,6 +2580,4 @@ Need this to run correlations with OR of other sensitivity analysis (i.e., expos
 ```{r save environment}
 save.image(file='COVID_main_analysis_regressions.RData')
 ```
-
-
 

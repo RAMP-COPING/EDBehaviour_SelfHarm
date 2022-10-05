@@ -54,16 +54,16 @@ date
 # Read in data
 ## Baseline data (generated from the script 1.Preprocessing_EDBeh_SelfHarm)
 ```{r Read in baseline data of all datasets}
-glad_baseline <- readRDS(file = "../data_cleaned/BASELINE_glad2022-02-21.rds")
+glad_baseline <- readRDS(file = "../data_cleaned/BASELINE_glad2022-09-27.rds")
 dim(glad_baseline)
 
-edgi_baseline <- readRDS(file = "../data_cleaned/BASELINE_edgi2022-02-21.rds")
+edgi_baseline <- readRDS(file = "../data_cleaned/BASELINE_edgi2022-09-27.rds")
 dim(edgi_baseline)
 
-nbr_baseline <- readRDS(file = "../data_cleaned/BASELINE_nbr2022-02-21.rds")
+nbr_baseline <- readRDS(file = "../data_cleaned/BASELINE_nbr2022-09-27.rds")
 dim(nbr_baseline)
 
-ramp_baseline <- readRDS(file = "../data_cleaned/BASELINE_ramp2022-02-21.rds")
+ramp_baseline <- readRDS(file = "../data_cleaned/BASELINE_ramp2022-09-27.rds")
 dim(ramp_baseline)
 ```
 
@@ -83,7 +83,7 @@ nbr_baseline$highest_education<- as.factor(nbr_baseline$highest_education)
  
 ## ED baseline grouping data (generated from the script "2.BASELINE_ED_groupings")
 ```{r Read in ED data ED grouping}
-baseline_ED_groups_data <- readRDS(file = "../data_cleaned/ED_BASELINE_groups2022-06-20.rds")
+baseline_ED_groups_data <- readRDS(file = "../data_cleaned/ED_BASELINE_groups2022-09-27.rds")
 
 # Check
 colnames(baseline_ED_groups_data)
@@ -92,7 +92,7 @@ nrow(baseline_ED_groups_data)
 
 ## OCD screener data (generated from the script "3.OCD_screener")
 ```{r Read in ED data ED grouping}
-OCD_screener <- readRDS(file = "../data_cleaned/OCD_screener2022-02-21.rds")
+OCD_screener <- readRDS(file = "../data_cleaned/OCD_screener2022-09-27.rds")
 
 # Check
 colnames(OCD_screener)
@@ -103,45 +103,45 @@ nrow(OCD_screener)
 NB: No follow ups have a 'sample' column because all COPING data were merged.
 ```{r Read in data follow up all datasets}
 # Thoughts and feelings questionnaire (self-harm)
-taf_ramp <- readRDS(file = "../data_cleaned/TAF_ramp2022-02-21.rds")
+taf_ramp <- readRDS(file = "../data_cleaned/TAF_ramp2022-09-27.rds")
 dim(taf_ramp)
 
-taf_coping <- readRDS(file = "../data_cleaned/TAF_coping2022-02-21.rds")
+taf_coping <- readRDS(file = "../data_cleaned/TAF_coping2022-09-27.rds")
 dim(taf_coping)
 
 # EDEQ (eating disorder behaviour)
-edeq_coping_screener <- readRDS(file = "../data_cleaned/EDEQ_screener_coping2022-02-21.rds")
+edeq_coping_screener <- readRDS(file = "../data_cleaned/EDEQ_screener_coping2022-09-27.rds")
 dim(edeq_coping_screener)
 
-edeq_ramp_screener <- readRDS(file = "../data_cleaned/EDEQ_screener_ramp2022-02-21.rds")
+edeq_ramp_screener <- readRDS(file = "../data_cleaned/EDEQ_screener_ramp2022-09-27.rds")
 dim(edeq_ramp_screener)
 
 # Virus questionnaire
-virus_ramp <- readRDS(file = "../data_cleaned/VIRUS_ramp_followup2022-02-21.rds")
+virus_ramp <- readRDS(file = "../data_cleaned/VIRUS_ramp_followup2022-09-27.rds")
 dim(virus_ramp)
   
-virus_coping <- readRDS(file = "../data_cleaned/VIRUS_coping_followup2022-02-21.rds")
+virus_coping <- readRDS(file = "../data_cleaned/VIRUS_coping_followup2022-09-27.rds")
 dim(virus_coping)
 
 # Loss 
-loss_ramp <- readRDS(file = "../data_cleaned/LOSS_ramp_followup2022-02-21.rds")
+loss_ramp <- readRDS(file = "../data_cleaned/LOSS_ramp_followup2022-09-27.rds")
 dim(loss_ramp)
 
-loss_coping <- readRDS(file = "../data_cleaned/LOSS_coping_followup2022-02-21.rds")
+loss_coping <- readRDS(file = "../data_cleaned/LOSS_coping_followup2022-09-27.rds")
 dim(loss_coping)
 
 # Demographics (living situation and vulnerable group member)
-dem_coping_followup <- readRDS(file = "../data_cleaned/DEM_followup_coping2022-02-21.rds")
+dem_coping_followup <- readRDS(file = "../data_cleaned/DEM_followup_coping2022-09-27.rds")
 dim(dem_coping_followup)
 
-dem_ramp_followup <- readRDS(file = "../data_cleaned/DEM_followup_ramp2022-02-21.rds")
+dem_ramp_followup <- readRDS(file = "../data_cleaned/DEM_followup_ramp2022-09-27.rds")
 dim(dem_ramp_followup)
 
 # Respiratory questionnaire
-resp_coping_followup <- readRDS(file = "../data_cleaned/RESP_coping_followup2022-02-21.rds")
+resp_coping_followup <- readRDS(file = "../data_cleaned/RESP_coping_followup2022-09-27.rds")
 dim(resp_coping_followup)
 
-resp_ramp_followup <- readRDS(file = "../data_cleaned/RESP_ramp_followup2022-02-21.rds")
+resp_ramp_followup <- readRDS(file = "../data_cleaned/RESP_ramp_followup2022-09-27.rds")
 dim(resp_ramp_followup)
 ```
 
@@ -234,50 +234,17 @@ nrow(DEM_FOLLOWUP)
 # Merge all baseline and follow up data
 ## First, merge all follow-up data
 ```{r Merge all follow up data and ED baseline groupings}
-dat_merged1 <- dplyr::full_join(DEM_FOLLOWUP,
-                                LOSS,
-                                by = "ID"
-                                )
-
-
-
-dat_merged2 <- dplyr::full_join(RESP,
-                                VIRUS,
-                                by = "ID"
-                                )
-
-
-dat_merged3 <- dplyr::full_join(TAF,
-                                EDEQ,
-                                by = "ID"
-                                )
-
-
-dat_merged4 <- dplyr::full_join(baseline_ED_groups_data,
-                                OCD_screener,
-                                by = "ID"
-                                )
-
-
-dat_merged_A <- dplyr::full_join(dat_merged1,
-                                dat_merged2,
-                                by = "ID"
-                                )
-
-
-
-dat_merged_B <- dplyr::full_join(dat_merged3,
-                                dat_merged4,
-                                by = "ID"
-                                )
-
-
-
-follow_up_data <- dplyr::full_join(dat_merged_A,
-                                dat_merged_B,
-                                by = "ID"
-                                )
-
+follow_up_data <- list(DEM_FOLLOWUP,
+                       LOSS,
+                       RESP,
+                       VIRUS,
+                       TAF,
+                       EDEQ,
+                       baseline_ED_groups_data,
+                       OCD_screener
+                ) %>%
+reduce(full_join,
+         by = "ID")
 
 # Check
 colnames(follow_up_data)

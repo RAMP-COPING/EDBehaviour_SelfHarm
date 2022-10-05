@@ -53,7 +53,7 @@ date
 
 # Read in data
 ```{r Read in data}
-dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-06-21.rds")
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-09-27.rds")
 
 # Check
 dim(dat)
@@ -187,7 +187,7 @@ dat_dummy %>%
 ```{r binge eating correlation matrix}
 # Select items for correlation matrix
 BE_dat_corr_mat <- dat_dummy %>%
-   filter(NEW_binge_eating_pandemic_NA == 0) %>%
+   filter(BE_data_for_model == 1) %>%
   select(
      "Being female" = "sex_binary_Female",
    "Minoritised gender" = "minoritised_gender_Yes",
@@ -261,7 +261,7 @@ dev.off()
 ```{r low weight correlation matrix}
 # Select items for correlation matrix
 LW_dat_corr_mat <- dat_dummy %>%
-   filter(NEW_low_weight_pandemic_NA == 0) %>%
+   filter(LW_data_for_model == 1) %>%
   select(
     "Being female" = "sex_binary_Female",
     "Minoritised gender" = "minoritised_gender_Yes",
@@ -285,9 +285,7 @@ LW_dat_corr_mat <- dat_dummy %>%
    "Loss due to COVID-19" = "lost_someone_before_LW_final_Yes",
    "Change in main eco" = "main_eco_change_before_LW_final_Yes",
    "Change in living sit" ="living_situation_change_before_LW_final_Yes",
-   "Compulsive beh/mental act" = "ocd.compulsive_beh_mental_act_binary_Yes",
-   "Repetitive thoughts" =  "ocd.repetitive_unpleasant_thoughts_binary_Yes",
-   "Pandemic worry score: 0-20" = "panworry_factor_0-20",
+    "Pandemic worry score: 0-20" = "panworry_factor_0-20",
    "Pandemic worry score: 21-40" = "panworry_factor_21-40",
    "Pandemic worry score: 41-60" = "panworry_factor_41-60",
    "Pandemic worry score: 61-80" = "panworry_factor_61-80",
@@ -298,7 +296,7 @@ LW_dat_corr_mat <- dat_dummy %>%
 LW_corr_mat_object <- psych::mixedCor(data=LW_dat_corr_mat,
        #  c= 25,  # Continuous variables
          p= NULL,
-         d= 1:28, # Dichotomous variable
+         d= 1:26, # Dichotomous variable
              use="pairwise.complete.obs")
 
 
@@ -338,7 +336,7 @@ dev.off()
 ```{r harmful ideation correlation matrix}
 # Select items for correlation matrix
 HI_dat_corr_mat <- dat_dummy %>%
-   filter(NEW_harmful_ideation_pandemic_NA == 0) %>%
+   filter(HI_data_for_model == 1) %>%
   select( 
  "Being female" = "sex_binary_Female",
    "Minoritised gender" = "minoritised_gender_Yes",
@@ -412,7 +410,7 @@ dev.off()
 ```{r self-harm correlation matrix}
 # Select items for correlation matrix
 SH_dat_corr_mat <- dat_dummy %>%
-   filter(NEW_selfharm_pandemic_NA == 0) %>%
+   filter(SH_data_for_model == 1) %>%
   select(
  "Being female" = "sex_binary_Female",
     "Minoritised gender" = "minoritised_gender_Yes",
@@ -531,77 +529,3 @@ outcome_corr_object_object_matrix <- corrplot::corrplot(outcome_corr_object_obje
 dev.off()
 ```
 
-## Low weight
-```{r low weight correlation matrix}
-# Select items for correlation matrix
-LW_dat_corr_mat <- dat_dummy %>%
-   filter(NEW_low_weight_pandemic_NA == 0) %>%
-  select(
-     "Being female" = "sex_binary_Female",
-    "Minoritised gender" = "minoritised_gender_Yes",
-   "16-25 years" = "age_category_COVID_baseline_16-25",
-   "26-35 years" = "age_category_COVID_baseline_26-35",
-   "36-45 years" = "age_category_COVID_baseline_36-45",
-   "46-55 years" = "age_category_COVID_baseline_46-55",
-   "56-65 years" = "age_category_COVID_baseline_56-65",
-   "66-70 years" =  "age_category_COVID_baseline_66-70",
-   "71+ years" = "age_category_COVID_baseline_71+",
-   "White" = "race_binary_White",
-   "Psychiatric disorder" ="mental_health_diagnosis_Psychiatric disorder",
-   "Key worker" ="paid_employment_key_worker_Key worker",
-   "Employed (not key worker)"  = "paid_employment_key_worker_Paid employment",
-   "Unemployed" = "paid_employment_key_worker_Not paid employment",
-   "Student" = "paid_employment_key_worker_Student",
-   "Retired"= "paid_employment_key_worker_Retired",
-   "Vulnerable group member" = "vulnerable_group_member_Yes",
-   "Pandemic loneliness" = "increased_loneliness_during_pandemic_Yes",
-   "COVID-19 infection" = "positive_covid_test_before_LW_final_Yes",
-   "Loss due to COVID-19" = "lost_someone_before_LW_final_Yes",
-   "Change in main eco" = "main_eco_change_before_LW_final_Yes",
-   "Change in living sit" ="living_situation_change_before_LW_final_Yes",
-   "OCD symptoms" = "OCD_symptoms_Yes",
-   "Pandemic worry score: 0-20" = "panworry_factor_0-20",
-   "Pandemic worry score: 21-40" = "panworry_factor_21-40",
-   "Pandemic worry score: 41-60" = "panworry_factor_41-60",
-   "Pandemic worry score: 61-80" = "panworry_factor_61-80",
-
-) 
-
-# Run correlation analyses with continious and dichotomous variables 
-LW_corr_mat_object <- psych::mixedCor(data=LW_dat_corr_mat,
-      #   c= 24,  # Continuous variables
-         p= NULL,
-         d= 1:27, # Dichotomous variable
-             use="pairwise.complete.obs")
-
-#Save correlation matrix in an object
-LW_corr_mat_object_matrix <- LW_corr_mat_object$rho
-
-# Write file path to save plot
-png(height = 900,
-    width = 900,
-    file = paste0(filepath_plots_corr, "new_LW_exposures_corr_matrix.png")
-)
-
-# Create correlation matrix with hierarchical clustering
-corrplot::corrplot(LW_corr_mat_object_matrix, 
-         method = "color", # objects to represent the correlations on plot
-         type = "lower", # only use the lower triangle of the matrix
-         diag = FALSE, # do not show the correlations on the diagonal
-         addgrid.col = NA,
-         addCoef.col = "black", # colour for the correlation coefficients in the plot
-         tl.cex = 0.9,
-         order = "original",
-         tl.col = "black",
-         cl.align.text = "c",
-         col=colorRampPalette(c("dodgerblue4","white","firebrick4"))(200), # colours for correlations
-         number.font = 0.1,
-         number.cex = 0.8, # size of co-efficients
-         sig.level = 0.01, # Choose significant level
-         insig = "blank", # Nonsignificant correlations have no colour,
-         bg = "white"
-         )
-
-# Save plot
-dev.off()
-```

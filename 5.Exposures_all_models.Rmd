@@ -55,7 +55,7 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-06-20.rds"))
+dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-09-27.rds"))
 ```
 
 # EXPOSURES / EXPLANATORY VARIABLES
@@ -344,7 +344,6 @@ dat <- dat %>%
                      key_worker == "Key worker" ~ "Key worker", # Employed and key worker
                      
                       baseline_paid_employment == "Paid employment" ~ "Paid employment", # In paid employment but did not endorse being a key worker (may be missing for that question) 
-                     
                      baseline_paid_employment == "Not in paid employment" ~ "Not paid employment", # Not in paid employment (and therefore not key worker)
                      baseline_paid_employment == "Student" ~ "Student", # Student (and therefore not key worker),
                      
@@ -359,6 +358,10 @@ dat %>%
 dat %>%
   filter(is.na(paid_employment_key_worker)) %>%
   freq(baseline_paid_employment)
+
+dat %>%
+  filter(is.na(paid_employment_key_worker)) %>%
+  freq(key_worker)
 
 # Re-order for regression analysis
 dat <- dat %>%
@@ -443,7 +446,7 @@ Calculate whether they have experienced an increase in loneliness during the pan
 dat <- dat %>%
   mutate(increased_loneliness_during_pandemic =
            case_when(
-             lone.similar_felt_pandemic == "No different" ~ "No", # These people did not get asked about their prepandemic loneliness, becasue they indicated that they're had been no change.
+             lone.similar_felt_pandemic == "No different" ~ "No", # These people did not get asked about their pre-pandemic loneliness, because they indicated that there had been no change (i.e., did not pass the screener)
            loneliness_pandemic_count > loneliness_prepandemic_count ~ "Yes", # These people have higher loneliness scores at baseline than retrospective prepandemic loneliness scores
          loneliness_pandemic_count <= loneliness_prepandemic_count ~ "No" # These people have lower or the same loneliness scores at baseline than retrospective prepandemic loneliness scores
          )
@@ -457,7 +460,7 @@ dat %>%
 dat %>%
   filter(is.na(increased_loneliness_during_pandemic) &
           (!is.na(loneliness_prepandemic_count) &
-           !is.na(loneliness_pandemic_count))) # There should not be anyone who has scores for both prepandemic and pandemic loneliness who were not assigned scores
+           !is.na(loneliness_pandemic_count))) # There should not be anyone who has scores for both prepandemic and pandemic loneliness who were not assigned a final variable
 
 dat %>%
   filter(is.na(increased_loneliness_during_pandemic))%>%
@@ -546,6 +549,33 @@ dat$panworry_total_score <- rowSums(dat[ ,
 # Check
 dat %>%
   freq(panworry_total_score)    
+
+# Check (no one should not be missing for all items but not have been assigned a final score)
+dat %>%
+  filter(is.na(panworry_total_score) &
+          
+          (!is.na(panworry.impact_on_your_employment_status_numeric) &
+          !is.na(panworry.household_employment_status_key_numeric) &
+          !is.na(panworry.impact_on_your_education_or_exams_numeric) &
+          !is.na(panworry.exams_impact_education_children_numeric) &
+          !is.na(panworry.financial_impact_numeric) &
+          !is.na(panworry.contracting_the_virus_numeric) &
+          !is.na(panworry.people_you_know_contracting_the_virus_numeric) &
+          !is.na(panworry.people_you_dont_know_contracting_the_virus_numeric) &
+          !is.na(panworry.impact_mental_health_wellbeing_numeric) &
+          !is.na(panworry.childrens_mental_health_impact_numeric) &
+          !is.na(panworry.relatives_impact_mental_health_numeric) &
+          !is.na(panworry.being_socially_isolated_numeric) &
+          !is.na(panworry.people_you_know_being_socially_isolated_numeric) &
+          !is.na(panworry.shortage_of_essential_supplies_numeric) &
+          !is.na(panworry.shortage_of_medication_or_access_to_healthcare_numeric) &
+          !is.na(panworry.healthcare_people_essential_supplies_numeric) &
+          !is.na(panworry.information_virus_government_accuracy_numeric) &
+          !is.na(panworry.the_governments_response_to_the_pandemic_numeric) &
+          !is.na(panworry.separation_from_family_members_numeric) &
+          !is.na(panworry.global_recession_economy_longstanding_numeric))
+            ) 
+
 ```
 
 ## OCD screener
@@ -569,10 +599,16 @@ dat <- dat %>%
              ocd.compulsive_beh_mental_act_binary == "No" ~ "No"  
              
            ))
+
+# Check
+dat %>%
+  freq(OCD_symptoms
+       )
 ```
+
 # For all models, we need to know in which phase they first experienced an exposure (for those that are measured repeatedly).
 ## Positive covid test - three questionnaires (virus, resp, & dem)
-NB: For the 'virus' questionnaire, there is no baseline assessment. However, there is a 'resp' questionnaire that is asked at baseline and at every follow up phase, so will include positive tests indicated in this questionnaire too, as well as people who indicated they were unwell with coronavirus in any of the demographic questionnaires.
+NB: For the 'virus' questionnaire, there is no baseline assessment. However, there is a 'resp' questionnaire that is asked at baseline and at every follow up phase, so will include positive tests indicated in this questionnaire too, as well as people who indicated they were unwell with coronavirus in any of the demographic questionnaires (no baseline assessment).
 
 Need to ensure COVID test occurred BEFORE outcomes - create new variable for COVID test that only counts positive tests as ones that occurred BEFORE each outcome. Will exclude anyone from the analysis if they experienced outcome before exposure, EVEN if it went: outcome → exposure → outcome. Should look at whether their FIRST experience of outcome came before (or at the same time of) their FIRST experience of exposure
 
@@ -584,7 +620,7 @@ Exposure must come before the outcome. Need to identify at which wave participan
 dat <- dat %>%
   mutate(exposure_phase_positive_covid_test =
            case_when(
-             # Virus questionnaire - all missing (Have you ever had a COVID-19 test? Please include any tests you've reported in past surveys.)
+              # Screener to virus questionnaire
              (is.na(virus.past_surveys_include_covid19_.Wave_1b)  &
                        is.na(virus.past_surveys_include_covid19_.Wave_2b)  &
                        is.na(virus.past_surveys_include_covid19_.Wave_3b)  &
@@ -596,285 +632,56 @@ dat <- dat %>%
                        is.na(virus.past_surveys_include_covid19_.Wave_14b) &
                        is.na(virus.past_surveys_include_covid19_.Wave_16b) & 
            
-            # Resp questionnaire - all missing
-                       is.na(resp.coronavirus_test_nosethroat_swab) &
-                       is.na(resp.coronavirus_antibody_test) &
-                       is.na(resp.coronavirus_test_nosethroat_swab_.Wave_1a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_1a) &
-                        is.na(resp.coronavirus_test_nosethroat_swab_.Wave_1b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_1b) & 
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_2a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_2a) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_2b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_2b) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_3a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_3a) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_3b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_3b) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_4a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_4a) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_4b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_4b) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_5a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_5a) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_6b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_6b) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_7a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_7a) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_8b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_8b) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_9a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_9a) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_10b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_10b) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_11a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_11a) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_12b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_12b) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_13a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_13a) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_14b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_14b) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_15a) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_15a) &
-                         is.na(resp.coronavirus_test_nosethroat_swab_.Wave_16b) &
-                       is.na(resp.coronavirus_antibody_test_.Wave_16b) &
-                        
+            # Screener to resp questionnaire
+               is.na(resp.screener_baseline)  &
+              is.na(resp.screener_followup_.Wave_1a)  &
+              is.na(resp.screener_followup_.Wave_1b)  &
+              is.na(resp.screener_followup_.Wave_2a)  &
+              is.na(resp.screener_followup_.Wave_2b)  &
+              is.na(resp.screener_followup_.Wave_3a)  &
+              is.na(resp.screener_followup_.Wave_3b)  &
+              is.na(resp.screener_followup_.Wave_4a)  &
+              is.na(resp.screener_followup_.Wave_4b)  &
+              is.na(resp.screener_followup_.Wave_5a)  &
+              is.na(resp.screener_followup_.Wave_6b)  &
+              is.na(resp.screener_followup_.Wave_7a)  &
+              is.na(resp.screener_followup_.Wave_8b)  &
+              is.na(resp.screener_followup_.Wave_9a)  &
+              is.na(resp.screener_followup_.Wave_10b)  &
+              is.na(resp.screener_followup_.Wave_11a)  &
+              is.na(resp.screener_followup_.Wave_12b)  &
+              is.na(resp.screener_followup_.Wave_13a)  &
+              is.na(resp.screener_followup_.Wave_14b)  &
+              is.na(resp.screener_followup_.Wave_15a)  &
+              is.na(resp.screener_followup_.Wave_16b)  &
+            
+              # Screener to dem questionnaire
+              is.na(dem.physical_health_.Wave_1a)  & 
+              is.na(dem.physical_health_.Wave_1b)  &
+              is.na(dem.physical_health_.Wave_2a)  &
+              is.na(dem.physical_health_.Wave_2b)  &
+              is.na(dem.physical_health_.Wave_3a)  &
+              is.na(dem.physical_health_.Wave_3b)  &
+              is.na(dem.physical_health_.Wave_4a)  &
+              is.na(dem.physical_health_.Wave_4b)  &
+              is.na(dem.physical_health_.Wave_5a)  &
+              is.na(dem.physical_health_.Wave_6b)  &
+              is.na(dem.physical_health_.Wave_7a)  &
+              is.na(dem.physical_health_.Wave_8b)  &
+              is.na(dem.physical_health_.Wave_9a)  &
+              is.na(dem.physical_health_.Wave_10b)  &
+              is.na(dem.physical_health_.Wave_11a)  &
+              is.na(dem.physical_health_.Wave_12b)  &
+              is.na(dem.physical_health_.Wave_13a)  &
+              is.na(dem.physical_health_.Wave_14b)  &
+              is.na(dem.physical_health_.Wave_15a)  &
+              is.na(dem.physical_health_.Wave_16b)) ~ NA_character_, # Never answered screeners to either resp or virus or dem questionnaire
               
-                # Demographics questionnaire - all missing (In the last two weeks, has your physical health changed because you became unwell with the coronavirus?)
-                        is.na(dem.unwell_coronavirus_weeks_physical_.Wave_1a) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_1b) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_2a) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_2b) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_3a) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_3b) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_4a) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_4b) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_5a) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_6b) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_7a) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_8b) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_9a) &
-                        is.na(dem.unwell_coronavirus_weeks_physical_.Wave_10b) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_11a) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_12b) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_13a) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_14b) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_15a) &
-                         is.na(dem.unwell_coronavirus_weeks_physical_.Wave_16b)) ~ "All missing",
-             
-             # Virus questionnaire - No at least once and rest missing (i.e., never said yes to taking a test)        
-                       ((is.na(virus.past_surveys_include_covid19_.Wave_1b ) |
-                        virus.past_surveys_include_covid19_.Wave_1b == "No") &
-                         (is.na(virus.past_surveys_include_covid19_.Wave_2b ) |
-                        virus.past_surveys_include_covid19_.Wave_2b == "No") &
-                         (is.na(virus.past_surveys_include_covid19_.Wave_3b ) |
-                        virus.past_surveys_include_covid19_.Wave_3b == "No") &
-                         (is.na(virus.past_surveys_include_covid19_.Wave_4b ) |
-                        virus.past_surveys_include_covid19_.Wave_4b == "No") &
-                         (is.na(virus.past_surveys_include_covid19_.Wave_6b ) |
-                        virus.past_surveys_include_covid19_.Wave_6b == "No") &
-                         (is.na(virus.past_surveys_include_covid19_.Wave_8b ) |
-                        virus.past_surveys_include_covid19_.Wave_8b == "No") &
-                         (is.na(virus.past_surveys_include_covid19_.Wave_10b ) |
-                        virus.past_surveys_include_covid19_.Wave_10b == "No") &
-                         (is.na(virus.past_surveys_include_covid19_.Wave_12b ) |
-                        virus.past_surveys_include_covid19_.Wave_12b == "No") & 
-                        (is.na(virus.past_surveys_include_covid19_.Wave_14b ) |
-                        virus.past_surveys_include_covid19_.Wave_14b == "No") &
-                         (is.na(virus.past_surveys_include_covid19_.Wave_16b ) |
-                        virus.past_surveys_include_covid19_.Wave_16b == "No") &
-                       
-             
-         # Resp questionnaire - No at least once and rest missing (i.e., never said yes to taking a test)
-            (is.na(resp.coronavirus_test_nosethroat_swab) |
-                       resp.coronavirus_test_nosethroat_swab == "No") &
-                         
-            (is.na(resp.coronavirus_antibody_test) |
-                         resp.coronavirus_antibody_test == "No") &
-                     
-            (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_1a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_1a == "No") &
-                         
-            (is.na(resp.coronavirus_antibody_test_.Wave_1a) |
-                         resp.coronavirus_antibody_test_.Wave_1a == "No") &
-           
-            (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_1b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_1b == "No") &
-                         
-             (is.na(resp.coronavirus_antibody_test_.Wave_1b) |
-                         resp.coronavirus_antibody_test_.Wave_1b == "No") &
-           
-            (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_2a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_2a == "No") &
-                         
-             (is.na(resp.coronavirus_antibody_test_.Wave_2a) |
-                         resp.coronavirus_antibody_test_.Wave_2a == "No") &
-           
-            (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_2b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_2b == "No") &
-                         
-           (is.na(resp.coronavirus_antibody_test_.Wave_2b) |
-                         resp.coronavirus_antibody_test_.Wave_2b == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_3a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_3a == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_3a) |
-                         resp.coronavirus_antibody_test_.Wave_3a == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_3b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_3b == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_3b) |
-                         resp.coronavirus_antibody_test_.Wave_3b == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_4a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_4a == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_4a) |
-                         resp.coronavirus_antibody_test_.Wave_4a == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_4b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_4b == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_4b) |
-                         resp.coronavirus_antibody_test_.Wave_4b == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_5a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_5a == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_5a) |
-                         resp.coronavirus_antibody_test_.Wave_5a == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_6b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_6b == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_6b) |
-                         resp.coronavirus_antibody_test_.Wave_6b == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_7a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_7a == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_7a) |
-                         resp.coronavirus_antibody_test_.Wave_7a == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_8b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_8b == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_8b) |
-                         resp.coronavirus_antibody_test_.Wave_8b == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_9a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_9a == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_9a) |
-                         resp.coronavirus_antibody_test_.Wave_9a == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_10b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_10b == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_10b) |
-                         resp.coronavirus_antibody_test_.Wave_10b == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_11a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_11a == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_11a) |
-                         resp.coronavirus_antibody_test_.Wave_11a == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_12b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_12b == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_12b) |
-                         resp.coronavirus_antibody_test_.Wave_12b == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_13a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_13a == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_13a) |
-                         resp.coronavirus_antibody_test_.Wave_13a == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_14b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_14b == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_14b) |
-                         resp.coronavirus_antibody_test_.Wave_14b == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_15a) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_15a == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_15a) |
-                         resp.coronavirus_antibody_test_.Wave_15a == "No") &
-           
-           (is.na(resp.coronavirus_test_nosethroat_swab_.Wave_16b) |
-                       resp.coronavirus_test_nosethroat_swab_.Wave_16b == "No") &
-                         
-                        (is.na(resp.coronavirus_antibody_test_.Wave_16b) |
-                         resp.coronavirus_antibody_test_.Wave_16b == "No")) ~ "Not taken test",  
-             
-         
-             # Virus questionnaire - Question about results of their test
-                      ( is.na(virus.back_positive_antibodies_tests_.Wave_1b ) &
-                       is.na(virus.back_positive_antibodies_tests_.Wave_2b ) &
-                       is.na(virus.back_positive_antibodies_tests_.Wave_3b ) &
-                       is.na(virus.back_positive_antibodies_tests_.Wave_4b ) &
-                       is.na(virus.back_positive_antibodies_tests_.Wave_6b ) &
-                       is.na(virus.back_positive_antibodies_tests_.Wave_8b ) &
-                       is.na(virus.back_positive_antibodies_tests_.Wave_10b)  &
-                       is.na(virus.back_positive_antibodies_tests_.Wave_12b)  &
-                       is.na(virus.back_positive_antibodies_tests_.Wave_14b)  &
-                       is.na(virus.back_positive_antibodies_tests_.Wave_16b)  &
-           
-             # Resp questionnaire - Question about results of their test
-            is.na(resp.results_nosethroat_swab_test) &
-                        is.na(resp.results_antibody_test) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_1a) &
-                        is.na(resp.results_antibody_test_.Wave_1a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_1b) &
-                        is.na(resp.results_antibody_test_.Wave_1b) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_2a) &
-                        is.na(resp.results_antibody_test_.Wave_2a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_2b) &
-                        is.na(resp.results_antibody_test_.Wave_2b) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_3a) &
-                        is.na(resp.results_antibody_test_.Wave_3a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_3b) &
-                        is.na(resp.results_antibody_test_.Wave_3b) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_4a) &
-                        is.na(resp.results_antibody_test_.Wave_4a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_4b) &
-                        is.na(resp.results_antibody_test_.Wave_4b) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_5a) &
-                        is.na(resp.results_antibody_test_.Wave_5a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_6b) &
-                        is.na(resp.results_antibody_test_.Wave_6b) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_7a) &
-                        is.na(resp.results_antibody_test_.Wave_7a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_8b) &
-                        is.na(resp.results_antibody_test_.Wave_8b) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_9a) &
-                        is.na(resp.results_antibody_test_.Wave_9a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_10b) &
-                        is.na(resp.results_antibody_test_.Wave_10b) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_11a) &
-                        is.na(resp.results_antibody_test_.Wave_11a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_12b) &
-                        is.na(resp.results_antibody_test_.Wave_12b) &
-          is.na(resp.results_nosethroat_swab_test_.Wave_13a) &
-                        is.na(resp.results_antibody_test_.Wave_13a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_14b) &
-                        is.na(resp.results_antibody_test_.Wave_14b) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_15a) &
-                        is.na(resp.results_antibody_test_.Wave_15a) &
-           is.na(resp.results_nosethroat_swab_test_.Wave_16b) &
-                        is.na(resp.results_antibody_test_.Wave_16b))  ~ "Test taken but not answered test result", 
-       
-                       
-           # Positive test results - resp, virus and demographics questionnaire
-         resp.results_nosethroat_swab_test == "Positive" | 
-         resp.results_antibody_test == "Positive"  ~ "Baseline",
-         
+              # BASELINE indication of positive COVID test and/or being ill with COVID
+               resp.results_nosethroat_swab_test == "Positive" | 
+                resp.results_antibody_test == "Positive"  ~ "Baseline",
+      
+              # FOLLOW-UP indication of positive COVID test and/or being ill with COVID
           resp.results_nosethroat_swab_test_.Wave_1a == "Positive" | 
           resp.results_antibody_test_.Wave_1a == "Positive"  |
           dem.unwell_coronavirus_weeks_physical_.Wave_1a == "Yes"  ~ "1a",
@@ -920,7 +727,6 @@ dat <- dat %>%
            resp.results_antibody_test_.Wave_6b == "Positive"|
            dem.unwell_coronavirus_weeks_physical_.Wave_6b =="Yes" ~ "6b",
 
-                
             resp.results_nosethroat_swab_test_.Wave_7a == "Positive" | 
           resp.results_antibody_test_.Wave_7a == "Positive"  |
           dem.unwell_coronavirus_weeks_physical_.Wave_7a == "Yes"  ~ "7a",
@@ -965,302 +771,237 @@ dat <- dat %>%
            resp.results_nosethroat_swab_test_.Wave_16b == "Positive" | 
            resp.results_antibody_test_.Wave_16b == "Positive"|
            dem.unwell_coronavirus_weeks_physical_.Wave_16b =="Yes" ~ "16b",
+              
+              # No at least once
+               ## BASELINE 
+               resp.screener_baseline == "No" | # Not passed screener at baseline
+               
+                resp.coronavirus_test_nosethroat_swab == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test == "No" | # Not had an antibody test / not passed screener
+                resp.results_antibody_test == "Negative" | # Negative antibody test result
+      
+              # FOLLOW-UPS
+               dem.unwell_coronavirus_weeks_physical_.Wave_1a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_1a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_1a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_1a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_1a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_1a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_1a == "Negative" | # Negative antibody test result
+                 
+               
+                 dem.unwell_coronavirus_weeks_physical_.Wave_1b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_1b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_1b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_1b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_1b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_1b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_1b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_1b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
+               virus.back_positive_antibodies_tests_.Wave_1b == "Unsure/inconclusive" |
+                
+               dem.unwell_coronavirus_weeks_physical_.Wave_2a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_2a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_2a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_2a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_2a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_2a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_2a == "Negative" | # Negative antibody test result
+               
+               dem.unwell_coronavirus_weeks_physical_.Wave_2b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_2b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_2b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_2b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_2b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_2b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_2b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_2b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
+               virus.back_positive_antibodies_tests_.Wave_2b == "Unsure/inconclusive" |
+              
+                  dem.unwell_coronavirus_weeks_physical_.Wave_3a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_3a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_3a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_3a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_3a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_3a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_3a == "Negative" | # Negative antibody test result
+               
+                 dem.unwell_coronavirus_weeks_physical_.Wave_3b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_3b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_3b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_3b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_3b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_3b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_3b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_3b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
+                 virus.back_positive_antibodies_tests_.Wave_3b == "Unsure/inconclusive" |
+                 
+               dem.unwell_coronavirus_weeks_physical_.Wave_4a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_4a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_4a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_4a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_4a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_4a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_4a == "Negative" | # Negative antibody test result
+               
+                dem.unwell_coronavirus_weeks_physical_.Wave_4b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_4b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_4b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_4b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_4b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_4b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_4b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_4b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
+               virus.back_positive_antibodies_tests_.Wave_4b == "Unsure/inconclusive" |
+                 
+                dem.unwell_coronavirus_weeks_physical_.Wave_5a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_5a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_5a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_5a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_5a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_5a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_5a == "Negative" | # Negative antibody test result
+               
+                 dem.unwell_coronavirus_weeks_physical_.Wave_6b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_6b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_6b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_6b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_6b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_6b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_6b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_6b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
+                  virus.back_positive_antibodies_tests_.Wave_6b == "Unsure/inconclusive" |
+               
+               
+                 dem.unwell_coronavirus_weeks_physical_.Wave_7a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_7a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_7a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_7a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_7a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_7a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_7a == "Negative" | # Negative antibody test result
+               
+                dem.unwell_coronavirus_weeks_physical_.Wave_8b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_8b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_8b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_8b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_8b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_8b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_8b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_8b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
             
-            TRUE ~ "Not positive" # Then, everyone who is left over, i.e., NA will have answered "No" or "Unsure/inconclusive" at least once, even if they are missing for all other phases. The only people we can not assume an answer for (i.e., has experienced or has not experienced) is those who never answered the question throughout the whole time period
-                   )
-  )
-
+                  dem.unwell_coronavirus_weeks_physical_.Wave_9a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_9a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_9a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_9a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_9a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_9a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_9a == "Negative" | # Negative antibody test result
+               
+                  dem.unwell_coronavirus_weeks_physical_.Wave_10b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_10b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_10b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_10b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_10b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_10b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_10b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_10b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
+               virus.back_positive_antibodies_tests_.Wave_10b == "Unsure/inconclusive" |
+                 
+                  dem.unwell_coronavirus_weeks_physical_.Wave_11a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_11a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_11a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_11a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_11a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_11a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_11a == "Negative" | # Negative antibody test result
+               
+                    dem.unwell_coronavirus_weeks_physical_.Wave_12b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_12b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_12b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_12b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_12b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_12b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_12b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_12b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
+               virus.back_positive_antibodies_tests_.Wave_12b == "Unsure/inconclusive" |
+               
+                  dem.unwell_coronavirus_weeks_physical_.Wave_13a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_13a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_13a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_13a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_13a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_13a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_13a == "Negative" | # Negative antibody test result
+               
+                  dem.unwell_coronavirus_weeks_physical_.Wave_14b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_14b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_14b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_14b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_14b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_14b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_14b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_14b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
+                   virus.back_positive_antibodies_tests_.Wave_14b == "Unsure/inconclusive" |
+                     
+                   dem.unwell_coronavirus_weeks_physical_.Wave_15a == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_15a == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_15a == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_15a == "Negative" | # Negative nose throat swab
+                 resp.coronavirus_antibody_test_.Wave_15a == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_15a == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_15a == "Negative" | # Negative antibody test result
+               
+                  dem.unwell_coronavirus_weeks_physical_.Wave_16b == "No" | # Not been unwell with coronavirus / not passed screener
+                resp.coronavirus_test_nosethroat_swab_.Wave_16b == "No" | # Not had an nose throat swab test / not passed screener
+                resp.results_nosethroat_swab_test_.Wave_16b == "Not passed screener" | # Not passed screener
+                resp.results_nosethroat_swab_test_.Wave_16b == "Negative" | # Negative nose throat swab
+                resp.coronavirus_antibody_test_.Wave_16b == "No" | # Not had an antibody test / not passed screener
+                 resp.results_antibody_test_.Wave_16b == "Not passed screener" | # Not passed antibody screener
+                resp.results_antibody_test_.Wave_16b == "Negative" | # Negative antibody test result
+                 virus.back_positive_antibodies_tests_.Wave_16b == "No" | # Not had any tests back positive for COVID-19 / not passed screener
+               virus.back_positive_antibodies_tests_.Wave_16b == "Unsure/inconclusive" ~ "Not experienced"
+              )
+              )
+                  
+                  
 # Check
 dat %>%
   freq(exposure_phase_positive_covid_test)
 
-# Check NAs - unwell with coronavirus
+# Check
 dat %>%
   filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_1a)
+  select(starts_with("virus"))
 
 dat %>%
   filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_1b)
+  select(starts_with("dem.unwell_coronavirus_weeks_physical"))
 
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_2a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_2b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_3a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_3b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_4a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_4b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_5a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_6b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_7a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_8b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_9a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_10b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_11a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_12b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_13a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_14b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_15a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(dem.unwell_coronavirus_weeks_physical_.Wave_16b)
-
-# Check NAs - results nose/throat swab
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_1a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_1b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_2a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_2b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_3a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_3b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_4a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_4b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_5a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_6b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_7a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_8b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_9a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_10b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_11a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_12b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_13a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_14b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_15a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_nosethroat_swab_test_.Wave_16b)
-
-# Check NAs - results antibody test
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_1a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_1b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_2a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_2b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_3a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_3b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_4a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_4b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_5a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_6b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_7a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_8b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_9a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_10b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_11a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_12b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_13a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_14b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_15a)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(resp.results_antibody_test_.Wave_16b)
-
-# Check NAs - antibody test (different questionnaire)
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_1b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_2b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_3b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_4b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_6b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_8b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_10b)
-
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_12b)
 
+# Check random waves
 dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_14b)
+  filter(is.na(exposure_phase_positive_covid_test) &
+           (!is.na(dem.unwell_coronavirus_weeks_physical_.Wave_6b) &
+                !is.na( resp.coronavirus_test_nosethroat_swab_.Wave_7a) &
+                !is.na( resp.results_nosethroat_swab_test_.Wave_8b) &
+                !is.na( resp.results_nosethroat_swab_test_.Wave_9a) &
+                !is.na( resp.coronavirus_antibody_test_.Wave_10b) &
+                !is.na( resp.results_antibody_test_.Wave_11a) &
+                !is.na( resp.results_antibody_test_.Wave_12b) &
+                !is.na(  virus.back_positive_antibodies_tests_.Wave_14b) &
+             !is.na( virus.back_positive_antibodies_tests_.Wave_14b))
+             )
 
-dat %>%
-  filter(is.na(exposure_phase_positive_covid_test)) %>%
-  freq(virus.back_positive_antibodies_tests_.Wave_16b)
 ```
+NB: Those who have only ever put "Result awaited" have been coded as NA as we can not be sure whether they had COVID-19 or not.
 
 ## Losing someone due to COVID-19 (grief)
-There are two questions in COPING that capture whether someone has lost someone due to COVID, in the 'grief' questionnaire in follow up B only and baseline ("In the past month, have you lost someone close to you due to COVID-19?") and the demographics questionnaire ("Has a relative that was previously ill with coronavirus or suspected coronavirus passed away?") in follow up A and B [not at baseline]
+There are two questions in COPING that capture whether someone has lost someone due to COVID. 
+1) in the 'grief' questionnaire which is in follow up B only and baseline ("In the past month, have you lost someone close to you due to COVID-19?")
+
+2) the demographics questionnaire ("Has a relative that was previously ill with coronavirus or suspected coronavirus passed away?") in follow up A and B [not at baseline]
 
 ### Identify at which phase they first experienced the exposure
 Exposure must come before the outcome. Need to identify at which wave participants first experienced each exposure (as well as first experience of each outcome), to ensure that their first experience of the exposure happened BEFORE their first experience of the outcome.
@@ -1357,56 +1098,36 @@ dat <- dat %>%
                         )  ~ "Not answered or PNTA", 
                        
                        grief.covid_lost_due_close == "Yes" ~ "Baseline",
-                       
-                       dem.coronavirus_relative_previously_ill.1_.Wave_1a == "Yes" ~ "1a",
-                    
+                       dem.coronavirus_relative_previously_ill.1_.Wave_1a == "Yes" ~ "1a", 
                        grief.due_past_month_lost_.Wave_1b  == "Yes" |
-                         dem.coronavirus_relative_previously_ill.1_.Wave_1b == "Yes" ~ "1b",
-                    
-                      dem.coronavirus_relative_previously_ill.1_.Wave_2a == "Yes" ~ "2a",
-                    
+                       dem.coronavirus_relative_previously_ill.1_.Wave_1b == "Yes" ~ "1b",
+                       dem.coronavirus_relative_previously_ill.1_.Wave_2a == "Yes" ~ "2a",
                        grief.due_past_month_lost_.Wave_2b  == "Yes" |
-                         dem.coronavirus_relative_previously_ill.1_.Wave_2b == "Yes" ~ "2b",
-                      
-                      dem.coronavirus_relative_previously_ill.1_.Wave_3a == "Yes" ~ "3a",
-                        
-                      grief.due_past_month_lost_.Wave_3b  == "Yes" |
-                         dem.coronavirus_relative_previously_ill.1_.Wave_3b == "Yes" ~ "3b",
-                       
-                      dem.coronavirus_relative_previously_ill.1_.Wave_4a == "Yes" ~ "4a",
-                      
+                       dem.coronavirus_relative_previously_ill.1_.Wave_2b == "Yes" ~ "2b",
+                       dem.coronavirus_relative_previously_ill.1_.Wave_3a == "Yes" ~ "3a",
+                       grief.due_past_month_lost_.Wave_3b  == "Yes" |
+                       dem.coronavirus_relative_previously_ill.1_.Wave_3b == "Yes" ~ "3b",
+                       dem.coronavirus_relative_previously_ill.1_.Wave_4a == "Yes" ~ "4a",
                        grief.due_past_month_lost_.Wave_4b  == "Yes" |
-                         dem.coronavirus_relative_previously_ill.1_.Wave_4b == "Yes" ~ "4b",
-                      
-                      dem.coronavirus_relative_previously_ill.1_.Wave_5a == "Yes" ~ "5a",
-                       
-                     grief.due_past_month_lost_.Wave_6b  == "Yes" |
-                         dem.coronavirus_relative_previously_ill.1_.Wave_6b == "Yes" ~ "6b",
-                      
-                     dem.coronavirus_relative_previously_ill.1_.Wave_7a == "Yes" ~ "7a",
-                       
-                   grief.due_past_month_lost_.Wave_8b  == "Yes" |
+                       dem.coronavirus_relative_previously_ill.1_.Wave_4b == "Yes" ~ "4b",
+                       dem.coronavirus_relative_previously_ill.1_.Wave_5a == "Yes" ~ "5a",
+                       grief.due_past_month_lost_.Wave_6b  == "Yes" |
+                        dem.coronavirus_relative_previously_ill.1_.Wave_6b == "Yes" ~ "6b",
+                       dem.coronavirus_relative_previously_ill.1_.Wave_7a == "Yes" ~ "7a",
+                       grief.due_past_month_lost_.Wave_8b  == "Yes" |
                        dem.coronavirus_relative_previously_ill.1_.Wave_8b == "Yes" ~ "8b",
-                       
-                    dem.coronavirus_relative_previously_ill.1_.Wave_9a == "Yes" ~ "9a",
-                       
-                    grief.due_past_month_lost_.Wave_10b  == "Yes" |
-                         dem.coronavirus_relative_previously_ill.1_.Wave_10b == "Yes" ~ "10b",
-                       
-                    dem.coronavirus_relative_previously_ill.1_.Wave_11a == "Yes" ~ "11a",
-                       
-                    grief.due_past_month_lost_.Wave_12b  == "Yes" |
-                         dem.coronavirus_relative_previously_ill.1_.Wave_12b == "Yes" ~ "12b",
-                       
-                    dem.coronavirus_relative_previously_ill.1_.Wave_13a == "Yes" ~ "13a",
-                      
-                     grief.due_past_month_lost_.Wave_14b  == "Yes" |
-                         dem.coronavirus_relative_previously_ill.1_.Wave_14b == "Yes" ~ "14b",
-                      
-                     dem.coronavirus_relative_previously_ill.1_.Wave_15a == "Yes" ~ "15a",
-                      
-                     grief.due_past_month_lost_.Wave_16b  == "Yes" |
-                         dem.coronavirus_relative_previously_ill.1_.Wave_16b == "Yes" ~ "16b",
+                       dem.coronavirus_relative_previously_ill.1_.Wave_9a == "Yes" ~ "9a",
+                       grief.due_past_month_lost_.Wave_10b  == "Yes" |
+                       dem.coronavirus_relative_previously_ill.1_.Wave_10b == "Yes" ~ "10b",
+                       dem.coronavirus_relative_previously_ill.1_.Wave_11a == "Yes" ~ "11a",
+                       grief.due_past_month_lost_.Wave_12b  == "Yes" |
+                       dem.coronavirus_relative_previously_ill.1_.Wave_12b == "Yes" ~ "12b",
+                       dem.coronavirus_relative_previously_ill.1_.Wave_13a == "Yes" ~ "13a",
+                       grief.due_past_month_lost_.Wave_14b  == "Yes" |
+                       dem.coronavirus_relative_previously_ill.1_.Wave_14b == "Yes" ~ "14b",
+                       dem.coronavirus_relative_previously_ill.1_.Wave_15a == "Yes" ~ "15a",
+                       grief.due_past_month_lost_.Wave_16b  == "Yes" |
+                       dem.coronavirus_relative_previously_ill.1_.Wave_16b == "Yes" ~ "16b",
                        
               # Not lost someone
                      
@@ -1414,132 +1135,92 @@ dat <- dat %>%
                       
                      (dem.health_of_a_relative_.Wave_1a == "Not Health of a relative" | # Screener question
                         dem.coronavirus_relative_previously_ill.1_.Wave_1a  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_1a == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_1a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_1a == "No") |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_1a == "No") | # Relative not passed
 
                       (dem.health_of_a_relative_.Wave_1b == "Not Health of a relative" | # Screener question
-                          dem.coronavirus_relative_previously_ill.1_.Wave_1b  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_1b == "No" | # No ill relative
-                         dem.coronavirus_relative_ill_suspected_.Wave_1b == "Unsure" |  # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_1b == "No" |
+                       dem.coronavirus_relative_previously_ill.1_.Wave_1b  == "Unsure" | # Unsure if relative has passed
+                      dem.coronavirus_relative_previously_ill.1_.Wave_1b == "No" |  # Relative not passed
                       grief.due_past_month_lost_.Wave_1b  == "No" ) |
 
                       (dem.health_of_a_relative_.Wave_2a == "Not Health of a relative" | # Screener question
-                      dem.coronavirus_relative_ill_suspected_.Wave_2a == "No" | # No ill relative
                          dem.coronavirus_relative_previously_ill.1_.Wave_2a  == "Unsure" | # Unsure if relative has passed
-                         dem.coronavirus_relative_ill_suspected_.Wave_2a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_2a == "No" ) |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_2a == "No" ) | # Ill relative not passed away
 
                       (dem.health_of_a_relative_.Wave_2b == "Not Health of a relative" | # Screener question
                        dem.coronavirus_relative_previously_ill.1_.Wave_2b  == "Unsure" | # Unsure if relative has passed
-                         dem.coronavirus_relative_ill_suspected_.Wave_2b == "No" | # No ill relative
-                       dem.coronavirus_relative_ill_suspected_.Wave_2b == "Unsure" |  # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_2b == "No" |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_2b == "No" | # Ill relative not passed 
                       grief.due_past_month_lost_.Wave_2b  == "No" ) |
 
                      (dem.health_of_a_relative_.Wave_3a == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_3a  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_3a == "No" | # No ill relative
-                         dem.coronavirus_relative_ill_suspected_.Wave_3a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_3a == "No" ) |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_3a == "No" ) | # # Ill relative not passed 
 
                       (dem.health_of_a_relative_.Wave_3b == "Not Health of a relative" | # Screener question
                           dem.coronavirus_relative_previously_ill.1_.Wave_3b  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_3b == "No" | # No ill relative
-                         dem.coronavirus_relative_ill_suspected_.Wave_3b == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_3b == "No" |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_3b == "No" | # # Ill relative not passed 
                       grief.due_past_month_lost_.Wave_3b  == "No" ) |
 
                      (dem.health_of_a_relative_.Wave_4a == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_4a  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_4a == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_4a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_4a == "No" ) |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_4a == "No" ) | # # Ill relative not passed 
                      
                       (dem.health_of_a_relative_.Wave_4b == "Not Health of a relative" | # Screener question
                           dem.coronavirus_relative_previously_ill.1_.Wave_4b  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_4b == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_4b == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_4b == "No" |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_4b == "No" | # # Ill relative not passed 
                       grief.due_past_month_lost_.Wave_4b  == "No" ) |
                      
                      (dem.health_of_a_relative_.Wave_5a == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_5a  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_5a == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_5a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_5a == "No" ) |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_5a == "No" ) | # # Ill relative not passed 
                      
                      (dem.health_of_a_relative_.Wave_6b == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_6b  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_6b == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_6b == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_6b == "No" |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_6b == "No" | # # Ill relative not passed 
                       grief.due_past_month_lost_.Wave_6b  == "No" ) |
                      
                      (dem.health_of_a_relative_.Wave_7a == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_7a  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_7a == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_7a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_7a == "No" ) |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_7a == "No" ) | # # Ill relative not passed 
                      
                      (dem.health_of_a_relative_.Wave_8b == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_8b  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_8b == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_8b == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_8b == "No" |
+                       dem.coronavirus_relative_previously_ill.1_.Wave_8b == "No" | #  Ill relative not passed 
                       grief.due_past_month_lost_.Wave_8b  == "No" ) |
                      
                      (dem.health_of_a_relative_.Wave_9a == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_9a  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_9a == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_9a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_9a == "No" ) |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_9a == "No" ) | # # Ill relative not passed 
                      
                      (dem.health_of_a_relative_.Wave_10b == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_10b  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_10b == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_10b == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_10b == "No" |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_10b == "No" | # # Ill relative not passed 
                       grief.due_past_month_lost_.Wave_10b  == "No" ) |
                      
                      (dem.health_of_a_relative_.Wave_11a == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_11a  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_11a == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_11a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_11a == "No" ) |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_11a == "No" ) | # # Ill relative not passed 
                      
                       (dem.health_of_a_relative_.Wave_12b == "Not Health of a relative" | # Screener question
                           dem.coronavirus_relative_previously_ill.1_.Wave_12b  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_12b == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_12b == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_12b == "No" |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_12b == "No" | # # Ill relative not passed 
                       grief.due_past_month_lost_.Wave_12b  == "No" ) |
                      
                      (dem.health_of_a_relative_.Wave_13a == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_13a  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_13a == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_13a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_13a == "No" ) |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_13a == "No" ) | # # Ill relative not passed 
                      
                      (dem.health_of_a_relative_.Wave_14b == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_14b  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_14b == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_14b == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_14b == "No" |
+                       dem.coronavirus_relative_previously_ill.1_.Wave_14b == "No" | # # Ill relative not passed 
                       grief.due_past_month_lost_.Wave_14b  == "No" ) |
                      
                      (dem.health_of_a_relative_.Wave_15a == "Not Health of a relative" | # Screener question
                          dem.coronavirus_relative_previously_ill.1_.Wave_15a  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_15a == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_15a == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_15a == "No" ) |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_15a == "No" ) | # # Ill relative not passed 
                      
                        (dem.health_of_a_relative_.Wave_16b == "Not Health of a relative" | # Screener question
                            dem.coronavirus_relative_previously_ill.1_.Wave_16b  == "Unsure" | # Unsure if relative has passed
-                      dem.coronavirus_relative_ill_suspected_.Wave_16b == "No" | # No ill relative
-                        dem.coronavirus_relative_ill_suspected_.Wave_16b == "Unsure" | # Not sure if ill relative (not known)
-                      dem.coronavirus_relative_previously_ill.1_.Wave_16b == "No" |
+                      dem.coronavirus_relative_previously_ill.1_.Wave_16b == "No" | # # Ill relative not passed 
                       grief.due_past_month_lost_.Wave_16b  == "No" )   ~ "Not lost someone" 
                    
                    
@@ -1664,7 +1345,7 @@ dat <- dat %>%
                        dem.employment_.Wave_16b == "Employment" |
                       dat$dem.household_employment_status_key_.Wave_16b == "Employment status of a key earner in your household"~ "16b",
                        
-                    
+                      baseline_paid_employment == "Retired" | # Not asked question about change in employment
                        employ.my_employment_status_has_not_changed == "My employment status has not changed" | # Not experienced change in employment at baseline
                        employ.no_impact == "No impact"  | # Not impacted studies at baseline
                        employ.impact_on_studies_still_unknown == "Impact on studies still unknown" | # Not sure about impact yet
@@ -1764,12 +1445,12 @@ dat <- dat %>%
                        dem.living_situation_.Wave_10b == "Living situation" ~ "10b",
                        dem.living_situation_.Wave_11a == "Living situation" ~ "11a",
                        dem.living_situation_.Wave_12b == "Living situation" ~ "12b",
-                     dem.living_situation_.Wave_13a == "Living situation" ~ "13a",
+                       dem.living_situation_.Wave_13a == "Living situation" ~ "13a",
                        dem.living_situation_.Wave_14b == "Living situation" ~ "14b",
                        dem.living_situation_.Wave_15a == "Living situation" ~ "15a",
                        dem.living_situation_.Wave_16b == "Living situation" ~ "16b",
 
-                      dem2.living_situation_change_pandemic == "No" | # Not experienced change in living situation at baseline
+                       dem2.living_situation_change_pandemic == "No" | # Not experienced change in living situation at baseline
                        dem.living_situation_.Wave_1a == "Not Living situation" |
                        dem.living_situation_.Wave_1b == "Not Living situation" |
                        dem.living_situation_.Wave_2a == "Not Living situation" |

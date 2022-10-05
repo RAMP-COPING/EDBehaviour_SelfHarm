@@ -54,8 +54,8 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-06-20.rds"))
-dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-06-20.rds"))
+dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-09-27.rds"))
+dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-09-27.rds"))
 
 # Merge
 dat <- dplyr::full_join(dat_all_info,
@@ -115,94 +115,7 @@ dat %>%
 # Check NAs
 dat %>%
   filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wavebaseline)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_1b)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_2b)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_3b)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_4b)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_6b)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_8b)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_10b)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_12b)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_14b)
-
-dat %>%
-  filter(is.na(pandemic_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_16b)
-
-
-# Look at people who answered EVERY phase
-dat <- dat %>%
-  mutate(pandemic_low_weight_every_phase =
-           case_when(ed_scid5.weigh_weighed_past_month_.Wavebaseline == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_1b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_2b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_3b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_4b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_6b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_8b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_10b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_12b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_14b == "Yes" |
-                       ed_scid5.weigh_weighed_past_month_.Wave_16b == "Yes" ~ 1, 
-             
-                  is.na(ed_scid5.weigh_weighed_past_month_.Wavebaseline) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_1b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_2b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_3b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_4b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_6b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_8b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_10b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_12b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_14b) &
-                       is.na(ed_scid5.weigh_weighed_past_month_.Wave_16b) ~ NA_real_, 
-                     
-                   ed_scid5.weigh_weighed_past_month_.Wavebaseline == "No" &
-                       ed_scid5.weigh_weighed_past_month_.Wave_1b == "No" &
-                       ed_scid5.weigh_weighed_past_month_.Wave_2b == "No" &
-                       ed_scid5.weigh_weighed_past_month_.Wave_3b == "No" &
-                       ed_scid5.weigh_weighed_past_month_.Wave_4b == "No" &
-                       ed_scid5.weigh_weighed_past_month_.Wave_6b == "No" &
-                       ed_scid5.weigh_weighed_past_month_.Wave_8b == "No" &
-                       ed_scid5.weigh_weighed_past_month_.Wave_10b == "No" & 
-                       ed_scid5.weigh_weighed_past_month_.Wave_12b == "No" &
-                       ed_scid5.weigh_weighed_past_month_.Wave_14b == "No" & 
-                       ed_scid5.weigh_weighed_past_month_.Wave_16b == "No"  ~ 0 
-                    
-           )
-  )
-
-# Check
-dat %>%
-  freq(pandemic_low_weight_every_phase)
+  select(starts_with("ed_scid5.weigh_weighed_past_month_."))
 ```
 
 NEW low weight experience, i.e., those who at baseline indicated no lifetime experience of binge eating
@@ -231,27 +144,6 @@ dat %>%
   filter(is.na(NEW_low_weight_pandemic) &
            lifetime_low_weight_baseline_numeric == 0) %>% # Only interested in those with no prepan experience
   freq(pandemic_low_weight)
-
-
-# Look at people who answered EVERY phase
-dat <- dat %>%
-  mutate(NEW_low_weight_pandemic_every_phase =
-           case_when( 
-                  # No lifetime low weight at baseline...
-                   lifetime_low_weight_baseline_numeric == 0 & 
-               
-                 #... but occurred at least once during the pandemic
-                     (pandemic_low_weight_every_phase == 1 |
-                       pandemic_low_weight_derived == 1)  # as identified in the script "2.Baseline_ED_groupings" 
-                        ~ 1,
-                     
-                     lifetime_low_weight_baseline_numeric == 0 &  # No lifetime low weight at baseline, and no low weight during the pandemic at EVERY phase
-                     pandemic_low_weight_every_phase == 0 ~ 0
-            )
-  )
-
-dat %>%
-  freq(NEW_low_weight_pandemic_every_phase) # NAs are because the sample is restricted to those who did NOT report low weight at baseline
 ```
 ## Sensitivity analysis: No at least 3 times
 ```{r sensitivity analysis low weight no 3 times}
@@ -403,7 +295,7 @@ dat <- dat %>%
                      
                        (NEW_low_weight_pandemic == 1 & # New experience
                      ed_scid5.weigh_weighed_past_month_.Wavebaseline ==  "Yes") ~ "Baseline",
-                 (NEW_low_weight_pandemic == 1 & # New experience
+                    (NEW_low_weight_pandemic == 1 & # New experience
                      pandemic_low_weight_derived ==  1) ~ "Baseline",
                      (NEW_low_weight_pandemic == 1 & # New experience
                      ed_scid5.weigh_weighed_past_month_.Wave_1b == "Yes") ~ "1b",
@@ -437,47 +329,7 @@ dat %>%
 # Check NAs
 dat %>%
   filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wavebaseline)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_1b)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_2b)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_3b)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_4b)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_6b)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_8b)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_10b)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_12b)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_14b)
-
-dat %>%
-  filter(is.na(outcome_phase_low_weight)) %>%
-  freq(ed_scid5.weigh_weighed_past_month_.Wave_16b)
+  select(starts_with("ed_scid5.weigh_weighed_past_month_."))
 ```
 
 # EXPOSURES / EXPLANATORY VARIABLES
@@ -1080,102 +932,94 @@ dat <- dat %>%
 # Check
 dat %>%
   freq(positive_covid_test_LW_16b)
-
 ```
 
 Low weight & Positive COVID test result
 ```{r Positve COVID test result exposure LW - virus, dem and resp Q}
 dat <- dat %>%
   mutate(positive_covid_test_before_LW =
-           case_when(# First exposure NOT before first experience of outcome
-                positive_covid_test_LW_baseline == "To drop" |
-                            positive_covid_test_LW_1a == "To drop" |
+           case_when(
+                # First exposure NOT before first experience of outcome
+                    positive_covid_test_LW_baseline == "To drop" |
+                    positive_covid_test_LW_1a == "To drop" |
                     positive_covid_test_LW_1b == "To drop" |
-               positive_covid_test_LW_2a == "To drop" |
+                    positive_covid_test_LW_2a == "To drop" |
                     positive_covid_test_LW_2b == "To drop" |
-               positive_covid_test_LW_3a == "To drop" |
+                    positive_covid_test_LW_3a == "To drop" |
                     positive_covid_test_LW_3b == "To drop" |
-               positive_covid_test_LW_4a == "To drop" |
+                    positive_covid_test_LW_4a == "To drop" |
                     positive_covid_test_LW_4b == "To drop" |
-               positive_covid_test_LW_5a == "To drop" |
+                    positive_covid_test_LW_5a == "To drop" |
                     positive_covid_test_LW_6b == "To drop" |
-               positive_covid_test_LW_7a == "To drop" |
+                    positive_covid_test_LW_7a == "To drop" |
                     positive_covid_test_LW_8b == "To drop" |
-               positive_covid_test_LW_9a == "To drop" |
+                    positive_covid_test_LW_9a == "To drop" |
                     positive_covid_test_LW_10b == "To drop" |
-              positive_covid_test_LW_11a == "To drop" |
+                    positive_covid_test_LW_11a == "To drop" |
                     positive_covid_test_LW_12b == "To drop" |
-                positive_covid_test_LW_13a == "To drop" |
+                    positive_covid_test_LW_13a == "To drop" |
                     positive_covid_test_LW_14b == "To drop" |
-                 positive_covid_test_LW_15a == "To drop" |
-                    positive_covid_test_LW_16b == "To drop" ~ "Positive test after low weight",
+                    positive_covid_test_LW_15a == "To drop" |
+                    positive_covid_test_LW_16b == "To drop" | # Positive test after low weight
                     
-                     # Not answered whether they'd taken a test
-                    exposure_phase_positive_covid_test == "All missing" ~ "Missing whether experienced COVID", # Need to be dropped
+                  
+                   # Not answered whether they'd experienced low weight
+                    outcome_phase_low_weight == "Not answered" ~ "To drop", # Missing whether experienced low weight
                     
-                     # Not taken test
-                    exposure_phase_positive_covid_test == "Not taken test" ~ "Not taken test", 
-                    
-                    # Taken test but not given test result
-                    exposure_phase_positive_covid_test == "Test taken but not answered test result" ~ "Missing test result", # Need to be dropped
-                    
-                     # Not answered whether they'd experienced binge eating 
-                    outcome_phase_low_weight == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
-                    
-                    # First exposure BEFORE first experience of outcome
-             positive_covid_test_LW_baseline == "Yes" |
+                  # First exposure BEFORE first experience of outcome
+                    positive_covid_test_LW_baseline == "Yes" |
                     positive_covid_test_LW_1a == "Yes" |
-             positive_covid_test_LW_1b == "Yes" |
-               positive_covid_test_LW_2a == "Yes" |
-              positive_covid_test_LW_2b == "Yes" |
-               positive_covid_test_LW_3a == "Yes" |
+                    positive_covid_test_LW_1b == "Yes" |
+                    positive_covid_test_LW_2a == "Yes" |
+                    positive_covid_test_LW_2b == "Yes" |
+                    positive_covid_test_LW_3a == "Yes" |
                     positive_covid_test_LW_3b == "Yes" |
-               positive_covid_test_LW_4a == "Yes" |
+                    positive_covid_test_LW_4a == "Yes" |
                     positive_covid_test_LW_4b == "Yes" |
-               positive_covid_test_LW_5a == "Yes" |
+                    positive_covid_test_LW_5a == "Yes" |
                     positive_covid_test_LW_6b == "Yes" |
-               positive_covid_test_LW_7a == "Yes" |
+                    positive_covid_test_LW_7a == "Yes" |
                     positive_covid_test_LW_8b == "Yes" |
-               positive_covid_test_LW_9a == "Yes" |
+                    positive_covid_test_LW_9a == "Yes" |
                     positive_covid_test_LW_10b == "Yes" |
-               positive_covid_test_LW_11a  == "Yes" |
+                    positive_covid_test_LW_11a  == "Yes" |
                     positive_covid_test_LW_12b  == "Yes" |
-               positive_covid_test_LW_13a  == "Yes" |
+                    positive_covid_test_LW_13a  == "Yes" |
                     positive_covid_test_LW_14b  == "Yes" |
-               positive_covid_test_LW_15a == "Yes" |
-                    positive_covid_test_LW_16b == "Yes"~ "Positive test before low weight",
+                    positive_covid_test_LW_15a == "Yes" |
+                    positive_covid_test_LW_16b == "Yes" ~ "Positive test before low weight",
                     
                    # Experienced exposure but not outcome
-             positive_covid_test_LW_baseline == "No outcome" |
-             positive_covid_test_LW_1a == "No outcome" |
+                    positive_covid_test_LW_baseline == "No outcome" |
+                    positive_covid_test_LW_1a == "No outcome" |
                     positive_covid_test_LW_1b == "No outcome" |
-               positive_covid_test_LW_2a == "No outcome" |
+                    positive_covid_test_LW_2a == "No outcome" |
                     positive_covid_test_LW_2b == "No outcome" |
-               positive_covid_test_LW_3a == "No outcome" |
+                    positive_covid_test_LW_3a == "No outcome" |
                     positive_covid_test_LW_3b == "No outcome" |
-               positive_covid_test_LW_4a == "No outcome" |
+                    positive_covid_test_LW_4a == "No outcome" |
                     positive_covid_test_LW_4b == "No outcome" |
-               positive_covid_test_LW_5a == "No outcome" |
+                    positive_covid_test_LW_5a == "No outcome" |
                     positive_covid_test_LW_6b == "No outcome" |
-               positive_covid_test_LW_7a == "No outcome" |
+                    positive_covid_test_LW_7a == "No outcome" |
                     positive_covid_test_LW_8b == "No outcome" |
-               positive_covid_test_LW_9a == "No outcome" |
+                    positive_covid_test_LW_9a == "No outcome" |
                     positive_covid_test_LW_10b == "No outcome" |
-               positive_covid_test_LW_11a == "No outcome" |
+                    positive_covid_test_LW_11a == "No outcome" |
                     positive_covid_test_LW_12b == "No outcome" |
-               positive_covid_test_LW_13a == "No outcome" |
+                    positive_covid_test_LW_13a == "No outcome" |
                     positive_covid_test_LW_14b == "No outcome" |
-               positive_covid_test_LW_15a == "No outcome" |
-                    positive_covid_test_LW_16b == "No outcome"  ~ "Exposure but no outcome",
+                    positive_covid_test_LW_15a == "No outcome" |
+                    positive_covid_test_LW_16b == "No outcome"  ~ "Exposure but no outcome", 
              
-              # Experienced outcome but not exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
-                     (outcome_phase_low_weight != "Not answered" |
-                        outcome_phase_low_weight != "Not experienced") ~ "Outcome but no exposure", 
+                   # Experienced outcome but not exposure
+                   exposure_phase_positive_covid_test == "Not experienced" &
+                  (outcome_phase_low_weight != "Not answered" &
+                   outcome_phase_low_weight != "Not experienced") ~ "Outcome but no exposure", # These people may have not passed the screener, not taken tests, taken a test but received a negative or inconclusive result. Essentially, these people have never reported a positive test result or that they have been ill with COVID, however they have answered the question at least once (i.e., are not just missing for all questions)
                    
-                       # Experienced neither outcome nor exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
-                     outcome_phase_low_weight == "Not experienced" ~ "Neither exposure nor outcome"
+                   # Experienced neither outcome nor exposure
+                   exposure_phase_positive_covid_test == "Not experienced" &
+                    outcome_phase_low_weight == "Not experienced" ~ "Neither exposure nor outcome"
   
       )
 )
@@ -1187,18 +1031,18 @@ dat %>%
 # Create final variable of positive COVID test before LW outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_LW_final =
-           case_when(positive_covid_test_before_LW == "Positive test after low weight" | # Need to drop people who first experienced outcome before first experience of exposure
-                     positive_covid_test_before_LW == "All missing" | # Need to drop people who never answered whether they'd experienced the exposure
-                       positive_covid_test_before_LW == "Missing test result" | # Taken a test but not indicated result of test
-                     positive_covid_test_before_LW == "Missing whether experienced low weight" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced the outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered whether they'd experienced the outcome
+             
+              positive_covid_test_before_LW == "To drop" ~ NA_character_,  
                      
-                     positive_covid_test_before_LW == "Not taken test" |
-                     positive_covid_test_before_LW ==  "Outcome but no exposure" |
-                     positive_covid_test_before_LW ==  "Neither exposure nor outcome" ~ "No",
+              positive_covid_test_before_LW ==  "Outcome but no exposure" |
+              positive_covid_test_before_LW ==  "Neither exposure nor outcome" ~ "No",
                     
-                     
-                       positive_covid_test_before_LW == "Exposure but no outcome" |
-                    positive_covid_test_before_LW == "Positive test before low weight" ~ "Yes")
+              positive_covid_test_before_LW == "Exposure but no outcome" |
+              positive_covid_test_before_LW == "Positive test before low weight" ~ "Yes"
+              )
   )
 
 # Check
@@ -1218,6 +1062,7 @@ missing %>%
          outcome_phase_low_weight
          )
 ```
+121 people endorsed a positive COVID test/being unwell with COVID in a phase after the phase in which they endorsed experiencing low weight.
 
 ## Losing someone due to COVID-19 (grief)
 ```{r Lost someone exposure BEFORE outcome LW}
@@ -1836,13 +1681,13 @@ dat <- dat %>%
                       lost_someone_LW_13a == "To drop" |
                       lost_someone_LW_14b == "To drop" |
                       lost_someone_LW_15a == "To drop" |
-                    lost_someone_LW_16b == "To drop"~ "Lost someone after low weight",
+                    lost_someone_LW_16b == "To drop" | # Lost someone after low weight
                     
                      # Not answered whether they'd lost someone
-                    exposure_phase_losing_someone == "Not answered or PNTA" ~ "Missing whether lost someone", # Need to be dropped
+                    exposure_phase_losing_someone == "Not answered or PNTA" |  # Missing whether lost someone
                     
                     # Not answered whether they'd experienced low weight
-                    outcome_phase_low_weight == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
+                    outcome_phase_low_weight == "Not answered" ~ "To drop", # Missing whether experienced low weight
                     
                   # First lost someone BEFORE first experience of low weight
                      lost_someone_LW_baseline == "Yes" |
@@ -1892,7 +1737,7 @@ dat <- dat %>%
                    
                   # Experienced outcome but not exposure
                    exposure_phase_losing_someone == "Not lost someone" &
-                     (outcome_phase_low_weight != "Not answered" |
+                     (outcome_phase_low_weight != "Not answered" &
                         outcome_phase_low_weight != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -1908,15 +1753,19 @@ dat %>%
 # Create final variable of lost someone before LW outcome
 dat <- dat %>%
   mutate(lost_someone_before_LW_final =
-           case_when(losing_someone_before_LW == "Lost someone after low weight" | # Need to drop people who first experienced outcome before first experience of exposure
-                     losing_someone_before_LW == "Missing whether lost someone" | # Need to drop people who never answered or put PNTA for whether they'd lost someone
-                     losing_someone_before_LW == "Missing whether experienced low weight" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced low weight
+           case_when( 
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd lost someone
+             # Need to drop people who never answered whether they'd experienced low weight
+             
+              losing_someone_before_LW == "To drop"  ~ NA_character_,  
                      
-                      losing_someone_before_LW ==  "Outcome but no exposure" |
-                    losing_someone_before_LW ==  "Neither exposure nor outcome" ~ "No",
+              losing_someone_before_LW ==  "Outcome but no exposure" |
+              losing_someone_before_LW ==  "Neither exposure nor outcome" ~ "No",
                     
-                     losing_someone_before_LW == "Exposure but no outcome" |
-                    losing_someone_before_LW == "Lost someone before low weight" ~ "Yes")
+              losing_someone_before_LW == "Exposure but no outcome" |
+              losing_someone_before_LW == "Lost someone before low weight" ~ "Yes"
+             )
   )
 
 # Check
@@ -2549,13 +2398,13 @@ dat <- dat %>%
                     main_eco_change_LW_13a == "To drop" |
                        main_eco_change_LW_14b == "To drop" |
                     main_eco_change_LW_15a == "To drop" |
-                       main_eco_change_LW_16b == "To drop"~ "Change in eco activity after low weight",
+                       main_eco_change_LW_16b == "To drop" | # Change in eco activity after low weight
                     
-                     # Not answered whether they'd experienced exposure
-                    exposure_phase_main_eco_change == "Missing at every phase" ~ "Missing whether change in eco activity", # Need to be dropped
+                    # Not answered whether they'd experienced exposure
+                    exposure_phase_main_eco_change == "Missing at every phase" | # Missing whether change in eco activity"
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_low_weight == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
+                    outcome_phase_low_weight == "Not answered" ~ "To drop", # Missing whether experienced low weight"
                     
                   # First exposure BEFORE first experience of outcome
                     main_eco_change_LW_baseline == "Yes" |
@@ -2605,7 +2454,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_main_eco_change == "No change in eco activity" &
-                     (outcome_phase_low_weight != "Not answered" |
+                     (outcome_phase_low_weight != "Not answered" &
                         outcome_phase_low_weight != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -2621,9 +2470,12 @@ dat %>%
 # Create final variable of first exposure before first outcome
 dat <- dat %>%
   mutate(main_eco_change_before_LW_final =
-           case_when(main_eco_change_before_LW == "Change in eco activity after low weight" | # Need to drop people who first experienced outcome before first experience of exposure
-                     main_eco_change_before_LW == "Missing whether change in eco activity" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
-                      main_eco_change_before_LW == "Missing whether experienced low weight" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
+             # Need to drop people who never answered whether they'd experienced outcome
+             
+             main_eco_change_before_LW == "To drop" ~ NA_character_,  
                      
                       main_eco_change_before_LW ==  "Outcome but no exposure" |
                       main_eco_change_before_LW ==  "Neither exposure nor outcome" ~ "No",
@@ -3259,13 +3111,13 @@ dat <- dat %>%
                     living_situation_change_LW_13a == "To drop" |
                       living_situation_change_LW_14b== "To drop" |
                     living_situation_change_LW_15a == "To drop" |
-                      living_situation_change_LW_16b == "To drop" ~ "Change in living situation after low weight",
+                      living_situation_change_LW_16b == "To drop" | # Change in living situation after low weight
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_living_situation_change == "Missing at every phase" ~ "Missing whether change in living situation", # Need to be dropped
+                    exposure_phase_living_situation_change == "Missing at every phase" | # Missing whether change in living situation
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_low_weight == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
+                    outcome_phase_low_weight == "Not answered" ~ "To drop", # Missing whether experienced low weight
                     
                   # First exposure BEFORE first experience of outcome
                     living_situation_change_LW_baseline == "Yes" |
@@ -3315,7 +3167,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_living_situation_change == "No change in living situation" &
-                     (outcome_phase_low_weight != "Not answered" |
+                     (outcome_phase_low_weight != "Not answered" &
                         outcome_phase_low_weight != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -3332,9 +3184,12 @@ dat %>%
 # Create final variable of exposure before outcome
 dat <- dat %>%
   mutate(living_situation_change_before_LW_final =
-           case_when(living_situation_change_before_LW == "Change in living situation after low weight" | # Need to drop people who first experienced outcome before first experience of exposure
-                     living_situation_change_before_LW == "Missing whether change in living situation" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
-                     living_situation_change_before_LW == "Missing whether experienced low weight" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced the outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
+             # Need to drop people who never answered whether they'd experienced the outcome
+             
+             living_situation_change_before_LW == "To drop" ~ NA_character_,  
                      
                        living_situation_change_before_LW ==  "Outcome but no exposure" |
                      living_situation_change_before_LW ==  "Neither exposure nor outcome" ~ "No",

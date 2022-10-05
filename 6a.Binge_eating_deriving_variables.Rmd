@@ -53,8 +53,8 @@ date
 ```
 # Read in data
 ```{r Read in dataset}
-dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-06-20.rds"))
-dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-06-20.rds"))
+dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-09-27.rds"))
+dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-09-27.rds"))
 
 # Merge
 dat <- dplyr::full_join(dat_all_info,
@@ -112,92 +112,7 @@ dat %>%
 # Check NAs
 dat %>%
   filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wavebaseline)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_1b)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_2b)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_3b)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_4b)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_6b)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_8b)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_10b)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_12b)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_14b)
-
-dat %>%
-  filter(is.na(pandemic_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_16b)
-
-# Look at people who said "No" at every EVERY phase
-dat <- dat %>%
-  mutate(pandemic_binge_eating_every_phase =
-           case_when(ed_scid5.regular_episodes_eating_binges_.Wavebaseline == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_1b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_2b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_3b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_4b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_6b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_8b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_10b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_12b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_14b == "Yes" |
-                       ed_scid5.regular_episodes_eating_binges_.Wave_16b == "Yes" ~ 1, 
-                     
-                      is.na(ed_scid5.regular_episodes_eating_binges_.Wavebaseline) &
-                      is.na(ed_scid5.regular_episodes_eating_binges_.Wave_1b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_2b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_3b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_4b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_6b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_8b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_10b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_12b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_14b) &
-                       is.na(ed_scid5.regular_episodes_eating_binges_.Wave_16b)  ~ NA_real_, 
-                     
-                      ed_scid5.regular_episodes_eating_binges_.Wavebaseline == "No" &
-                      ed_scid5.regular_episodes_eating_binges_.Wave_1b == "No" &
-                      ed_scid5.regular_episodes_eating_binges_.Wave_2b == "No" &
-                      ed_scid5.regular_episodes_eating_binges_.Wave_3b == "No" &
-                      ed_scid5.regular_episodes_eating_binges_.Wave_4b == "No" &
-                      ed_scid5.regular_episodes_eating_binges_.Wave_6b == "No" &
-                      ed_scid5.regular_episodes_eating_binges_.Wave_8b == "No" & 
-                      ed_scid5.regular_episodes_eating_binges_.Wave_10b == "No" & 
-                      ed_scid5.regular_episodes_eating_binges_.Wave_12b == "No" &
-                      ed_scid5.regular_episodes_eating_binges_.Wave_14b == "No" &
-                      ed_scid5.regular_episodes_eating_binges_.Wave_16b == "No"  ~ 0 
-                    
-           ))
-
-# Check
-dat %>%
-  freq(pandemic_binge_eating_every_phase)
+  select(starts_with("ed_scid5.regular_episodes_eating_binges_"))
 ```
 
 NEW binge eating experience, i.e., those who at baseline indicated no lifetime experience of binge eating
@@ -225,26 +140,6 @@ dat %>%
   filter(is.na(NEW_binge_eating_pandemic) &
          lifetime_binge_eating_baseline_numeric == 0) %>% # Only interested in those with no prepan experience
   freq(pandemic_binge_eating)
-
-
-# Look at people who answered EVERY phase
-dat <- dat %>%
-  mutate(NEW_binge_eating_pandemic_every_phase =
-           case_when(
-             lifetime_binge_eating_baseline_numeric == 0 & # No lifetime binge eating at baseline...
-               
-               #...but occurred at least once during the pandemic
-                     (pandemic_binge_eating_every_phase == 1  | # as identified above
-                      pandemic_binge_eating_derived == 1)  # as identified in the script "2.Baseline_ED_groupings"
-                     ~ 1,
-                     
-                     lifetime_binge_eating_baseline_numeric == 0 &  # No lifetime binge eating at baseline, and no binge eating during the pandemic at EVERY phase
-                     pandemic_binge_eating_every_phase == 0 ~ 0
-           )
-  )
-
-dat %>%
-  freq(NEW_binge_eating_pandemic_every_phase) # NAs are because the sample is restricted to those who did NOT report binge eating at baseline
 ```
 
 ## Sensitivity analysis: No at least 3 times
@@ -428,48 +323,8 @@ dat %>%
 
 # Check NAs
 dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wavebaseline)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_1b)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_2b)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_3b)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_4b)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_6b)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_8b)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_10b)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_12b)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_14b)
-
-dat %>%
-  filter(is.na(outcome_phase_binge_eating)) %>%
-  freq(ed_scid5.regular_episodes_eating_binges_.Wave_16b)
+  filter(outcome_phase_binge_eating == "Not answered") %>%
+  select(starts_with("ed_scid5.regular_episodes_eating_binges_."))
 ```
 
 # EXPOSURES / EXPLANATORY VARIABLES
@@ -1074,98 +929,91 @@ dat %>%
   freq(positive_covid_test_BE_16b)
 ```
 
-Binge eating & Positive COVID test result
+Binge eating & positive COVID test result
 ```{r Positve COVID test result exposure BE - virus, dem and resp Q}
 dat <- dat %>%
   mutate(positive_covid_test_before_BE =
-           case_when(# First exposure NOT before first experience of outcome
-                positive_covid_test_BE_baseline == "To drop" |
-                            positive_covid_test_BE_1a == "To drop" |
+           case_when(
+             
+             # First exposure NOT before first experience of outcome
+                    positive_covid_test_BE_baseline == "To drop" |
+                    positive_covid_test_BE_1a == "To drop" |
                     positive_covid_test_BE_1b == "To drop" |
-               positive_covid_test_BE_2a == "To drop" |
+                    positive_covid_test_BE_2a == "To drop" |
                     positive_covid_test_BE_2b == "To drop" |
-               positive_covid_test_BE_3a == "To drop" |
+                    positive_covid_test_BE_3a == "To drop" |
                     positive_covid_test_BE_3b == "To drop" |
-               positive_covid_test_BE_4a == "To drop" |
+                    positive_covid_test_BE_4a == "To drop" |
                     positive_covid_test_BE_4b == "To drop" |
-               positive_covid_test_BE_5a == "To drop" |
+                    positive_covid_test_BE_5a == "To drop" |
                     positive_covid_test_BE_6b == "To drop" |
-               positive_covid_test_BE_7a == "To drop" |
+                    positive_covid_test_BE_7a == "To drop" |
                     positive_covid_test_BE_8b == "To drop" |
-               positive_covid_test_BE_9a == "To drop" |
+                    positive_covid_test_BE_9a == "To drop" |
                     positive_covid_test_BE_10b == "To drop" |
-              positive_covid_test_BE_11a == "To drop" |
+                    positive_covid_test_BE_11a == "To drop" |
                     positive_covid_test_BE_12b == "To drop" |
-                positive_covid_test_BE_13a == "To drop" |
+                    positive_covid_test_BE_13a == "To drop" |
                     positive_covid_test_BE_14b == "To drop" |
-                positive_covid_test_BE_15a == "To drop" |
-                    positive_covid_test_BE_16b == "To drop"  ~ "Positive test after binge eating",
+                    positive_covid_test_BE_15a == "To drop" |
+                    positive_covid_test_BE_16b == "To drop"  | 
                     
-                     # Not answered whether they'd taken a test
-                    exposure_phase_positive_covid_test == "All missing" ~ "Missing whether experienced COVID", # Need to be dropped
+                  # Not answered whether they'd experienced binge eating 
+                    outcome_phase_binge_eating == "Not answered" ~ "To drop", 
                     
-                     # Not taken test
-                    exposure_phase_positive_covid_test == "Not taken test" ~ "Not taken test", 
-                    
-                    # Taken test but not given test result
-                    exposure_phase_positive_covid_test == "Test taken but not answered test result" ~ "Missing test result", # Need to be dropped
-                    
-                     # Not answered whether they'd experienced binge eating 
-                    outcome_phase_binge_eating == "Not answered" ~ "Missing whether experienced binge eating", # Need to be dropped
-                    
-                    # First positive test BEFORE first experience of binge eating
-             positive_covid_test_BE_baseline == "Yes" |
+                  # First positive test BEFORE first experience of binge eating
+                    positive_covid_test_BE_baseline == "Yes" |
                     positive_covid_test_BE_1a == "Yes" |
-             positive_covid_test_BE_1b == "Yes" |
-               positive_covid_test_BE_2a == "Yes" |
-              positive_covid_test_BE_2b == "Yes" |
-               positive_covid_test_BE_3a== "Yes" |
+                    positive_covid_test_BE_1b == "Yes" |
+                    positive_covid_test_BE_2a == "Yes" |
+                    positive_covid_test_BE_2b == "Yes" |
+                    positive_covid_test_BE_3a == "Yes" |
                     positive_covid_test_BE_3b == "Yes" |
-               positive_covid_test_BE_4a == "Yes" |
+                    positive_covid_test_BE_4a == "Yes" |
                     positive_covid_test_BE_4b == "Yes" |
-               positive_covid_test_BE_5a == "Yes" |
+                    positive_covid_test_BE_5a == "Yes" |
                     positive_covid_test_BE_6b == "Yes" |
-               positive_covid_test_BE_7a == "Yes" |
+                    positive_covid_test_BE_7a == "Yes" |
                     positive_covid_test_BE_8b == "Yes" |
-               positive_covid_test_BE_9a == "Yes" |
+                    positive_covid_test_BE_9a == "Yes" |
                     positive_covid_test_BE_10b== "Yes" |
-               positive_covid_test_BE_11a == "Yes" |
+                    positive_covid_test_BE_11a == "Yes" |
                     positive_covid_test_BE_12b == "Yes" |
-               positive_covid_test_BE_13a == "Yes" |
+                    positive_covid_test_BE_13a == "Yes" |
                     positive_covid_test_BE_14b == "Yes" |
-               positive_covid_test_BE_15a == "Yes" |
+                    positive_covid_test_BE_15a == "Yes" |
                     positive_covid_test_BE_16b == "Yes"  ~ "Positive test before binge eating",
                     
-                   # Experienced exposure but not outcome
-             positive_covid_test_BE_baseline == "No outcome" |
-             positive_covid_test_BE_1a == "No outcome" |
+              # Experienced exposure but not outcome
+                    positive_covid_test_BE_baseline == "No outcome" |
+                    positive_covid_test_BE_1a == "No outcome" |
                     positive_covid_test_BE_1b == "No outcome" |
-               positive_covid_test_BE_2a == "No outcome" |
+                    positive_covid_test_BE_2a == "No outcome" |
                     positive_covid_test_BE_2b == "No outcome" |
-               positive_covid_test_BE_3a == "No outcome" |
+                    positive_covid_test_BE_3a == "No outcome" |
                     positive_covid_test_BE_3b == "No outcome" |
-               positive_covid_test_BE_4a == "No outcome" |
+                    positive_covid_test_BE_4a == "No outcome" |
                     positive_covid_test_BE_4b == "No outcome" |
-               positive_covid_test_BE_5a == "No outcome" |
+                    positive_covid_test_BE_5a == "No outcome" |
                     positive_covid_test_BE_6b == "No outcome" |
-               positive_covid_test_BE_7a == "No outcome" |
+                    positive_covid_test_BE_7a == "No outcome" |
                     positive_covid_test_BE_8b == "No outcome" |
-               positive_covid_test_BE_9a == "No outcome" |
+                    positive_covid_test_BE_9a == "No outcome" |
                     positive_covid_test_BE_10b == "No outcome" |
-               positive_covid_test_BE_11a == "No outcome" |
+                    positive_covid_test_BE_11a == "No outcome" |
                     positive_covid_test_BE_12b == "No outcome" |
-               positive_covid_test_BE_13a == "No outcome" |
+                    positive_covid_test_BE_13a == "No outcome" |
                     positive_covid_test_BE_14b == "No outcome" |
-               positive_covid_test_BE_15a == "No outcome" |
+                    positive_covid_test_BE_15a == "No outcome" |
                     positive_covid_test_BE_16b == "No outcome"  ~ "Exposure but no outcome",
              
-              # Experienced outcome but not exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
-                     (outcome_phase_binge_eating != "Not answered" |
-                        outcome_phase_binge_eating != "Not experienced") ~ "Outcome but no exposure", 
+              # Experienced outcome but not exposure (NB: # These people may have not passed the screener, not taken tests, taken a test but received a negative or inconclusive result. Essentially, these people have never reported a positive test result or that they have been ill with COVID, however they have answered the question at least once (i.e., are not just missing for all questions)
+                   exposure_phase_positive_covid_test == "Not experienced" &
+                     (outcome_phase_binge_eating != "Not answered" &
+                     outcome_phase_binge_eating != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
+                   exposure_phase_positive_covid_test == "Not experienced" &
                      outcome_phase_binge_eating == "Not experienced" ~ "Neither exposure nor outcome"
   
       )
@@ -1187,17 +1035,15 @@ dat %>%
 # Create final variable of positive COVID test before BE outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_BE_final =
-           case_when(positive_covid_test_before_BE == "Positive test after binge eating" | # Need to drop people who first experienced outcome before first experience of exposure
-                     positive_covid_test_before_BE == "Missing whether experienced COVID" | # Need to drop people who never answered whether they'd experienced the exposure
-                     positive_covid_test_before_BE == "Missing test result" | # Taken a test but not indicated result of test
-                     positive_covid_test_before_BE == "Missing whether experienced binge eating" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced the outcome
-                     
-                     positive_covid_test_before_BE == "Not taken test" |
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure, and need to drop people who never answered whether they'd experienced the outcome
+                     positive_covid_test_before_BE == "To drop" ~ NA_character_, 
+             
                      positive_covid_test_before_BE ==  "Outcome but no exposure" |
                      positive_covid_test_before_BE ==  "Neither exposure nor outcome" ~ "No",
                     
                      positive_covid_test_before_BE == "Exposure but no outcome" | # Had COVID but no outcome 
-                    positive_covid_test_before_BE == "Positive test before binge eating" ~ "Yes" # Those who had outcome, only include those who had exposure first
+                     positive_covid_test_before_BE == "Positive test before binge eating" ~ "Yes" # Those who had outcome AND exposure, only include those who had exposure first
                     )
   )
 
@@ -1218,6 +1064,8 @@ missing %>%
          outcome_phase_binge_eating
          )
 ```
+263 people endorsed binge eating in a phase before they endorsed a positive COVID test and/or being unwell with COVID.
+   
 ## Losing someone due to COVID-19
 ```{r Lost someone exposure BEFORE outcome BE}
 # Baseline
@@ -1817,7 +1665,9 @@ Binge eating & losing someone
 ```{r Losing someone exposure BE}
 dat <- dat %>%
   mutate(losing_someone_before_BE =
-           case_when(# First lost someone NOT before first experience of binge eating
+           case_when(
+             
+             # First lost someone NOT before first experience of binge eating
                     lost_someone_BE_baseline == "To drop" |
                        lost_someone_BE_1a == "To drop" |
                     lost_someone_BE_1b == "To drop" |
@@ -1838,13 +1688,13 @@ dat <- dat %>%
                        lost_someone_BE_13a == "To drop" |
                      lost_someone_BE_14b == "To drop" |
                        lost_someone_BE_15a == "To drop" |
-                    lost_someone_BE_16b == "To drop"   ~ "Lost someone after binge eating",
-                    
-                     # Not answered whether they'd lost someone
-                    exposure_phase_losing_someone == "Not answered or PNTA" ~ "Missing whether lost someone", # Need to be dropped
+                    lost_someone_BE_16b == "To drop"  | 
                     
                     # Not answered whether they'd experienced binge eating 
-                    outcome_phase_binge_eating == "Not answered" ~ "Missing whether experienced binge eating", # Need to be dropped
+                    outcome_phase_binge_eating == "Not answered"  | 
+                      
+                    # Not answered whether they'd lost someone
+                    exposure_phase_losing_someone == "Not answered or PNTA" ~ "To drop", # Need to be dropped
                     
                   # First lost someone BEFORE first experience of binge eating
                    lost_someone_BE_baseline == "Yes" |
@@ -1894,7 +1744,7 @@ dat <- dat %>%
                    
                    # Experienced outcome but not exposure
                    exposure_phase_losing_someone == "Not lost someone" &
-                     (outcome_phase_binge_eating != "Not answered" |
+                     (outcome_phase_binge_eating != "Not answered" &
                         outcome_phase_binge_eating != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -1909,19 +1759,21 @@ dat <- dat %>%
 dat %>%
   freq(losing_someone_before_BE) 
 
-
 # Create final variable of lost someone before BE outcome
 dat <- dat %>%
   mutate(lost_someone_before_BE_final =
-           case_when(losing_someone_before_BE == "Lost someone after binge eating" | # Need to drop people who first experienced outcome before first experience of exposure
-                     losing_someone_before_BE == "Missing whether lost someone" | # Need to drop people who never answered or put PNTA for whether they'd lost someone
-                     losing_someone_before_BE == "Missing whether experienced binge eating" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced binge eating
-                     
-                       losing_someone_before_BE ==  "Outcome but no exposure" |
-                      losing_someone_before_BE ==  "Neither exposure nor outcome" ~ "No",
+           case_when(
+             # Need to drop people who never answered or put PNTA for whether they'd lost someone
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered whether they'd experienced binge eating
+                losing_someone_before_BE == "To drop" ~ NA_character_,  
+                   
+                 losing_someone_before_BE ==  "Outcome but no exposure" |
+                 losing_someone_before_BE ==  "Neither exposure nor outcome" ~ "No",
                     
                     losing_someone_before_BE == "Exposure but no outcome" |
-                    losing_someone_before_BE == "Lost someone before binge eating" ~ "Yes")
+                    losing_someone_before_BE == "Lost someone before binge eating" ~ "Yes"
+                )
   )
 
 # Check
@@ -1942,8 +1794,6 @@ missing %>%
          outcome_phase_binge_eating
          )
 ```
-
-
 ## Change in main eco activity (work/education)
 ```{r Change in main eco activity BEFORE outcome BE}
 # Baseline
@@ -2527,10 +2377,11 @@ dat %>%
 
 Binge eating & change in main eco activity 
 ```{r Change in eco activity exposure BE}
-
 dat <- dat %>%
   mutate(main_eco_change_before_BE =
-           case_when(# First exposure NOT before first experience of outcome   
+           case_when(
+             
+             # First exposure NOT before first experience of outcome   
                     main_eco_change_BE_baseline == "To drop" |
                     main_eco_change_BE_1a == "To drop" |
                     main_eco_change_BE_1b == "To drop" |
@@ -2551,13 +2402,13 @@ dat <- dat %>%
                     main_eco_change_BE_13a == "To drop" |
                       main_eco_change_BE_14b == "To drop" |
                     main_eco_change_BE_15a == "To drop" |
-                      main_eco_change_BE_16b == "To drop" ~ "Change in eco activity after binge eating",
+                      main_eco_change_BE_16b == "To drop"  |  # Change in eco activity after binge eating
                     
-                     # Not answered whether they'd experienced exposure
-                    exposure_phase_main_eco_change == "Missing at every phase" ~ "Missing whether change in eco activity", # Need to be dropped
+                 # Not answered whether they'd experienced exposure
+                    exposure_phase_main_eco_change == "Missing at every phase" |  # Missing whether change in eco activity" 
                     
                     # Not answered whether they'd experienced binge eating 
-                    outcome_phase_binge_eating == "Not answered" ~ "Missing whether experienced binge eating", # Need to be dropped
+                    outcome_phase_binge_eating == "Not answered" ~ "To drop",  # Missing whether experienced binge eating"
                     
                   # First exposure before first outcome
                     main_eco_change_BE_baseline == "Yes" |
@@ -2607,7 +2458,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_main_eco_change == "No change in eco activity" &
-                     (outcome_phase_binge_eating != "Not answered" |
+                     (outcome_phase_binge_eating != "Not answered" &
                         outcome_phase_binge_eating != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -2624,9 +2475,12 @@ dat %>%
 # Create final variable of first exposure before first outcome
 dat <- dat %>%
   mutate(main_eco_change_before_BE_final =
-           case_when(main_eco_change_before_BE == "Change in eco activity after binge eating" | # Need to drop people who first experienced outcome before first experience of exposure
-                     main_eco_change_before_BE == "Missing whether change in eco activity" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
-                     main_eco_change_before_BE == "Missing whether experienced binge eating" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced binge eating
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
+             # Need to drop people who never answered whether they'd experienced binge eating
+             
+             main_eco_change_before_BE == "To drop" ~ NA_character_,  
                      
                      main_eco_change_before_BE ==  "Outcome but no exposure" |
                       main_eco_change_before_BE ==  "Neither exposure nor outcome" ~ "No",
@@ -3238,7 +3092,8 @@ Binge eating & change in living situation
 ```{r Change in living situation exposure BE}
 dat <- dat %>%
   mutate(living_situation_change_before_BE =
-           case_when(# First exposure NOT before first experience of outcome   
+           case_when(
+             # First exposure NOT before first experience of outcome   
                     living_situation_change_BE_baseline == "To drop" |
                     living_situation_change_BE_1a == "To drop" |
                     living_situation_change_BE_1b == "To drop" |
@@ -3259,13 +3114,13 @@ dat <- dat %>%
                     living_situation_change_BE_13a == "To drop" |
                       living_situation_change_BE_14b == "To drop" |
                     living_situation_change_BE_15a == "To drop" |
-                      living_situation_change_BE_16b == "To drop" ~ "Change in living situation after binge eating",
+                      living_situation_change_BE_16b == "To drop" |  # change in living situation after binge eating
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_living_situation_change == "Missing at every phase" ~ "Missing whether change in living situation", # Need to be dropped
+                    exposure_phase_living_situation_change == "Missing at every phase" |  # Missing whether change in living situation
                     
                     # Not answered whether they'd experienced binge eating 
-                    outcome_phase_binge_eating == "Not answered" ~ "Missing whether experienced binge eating", # Need to be dropped
+                    outcome_phase_binge_eating == "Not answered" ~ "To drop", 
                     
                   # First exposure BEFORE first experience of outcome
                     living_situation_change_BE_baseline == "Yes" |
@@ -3315,7 +3170,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_living_situation_change == "No change in living situation" &
-                     (outcome_phase_binge_eating != "Not answered" |
+                     (outcome_phase_binge_eating != "Not answered" &
                         outcome_phase_binge_eating != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -3332,15 +3187,19 @@ dat %>%
 # Create final variable of exposure before outcome
 dat <- dat %>%
   mutate(living_situation_change_before_BE_final =
-           case_when(living_situation_change_before_BE == "Change in living situation after binge eating" | # Need to drop people who first experienced outcome before first experience of exposure
-                     living_situation_change_before_BE == "Missing whether change in living situation" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
-                     living_situation_change_before_BE == "Missing whether experienced binge eating" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced binge eating
+           case_when( 
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
+             # Need to drop people who never answered whether they'd experienced binge eating
+             
+             living_situation_change_before_BE == "To drop" ~ NA_character_,  
                      
-                       living_situation_change_before_BE ==  "Outcome but no exposure" |
-                      living_situation_change_before_BE ==  "Neither exposure nor outcome" ~ "No",
+             living_situation_change_before_BE ==  "Outcome but no exposure" |
+             living_situation_change_before_BE ==  "Neither exposure nor outcome" ~ "No",
                     
-                      living_situation_change_before_BE == "Exposure but no outcome" |
-                    living_situation_change_before_BE == "Change in living situation before binge eating" ~ "Yes")
+             living_situation_change_before_BE == "Exposure but no outcome" |
+             living_situation_change_before_BE == "Change in living situation before binge eating" ~ "Yes"
+             )
   )
 
 # Check

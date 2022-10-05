@@ -55,8 +55,8 @@ date
 
 # Read in data
 ```{r Read in dataset}
-dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-05-16.rds"))
-dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-05-16.rds"))
+dat_exposure_info <- readRDS(paste0(filepath_saved_data, "exposures_all_models2022-09-27.rds"))
+dat_all_info <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-09-27.rds"))
 
 # Merge
 dat <- dplyr::full_join(dat_all_info,
@@ -150,166 +150,7 @@ dat %>%
 # Check NAs (should be NA or PNTA)
 dat %>%
   filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wavebaseline)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_1a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_1b)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_2a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_2b)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_3a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_3b)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_4a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_4b)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_5a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_6b)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_7a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_8b)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_9a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_10b)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_11a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_12b)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_13a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_14b)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_15a)
-
-dat %>%
-  filter(is.na(TWO_WEEKS_PANDEMIC_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_16b)
-
-# Look at people who answered every phase
-dat <- dat %>%
-  mutate(TWO_WEEKS_PANDEMIC_selfharm_every_phase =
-           case_when( 
-                      (taf.meant_life_end_weeks_.Wavebaseline == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_1a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_1b == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_2a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_2b == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_3a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_3b == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_4a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_4b == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_5a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_6b == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_7a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_8b == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_9a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_10b == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_11a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_12b == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_13a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_14b == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_15a == "Yes" |
-                       taf.meant_life_end_weeks_.Wave_16b == "Yes" )
-                       ~ 1, # "Yes" at least once
-                        
-                       (is.na(taf.meant_life_end_weeks_.Wavebaseline) &
-                       is.na(taf.meant_life_end_weeks_.Wave_1a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_1b) &
-                       is.na(taf.meant_life_end_weeks_.Wave_2a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_2b) &
-                       is.na(taf.meant_life_end_weeks_.Wave_3a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_3b) &
-                       is.na(taf.meant_life_end_weeks_.Wave_4a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_4b) &
-                       is.na(taf.meant_life_end_weeks_.Wave_5a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_6b) &
-                       is.na(taf.meant_life_end_weeks_.Wave_7a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_8b) &
-                       is.na(taf.meant_life_end_weeks_.Wave_9a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_10b) &
-                       is.na(taf.meant_life_end_weeks_.Wave_11a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_12b) &
-                       is.na(taf.meant_life_end_weeks_.Wave_13a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_14b) &
-                       is.na(taf.meant_life_end_weeks_.Wave_15a) &
-                       is.na(taf.meant_life_end_weeks_.Wave_16b))
-                      ~ NA_real_, # Missing at every phase
-                     
-                       (taf.meant_life_end_weeks_.Wavebaseline == "No" &
-                       taf.meant_life_end_weeks_.Wave_1a == "No" &
-                       taf.meant_life_end_weeks_.Wave_1b == "No" &
-                       taf.meant_life_end_weeks_.Wave_2a == "No" &
-                       taf.meant_life_end_weeks_.Wave_2b == "No" &
-                       taf.meant_life_end_weeks_.Wave_3a == "No" &
-                       taf.meant_life_end_weeks_.Wave_3b == "No"&
-                       taf.meant_life_end_weeks_.Wave_4a == "No" &
-                       taf.meant_life_end_weeks_.Wave_4b == "No" &
-                       taf.meant_life_end_weeks_.Wave_5a == "No" &
-                       taf.meant_life_end_weeks_.Wave_6b == "No" &
-                       taf.meant_life_end_weeks_.Wave_7a == "No" &
-                       taf.meant_life_end_weeks_.Wave_8b == "No" &
-                       taf.meant_life_end_weeks_.Wave_9a == "No" &
-                       taf.meant_life_end_weeks_.Wave_10b == "No" &
-                       taf.meant_life_end_weeks_.Wave_11a == "No" &
-                       taf.meant_life_end_weeks_.Wave_12b == "No" &
-                       taf.meant_life_end_weeks_.Wave_13a == "No" &
-                       taf.meant_life_end_weeks_.Wave_14b == "No" &
-                       taf.meant_life_end_weeks_.Wave_15a == "No" &
-                       taf.meant_life_end_weeks_.Wave_16b == "No") ~ 0
-                    
-           ))
-                    
-   
-# Check
-dat %>%
-  freq(TWO_WEEKS_PANDEMIC_selfharm_every_phase)
+  select(starts_with("taf.meant_life_end_weeks_."))
 ```
 
 ### PREPANDEMIC self-harm 
@@ -653,87 +494,7 @@ dat %>%
 # Check NAs
 dat %>%
   filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wavebaseline)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_1a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_1b)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_2a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_2b)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_3a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_3b)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_4a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_4b)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_5a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_6b)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_7a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_8b)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_9a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_10b)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_11a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_12b)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_13a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_14b)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_15a)
-
-dat %>%
-  filter(is.na(outcome_phase_selfharm)) %>%
-  freq(taf.meant_life_end_weeks_.Wave_16b)
+  select(starts_with("taf.meant_life_end_weeks_."))
 ```
 
 # EXPOSURES / EXPLANATORY VARIABLES
@@ -915,6 +676,7 @@ dat <- dat %>%
                        outcome_phase_selfharm == "1a" | 
                        outcome_phase_selfharm == "1b" |
                         outcome_phase_selfharm == "2a")  ~ "To drop", # First experience of self-harm  occurred before first COVID test - need to drop
+                     
                      exposure_phase_positive_covid_test == "2b" & # First positive COVID test at phase 2b
                     outcome_phase_selfharm == "Not experienced" ~ "No outcome",  # Never experienced outcome (people who are all NA are coded as "Not answered")
                     
@@ -1586,19 +1348,10 @@ dat <- dat %>%
                 positive_covid_test_SH_13a == "To drop" |
                positive_covid_test_SH_14b == "To drop" |
                     positive_covid_test_SH_15a == "To drop" |
-              positive_covid_test_SH_16b == "To drop"~ "Positive test after self-harm",
+              positive_covid_test_SH_16b == "To drop"   | # Positive test after self-harm
                     
-                     # Not answered whether they'd taken a test
-                    exposure_phase_positive_covid_test == "All missing" ~ "Missing whether experienced COVID", # Need to be dropped
-                    
-                     # Not taken test
-                    exposure_phase_positive_covid_test == "Not taken test" ~ "Not taken test", 
-                    
-                    # Taken test but not given test result
-                    exposure_phase_positive_covid_test == "Test taken but not answered test result" ~ "Missing test result", # Need to be dropped
-                    
-                     # Not answered whether they'd experienced self-harm
-                    outcome_phase_selfharm == "Not answered or PNTA" ~ "Missing whether experienced self-harm", # Need to be dropped
+                    # Not answered whether they'd experienced self-harm
+                    outcome_phase_selfharm == "Not answered or PNTA" ~ "To drop", # Missing whether experienced self-harm
                     
                     # First positive test BEFORE first experience of self-harm
              positive_covid_test_SH_baseline == "Yes" |
@@ -1647,12 +1400,13 @@ dat <- dat %>%
                positive_covid_test_SH_16b == "No outcome" ~ "Exposure but no outcome",
                    
                    # Experienced outcome but not exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
-                     (outcome_phase_selfharm != "Not answered or PNTA" |
+             # These people may have not passed the screener, not taken tests, taken a test but received a negative or inconclusive result. Essentially, these people have never reported a positive test result or that they have been ill with COVID, however they have answered the question at least once (i.e., are not just missing for all questions)
+                   exposure_phase_positive_covid_test == "Not experienced" &
+                     (outcome_phase_selfharm != "Not answered or PNTA" &
                         outcome_phase_selfharm != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
+                   exposure_phase_positive_covid_test == "Not experienced" &
                      outcome_phase_selfharm == "Not experienced" ~ "Neither exposure nor outcome"
              )
 )
@@ -1664,12 +1418,11 @@ dat %>%
 # Create final variable of positive COVID test before SH outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_SH_final =
-           case_when(positive_covid_test_before_SH == "Positive test after self-harm" | # Need to drop people who first experienced outcome before first experience of exposure
-                     positive_covid_test_before_SH == "Missing whether experienced COVID" | # Need to drop people who never answered whether they'd taken a COVID test
-                       positive_covid_test_before_SH == "Missing test result" | # Taken a test but not indicated result of test
-                     positive_covid_test_before_SH == "Missing whether experienced self-harm" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced self-harm 
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered whether they'd experienced self-harm 
+             positive_covid_test_before_SH == "To drop" ~ NA_character_,  
                
-                     positive_covid_test_before_SH ==  "Not taken test" |
                     positive_covid_test_before_SH ==  "Outcome but no exposure" |
                      positive_covid_test_before_SH ==  "Neither exposure nor outcome" ~ "No",
                      
@@ -1688,13 +1441,14 @@ missing <- dat %>%
 
 # These people should all have experienced outcome before exposure, or missing test result etc    
 missing %>%
-  filter(exposure_phase_positive_covid_test != "All missing" &
-          outcome_phase_selfharm != "Not answered") %>%
+  filter(exposure_phase_positive_covid_test != "Not experienced" &
+          outcome_phase_selfharm != "Not answered or PNTA") %>%
   select(exposure_phase_positive_covid_test,
          outcome_phase_selfharm
          )
 ```
-
+196 people endorsed self-harm in a phase before the phase in which they endorsed a positive COVID test/being unwell with COVID.
+  
 ## Losing someone due to COVID-19 (grief)
 ```{r Lost someone exposure BEFORE outcome SH}
 # Baseline
@@ -2528,13 +2282,13 @@ dat <- dat %>%
                       lost_someone_SH_13a == "To drop" |
                     lost_someone_SH_14b == "To drop" |
                       lost_someone_SH_15a == "To drop" |
-                    lost_someone_SH_16b == "To drop" ~ "Lost someone after self-harm",
+                    lost_someone_SH_16b == "To drop" |  # Lost someone after self-harm
                     
                      # Not answered whether they'd lost someone
-                    exposure_phase_losing_someone == "Not answered or PNTA" ~ "Missing whether lost someone", # Need to be dropped
+                    exposure_phase_losing_someone == "Not answered or PNTA" |  # Missing whether lost someone
                     
                     # Not answered whether they'd experienced self-harm
-                    outcome_phase_selfharm == "Not answered or PNTA" ~ "Missing whether experienced self-harm", # Need to be dropped
+                    outcome_phase_selfharm == "Not answered or PNTA" ~ "To drop", # Missing whether experienced self-harm
                     
                   # First lost someone BEFORE first experience of self-harm
                    lost_someone_SH_baseline == "Yes" |
@@ -2584,7 +2338,7 @@ dat <- dat %>%
                   
                    # Experienced outcome but not exposure
                    exposure_phase_losing_someone == "Not lost someone" &
-                     (outcome_phase_selfharm != "Not answered or PNTA" |
+                     (outcome_phase_selfharm != "Not answered or PNTA" &
                         outcome_phase_selfharm != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -2599,12 +2353,15 @@ dat %>%
 # Create final variable of lost someone before SH outcome
 dat <- dat %>%
   mutate(lost_someone_before_SH_final =
-           case_when(losing_someone_before_SH == "Lost someone after self-harm" | # Need to drop people who first experienced outcome before first experience of exposure
-                     losing_someone_before_SH == "Missing whether lost someone" | # Need to drop people who never answered or put PNTA for whether they'd lost someone
-                     losing_someone_before_SH == "Missing whether experienced self-harm ideation" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced self-harm ideation
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd lost someone
+             # Need to drop people who never answered whether they'd experienced self-harm ideation
+             
+                 losing_someone_before_SH == "To drop" ~ NA_character_,  
                      
-                       losing_someone_before_SH ==  "Outcome but no exposure" |
-                     losing_someone_before_SH ==  "Neither exposure nor outcome" ~ "No",
+                 losing_someone_before_SH ==  "Outcome but no exposure" |
+                 losing_someone_before_SH ==  "Neither exposure nor outcome" ~ "No",
                     
                     losing_someone_before_SH == "Exposure but no outcome" |
                     losing_someone_before_SH == "Lost someone before self-harm" ~ "Yes")
@@ -2627,6 +2384,7 @@ missing %>%
          outcome_phase_selfharm
          )
 ```
+199 people reported losing someone in a phase after experiencing self-harm.
 
 ## Change in main eco activity (work/education)
 ```{r Change in main eco activity BEFORE outcome SH}
@@ -3445,13 +3203,13 @@ dat <- dat %>%
                     main_eco_change_SH_13a == "To drop" |
                        main_eco_change_SH_14b == "To drop" |
                     main_eco_change_SH_15a == "To drop" |
-                       main_eco_change_SH_16b == "To drop" ~ "Change in eco activity after self-harm",
+                       main_eco_change_SH_16b == "To drop" |  # Change in eco activity after self-harm
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_main_eco_change == "Missing at every phase" ~ "Missing whether change in eco activity", # Need to be dropped
+                    exposure_phase_main_eco_change == "Missing at every phase" |  # Missing whether change in eco activity
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_selfharm == "Not answered or PNTA" ~ "Missing whether experienced self-harm", # Need to be dropped
+                    outcome_phase_selfharm == "Not answered or PNTA" ~ "To drop", # Missing whether experienced self-harm
                     
                   # First exposure BEFORE first experience of outcome
                     main_eco_change_SH_baseline == "Yes" |
@@ -3501,7 +3259,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_main_eco_change == "No change in eco activity" &
-                     (outcome_phase_selfharm != "Not answered or PNTA" |
+                     (outcome_phase_selfharm != "Not answered or PNTA" &
                         outcome_phase_selfharm!= "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -3518,9 +3276,12 @@ dat %>%
 # Create final variable of first exposure before first outcome
 dat <- dat %>%
   mutate(main_eco_change_before_SH_final =
-           case_when(main_eco_change_before_SH == "Change in eco activity after self-harm" | # Need to drop people who first experienced outcome before first experience of exposure
-                     main_eco_change_before_SH == "Missing whether change in eco activity" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
-                      main_eco_change_before_SH == "Missing whether experienced self-harm" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
+             # Need to drop people who never answered whether they'd experienced outcome
+             
+             main_eco_change_before_SH == "To drop" ~ NA_character_,  
                      
                       main_eco_change_before_SH ==  "Outcome but no exposure" |
                       main_eco_change_before_SH ==  "Neither exposure nor outcome" ~ "No",
@@ -3547,6 +3308,7 @@ missing %>%
          outcome_phase_selfharm
          )
 ```
+140 people reported self-harm BEFORE the phase they reported main eco change.
 
 ## Change in living situation
 ```{r Change in living situation BEFORE outcome SH}
@@ -4370,13 +4132,13 @@ dat <- dat %>%
                     living_situation_change_SH_13a == "To drop" |
                       living_situation_change_SH_14b == "To drop" |
                     living_situation_change_SH_15a == "To drop" |
-                      living_situation_change_SH_16b == "To drop"  ~ "Change in living situation after self-harm",
+                      living_situation_change_SH_16b == "To drop" |  # Change in living situation after self-harm
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_living_situation_change == "Missing at every phase" ~ "Missing whether change in living situation", # Need to be dropped
+                    exposure_phase_living_situation_change == "Missing at every phase" | # Missing whether change in living situation
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_selfharm == "Not answered or PNTA" ~ "Missing whether experienced self-harm", # Need to be dropped
+                    outcome_phase_selfharm == "Not answered or PNTA" ~ "To drop", # Missing whether experienced self-harm
                     
                   # First exposure BEFORE first experience of outcome
                     living_situation_change_SH_baseline == "Yes" |
@@ -4426,7 +4188,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_living_situation_change == "No change in living situation" &
-                     (outcome_phase_selfharm != "Not answered or PNTA" |
+                     (outcome_phase_selfharm != "Not answered or PNTA" &
                         outcome_phase_selfharm != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -4443,9 +4205,12 @@ dat %>%
 # Create final variable of exposure before outcome
 dat <- dat %>%
   mutate(living_situation_change_before_SH_final =
-           case_when(living_situation_change_before_SH == "Change in living situation after self-harm" | # Need to drop people who first experienced outcome before first experience of exposure
-                     living_situation_change_before_SH == "Missing whether change in living situation" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
-                     living_situation_change_before_SH == "Missing whether experienced self-harm" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced the outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
+             # Need to drop people who never answered whether they'd experienced the outcome
+             
+             living_situation_change_before_SH == "To drop" ~ NA_character_,  
                      
                        living_situation_change_before_SH ==  "Outcome but no exposure" |
                      living_situation_change_before_SH ==  "Neither exposure nor outcome" ~ "No",
@@ -4470,6 +4235,7 @@ missing %>%
          outcome_phase_selfharm
          )
 ```
+229 people reported self-harm BEFORE change in living situation.
 
 # Saving dataset
 ## Select & save variables needed for analysis
