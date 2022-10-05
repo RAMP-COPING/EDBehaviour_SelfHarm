@@ -1147,14 +1147,19 @@ dat %>%
 dat <- dat %>%
   mutate(NEW_harmful_ideation_pandemic =
            case_when(
-             NEW_selfharm_ideation_pandemic == 1 |
-             NEW_passive_suicidal_ideation_pandemic == 1 ~ 1,
+             # Didn't experience either prepandemic, and went on to experience one during the pandemic
+             ((PREPANDEMIC_passive_suicidal_ideation == 0 &
+               PREPANDEMIC_selfharm_ideation == 0) &
+             (NEW_selfharm_ideation_pandemic == 1 |
+             NEW_passive_suicidal_ideation_pandemic == 1) ~ 1),
              
+             # Didn't experience either prepandemic, and did not experience either during the pandemic
+              ((PREPANDEMIC_passive_suicidal_ideation == 0 &
+               PREPANDEMIC_selfharm_ideation == 0) &
              NEW_selfharm_ideation_pandemic == 0 &
-             NEW_passive_suicidal_ideation_pandemic == 0 ~ 0
+             NEW_passive_suicidal_ideation_pandemic == 0 ~ 0)
              
            ))
-
 # Check
 dat %>%
   freq(NEW_harmful_ideation_pandemic)
@@ -1252,11 +1257,17 @@ dat %>%
 dat <- dat %>%
   mutate(sens_NEW_harmful_ideation_pandemic =
            case_when(
-               sens_NEW_selfharm_ideation_pandemic == 1 |
-               sens_NEW_passive_suicidal_ideation_pandemic == 1 ~ 1,
-             
-               sens_NEW_selfharm_ideation_pandemic == 0 &
-               sens_NEW_passive_suicidal_ideation_pandemic == 0 ~ 0
+              # Didn't experience either prepandemic, and went on to experience one during the pandemic
+             ((PREPANDEMIC_passive_suicidal_ideation == 0 &
+               PREPANDEMIC_selfharm_ideation == 0) &
+               (sens_NEW_selfharm_ideation_pandemic == 1 |
+               sens_NEW_passive_suicidal_ideation_pandemic == 1) ~ 1),
+              
+             # Didn't experience either prepandemic, and did not experience either during the pandemic
+              ((PREPANDEMIC_passive_suicidal_ideation == 0 &
+               PREPANDEMIC_selfharm_ideation == 0) &
+                sens_NEW_selfharm_ideation_pandemic == 0 &
+               sens_NEW_passive_suicidal_ideation_pandemic == 0 ~ 0)
              
            ))
 

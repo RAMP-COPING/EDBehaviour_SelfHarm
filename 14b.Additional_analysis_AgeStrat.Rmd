@@ -1,0 +1,713 @@
+---
+title: 'Additional analysis: Age stratified by sex'
+author: "Helena Davies"
+date: "05/10/2022"
+output: html_document
+---
+
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools",
+              "sjlabelled",
+              "Amelia",
+              "gtsummary",
+              "broom",
+              "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in data
+```{r Read in data}
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-10-04.rds")
+dim(dat)
+colnames(dat)
+```
+
+## Stratify by age
+```{r stratify by age}
+dat_1625 <- dat %>%
+  filter(age_category_COVID_baseline == "16-25")
+
+dat_2635 <- dat %>%
+  filter(age_category_COVID_baseline == "26-35")
+
+dat_3645 <- dat %>%
+  filter(age_category_COVID_baseline == "36-45")
+
+dat_4655 <- dat %>%
+  filter(age_category_COVID_baseline == "46-55")
+
+dat_5665 <- dat %>%
+  filter(age_category_COVID_baseline == "56-65")
+
+dat_6670 <- dat %>%
+  filter(age_category_COVID_baseline == "66-70")
+
+dat_71plus <- dat %>%
+  filter(age_category_COVID_baseline == "71+")
+```
+
+# Binge eating
+```{r Binge eating sex 16-25 model}
+# Reference category
+dat_1625 <- within(dat_1625,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_binge_eating_pandemic ~  
+                 sex_binary,
+                 data = dat_1625,
+                 family = "binomial"
+              )
+
+binge_eating_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+binge_eating_sex
+```
+
+```{r Binge eating sex 26-35 model}
+# Reference category
+dat_2635 <- within(dat_2635,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_binge_eating_pandemic ~  
+                 sex_binary,
+                 data = dat_2635,
+                 family = "binomial"
+              )
+
+binge_eating_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+binge_eating_sex
+```
+
+```{r Binge eating sex 36-45 model}
+# Reference category
+dat_3645 <- within(dat_3645,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_binge_eating_pandemic ~  
+                 sex_binary,
+                 data = dat_3645,
+                 family = "binomial"
+              )
+
+binge_eating_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+binge_eating_sex
+```
+
+```{r Binge eating sex 46-55 model}
+# Reference category
+dat_4655 <- within(dat_4655,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_binge_eating_pandemic ~  
+                 sex_binary,
+                 data = dat_4655,
+                 family = "binomial"
+              )
+
+binge_eating_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+binge_eating_sex
+```
+
+
+```{r Binge eating sex 56-65 model}
+# Reference category
+dat_5665 <- within(dat_5665,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_binge_eating_pandemic ~  
+                 sex_binary,
+                 data = dat_5665,
+                 family = "binomial"
+              )
+
+binge_eating_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+binge_eating_sex
+```
+
+```{r Binge eating sex 66-70 model}
+# Reference category
+dat_6670 <- within(dat_6670,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_binge_eating_pandemic ~  
+                 sex_binary,
+                 data = dat_6670,
+                 family = "binomial"
+              )
+
+binge_eating_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+binge_eating_sex
+```
+
+```{r Binge eating sex 71+ model}
+# Reference category
+dat_71plus <- within(dat_71plus,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_binge_eating_pandemic ~  
+                 sex_binary,
+                 data = dat_71plus,
+                 family = "binomial"
+              )
+
+binge_eating_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+binge_eating_sex
+```
+
+
+# Low weight 
+```{r Low weight sex 16-25 model}
+# Reference category
+dat_1625 <- within(dat_1625,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_low_weight_pandemic ~  
+                 sex_binary,
+                 data = dat_1625,
+                 family = "binomial"
+              )
+
+low_weight_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+low_weight_sex
+```
+
+```{r Low weight sex 26-35 model}
+# Reference category
+dat_2635 <- within(dat_2635,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_low_weight_pandemic ~  
+                 sex_binary,
+                 data = dat_2635,
+                 family = "binomial"
+              )
+
+low_weight_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+low_weight_sex
+```
+
+```{r Low weight sex 36-45 model}
+# Reference category
+dat_3645 <- within(dat_3645,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_low_weight_pandemic ~  
+                 sex_binary,
+                 data = dat_3645,
+                 family = "binomial"
+              )
+
+low_weight_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+low_weight_sex
+```
+
+```{r Low weight sex 46-55 model}
+# Reference category
+dat_4655 <- within(dat_4655,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_low_weight_pandemic ~  
+                 sex_binary,
+                 data = dat_4655,
+                 family = "binomial"
+              )
+
+low_weight_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+low_weight_sex
+```
+
+
+```{r Low weight sex 56-65 model}
+# Reference category
+dat_5665 <- within(dat_5665,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_low_weight_pandemic ~  
+                 sex_binary,
+                 data = dat_5665,
+                 family = "binomial"
+              )
+
+low_weight_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+low_weight_sex
+```
+
+```{r Low weight sex 66-70 model}
+# Reference category
+dat_6670 <- within(dat_6670,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_low_weight_pandemic ~  
+                 sex_binary,
+                 data = dat_6670,
+                 family = "binomial"
+              )
+
+low_weight_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+low_weight_sex
+```
+
+```{r Low weight sex 71+ model}
+# Reference category
+dat_71plus <- within(dat_71plus,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_low_weight_pandemic ~  
+                 sex_binary,
+                 data = dat_71plus,
+                 family = "binomial"
+              )
+
+low_weight_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+low_weight_sex
+```
+
+# Harmful ideation 
+```{r Harmful ideation sex 16-25 model}
+# Reference category
+dat_1625 <- within(dat_1625,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_harmful_ideation_pandemic ~  
+                 sex_binary,
+                 data = dat_1625,
+                 family = "binomial"
+              )
+
+harmful_ideation_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+harmful_ideation_sex
+```
+
+```{r Harmful ideation sex 26-35 model}
+# Reference category
+dat_2635 <- within(dat_2635,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_harmful_ideation_pandemic ~  
+                 sex_binary,
+                 data = dat_2635,
+                 family = "binomial"
+              )
+
+harmful_ideation_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+harmful_ideation_sex
+```
+
+```{r Harmful ideation sex 36-45 model}
+# Reference category
+dat_3645 <- within(dat_3645,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_harmful_ideation_pandemic ~  
+                 sex_binary,
+                 data = dat_3645,
+                 family = "binomial"
+              )
+
+harmful_ideation_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+harmful_ideation_sex
+```
+
+```{r Harmful ideation sex 46-55 model}
+# Reference category
+dat_4655 <- within(dat_4655,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_harmful_ideation_pandemic ~  
+                 sex_binary,
+                 data = dat_4655,
+                 family = "binomial"
+              )
+
+harmful_ideation_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+harmful_ideation_sex
+```
+
+
+```{r Harmful ideation sex 56-65 model}
+# Reference category
+dat_5665 <- within(dat_5665,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_harmful_ideation_pandemic ~  
+                 sex_binary,
+                 data = dat_5665,
+                 family = "binomial"
+              )
+
+harmful_ideation_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+harmful_ideation_sex
+```
+
+```{r Harmful ideation sex 66-70 model}
+# Reference category
+dat_6670 <- within(dat_6670,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_harmful_ideation_pandemic ~  
+                 sex_binary,
+                 data = dat_6670,
+                 family = "binomial"
+              )
+
+harmful_ideation_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+harmful_ideation_sex
+```
+
+```{r Harmful ideation sex 71+ model}
+# Reference category
+dat_71plus <- within(dat_71plus,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_harmful_ideation_pandemic ~  
+                 sex_binary,
+                 data = dat_71plus,
+                 family = "binomial"
+              )
+
+harmful_ideation_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+harmful_ideation_sex
+```
+
+# Self-harm 
+```{r Self-harm sex 16-25 model}
+# Reference category
+dat_1625 <- within(dat_1625,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_selfharm_pandemic ~  
+                 sex_binary,
+                 data = dat_1625,
+                 family = "binomial"
+              )
+
+selfharm_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+selfharm_sex
+```
+
+```{r Self-harm sex 26-35 model}
+# Reference category
+dat_2635 <- within(dat_2635,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_selfharm_pandemic ~  
+                 sex_binary,
+                 data = dat_2635,
+                 family = "binomial"
+              )
+
+selfharm_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+selfharm_sex
+```
+
+```{r Self-harm sex 36-45 model}
+# Reference category
+dat_3645 <- within(dat_3645,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_selfharm_pandemic ~  
+                 sex_binary,
+                 data = dat_3645,
+                 family = "binomial"
+              )
+
+selfharm_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+selfharm_sex
+```
+
+```{r Self-harm sex 46-55 model}
+# Reference category
+dat_4655 <- within(dat_4655,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_selfharm_pandemic ~  
+                 sex_binary,
+                 data = dat_4655,
+                 family = "binomial"
+              )
+
+selfharm_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+selfharm_sex
+```
+
+
+```{r Self-harm sex 56-65 model}
+# Reference category
+dat_5665 <- within(dat_5665,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_selfharm_pandemic ~  
+                 sex_binary,
+                 data = dat_5665,
+                 family = "binomial"
+              )
+
+selfharm_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+selfharm_sex
+```
+
+```{r Self-harm sex 66-70 model}
+# Reference category
+dat_6670 <- within(dat_6670,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_selfharm_pandemic ~  
+                 sex_binary,
+                 data = dat_6670,
+                 family = "binomial"
+              )
+
+selfharm_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+selfharm_sex
+```
+
+```{r Self-harm sex 71+ model}
+# Reference category
+dat_71plus <- within(dat_71plus,
+              sex_binary <- relevel(factor(sex_binary),
+                                    ref = "Male"))
+
+model_sex <- glm(NEW_selfharm_pandemic ~  
+                 sex_binary,
+                 data = dat_71plus,
+                 family = "binomial"
+              )
+
+selfharm_sex <- tidy(model_sex,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_sex) %>% 
+  length()
+
+selfharm_sex
+```

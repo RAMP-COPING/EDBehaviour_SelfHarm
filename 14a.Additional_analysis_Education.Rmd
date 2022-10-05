@@ -1,0 +1,269 @@
+---
+title: "Additional analysis: with education included but not people aged 16-25"
+author: "Helena Davies"
+date: "12/05/2022"
+output: html_document
+---
+
+Configure global options for all chunks
+```{r Setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  comment = '',
+  prompt = FALSE,
+  cache = FALSE
+  )
+```
+
+Clear global environment prior to initiation
+```{r Clear global environment}
+remove(list = ls())
+```
+
+Read in file with path to data channel
+```{r Read in file with path to data channel}
+source(file = "../credentials/paths.R")
+```
+
+Add the add_numeric function - used to convert character variables into numeric variables
+Add the remove_duplicates function - used to deduplicate and remove NAs from IDs
+Add the sumscores function - used to generate sumscores
+Add the package_check function - used to install and load dependencies
+Add the imp_check function - used to check variables for implausible values
+```{r Read in functions}
+source(file = paste0(filepath_functions, "add_numeric.R"))
+source(file = paste0(filepath_functions, "remove_duplicates.R"))
+source(file = paste0(filepath_functions, "package_check.R"))
+source("./functions.R")
+```
+
+Use package_check to install and load dependencies
+Load tidyverse last
+```{r Install load dependencies}
+packages <- c("summarytools",
+              "sjlabelled",
+              "Amelia",
+              "gtsummary",
+              "broom",
+              "tidyverse")
+package_check(packages)
+```
+
+Retrieve recent date
+We are using the recent date to save files with paste0() as an extension to not overwrite old versions
+```{r Recent date}
+date <- Sys.Date()
+date
+```
+
+# Read in data
+```{r Read in data}
+dat <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-10-04.rds")
+dim(dat)
+colnames(dat)
+```
+
+# Exclude people aged 16-25
+```{r exclude people aged 16-26}
+dat <- dat %>%
+  filter(age_category_COVID_baseline != "16-25")
+
+# Check
+dat %>%
+  freq(age_category_COVID_baseline)
+
+33529-36715
+```
+
+```{r change panworry to factor}
+dat <- dat %>%
+  mutate(panworry_factor =
+           case_when(panworry_total_score > -1 &
+                       panworry_total_score <= 20 ~ "0-20",
+             
+                     panworry_total_score > 20 &
+                       panworry_total_score <= 40 ~ "21-40",
+                     
+                     panworry_total_score > 40 &
+                      panworry_total_score <= 60 ~ "41-60",
+                     
+                      panworry_total_score > 60 &
+                      panworry_total_score <= 80 ~ "61-80"
+                     )
+         )
+```
+
+### Re-ordering variables / converting to factors
+First, re-order all variables to get desired reference category for plotting - put largest category as reference
+Age
+```{r Re-order age levels}
+dat <- dat %>%
+  mutate(age_category_COVID_baseline = factor(age_category_COVID_baseline,
+                       levels = c("46-55",
+                          # Mid-life
+                                  #"16-25",
+                                  "26-35",
+                                  "36-45",
+                                  "56-65", 
+                                   "66-70",
+                                   "71+")
+                       )
+         )
+
+# Check
+dat %>%
+  freq(age_category_COVID_baseline)
+```
+
+Race
+```{r Re-order race levels}
+dat <- dat %>%
+  mutate(race_binary = factor(race_binary,
+                       levels = c("White", # Largest category
+                                  "Racially minoritised"
+                                  )))
+dat %>%
+  freq(race_binary)
+```
+
+Psychiatric disorder
+```{r  Re-order psych disorder levels}
+# First recode to "Yes" and "No"
+dat <- dat %>%
+  mutate(psych_disorder_factor =
+           case_when(
+            mental_health_diagnosis == "Psychiatric disorder" ~ "Yes", 
+            mental_health_diagnosis == "No psychiatric disorder" ~ "No")
+  )
+
+# Check 
+dat %>%
+  freq(psych_disorder_factor)
+
+# Then change order
+dat <- dat %>%
+  mutate(psych_disorder_factor = factor(psych_disorder_factor,
+                       levels = c( "No", # Ref category
+                                  "Yes"
+                                  )))
+
+# Check again
+dat %>%
+  freq(psych_disorder_factor)
+```
+
+Employment
+```{r Re-order employment levels}
+dat <- dat%>%
+  mutate(paid_employment_key_worker = factor(paid_employment_key_worker,
+                       levels = c("Paid employment",  
+                                  "Key worker",
+                                  "Not paid employment",
+                                  "Retired",
+                                  "Student"
+                                  )
+                       )
+         )
+
+# Check
+dat %>%
+  freq(paid_employment_key_worker)
+```
+
+# REGRESSION MODELS
+## Binge eating
+```{r Binge eating education model}
+# Reference category
+dat <- within(dat,
+              highest_education <- relevel(highest_education,
+                                                     ref = "No formal qualifications"))
+
+model_edu <- glm(NEW_binge_eating_pandemic ~  
+                 highest_education +
+                   age_category_COVID_baseline +
+                   sex_binary + 
+                   race_binary +
+                   psych_disorder_factor,
+                 data = dat,
+                 family = "binomial"
+              )
+
+binge_eating_edu <- tidy(model_edu,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_edu) %>% 
+  length()
+
+binge_eating_edu
+```
+
+## Low weight
+```{r Low weight education model}
+model_edu <- glm(NEW_low_weight_pandemic ~  
+                 highest_education +
+                   age_category_COVID_baseline +
+                   sex_binary + 
+                   race_binary +
+                   psych_disorder_factor,
+                 data = dat,
+                 family = "binomial"
+              )
+
+low_weight_edu <- tidy(model_edu,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_edu) %>% 
+  length()
+
+low_weight_edu
+```
+
+## Suicidal and/or self=harm ideation
+```{r Harmful ideation education model}
+model_edu <- glm(NEW_harmful_ideation_pandemic ~  
+                 highest_education +
+                   age_category_COVID_baseline +
+                   sex_binary + 
+                   race_binary +
+                   psych_disorder_factor,
+                 data = dat,
+                 family = "binomial"
+              )
+
+harmful_ideation_edu <- tidy(model_edu,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_edu) %>% 
+  length()
+
+harmful_ideation_edu
+```
+
+## Self-harm
+```{r self-harm education model}
+model_edu <- glm(NEW_selfharm_pandemic ~  
+                 highest_education +
+                   age_category_COVID_baseline +
+                   sex_binary + 
+                   race_binary +
+                   psych_disorder_factor,
+                 data = dat,
+                 family = "binomial"
+              )
+
+selfharm_edu <- tidy(model_edu,
+     conf.int=TRUE,
+     exponentiate=TRUE)
+
+fitted(model_edu) %>% 
+  length()
+
+selfharm_edu
+```
+
+
+
+

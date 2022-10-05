@@ -54,7 +54,7 @@ date
 
 # Read in data
 ```{r read in data}
-dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-09-27.rds"))
+dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-10-04.rds"))
 
 dat_raw %>%
   colnames()
@@ -140,7 +140,7 @@ dat_completed <- dat_edgi_nbr %>%
 
 # Read in data (again)
 ```{r read in data}
-dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-09-27.rds"))
+dat_raw <- readRDS(paste0(filepath_saved_data, "final_dat_merged_2022-10-04.rds"))
 
 # Keep only those with completed COPING or RAMP data
 dat <- dat_raw %>%
@@ -229,15 +229,21 @@ dat <- dat %>%
          cohort != "NAFLD")
 ```
 
+# Save for comparing with complete data
+```{r}
+dat %>%
+  saveRDS(paste0(filepath_saved_data, "final_dat_merged_FIRST_exclusions_", date, ".rds"))
+```
+
 # Create groups with data on outcome
 ```{r binge eating group}
 dat_BE_possible <- dat %>%
   filter(lifetime_binge_eating_baseline_numeric == 0) # Those who reported no pre-pandemic binge eating make up our possible binge eating sample
 
-dat_BE <- dat_BE_possible %>%
+dat_BE <- dat %>%
   filter(!is.na(NEW_binge_eating_pandemic))
 
-nrow(dat_BE)-nrow(dat_BE_possible)
+nrow(dat_BE)-nrow(dat)
 ```
 Of those who had no pre-pandemic binge eating (30,818), 6607 people were missing for new onset binge eating during the pandemic.
 
@@ -276,7 +282,7 @@ dat_SH <- dat_SH_possible %>%
 
 nrow(dat_SH)-nrow(dat_SH_possible)
 ```
-Of those who had no pre-pandemic self-harm (30,016), 68 were missing for new onset harmful ideation during the pandemic.
+Of those who had no pre-pandemic self-harm (30,016), 68 were missing for new onset self-harm during the pandemic.
 
 
 # First, for each outcome, exclude people for missing data on ALL exposures
@@ -311,6 +317,12 @@ dat_BE_no_NA_exp_age <- dat_BE_no_NA_exp %>%
 nrow(dat_BE_no_NA_exp_age)-nrow(dat_BE_no_NA_exp)
 ```
 
+```{r sex missing binge eating}
+dat_BE_no_NA_exp_sex <- dat_BE_no_NA_exp %>%
+  drop_na(sex_binary)
+nrow(dat_BE_no_NA_exp_sex)-nrow(dat_BE_no_NA_exp)
+```
+
 ```{r gender missing binge eating}
 dat_BE_no_NA_exp_gender <- dat_BE_no_NA_exp %>%
   drop_na(minoritised_gender)
@@ -338,13 +350,6 @@ dat_BE_no_NA_exp_employ <- dat_BE_no_NA_exp %>%
 nrow(dat_BE_no_NA_exp_employ)-nrow(dat_BE_no_NA_exp)
 ```        
 44 missing for employment.
-
-```{r sex missing binge eating}
-dat_BE_no_NA_exp_sex <- dat_BE_no_NA_exp %>%
-  drop_na(sex_binary)
-nrow(dat_BE_no_NA_exp_sex)-nrow(dat_BE_no_NA_exp)
-```  
-74 missing for sex.
 
 ```{r vulnerable group member missing binge eating}
 dat_BE_no_NA_exp_vuln <- dat_BE_no_NA_exp %>%
@@ -801,6 +806,7 @@ dat <- dat %>%
 dat %>%
   freq(SH_data_for_model)
 ```
+
 # Keep people only included in at least one model
 ```{r keep those in at least one model}
 dat_final <- dat %>%

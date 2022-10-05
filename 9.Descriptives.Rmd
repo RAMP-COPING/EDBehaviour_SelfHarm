@@ -55,7 +55,7 @@ date
 # Read in data
 ## Final cleaned data
 ```{r Read in data}
-dat_cleaned <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-09-26.rds")
+dat_cleaned <- readRDS(file = "../data_cleaned/final_dat_merged_exclusions_2022-09-27.rds")
 
 # Check
 dim(dat_cleaned)
@@ -332,70 +332,20 @@ dat_final <- dplyr::left_join(dat,
 # Freq of descriptives within each regression model
 ## First, create groups 
 ```{r create groups}
-binge_eating_group <- dat_final %>% # 18,172
-   filter( !is.na(NEW_binge_eating_pandemic) &
-             !is.na(age_category_COVID_baseline) & 
-             !is.na(sex_binary) &
-             !is.na(minoritised_gender) &
-             !is.na(race_binary) & 
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(positive_covid_test_before_BE_final) &
-             !is.na(main_eco_change_before_BE_final)  &
-             !is.na(lost_someone_before_BE_final) &
-             !is.na(living_situation_change_before_BE_final)
-          ) 
+binge_eating_group <- dat_final %>% # 24,211
+   filter( BE_data_for_model == 1)
+          
 
+low_weight_group <- dat_final %>% # 24,364
+   filter( LW_data_for_model == 1 ) 
+           
 
-low_weight_group <- dat_final %>% # 19,148
-   filter( !is.na(NEW_low_weight_pandemic) &
-             !is.na(age_category_COVID_baseline) & 
-             !is.na(sex_binary) &
-             !is.na(minoritised_gender) &
-             !is.na(race_binary) & 
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(positive_covid_test_before_LW_final) &
-             !is.na(main_eco_change_before_LW_final)  &
-             !is.na(lost_someone_before_LW_final) &
-             !is.na(living_situation_change_before_LW_final) 
-           )
+harmful_ideation_group <- dat_final %>% # 18,040
+   filter( HI_data_for_model == 1 )
+          
 
-harmful_ideation_group <- dat_final %>% # 12,650
-   filter( !is.na(NEW_harmful_ideation_pandemic) &
-             !is.na(age_category_COVID_baseline) & 
-             !is.na(sex_binary) &
-             !is.na(minoritised_gender) &
-             !is.na(race_binary) & 
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(positive_covid_test_before_HI_final) &
-             !is.na(main_eco_change_before_HI_final)  &
-             !is.na(lost_someone_before_HI_final) &
-             !is.na(living_situation_change_before_HI_final)
-          ) 
-
-selfharm_group <- dat_final %>% # 20,266
-   filter(!is.na(NEW_selfharm_pandemic) &
-             !is.na(age_category_COVID_baseline) & 
-             !is.na(sex_binary) &
-             !is.na(minoritised_gender) &
-             !is.na(race_binary) & 
-             !is.na(mental_health_diagnosis) &
-             !is.na(paid_employment_key_worker) & 
-             !is.na(vulnerable_group_member) &
-             !is.na(panworry_total_score) & 
-             !is.na(positive_covid_test_before_SH_final) &
-             !is.na(main_eco_change_before_SH_final)  &
-             !is.na(lost_someone_before_SH_final) &
-             !is.na(living_situation_change_before_SH_final)
-          ) 
+selfharm_group <- dat_final %>% # 29,948
+   filter(SH_data_for_model == 1)
 ```
 
 # Signup BMIs - formatted for manuscript
@@ -504,15 +454,15 @@ ggpubr::ggarrange(signup_BMI_whole_sample_qqplot,
           signup_BMI_SH_qqplot,
           signup_BMI_SH_histogram,
           font.label = list(size = 18),
-          labels = c("Whole sample (n = 25,412)",
+          labels = c("Whole sample (n = 36,715)",
                      "",
-                     "Binge eating subsample (n = 18,172)",
+                     "Binge eating subsample (n = 24,211)",
                      "",
-                     "Low weight subsample (n = 19,148)",
+                     "Low weight subsample (n = 24,364)",
                      "",
-                     "Suicidal and/or self-harm subsample (n = 12,650)",
+                     "Suicidal and/or self-harm subsample (n = 18,040)",
                      "",
-                      "Self-harm subsample (n = 20,266)"
+                      "Self-harm subsample (n = 29,948)"
                      ),
           hjust = 0.001,
           ncol = 2,
@@ -627,15 +577,15 @@ ggpubr::ggarrange(lowest_BMI_whole_sample_qqplot,
           lowest_BMI_SH_qqplot,
           lowest_BMI_SH_histogram,
           font.label = list(size = 18),
-          labels = c("Whole sample (n = 25,412)",
+          labels = c("Whole sample (n = 36,715)",
                      "",
-                     "Binge eating subsample (n = 18,172)",
+                     "Binge eating subsample (n = 24,211)",
                      "",
-                     "Low weight subsample (n = 19,148)",
+                     "Low weight subsample (n = 24,364)",
                      "",
-                     "Suicidal and/or self-harm subsample (n = 12,650)",
+                     "Suicidal and/or self-harm subsample (n = 18,040)",
                      "",
-                      "Self-harm subsample (n = 20,266)"
+                      "Self-harm subsample (n = 29,948)"
                      ),
           hjust = 0.001,
           ncol = 2,
@@ -750,15 +700,15 @@ ggpubr::ggarrange(highest_BMI_whole_sample_qqplot,
           highest_BMI_SH_qqplot,
           highest_BMI_SH_histogram,
           font.label = list(size = 18),
-          labels = c("Whole sample (n = 25,412)",
+          labels = c("Whole sample (n = 36,715)",
                      "",
-                     "Binge eating subsample (n = 18,172)",
+                     "Binge eating subsample (n = 24,211)",
                      "",
-                     "Low weight subsample (n = 19,148)",
+                     "Low weight subsample (n = 24,364)",
                      "",
-                     "Suicidal and/or self-harm subsample (n = 12,650)",
+                     "Suicidal and/or self-harm subsample (n = 18,040)",
                      "",
-                      "Self-harm subsample (n = 20,266)"
+                      "Self-harm subsample (n = 29,948)"
                      ),
           hjust = 0.001,
           ncol = 2,
@@ -805,8 +755,8 @@ IQR(na.omit(binge_eating_group$dem.bmi_signup_cop))
 binge_eating_group %>%
   select(age_category_COVID_baseline,
          sex_binary,
-          minoritised_gender,
-         gender,
+         # minoritised_gender,
+          gender,
          transgender,
          race_categories,
          merged_highest_education
@@ -828,7 +778,7 @@ IQR(na.omit(low_weight_group$dem.bmi_signup_cop))
 low_weight_group %>%
   select(age_category_COVID_baseline,
          sex_binary,
-         minoritised_gender,
+        # minoritised_gender,
          gender,
          transgender,
          race_categories,
@@ -850,7 +800,7 @@ IQR(na.omit(harmful_ideation_group$dem.bmi_signup_cop))
 harmful_ideation_group %>%
   select(age_category_COVID_baseline,
          sex_binary,
-           minoritised_gender,
+        #   minoritised_gender,
          gender,
          transgender,
          race_categories,
@@ -872,7 +822,7 @@ IQR(na.omit(selfharm_group$dem.bmi_signup_cop))
 selfharm_group %>%
   select(age_category_COVID_baseline,
          sex_binary,
-          minoritised_gender,
+        #  minoritised_gender,
          gender,
          transgender,
          race_categories,
@@ -1157,35 +1107,27 @@ selfharm_group %>%
 # Percentage new onset - whole sample
 ```{r percentage new onset binge eating}
 dat %>%
-  filter(BE_model_included == 1) %>%
+  filter(BE_data_for_model == 1) %>%
   freq(NEW_binge_eating_pandemic)
-
-(3064/18172)*100 # 16.9%
 ``` 
 
 ```{r percentage new onset low weight}
 dat %>%
-  filter(LW_model_included == 1) %>%
+  filter(LW_data_for_model == 1) %>%
   freq(NEW_low_weight_pandemic)
-
-(1701/19148)*100 # 8.9%
 ```
 
 ```{r percentage new onset harmful ideation}
 dat %>%
-  filter(HI_model_included == 1) %>%
+  filter(HI_data_for_model == 1) %>%
   freq(NEW_harmful_ideation_pandemic)
-
-(3366/12650)*100 # 26.6%
 ```
 
 
 ```{r percentage new onset self-harm}
 dat %>%
-  filter(SH_model_included == 1) %>%
+  filter(SH_data_for_model == 1) %>%
   freq(NEW_selfharm_pandemic)
-
-(661/20266)*100 # 3.3%
 ```
 
 ## SENSITIVITY ANALYSIS: Percentage new onset - NBR  & RAMP only

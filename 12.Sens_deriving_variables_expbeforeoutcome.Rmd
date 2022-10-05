@@ -57,7 +57,7 @@ date
 # Read in data
 ```{r Read in data}
 # Need these data for re-deriving the outcome variables with no baseline 
-additional_dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-06-20.rds")) 
+additional_dat <- readRDS(paste0(filepath_saved_data, "final_dat_no_dup_entries2022-09-27.rds")) 
 
 additional_dat <- additional_dat %>%
   select(contains("ID"),
@@ -69,7 +69,7 @@ additional_dat <- additional_dat %>%
           )
 
 # Also need these data for variables I'm not changing
-final_dat_merged <- readRDS(paste0(filepath_saved_data, "final_dat_merged_exclusions_2022-06-21.rds"))
+final_dat_merged <- readRDS(paste0(filepath_saved_data, "final_dat_merged_exclusions_2022-10-04.rds"))
 
 final_dat_merged <- final_dat_merged %>%
   select(ID,
@@ -1020,11 +1020,15 @@ dat %>%
 dat <- dat %>%
   mutate(sens2_NEW_harmful_ideation_pandemic =
            case_when(
-             NEW_selfharm_ideation_pandemic == 1 |
-             NEW_passive_suicidal_ideation_pandemic == 1 ~ 1,
-             
+              ((PREPANDEMIC_passive_suicidal_ideation == 0 &
+               PREPANDEMIC_selfharm_ideation == 0) &
+            (NEW_selfharm_ideation_pandemic == 1 |
+             NEW_passive_suicidal_ideation_pandemic == 1) ~ 1),
+            
+            (PREPANDEMIC_passive_suicidal_ideation == 0 &
+               PREPANDEMIC_selfharm_ideation == 0 &
              NEW_selfharm_ideation_pandemic == 0 &
-             NEW_passive_suicidal_ideation_pandemic == 0 ~ 0
+             NEW_passive_suicidal_ideation_pandemic == 0 ~ 0)
              
            ))
 
@@ -1829,19 +1833,11 @@ dat <- dat %>%
                 positive_covid_test_BE_13a == "To drop" |
                     positive_covid_test_BE_14b == "To drop" |
                 positive_covid_test_BE_15a == "To drop" |
-                    positive_covid_test_BE_16b == "To drop"  ~ "Positive test after binge eating",
+                    positive_covid_test_BE_16b == "To drop"  | # Positive test after binge eating
                     
-                     # Not answered whether they'd taken a test
-                    exposure_phase_positive_covid_test == "All missing" ~ "Missing whether experienced COVID", # Need to be dropped
-                    
-                     # Not taken test
-                    exposure_phase_positive_covid_test == "Not taken test" ~ "Not taken test", 
-                    
-                    # Taken test but not given test result
-                    exposure_phase_positive_covid_test == "Test taken but not answered test result" ~ "Missing test result", # Need to be dropped
                     
                      # Not answered whether they'd experienced binge eating 
-                    outcome_phase_binge_eating == "Not answered" ~ "Missing whether experienced binge eating", # Need to be dropped
+                    outcome_phase_binge_eating == "Not answered" ~ "To drop", # Missing whether experienced binge eating
                     
                     # First positive test BEFORE first experience of binge eating
              positive_covid_test_BE_baseline == "Yes" |
@@ -1890,12 +1886,12 @@ dat <- dat %>%
                     positive_covid_test_BE_16b == "No outcome"  ~ "Exposure but no outcome",
              
               # Experienced outcome but not exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
-                     (outcome_phase_binge_eating != "Not answered" |
+                   exposure_phase_positive_covid_test == "Not experienced" &
+                     (outcome_phase_binge_eating != "Not answered" &
                         outcome_phase_binge_eating != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
+                   exposure_phase_positive_covid_test == "Not experienced" &
                      outcome_phase_binge_eating == "Not experienced" ~ "Neither exposure nor outcome"
   
       )
@@ -1917,12 +1913,14 @@ dat %>%
 # Create final variable of positive COVID test before BE outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_BE_final =
-           case_when(positive_covid_test_before_BE == "Positive test after binge eating" | # Need to drop people who first experienced outcome before first experience of exposure
-                     positive_covid_test_before_BE == "Missing whether experienced COVID" | # Need to drop people who never answered whether they'd experienced the exposure
-                     positive_covid_test_before_BE == "Missing test result" | # Taken a test but not indicated result of test
-                     positive_covid_test_before_BE == "Missing whether experienced binge eating" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced the outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered whether they'd experienced the exposure
+             # Taken a test but not indicated result of test
+             # Need to drop people who never answered whether they'd experienced the outcome
+             
+             positive_covid_test_before_BE == "To drop" ~ NA_character_,  
                      
-                     positive_covid_test_before_BE == "Not taken test" |
                      positive_covid_test_before_BE ==  "Outcome but no exposure" |
                      positive_covid_test_before_BE ==  "Neither exposure nor outcome" ~ "No",
                     
@@ -1942,7 +1940,7 @@ missing <- dat %>%
 
 # These people should all have experienced outcome before exposure, or missing test result etc    
 missing %>%
-  filter(exposure_phase_positive_covid_test != "All missing" &
+  filter(exposure_phase_positive_covid_test != "Not experienced" &
           outcome_phase_binge_eating != "Not answered") %>%
   select(exposure_phase_positive_covid_test,
          outcome_phase_binge_eating
@@ -2578,19 +2576,11 @@ dat <- dat %>%
                 positive_covid_test_LW_13a == "To drop" |
                     positive_covid_test_LW_14b == "To drop" |
                  positive_covid_test_LW_15a == "To drop" |
-                    positive_covid_test_LW_16b == "To drop" ~ "Positive test after low weight",
+                    positive_covid_test_LW_16b == "To drop" | # Positive test after low weight
                     
-                     # Not answered whether they'd taken a test
-                    exposure_phase_positive_covid_test == "All missing" ~ "Missing whether experienced COVID", # Need to be dropped
                     
-                     # Not taken test
-                    exposure_phase_positive_covid_test == "Not taken test" ~ "Not taken test", 
-                    
-                    # Taken test but not given test result
-                    exposure_phase_positive_covid_test == "Test taken but not answered test result" ~ "Missing test result", # Need to be dropped
-                    
-                     # Not answered whether they'd experienced binge eating 
-                    outcome_phase_low_weight == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
+                     # Not answered whether they'd experienced low weight
+                    outcome_phase_low_weight == "Not answered" ~ "To drop", # Missing whether experienced low weight
                     
                     # First exposure BEFORE first experience of outcome
              positive_covid_test_LW_baseline == "Yes" |
@@ -2639,12 +2629,12 @@ dat <- dat %>%
                     positive_covid_test_LW_16b == "No outcome"  ~ "Exposure but no outcome",
              
               # Experienced outcome but not exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
-                     (outcome_phase_low_weight != "Not answered" |
+                   exposure_phase_positive_covid_test == "Not experienced" &
+                     (outcome_phase_low_weight != "Not answered" &
                         outcome_phase_low_weight != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
+                   exposure_phase_positive_covid_test == "Not experienced" &
                      outcome_phase_low_weight == "Not experienced" ~ "Neither exposure nor outcome"
   
       )
@@ -2657,12 +2647,13 @@ dat %>%
 # Create final variable of positive COVID test before LW outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_LW_final =
-           case_when(positive_covid_test_before_LW == "Positive test after low weight" | # Need to drop people who first experienced outcome before first experience of exposure
-                     positive_covid_test_before_LW == "All missing" | # Need to drop people who never answered whether they'd experienced the exposure
-                       positive_covid_test_before_LW == "Missing test result" | # Taken a test but not indicated result of test
-                     positive_covid_test_before_LW == "Missing whether experienced low weight" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced the outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered whether they'd experienced the exposure
+             # Taken a test but not indicated result of test
+             # Need to drop people who never answered whether they'd experienced the outcome
+             positive_covid_test_before_LW == "To drop" ~ NA_character_,  
                      
-                     positive_covid_test_before_LW == "Not taken test" |
                      positive_covid_test_before_LW ==  "Outcome but no exposure" |
                      positive_covid_test_before_LW ==  "Neither exposure nor outcome" ~ "No",
                     
@@ -2682,7 +2673,7 @@ missing <- dat %>%
 
 # These people should all have experienced outcome before exposure, or missing test result etc    
 missing %>%
-  filter(exposure_phase_positive_covid_test != "All missing" &
+  filter(exposure_phase_positive_covid_test != "Not experienced" &
           outcome_phase_low_weight != "Not answered") %>%
   select(exposure_phase_positive_covid_test,
          outcome_phase_low_weight
@@ -3533,20 +3524,11 @@ dat <- dat %>%
                  positive_covid_test_HI_13a == "To drop" |
                     positive_covid_test_HI_14b == "To drop" |
                  positive_covid_test_HI_15a == "To drop" |
-                    positive_covid_test_HI_16b == "To drop" ~ "Positive test after harmful ideation",
-                    
-                     # Not answered whether they'd taken a test
-                    exposure_phase_positive_covid_test == "All missing" ~ "Missing whether experienced COVID", # Need to be dropped
-                    
-                     # Not taken test
-                    exposure_phase_positive_covid_test == "Not taken test" ~ "Not taken test", 
-                    
-                    # Taken test but not given test result
-                    exposure_phase_positive_covid_test == "Test taken but not answered test result" ~ "Missing test result", # Need to be dropped
-                    
+                    positive_covid_test_HI_16b == "To drop" |  # Positive test after harmful ideation 
+                     
                      # Not answered whether they'd experienced harmful ideation
-                    outcome_phase_harmful_ideation == "Not answered or PNTA" ~ "Missing whether experienced harmful ideation", # Need to be dropped
-                    
+                    outcome_phase_harmful_ideation == "Not answered or PNTA" ~ "To drop", # Missing whether experienced harmful ideation
+              
                     # First positive test BEFORE first experience of passsive suicidal ideation
              positive_covid_test_HI_baseline == "Yes" |
                     positive_covid_test_HI_1a == "Yes" |
@@ -3594,12 +3576,12 @@ dat <- dat %>%
                     positive_covid_test_HI_16b == "No outcome" ~ "Exposure but no outcome",
                    
               # Experienced outcome but not exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
-                     (outcome_phase_harmful_ideation != "Not answered or PNTA" |
+                   exposure_phase_positive_covid_test == "Not experienced" &
+                     (outcome_phase_harmful_ideation != "Not answered or PNTA" &
                         outcome_phase_harmful_ideation != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
+                   exposure_phase_positive_covid_test == "Not experienced" &
                      outcome_phase_harmful_ideation == "Not experienced" ~ "Neither exposure nor outcome"
              )
 )
@@ -3611,12 +3593,13 @@ dat %>%
 # Create final variable of positive COVID test before HI outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_HI_final =
-           case_when(positive_covid_test_before_HI == "Positive test after harmful ideation" | # Need to drop people who first experienced outcome before first experience of exposure
-                     positive_covid_test_before_HI == "Missing whether experienced COVID" | # Need to drop people who never answered whether they'd taken a COVID test
-                       positive_covid_test_before_HI == "Missing test result" | # Taken a test but not indicated result of test
-                     positive_covid_test_before_HI == "Missing whether experienced harmful ideation" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced harmful ideation
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered whether they'd taken a COVID test
+             # Taken a test but not indicated result of test
+             # Need to drop people who never answered whether they'd experienced harmful ideation
+             positive_covid_test_before_HI == "To drop" ~ NA_character_,  
                      
-                     positive_covid_test_before_HI ==  "Not taken test" |
                      positive_covid_test_before_HI ==  "Outcome but no exposure" |
                     positive_covid_test_before_HI ==  "Neither exposure nor outcome" ~ "No",
                      
@@ -3635,8 +3618,8 @@ missing <- dat %>%
 
 # These people should all have experienced outcome before exposure, or missing test result etc    
 missing %>%
-  filter(exposure_phase_positive_covid_test != "All missing" &
-          outcome_phase_harmful_ideation != "Not answered") %>%
+  filter(exposure_phase_positive_covid_test != "Not experienced" &
+          outcome_phase_harmful_ideation != "Not answered or PNTA") %>%
   select(exposure_phase_positive_covid_test,
          outcome_phase_harmful_ideation
          )
@@ -4490,19 +4473,11 @@ dat <- dat %>%
                 positive_covid_test_SH_13a == "To drop" |
                positive_covid_test_SH_14b == "To drop" |
                     positive_covid_test_SH_15a == "To drop" |
-              positive_covid_test_SH_16b == "To drop"~ "Positive test after self-harm",
+              positive_covid_test_SH_16b == "To drop" | # Positive test after self-harm
                     
-                     # Not answered whether they'd taken a test
-                    exposure_phase_positive_covid_test == "All missing" ~ "Missing whether experienced COVID", # Need to be dropped
-                    
-                     # Not taken test
-                    exposure_phase_positive_covid_test == "Not taken test" ~ "Not taken test", 
-                    
-                    # Taken test but not given test result
-                    exposure_phase_positive_covid_test == "Test taken but not answered test result" ~ "Missing test result", # Need to be dropped
                     
                      # Not answered whether they'd experienced self-harm
-                    outcome_phase_selfharm == "Not answered or PNTA" ~ "Missing whether experienced self-harm", # Need to be dropped
+                    outcome_phase_selfharm == "Not answered or PNTA" ~ "To drop", # Missing whether experienced self-harm
                     
                     # First positive test BEFORE first experience of self-harm
              positive_covid_test_SH_baseline == "Yes" |
@@ -4551,12 +4526,12 @@ dat <- dat %>%
                positive_covid_test_SH_16b == "No outcome" ~ "Exposure but no outcome",
                    
                    # Experienced outcome but not exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
-                     (outcome_phase_selfharm != "Not answered or PNTA" |
+                   exposure_phase_positive_covid_test == "Not experienced" &
+                     (outcome_phase_selfharm != "Not answered or PNTA" &
                         outcome_phase_selfharm != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
-                   exposure_phase_positive_covid_test == "Not positive" &
+                   exposure_phase_positive_covid_test == "Not experienced" &
                      outcome_phase_selfharm == "Not experienced" ~ "Neither exposure nor outcome"
              )
 )
@@ -4568,12 +4543,13 @@ dat %>%
 # Create final variable of positive COVID test before SH outcome
 dat <- dat %>%
   mutate(positive_covid_test_before_SH_final =
-           case_when(positive_covid_test_before_SH == "Positive test after self-harm" | # Need to drop people who first experienced outcome before first experience of exposure
-                     positive_covid_test_before_SH == "Missing whether experienced COVID" | # Need to drop people who never answered whether they'd taken a COVID test
-                       positive_covid_test_before_SH == "Missing test result" | # Taken a test but not indicated result of test
-                     positive_covid_test_before_SH == "Missing whether experienced self-harm" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced self-harm 
+           case_when(# Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered whether they'd taken a COVID test
+             # Taken a test but not indicated result of test
+             # Need to drop people who never answered whether they'd experienced self-harm 
+                     
+                     positive_covid_test_before_SH == "To drop" ~ NA_character_,  
                
-                     positive_covid_test_before_SH ==  "Not taken test" |
                     positive_covid_test_before_SH ==  "Outcome but no exposure" |
                      positive_covid_test_before_SH ==  "Neither exposure nor outcome" ~ "No",
                      
@@ -4592,8 +4568,8 @@ missing <- dat %>%
 
 # These people should all have experienced outcome before exposure, or missing test result etc    
 missing %>%
-  filter(exposure_phase_positive_covid_test != "All missing" &
-          outcome_phase_selfharm != "Not answered") %>%
+  filter(exposure_phase_positive_covid_test != "Not experienced" &
+          outcome_phase_selfharm != "Not answered or PNTA") %>%
   select(exposure_phase_positive_covid_test,
          outcome_phase_selfharm
          )
@@ -5225,13 +5201,13 @@ dat <- dat %>%
                        lost_someone_BE_13a == "To drop" |
                      lost_someone_BE_14b == "To drop" |
                        lost_someone_BE_15a == "To drop" |
-                    lost_someone_BE_16b == "To drop"   ~ "Lost someone after binge eating",
+                    lost_someone_BE_16b == "To drop"  | # Lost someone after binge eating
                     
                      # Not answered whether they'd lost someone
-                    exposure_phase_losing_someone == "Not answered or PNTA" ~ "Missing whether lost someone", # Need to be dropped
+                    exposure_phase_losing_someone == "Not answered or PNTA" | # missing whether lost someone
                     
                     # Not answered whether they'd experienced binge eating 
-                    outcome_phase_binge_eating == "Not answered" ~ "Missing whether experienced binge eating", # Need to be dropped
+                    outcome_phase_binge_eating == "Not answered" ~ "To drop" , # Missing whether experienced binge eating
                     
                   # First lost someone BEFORE first experience of binge eating
                    lost_someone_BE_baseline == "Yes" |
@@ -5281,7 +5257,7 @@ dat <- dat %>%
                    
                    # Experienced outcome but not exposure
                    exposure_phase_losing_someone == "Not lost someone" &
-                     (outcome_phase_binge_eating != "Not answered" |
+                     (outcome_phase_binge_eating != "Not answered" &
                         outcome_phase_binge_eating != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -5300,9 +5276,12 @@ dat %>%
 # Create final variable of lost someone before BE outcome
 dat <- dat %>%
   mutate(lost_someone_before_BE_final =
-           case_when(losing_someone_before_BE == "Lost someone after binge eating" | # Need to drop people who first experienced outcome before first experience of exposure
-                     losing_someone_before_BE == "Missing whether lost someone" | # Need to drop people who never answered or put PNTA for whether they'd lost someone
-                     losing_someone_before_BE == "Missing whether experienced binge eating" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced binge eating
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd lost someone
+             # Need to drop people who never answered whether they'd experienced binge eating
+             
+             losing_someone_before_BE == "To drop" ~ NA_character_,  
                      
                        losing_someone_before_BE ==  "Outcome but no exposure" |
                       losing_someone_before_BE ==  "Neither exposure nor outcome" ~ "No",
@@ -5951,13 +5930,13 @@ dat <- dat %>%
                       lost_someone_LW_13a == "To drop" |
                       lost_someone_LW_14b == "To drop" |
                       lost_someone_LW_15a == "To drop" |
-                    lost_someone_LW_16b == "To drop"~ "Lost someone after low weight",
+                    lost_someone_LW_16b == "To drop"  |  # Lost someone after low weight 
                     
                      # Not answered whether they'd lost someone
-                    exposure_phase_losing_someone == "Not answered or PNTA" ~ "Missing whether lost someone", # Need to be dropped
+                    exposure_phase_losing_someone == "Not answered or PNTA" |  # Missing whether lost someone
                     
                     # Not answered whether they'd experienced low weight
-                    outcome_phase_low_weight == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
+                    outcome_phase_low_weight == "Not answered" ~ "To drop", # Missing whether experienced low weight
                     
                   # First lost someone BEFORE first experience of low weight
                      lost_someone_LW_baseline == "Yes" |
@@ -6007,7 +5986,7 @@ dat <- dat %>%
                    
                   # Experienced outcome but not exposure
                    exposure_phase_losing_someone == "Not lost someone" &
-                     (outcome_phase_low_weight != "Not answered" |
+                     (outcome_phase_low_weight != "Not answered" &
                         outcome_phase_low_weight != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -6023,9 +6002,12 @@ dat %>%
 # Create final variable of lost someone before LW outcome
 dat <- dat %>%
   mutate(lost_someone_before_LW_final =
-           case_when(losing_someone_before_LW == "Lost someone after low weight" | # Need to drop people who first experienced outcome before first experience of exposure
-                     losing_someone_before_LW == "Missing whether lost someone" | # Need to drop people who never answered or put PNTA for whether they'd lost someone
-                     losing_someone_before_LW == "Missing whether experienced low weight" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced low weight
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd lost someone
+             # Need to drop people who never answered whether they'd experienced low weight
+            
+              losing_someone_before_LW == "To drop" ~ NA_character_,  
                      
                       losing_someone_before_LW ==  "Outcome but no exposure" |
                     losing_someone_before_LW ==  "Neither exposure nor outcome" ~ "No",
@@ -6897,13 +6879,13 @@ dat <- dat %>%
                        lost_someone_HI_13a == "To drop" |
                       lost_someone_HI_14b == "To drop" |
                        lost_someone_HI_15a == "To drop" |
-                    lost_someone_HI_16b == "To drop"  ~ "Lost someone after harmful ideation",
+                    lost_someone_HI_16b == "To drop" |  # Lost someone after harmful ideation 
                     
                      # Not answered whether they'd lost someone
-                    exposure_phase_losing_someone == "Not answered or PNTA" ~ "Missing whether lost someone", # Need to be dropped
-                    
+                    exposure_phase_losing_someone == "Not answered or PNTA" | # Missing whether lost someone
+                      
                     # Not answered whether they'd experienced harmful ideation
-                    outcome_phase_harmful_ideation == "Not answered or PNTA" ~ "Missing whether experienced harmful ideation", # Need to be dropped
+                    outcome_phase_harmful_ideation == "Not answered or PNTA" ~ "To drop", # Missing whether experienced harmful ideation
                     
                   # First lost someone BEFORE first experience of harmful ideation
                     lost_someone_HI_baseline == "Yes" |
@@ -6954,7 +6936,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_losing_someone == "Not lost someone" &
-                     (outcome_phase_harmful_ideation != "Not answered or PNTA" |
+                     (outcome_phase_harmful_ideation != "Not answered or PNTA" &
                         outcome_phase_harmful_ideation != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -6970,9 +6952,12 @@ dat %>%
 # Create final variable of lost someone before HI outcome
 dat <- dat %>%
   mutate(lost_someone_before_HI_final =
-           case_when(losing_someone_before_HI == "Lost someone after harmful ideation" | # Need to drop people who first experienced outcome before first experience of exposure
-                     losing_someone_before_HI == "Missing whether lost someone" | # Need to drop people who never answered or put PNTA for whether they'd lost someone
-                     losing_someone_before_HI == "Missing whether experienced harmful ideation" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced harmful ideation
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd lost someone
+             # Need to drop people who never answered whether they'd experienced harmful ideation
+             
+             losing_someone_before_HI == "To drop" ~ NA_character_,  
                      
                       losing_someone_before_HI ==  "Outcome but no exposure" |
                      losing_someone_before_HI ==  "Neither exposure nor outcome" ~ "No",
@@ -7843,13 +7828,13 @@ dat <- dat %>%
                       lost_someone_SH_13a == "To drop" |
                     lost_someone_SH_14b == "To drop" |
                       lost_someone_SH_15a == "To drop" |
-                    lost_someone_SH_16b == "To drop" ~ "Lost someone after self-harm",
+                    lost_someone_SH_16b == "To drop"  | # Lost someone after self-harm
                     
                      # Not answered whether they'd lost someone
-                    exposure_phase_losing_someone == "Not answered or PNTA" ~ "Missing whether lost someone", # Need to be dropped
-                    
+                    exposure_phase_losing_someone == "Not answered or PNTA" | # Missing whether lost someone
+                      
                     # Not answered whether they'd experienced self-harm
-                    outcome_phase_selfharm == "Not answered or PNTA" ~ "Missing whether experienced self-harm", # Need to be dropped
+                    outcome_phase_selfharm == "Not answered or PNTA" ~ "To drop", # Missing whether experienced self-harm
                     
                   # First lost someone BEFORE first experience of self-harm
                    lost_someone_SH_baseline == "Yes" |
@@ -7899,7 +7884,7 @@ dat <- dat %>%
                   
                    # Experienced outcome but not exposure
                    exposure_phase_losing_someone == "Not lost someone" &
-                     (outcome_phase_selfharm != "Not answered or PNTA" |
+                     (outcome_phase_selfharm != "Not answered or PNTA" &
                         outcome_phase_selfharm != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -7914,9 +7899,12 @@ dat %>%
 # Create final variable of lost someone before SH outcome
 dat <- dat %>%
   mutate(lost_someone_before_SH_final =
-           case_when(losing_someone_before_SH == "Lost someone after self-harm" | # Need to drop people who first experienced outcome before first experience of exposure
-                     losing_someone_before_SH == "Missing whether lost someone" | # Need to drop people who never answered or put PNTA for whether they'd lost someone
-                     losing_someone_before_SH == "Missing whether experienced self-harm ideation" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced self-harm ideation
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd lost someone
+             # Need to drop people who never answered whether they'd experienced self-harm ideation
+             
+             losing_someone_before_SH == "To drop" ~ NA_character_,  
                      
                        losing_someone_before_SH ==  "Outcome but no exposure" |
                      losing_someone_before_SH ==  "Neither exposure nor outcome" ~ "No",
@@ -8560,13 +8548,13 @@ dat <- dat %>%
                     main_eco_change_BE_13a == "To drop" |
                       main_eco_change_BE_14b == "To drop" |
                     main_eco_change_BE_15a == "To drop" |
-                      main_eco_change_BE_16b == "To drop" ~ "Change in eco activity after binge eating",
+                      main_eco_change_BE_16b == "To drop" | # Change in eco activity after binge eating 
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_main_eco_change == "Missing at every phase" ~ "Missing whether change in eco activity", # Need to be dropped
+                    exposure_phase_main_eco_change == "Missing at every phase" | # Missing whether change in eco activity
                     
                     # Not answered whether they'd experienced binge eating 
-                    outcome_phase_binge_eating == "Not answered" ~ "Missing whether experienced binge eating", # Need to be dropped
+                    outcome_phase_binge_eating == "Not answered" ~ "To drop", # Missing whether experienced binge eating
                     
                   # First exposure before first outcome
                     main_eco_change_BE_baseline == "Yes" |
@@ -8616,7 +8604,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_main_eco_change == "No change in eco activity" &
-                     (outcome_phase_binge_eating != "Not answered" |
+                     (outcome_phase_binge_eating != "Not answered" &
                         outcome_phase_binge_eating != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -8633,9 +8621,12 @@ dat %>%
 # Create final variable of first exposure before first outcome
 dat <- dat %>%
   mutate(main_eco_change_before_BE_final =
-           case_when(main_eco_change_before_BE == "Change in eco activity after binge eating" | # Need to drop people who first experienced outcome before first experience of exposure
-                     main_eco_change_before_BE == "Missing whether change in eco activity" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
-                     main_eco_change_before_BE == "Missing whether experienced binge eating" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced binge eating
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
+             # Need to drop people who never answered whether they'd experienced binge eating
+             
+             main_eco_change_before_BE == "To drop" ~ NA_character_,  
                      
                      main_eco_change_before_BE ==  "Outcome but no exposure" |
                       main_eco_change_before_BE ==  "Neither exposure nor outcome" ~ "No",
@@ -9283,13 +9274,13 @@ dat <- dat %>%
                     main_eco_change_LW_13a == "To drop" |
                        main_eco_change_LW_14b == "To drop" |
                     main_eco_change_LW_15a == "To drop" |
-                       main_eco_change_LW_16b == "To drop"~ "Change in eco activity after low weight",
+                       main_eco_change_LW_16b == "To drop" | # Change in eco activity after low weight
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_main_eco_change == "Missing at every phase" ~ "Missing whether change in eco activity", # Need to be dropped
+                    exposure_phase_main_eco_change == "Missing at every phase" | # Missing whether change in eco activity
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_low_weight == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
+                    outcome_phase_low_weight == "Not answered" ~ "To drop", # Missing whether experienced low weight
                     
                   # First exposure BEFORE first experience of outcome
                     main_eco_change_LW_baseline == "Yes" |
@@ -9339,7 +9330,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_main_eco_change == "No change in eco activity" &
-                     (outcome_phase_low_weight != "Not answered" |
+                     (outcome_phase_low_weight != "Not answered" &
                         outcome_phase_low_weight != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -9355,9 +9346,11 @@ dat %>%
 # Create final variable of first exposure before first outcome
 dat <- dat %>%
   mutate(main_eco_change_before_LW_final =
-           case_when(main_eco_change_before_LW == "Change in eco activity after low weight" | # Need to drop people who first experienced outcome before first experience of exposure
-                     main_eco_change_before_LW == "Missing whether change in eco activity" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
-                      main_eco_change_before_LW == "Missing whether experienced low weight" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced outcome
+           case_when(# Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
+             # Need to drop people who never answered whether they'd experienced outcome
+             
+             main_eco_change_before_LW == "To drop" ~ NA_character_,  
                      
                       main_eco_change_before_LW ==  "Outcome but no exposure" |
                       main_eco_change_before_LW ==  "Neither exposure nor outcome" ~ "No",
@@ -10220,13 +10213,13 @@ dat <- dat %>%
                     main_eco_change_HI_13a == "To drop" |
                        main_eco_change_HI_14b == "To drop" |
                     main_eco_change_HI_15a == "To drop" |
-                       main_eco_change_HI_16b == "To drop" ~ "Change in eco activity after harmful ideation",
+                       main_eco_change_HI_16b == "To drop" | # Change in eco activity after harmful ideation
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_main_eco_change == "Missing at every phase" ~ "Missing whether change in eco activity", # Need to be dropped
+                    exposure_phase_main_eco_change == "Missing at every phase" | # Missing whether change in eco activity
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_harmful_ideation == "Not answered or PNTA" ~ "Missing whether experienced harmful ideation", # Need to be dropped
+                    outcome_phase_harmful_ideation == "Not answered or PNTA" ~ "To drop", # Missing whether experienced harmful ideation
                     
                   # First exposure BEFORE first experience of outcome
                     main_eco_change_HI_baseline == "Yes" |
@@ -10276,7 +10269,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_main_eco_change == "No change in eco activity" &
-                     (outcome_phase_harmful_ideation != "Not answered or PNTA" |
+                     (outcome_phase_harmful_ideation != "Not answered or PNTA" &
                         outcome_phase_harmful_ideation != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -10292,9 +10285,12 @@ dat %>%
 # Create final variable of first exposure before first outcome
 dat <- dat %>%
   mutate(main_eco_change_before_HI_final =
-           case_when(main_eco_change_before_HI == "Change in eco activity after harmful ideation" | # Need to drop people who first experienced outcome before first experience of exposure
-                     main_eco_change_before_HI == "Missing whether change in eco activity" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
-                      main_eco_change_before_HI == "Missing whether experienced harmful ideation" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
+             # Need to drop people who never answered whether they'd experienced outcome
+             
+             main_eco_change_before_HI == "To drop" ~ NA_character_,  
                      
                       main_eco_change_before_HI ==  "Outcome but no exposure" |
                       main_eco_change_before_HI ==  "Neither exposure nor outcome" ~ "No",
@@ -11155,13 +11151,14 @@ dat <- dat %>%
                     main_eco_change_SH_13a == "To drop" |
                        main_eco_change_SH_14b == "To drop" |
                     main_eco_change_SH_15a == "To drop" |
-                       main_eco_change_SH_16b == "To drop" ~ "Change in eco activity after self-harm",
+                       main_eco_change_SH_16b == "To drop"  | # Change in eco activity after self-harm
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_main_eco_change == "Missing at every phase" ~ "Missing whether change in eco activity", # Need to be dropped
+                    exposure_phase_main_eco_change == "Missing at every phase" | # Missing whether change in eco activity
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_selfharm == "Not answered or PNTA" ~ "Missing whether experienced self-harm", # Need to be dropped
+                    outcome_phase_selfharm == "Not answered or PNTA" ~ "To drop", # Missing whether experienced self-harm
+                    
                     
                   # First exposure BEFORE first experience of outcome
                     main_eco_change_SH_baseline == "Yes" |
@@ -11211,7 +11208,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_main_eco_change == "No change in eco activity" &
-                     (outcome_phase_selfharm != "Not answered or PNTA" |
+                     (outcome_phase_selfharm != "Not answered or PNTA" &
                         outcome_phase_selfharm!= "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -11228,9 +11225,12 @@ dat %>%
 # Create final variable of first exposure before first outcome
 dat <- dat %>%
   mutate(main_eco_change_before_SH_final =
-           case_when(main_eco_change_before_SH == "Change in eco activity after self-harm" | # Need to drop people who first experienced outcome before first experience of exposure
-                     main_eco_change_before_SH == "Missing whether change in eco activity" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
-                      main_eco_change_before_SH == "Missing whether experienced self-harm" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+              # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their main eco activity
+              # Need to drop people who never answered whether they'd experienced outcome
+             
+             main_eco_change_before_SH == "To drop" ~ NA_character_, 
                      
                       main_eco_change_before_SH ==  "Outcome but no exposure" |
                       main_eco_change_before_SH ==  "Neither exposure nor outcome" ~ "No",
@@ -11873,13 +11873,13 @@ dat <- dat %>%
                     living_situation_change_BE_13a == "To drop" |
                       living_situation_change_BE_14b == "To drop" |
                     living_situation_change_BE_15a == "To drop" |
-                      living_situation_change_BE_16b == "To drop" ~ "Change in living situation after binge eating",
+                      living_situation_change_BE_16b == "To drop" | # Change in living situation after binge eating
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_living_situation_change == "Missing at every phase" ~ "Missing whether change in living situation", # Need to be dropped
+                    exposure_phase_living_situation_change == "Missing at every phase" | # Missing whether change in living situation
                     
                     # Not answered whether they'd experienced binge eating 
-                    outcome_phase_binge_eating == "Not answered" ~ "Missing whether experienced binge eating", # Need to be dropped
+                    outcome_phase_binge_eating == "Not answered" ~ "To drop", # Missing whether experienced binge eating
                     
                   # First exposure BEFORE first experience of outcome
                     living_situation_change_BE_baseline == "Yes" |
@@ -11929,7 +11929,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_living_situation_change == "No change in living situation" &
-                     (outcome_phase_binge_eating != "Not answered" |
+                     (outcome_phase_binge_eating != "Not answered" &
                         outcome_phase_binge_eating != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -11946,9 +11946,12 @@ dat %>%
 # Create final variable of exposure before outcome
 dat <- dat %>%
   mutate(living_situation_change_before_BE_final =
-           case_when(living_situation_change_before_BE == "Change in living situation after binge eating" | # Need to drop people who first experienced outcome before first experience of exposure
-                     living_situation_change_before_BE == "Missing whether change in living situation" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
-                     living_situation_change_before_BE == "Missing whether experienced binge eating" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced binge eating
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
+             # Need to drop people who never answered whether they'd experienced binge eating
+             
+             living_situation_change_before_BE == "To drop" ~ NA_character_,  
                      
                        living_situation_change_before_BE ==  "Outcome but no exposure" |
                       living_situation_change_before_BE ==  "Neither exposure nor outcome" ~ "No",
@@ -12594,13 +12597,13 @@ dat <- dat %>%
                     living_situation_change_LW_13a == "To drop" |
                       living_situation_change_LW_14b== "To drop" |
                     living_situation_change_LW_15a == "To drop" |
-                      living_situation_change_LW_16b == "To drop" ~ "Change in living situation after low weight",
+                      living_situation_change_LW_16b == "To drop" | # Change in living situation after low weight
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_living_situation_change == "Missing at every phase" ~ "Missing whether change in living situation", # Need to be dropped
+                    exposure_phase_living_situation_change == "Missing at every phase" | # Missing whether change in living situation
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_low_weight == "Not answered" ~ "Missing whether experienced low weight", # Need to be dropped
+                    outcome_phase_low_weight == "Not answered" ~ "To drop", # Missing whether experienced low weight
                     
                   # First exposure BEFORE first experience of outcome
                     living_situation_change_LW_baseline == "Yes" |
@@ -12650,7 +12653,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_living_situation_change == "No change in living situation" &
-                     (outcome_phase_low_weight != "Not answered" |
+                     (outcome_phase_low_weight != "Not answered" &
                         outcome_phase_low_weight != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -12667,9 +12670,12 @@ dat %>%
 # Create final variable of exposure before outcome
 dat <- dat %>%
   mutate(living_situation_change_before_LW_final =
-           case_when(living_situation_change_before_LW == "Change in living situation after low weight" | # Need to drop people who first experienced outcome before first experience of exposure
-                     living_situation_change_before_LW == "Missing whether change in living situation" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
-                     living_situation_change_before_LW == "Missing whether experienced low weight" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced the outcome
+           case_when(
+             # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
+             # Need to drop people who never answered whether they'd experienced the outcome
+             
+             living_situation_change_before_LW == "To drop" ~ NA_character_,  
                      
                        living_situation_change_before_LW ==  "Outcome but no exposure" |
                      living_situation_change_before_LW ==  "Neither exposure nor outcome" ~ "No",
@@ -13534,13 +13540,13 @@ dat <- dat %>%
                     living_situation_change_HI_13a == "To drop" |
                       living_situation_change_HI_14b == "To drop" |
                     living_situation_change_HI_15a == "To drop" |
-                      living_situation_change_HI_16b == "To drop" ~ "Change in living situation after harmful ideation",
+                      living_situation_change_HI_16b == "To drop" | # Change in living situation after harmful ideation
                     
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_living_situation_change == "Missing at every phase" ~ "Missing whether change in living situation", # Need to be dropped
+                    exposure_phase_living_situation_change == "Missing at every phase" | # Missing whether change in living situation
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_harmful_ideation == "Not answered or PNTA" ~ "Missing whether experienced harmful ideation", # Need to be dropped
+                    outcome_phase_harmful_ideation == "Not answered or PNTA" ~ "To drop", # Missing whether experienced harmful ideation
                     
                   # First exposure BEFORE first experience of outcome
                     living_situation_change_HI_baseline == "Yes" |
@@ -13590,7 +13596,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_living_situation_change == "No change in living situation" &
-                     (outcome_phase_harmful_ideation != "Not answered or PNTA" |
+                     (outcome_phase_harmful_ideation != "Not answered or PNTA" &
                         outcome_phase_harmful_ideation != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -13607,9 +13613,12 @@ dat %>%
 # Create final variable of exposure before outcome
 dat <- dat %>%
   mutate(living_situation_change_before_HI_final =
-           case_when(living_situation_change_before_HI == "Change in living situation after harmful ideation" | # Need to drop people who first experienced outcome before first experience of exposure
-                     living_situation_change_before_HI == "Missing whether change in living situation" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
-                     living_situation_change_before_HI == "Missing whether experienced harmful ideation" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced the outcome
+           case_when(
+              # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
+             # Need to drop people who never answered whether they'd experienced the outcome
+             
+             living_situation_change_before_HI == "To drop" ~ NA_character_,  
                      
                        living_situation_change_before_HI ==  "Outcome but no exposure" |
                       living_situation_change_before_HI ==  "Neither exposure nor outcome" ~ "No",
@@ -14479,13 +14488,13 @@ dat <- dat %>%
                     living_situation_change_SH_13a == "To drop" |
                       living_situation_change_SH_14b == "To drop" |
                     living_situation_change_SH_15a == "To drop" |
-                      living_situation_change_SH_16b == "To drop"  ~ "Change in living situation after self-harm",
-                    
+                      living_situation_change_SH_16b == "To drop" | # Change in living situation after self-harm
+                  
                      # Not answered whether they'd experienced exposure
-                    exposure_phase_living_situation_change == "Missing at every phase" ~ "Missing whether change in living situation", # Need to be dropped
+                    exposure_phase_living_situation_change == "Missing at every phase" | # Missing whether change in living situation
                     
                     # Not answered whether they'd experienced outcome
-                    outcome_phase_selfharm == "Not answered or PNTA" ~ "Missing whether experienced self-harm", # Need to be dropped
+                    outcome_phase_selfharm == "Not answered or PNTA" ~ "To drop", # Missing whether experienced self-harm
                     
                   # First exposure BEFORE first experience of outcome
                     living_situation_change_SH_baseline == "Yes" |
@@ -14535,7 +14544,7 @@ dat <- dat %>%
                   
                   # Experienced outcome but not exposure
                    exposure_phase_living_situation_change == "No change in living situation" &
-                     (outcome_phase_selfharm != "Not answered or PNTA" |
+                     (outcome_phase_selfharm != "Not answered or PNTA" &
                         outcome_phase_selfharm != "Not experienced") ~ "Outcome but no exposure", 
                    
                        # Experienced neither outcome nor exposure
@@ -14552,9 +14561,12 @@ dat %>%
 # Create final variable of exposure before outcome
 dat <- dat %>%
   mutate(living_situation_change_before_SH_final =
-           case_when(living_situation_change_before_SH == "Change in living situation after self-harm" | # Need to drop people who first experienced outcome before first experience of exposure
-                     living_situation_change_before_SH == "Missing whether change in living situation" | # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
-                     living_situation_change_before_SH == "Missing whether experienced self-harm" ~ NA_character_,  # Need to drop people who never answered whether they'd experienced the outcome
+           case_when(
+              # Need to drop people who first experienced outcome before first experience of exposure
+             # Need to drop people who never answered or put PNTA for whether they'd experienced a change in their living situation
+             # Need to drop people who never answered whether they'd experienced the outcome
+             
+             living_situation_change_before_SH == "To drop" ~ NA_character_,  
                      
                        living_situation_change_before_SH ==  "Outcome but no exposure" |
                      living_situation_change_before_SH ==  "Neither exposure nor outcome" ~ "No",
@@ -14625,7 +14637,10 @@ final_dat <- dat %>%
         living_situation_change_before_BE_final,
         living_situation_change_before_LW_final,
         living_situation_change_before_HI_final,
-        living_situation_change_before_SH_final
+        living_situation_change_before_SH_final,
+        
+        PREPANDEMIC_passive_suicidal_ideation,
+        PREPANDEMIC_selfharm_ideation
         )
 ```
 
